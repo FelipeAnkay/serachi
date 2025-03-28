@@ -1,12 +1,16 @@
 import React from 'react'
 import { motion } from "framer-motion";
 import Input from "../components/Input";
-import { User } from "lucide-react";
+import { Lock, Mail, User } from "lucide-react";
 import { useState } from "react";
+import { Link } from 'react-router-dom';
+import PasswordStrenghtMeter from '../components/PasswordStrenghtMeter';
 
 const SignUpPage = () => {
 
   const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
 
   const handleSignUp = async (e) => {
     e.preventDefault();
@@ -31,8 +35,43 @@ const SignUpPage = () => {
             value={name}
             onChange={(e) => setName(e.target.value)}
           />
+          <Input
+            icon={Mail}
+            type='email'
+            placeholder='Email address'
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
+          <Input
+            icon={Lock}
+            type='password'
+            placeholder='Enter Password'
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+          <PasswordStrenghtMeter password={password}/>
+
+          <motion.button 
+          className='mt-5 w-full py-3 px-4 bg-gradient-to-r from-blue-500 to-blue-700 text-white 
+						font-bold rounded-lg shadow-lg hover:from-blue-600
+						hover:to-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2
+						 focus:ring-offset-gray-900 transition duration-200'
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            type='submit'
+          >
+            Sign Up
+          </motion.button>
         </form>
       </div>
+      <div className='px-8 py-4 bg-gray-900 bg-opacity-50 flex justify-center'>
+				<p className='text-sm text-gray-400'>
+					Already have an account?{" "}
+					<Link to={"/login"} className='text-blue-400 hover:underline'>
+						Login
+					</Link>
+				</p>
+			</div>
     </motion.div>
   );
 };
