@@ -1,6 +1,11 @@
 import { motion } from "framer-motion";
+import Input from "../components/Input";
+import { User } from "lucide-react";
+import { useState } from "react";
 
 const SignUpPage = () => {
+
+  const [name, setName] = useState('');
 
   const handleSignUp = async (e) => {
 		e.preventDefault();
@@ -18,7 +23,11 @@ const SignUpPage = () => {
           Create Account
         </h2>
         <form onSubmit={handleSignUp}>
-
+          <Input
+            icon={User}
+            type='text'
+            placeholder='Full Name'
+          />
         </form>
       </div>
     </motion.div>
