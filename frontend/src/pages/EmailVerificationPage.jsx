@@ -2,12 +2,15 @@ import React, { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Loader } from 'lucide-react';
+import { useAuthStore } from '../store/authStore';
+import toast from 'react-hot-toast';
 
 const EmailVerificationPage = () => {
     const [code, setCode] = useState(["", "", "", "", "", ""]);
     const inputRefs = useRef([]);
     const navigate = useNavigate();
-    const isLoading = false;
+    const {error,isLoading,verifyEmail}=useAuthStore();
+
 
     const handleChange = (index, value) => {
         const newCode = [...code];
@@ -41,10 +44,17 @@ const EmailVerificationPage = () => {
 		}
     }
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         const verificationCode = code.join("");
-        console.log(`Verification Code submited: ${verificationCode}`);
+        try {
+            await verifyEmail(verificationCode);
+            navigate("/");
+            console.log(`Verification Code submited: ${verificationCode}`);
+            toast.success("Email verified successfully");
+        } catch (error) {
+            console.log(error);
+        }
     }
 
     useEffect(() => {
@@ -81,6 +91,7 @@ const EmailVerificationPage = () => {
                         ))}
                     </div>
                 </form>
+                {error && <p className='text-red-500 font-semibold mt-2'>{error}</p>}
                 <motion.button
                     className='mt-5 w-full py-3 px-4 bg-gradient-to-r from-blue-500 to-blue-700 text-white 
                       font-bold rounded-lg shadow-lg hover:from-blue-600

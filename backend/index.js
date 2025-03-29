@@ -12,7 +12,7 @@ const PORT = process.env.PORT || 5000;
 app.get("/", (req,res) =>{
     res.send("Hello W123");
 });
-app.use(cors({origin: "http://localhost:5173", credentials:true}));
+app.use(cors({origin: process.env.CLIENT_URL, credentials:true}));
 app.use(express.json());  //Allows us to parse incoming request with JSON
 app.use(cookieParser());
 
