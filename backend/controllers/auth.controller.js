@@ -6,7 +6,7 @@ import { generateVerificationCode } from "../utils/generateVerificationCode.js";
 import { generateTokenAndSetCookie } from "../utils/generateTokenAndSetCookie.js";
 import { sendVerificationEmail, sendWelcomeEmail, sendForgotPasswordEmail, sendResetPasswordSucessEmail } from "../mailtrap/emails.js";
 
-export const singup = async (req, res) => {
+export const signup = async (req, res) => {
     const {email, password, name} = req.body;
     try{
         if (!email || !password || !name){
