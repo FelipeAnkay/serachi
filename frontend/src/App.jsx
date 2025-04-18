@@ -8,6 +8,8 @@ import { useAuthStore } from './store/authStore';
 import { children, useEffect } from 'react';
 import HomePage from './pages/HomePage';
 import LoadingSpinner from './components/LoadingSpinner';
+import ForgotPasswordPage from './pages/ForgotPasswordPage';
+import ResetPasswordPage from './pages/ResetPasswordPage';
 
 const ProtectedRoute = ({ children }) => {
   const { isAuthenticated, user } = useAuthStore();
@@ -30,13 +32,13 @@ const RedirectAuthenticatedUser = ({ children }) => {
 }
 
 function App() {
-  const { isCheckingAuth, checkAuth, isAuthenticated, user } = useAuthStore();
+  const { isCheckingAuth, checkAuth } = useAuthStore();
   useEffect(() => {
     checkAuth()
   }, [checkAuth]);
 
   if (isCheckingAuth) return <LoadingSpinner />;
-  
+
   return (
     <div
       className='min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-emerald-950 flex items-center justify-center relative overflow-hidden'
@@ -70,6 +72,16 @@ function App() {
           }
         />
         <Route path="/verify-email" element={<EmailVerificationPage />} />
+        <Route path="/forgot-password" element={
+            <RedirectAuthenticatedUser>
+              <ForgotPasswordPage />
+            </RedirectAuthenticatedUser>
+          } />
+          <Route path="/reset-password/:token" element={
+            <RedirectAuthenticatedUser>
+              <ResetPasswordPage />
+            </RedirectAuthenticatedUser>
+          } />
       </Routes>
       <Toaster />
     </div>
