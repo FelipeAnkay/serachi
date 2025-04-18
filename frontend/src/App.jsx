@@ -82,6 +82,11 @@ function App() {
               <ResetPasswordPage />
             </RedirectAuthenticatedUser>
           } />
+
+          {/*catch all not determined above routes*/}
+          <Route path="*" element={
+            <Navigate to="/" replace />
+          } />
       </Routes>
       <Toaster />
     </div>
