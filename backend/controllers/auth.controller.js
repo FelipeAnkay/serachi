@@ -4,11 +4,14 @@ import { User } from "../models/user.model.js";
 import { generateVerificationCode } from "../utils/generateVerificationCode.js";
 import { generateTokenAndSetCookie } from "../utils/generateTokenAndSetCookie.js";
 import { sendVerificationEmail, sendWelcomeEmail, sendForgotPasswordEmail, sendResetPasswordSucessEmail } from "../mailtrap/emails.js";
+import { Service } from "../models/service.model.js";
+import { Activity } from "../models/activity.model.js";
 
+/* USER FUNCTIONS*/
 export const signup = async (req, res) => {
-    const {email, password, name} = req.body;
+    const {email, password, name, phone} = req.body;
     try{
-        if (!email || !password || !name){
+        if (!email || !password || !name || !phone){
             throw new Error("All fields are required");
         }
         const userAlreadyExists = await User.findOne({email});
@@ -22,6 +25,7 @@ export const signup = async (req, res) => {
             email,
             password: hashedPassword,
             name,
+            phone,
             verificationToken: verificationCode,
             verificationTokenexpiresAt: Date.now() + 24 * 60 * 60 * 1000 // 24 hrs
         })
@@ -192,12 +196,72 @@ export const resetPassword = async (req, res) => {
 
 export const checkAuth = async (req, res) => {
     try {
-        const user = await User.findById(req.userId).select("-password");
+        const user = await User.findById(req.userId).select("password");
         if(!user){
             return res.status(400).json({sucess: false, message: "User not found"});
         }
         res.status(200).json({sucess: true, user});
     } catch (error) {
         return res.status(400).json({sucess: false, message: error.message});
+    }
+}
+
+/*SERVICE FUNCTIONS */
+export const createService = async (req, res) => {
+    const {name, price, currency, activityList} = req.body;
+    try{
+        if (!name || !price || !currency || !activityList){
+            throw new Error("All fields are required");
+        }
+
+        const service = new Service({
+            name,
+            price,
+            currency,
+            activityList,
+        })
+
+        await service.save();
+
+        res.status(201).json({
+            sucess: true,
+            message: "service created succesfully",
+            service:{
+                ...service._doc
+            }
+        })
+
+    }catch (error){
+        res.status(400).json({sucess: false, message: error.message});
+    }
+}
+
+/*ACTIVITY FUNCTIONS */
+export const createActivity = async (req, res) => {
+    const {name, price, currency} = req.body;
+    try{
+        if (!name || !price || !currency){
+            throw new Error("All fields are required");
+        }
+
+        const activity = new Activity({
+            name,
+            price,
+            currency,
+        })
+
+        await activity.save();
+        //console.log("El object ID es: ", activity._id.toString());
+
+        res.status(201).json({
+            sucess: true,
+            message: "Activity created succesfully",
+            activity:{
+                ...activity._doc
+            }
+        })
+
+    }catch (error){
+        res.status(400).json({sucess: false, message: error.message});
     }
 }
