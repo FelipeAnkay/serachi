@@ -1,6 +1,5 @@
 import bcrypt, { compare } from "bcryptjs";
-import crypto from "crypto";
-
+import crypto from 'node:crypto';
 import { User } from "../models/user.model.js";
 import { generateVerificationCode } from "../utils/generateVerificationCode.js";
 import { generateTokenAndSetCookie } from "../utils/generateTokenAndSetCookie.js";
