@@ -6,9 +6,13 @@ import authRoutes from "./routes/auth.route.js";
 import cookieParser from 'cookie-parser';
 import path from "path";
 
+
 dotenv.config();
+//this is for prod
+//const serverless = require("serverless-http");
 
 const app = express();
+// HABILITAR PARA DEV ENV
 const PORT = process.env.PORT || 5000;
 const __dirname = path.resolve();
 
@@ -25,8 +29,12 @@ if (process.env.NODE_ENV === "production"){
     })
 }
 
+/* HABILITAR PARA DEV ENV */
 app.listen(PORT, () =>{
     connectDB();
     console.log("Server is running on: ", PORT);
 });
 
+
+//this is for prod
+//module.exports.handler = serverless(app);
