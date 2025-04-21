@@ -16,6 +16,10 @@ const serviceSchema = new mongoose.Schema({
         type: String,
         default: false
     }],
+    storeId: {
+        type:String,
+        required: true
+    },
     isActive:{
         type: Boolean,
         default: true

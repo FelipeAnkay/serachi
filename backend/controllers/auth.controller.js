@@ -5,7 +5,9 @@ import { generateVerificationCode } from "../utils/generateVerificationCode.js";
 import { generateTokenAndSetCookie } from "../utils/generateTokenAndSetCookie.js";
 import { sendVerificationEmail, sendWelcomeEmail, sendForgotPasswordEmail, sendResetPasswordSucessEmail } from "../mailtrap/emails.js";
 import { Service } from "../models/service.model.js";
-import { Activity } from "../models/activity.model.js";
+import { Product } from "../models/product.model.js";
+import { Store } from "../models/store.model.js"
+import { Room } from "../models/room.model.js";
 
 /* USER FUNCTIONS*/
 export const signup = async (req, res) => {
@@ -83,11 +85,16 @@ export const verifyEmail = async (req, res) => {
 }
 
 export const login = async (req, res) => {
-    const {email, password} =  req.body;
+    const {storeId,email, password} =  req.body;
     try {
         const user = await User.findOne({email});
-        if (!user) {
+        const store = await Store.findOne({storeId});
+
+        if (!user || !store) {
             return res.status(400).json({sucess: false, message: "Invalid credentials"});
+        }
+        if(!store.userList.find((element) => element === email)){
+            return res.status(400).json({sucess: false, message: "User not registrated in that company"});
         }
         const isPasswordValid = await bcrypt.compare(password, user.password);
         if (!isPasswordValid){
@@ -208,9 +215,9 @@ export const checkAuth = async (req, res) => {
 
 /*SERVICE FUNCTIONS */
 export const createService = async (req, res) => {
-    const {name, price, currency, activityList} = req.body;
+    const {name, price, currency, storeId, activityList} = req.body;
     try{
-        if (!name || !price || !currency || !activityList){
+        if (!name || !price || !currency || !storeId || !activityList){
             throw new Error("All fields are required");
         }
 
@@ -219,6 +226,7 @@ export const createService = async (req, res) => {
             price,
             currency,
             activityList,
+            storeId
         })
 
         await service.save();
@@ -262,26 +270,27 @@ export const updateService = async (req, res) => {
     }
 }
 
-/*ACTIVITY FUNCTIONS */
-export const createActivity = async (req, res) => {
-    const {name, price, currency} = req.body;
+/*Product FUNCTIONS */
+export const createProduct = async (req, res) => {
+    const {name, price, currency, storeId} = req.body;
     try{
-        if (!name || !price || !currency){
+        if (!name || !price || !storeId || !currency){
             throw new Error("All fields are required");
         }
 
-        const activity = new Activity({
+        const product = new Product({
             name,
             price,
             currency,
+            storeId
         })
 
-        await activity.save();
+        await product.save();
         //console.log("El object ID es: ", activity._id.toString());
 
         res.status(201).json({
             sucess: true,
-            message: "Activity created succesfully",
+            message: "product created succesfully",
             activity:{
                 ...activity._doc
             }
@@ -294,7 +303,7 @@ export const createActivity = async (req, res) => {
 
 /*STORE FUNCTIONS */
 export const createStore = async (req, res) => {
-    const {name, mainEmail, address, phone} = req.body;
+    const {name, mainEmail, address, storeId ,phone} = req.body;
     try{
         if (!name || !mainEmail || !phone){
             throw new Error("All fields are required");
@@ -304,6 +313,7 @@ export const createStore = async (req, res) => {
             name,
             mainEmail,
             address,
+            storeId,
             phone
         })
 
@@ -313,7 +323,7 @@ export const createStore = async (req, res) => {
             sucess: true,
             message: "Store created succesfully",
             service:{
-                ...service._doc
+                ...store._doc
             }
         })
 
@@ -339,7 +349,62 @@ export const updateStore = async (req, res) => {
             sucess: true,
             message: "Store updated succesfully",
             service:{
-                ...service._doc
+                ...store._doc
+            }   
+        })
+
+    }catch (error){
+        res.status(400).json({sucess: false, message: error.message});
+    }
+}
+
+/*ROOM FUNCTIONS */
+export const createRoom = async (req, res) => {
+    const {name, availability, storeId} = req.body;
+    try{
+        if (!name || !availability || !storeId){
+            throw new Error("All fields are required");
+        }
+
+        const room = new Room({
+            name,
+            availability,
+            storeId
+        })
+
+        await room.save();
+
+        res.status(201).json({
+            sucess: true,
+            message: "Room created succesfully",
+            service:{
+                ...room._doc
+            }
+        })
+
+    }catch (error){
+        res.status(400).json({sucess: false, message: error.message});
+    }
+}
+
+export const updateRoom = async (req, res) => {
+    const  { id, ...updateFields } = req.body;
+    try{
+        if (!id){
+            throw new Error("Id field is required");
+        }
+
+        const room = await Room.findByIdAndUpdate(id, updateFields, {
+            new: true
+          });
+
+        //await service.save();
+
+        res.status(201).json({
+            sucess: true,
+            message: "Room updated succesfully",
+            service:{
+                ...room._doc
             }   
         })
 

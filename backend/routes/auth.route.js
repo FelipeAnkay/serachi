@@ -1,5 +1,5 @@
 import express from 'express';
-import {updateStore, createStore,updateService, createService, login, logout, signup, verifyEmail, forgotPassword, resetPassword, checkAuth, createActivity } from '../controllers/auth.controller.js';
+import {updateStore, createStore,updateService, createService, login, logout, signup, verifyEmail, forgotPassword, resetPassword, checkAuth, createProduct, createRoom, updateRoom } from '../controllers/auth.controller.js';
 import {verifyToken} from '../middleware/verifyToken.js';
 
 const router = express.Router();
@@ -24,12 +24,17 @@ router.post("/create-service", createService);
 
 router.post("/update-service", updateService);
 
-/* ACTIVITY ROUTES */
-router.post("/create-activity", createActivity);
+/* PRODUCT ROUTES */
+router.post("/create-product", createProduct);
 
 /* STORE ROUTES */
 router.post("/create-store", createStore);
 
 router.post("/update-store", updateStore);
+
+/* ROOM ROUTES */
+router.post("/create-room", createRoom);
+
+router.post("/update-room", updateRoom);
 
 export default router;

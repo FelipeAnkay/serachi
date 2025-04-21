@@ -9,6 +9,11 @@ const storeSchema = new mongoose.Schema({
         required: true,
         unique: true
     },
+    storeId:{
+        type:String,
+        required: true,
+        unique: true
+    },
     address: {
         type:String,
         required: false
@@ -27,4 +32,4 @@ const storeSchema = new mongoose.Schema({
     },
 },{timestamps : true}); //fields created and updated AT by default with timestamp true
 
-export const Store = mongoose.model('Store', userSchema);
+export const Store = mongoose.model('Store', storeSchema);

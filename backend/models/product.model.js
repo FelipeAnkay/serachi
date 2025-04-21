@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-const activitySchema = new mongoose.Schema({
+const productSchema = new mongoose.Schema({
     name: {
         type:String,
         required: true
@@ -12,10 +12,14 @@ const activitySchema = new mongoose.Schema({
         type:String,
         default: "USD"
     },
+    storeId: {
+        type:String,
+        required: true
+    },
     isActive:{
         type: Boolean,
         default: true
     }
 },{timestamps : true}); //fields created and updated AT by default with timestamp true
 
-export const Activity = mongoose.model('Activity', activitySchema);
+export const Product = mongoose.model('Product', productSchema);
