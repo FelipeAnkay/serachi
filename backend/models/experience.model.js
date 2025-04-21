@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-const productSchema = new mongoose.Schema({
+const experienceSchema = new mongoose.Schema({
     name: {
         type:String,
         required: true
@@ -12,11 +12,11 @@ const productSchema = new mongoose.Schema({
         type:String,
         default: "USD"
     },
+    productList:[{
+        type: String,
+        default: false
+    }],
     storeId: {
-        type:String,
-        required: true
-    },
-    userId:{
         type:String,
         required: true
     },
@@ -26,4 +26,4 @@ const productSchema = new mongoose.Schema({
     },
 },{timestamps : true}); //fields created and updated AT by default with timestamp true
 
-export const Product = mongoose.model('Product', productSchema);
+export const Experience = mongoose.model('Experience', experienceSchema);

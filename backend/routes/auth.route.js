@@ -1,5 +1,5 @@
 import express from 'express';
-import {updateStore, createStore,updateService, createService, login, logout, signup, verifyEmail, forgotPassword, resetPassword, checkAuth, createProduct, createRoom, updateRoom } from '../controllers/auth.controller.js';
+import {updateStore, createStore,updateService, createService, login, logout, signup, verifyEmail, forgotPassword, resetPassword, checkAuth, createProduct, createRoom, updateRoom, createBook, updateBook } from '../controllers/auth.controller.js';
 import {verifyToken} from '../middleware/verifyToken.js';
 
 const router = express.Router();
@@ -36,5 +36,10 @@ router.post("/update-store", updateStore);
 router.post("/create-room", createRoom);
 
 router.post("/update-room", updateRoom);
+
+/* BOOK ROUTES */
+router.post("/create-book", createBook);
+
+router.post("/update-book", updateBook);
 
 export default router;

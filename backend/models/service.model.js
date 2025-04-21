@@ -12,11 +12,15 @@ const serviceSchema = new mongoose.Schema({
         type:String,
         default: "USD"
     },
-    activityList:[{
+    productList:[{
         type: String,
         default: false
     }],
     storeId: {
+        type:String,
+        required: true
+    },
+    userId:{
         type:String,
         required: true
     },

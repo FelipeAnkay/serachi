@@ -1,20 +1,32 @@
 import mongoose from "mongoose";
-const productSchema = new mongoose.Schema({
-    name: {
-        type:String,
+const bookSchema = new mongoose.Schema({
+    dateIn: {
+        type:Date,
         required: true
     },
-    price: {
-        type:Number,
+    dateOut: {
+        type:Date,
         required: true
     },
-    currency: {
+    roomId: {
         type:String,
-        default: "USD"
+        required: true
     },
     storeId: {
         type:String,
         required: true
+    },
+    clientName: {
+        type:String,
+        required: true
+    },
+    clientEmail: {
+        type:String,
+        required: true
+    },
+    clientQty: {
+        type:Number,
+        default: 1
     },
     userId:{
         type:String,
@@ -26,4 +38,4 @@ const productSchema = new mongoose.Schema({
     },
 },{timestamps : true}); //fields created and updated AT by default with timestamp true
 
-export const Product = mongoose.model('Product', productSchema);
+export const Book = mongoose.model('Book', bookSchema);

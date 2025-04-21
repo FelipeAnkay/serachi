@@ -8,6 +8,7 @@ import { Service } from "../models/service.model.js";
 import { Product } from "../models/product.model.js";
 import { Store } from "../models/store.model.js"
 import { Room } from "../models/room.model.js";
+import { Book } from "../models/book.model.js";
 
 /* USER FUNCTIONS*/
 export const signup = async (req, res) => {
@@ -215,9 +216,9 @@ export const checkAuth = async (req, res) => {
 
 /*SERVICE FUNCTIONS */
 export const createService = async (req, res) => {
-    const {name, price, currency, storeId, activityList} = req.body;
+    const {name, price, currency, storeId, userId, productList} = req.body;
     try{
-        if (!name || !price || !currency || !storeId || !activityList){
+        if (!name || !price || !currency || !storeId || !productList){
             throw new Error("All fields are required");
         }
 
@@ -225,7 +226,8 @@ export const createService = async (req, res) => {
             name,
             price,
             currency,
-            activityList,
+            productList,
+            userId,
             storeId
         })
 
@@ -272,7 +274,7 @@ export const updateService = async (req, res) => {
 
 /*Product FUNCTIONS */
 export const createProduct = async (req, res) => {
-    const {name, price, currency, storeId} = req.body;
+    const {name, price, currency, userId, storeId} = req.body;
     try{
         if (!name || !price || !storeId || !currency){
             throw new Error("All fields are required");
@@ -282,17 +284,17 @@ export const createProduct = async (req, res) => {
             name,
             price,
             currency,
+            userId,
             storeId
         })
 
         await product.save();
-        //console.log("El object ID es: ", activity._id.toString());
 
         res.status(201).json({
             sucess: true,
             message: "product created succesfully",
-            activity:{
-                ...activity._doc
+            service:{
+                ...product._doc
             }
         })
 
@@ -405,6 +407,64 @@ export const updateRoom = async (req, res) => {
             message: "Room updated succesfully",
             service:{
                 ...room._doc
+            }   
+        })
+
+    }catch (error){
+        res.status(400).json({sucess: false, message: error.message});
+    }
+}
+
+/*BOOK FUNCTIONS */
+export const createBook = async (req, res) => {
+    const {dateIn, dateOut, roomId, storeId, clientName, clientEmail, userId, clientQty } = req.body;
+    try{
+        if (!clientName || !dateIn || !dateOut || !roomId || !clientEmail || !storeId){
+            throw new Error("All fields are required");
+        }
+
+        const book = new Book({
+            dateIn,
+            dateOut,
+            roomId,
+            storeId,
+            clientName,
+            clientEmail,
+            userId,
+            clientQty
+        })
+
+        await book.save();
+
+        res.status(201).json({
+            sucess: true,
+            message: "Book created succesfully",
+            service:{
+                ...book._doc
+            }
+        })
+
+    }catch (error){
+        res.status(400).json({sucess: false, message: error.message});
+    }
+}
+
+export const updateBook = async (req, res) => {
+    const  { id, ...updateFields } = req.body;
+    try{
+        if (!id){
+            throw new Error("Id field is required");
+        }
+
+        const book = await Book.findByIdAndUpdate(id, updateFields, {
+            new: true
+          });
+
+        res.status(201).json({
+            sucess: true,
+            message: "Book updated succesfully",
+            service:{
+                ...book._doc
             }   
         })
 
