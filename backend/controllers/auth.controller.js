@@ -9,6 +9,7 @@ import { Product } from "../models/product.model.js";
 import { Store } from "../models/store.model.js"
 import { Room } from "../models/room.model.js";
 import { Book } from "../models/book.model.js";
+import { Experience } from "../models/experience.model.js";
 
 /* USER FUNCTIONS*/
 export const signup = async (req, res) => {
@@ -465,6 +466,65 @@ export const updateBook = async (req, res) => {
             message: "Book updated succesfully",
             service:{
                 ...book._doc
+            }   
+        })
+
+    }catch (error){
+        res.status(400).json({sucess: false, message: error.message});
+    }
+}
+
+/*EXPERIENCE FUNCTIONS */
+export const createExperience = async (req, res) => {
+    const {serviceId, bookId, storeId, userId, dateIn, dateOut, workFrame, assignedStaff } = req.body;
+    try{
+        console.log(dateIn,dateOut,workFrame,storeId,serviceId,bookId);
+        if (!dateIn || !dateOut || !workFrame || !storeId || !serviceId || !bookId){
+            throw new Error("All fields are required");
+        }
+
+        const experience = new Experience({
+            serviceId,
+            bookId,
+            storeId,
+            userId,
+            dateIn,
+            dateOut,
+            workFrame,
+            assignedStaff
+        })
+
+        await experience.save();
+
+        res.status(201).json({
+            sucess: true,
+            message: "Experience created succesfully",
+            service:{
+                ...experience._doc
+            }
+        })
+
+    }catch (error){
+        res.status(400).json({sucess: false, message: error.message});
+    }
+}
+
+export const updateExperience = async (req, res) => {
+    const  { id, ...updateFields } = req.body;
+    try{
+        if (!id){
+            throw new Error("Id field is required");
+        }
+
+        const experience = await Experience.findByIdAndUpdate(id, updateFields, {
+            new: true
+          });
+
+        res.status(201).json({
+            sucess: true,
+            message: "Experience updated succesfully",
+            service:{
+                ...experience._doc
             }   
         })
 

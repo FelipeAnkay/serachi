@@ -1,28 +1,35 @@
 import mongoose from "mongoose";
+const itemSchema = new mongoose.Schema({
+        productId: String,
+        date: String,
+        timeFrame: String,
+  }, { _id: false }); 
 const experienceSchema = new mongoose.Schema({
-    name: {
+    serviceId: {
         type:String,
         required: true
     },
-    price: {
-        type:Number,
+    bookId: {
+        type:String,
         required: true
     },
-    currency: {
-        type:String,
-        default: "USD"
-    },
-    productList:[{
-        type: String,
-        default: false
-    }],
     storeId: {
         type:String,
         required: true
     },
-    isActive:{
-        type: Boolean,
-        default: true
+    userId: {
+        type:String,
+        required: true
+    },
+    dateIn: {
+        type:Date
+    },
+    dateOut: {
+        type:Date
+    },
+    workFrame: [[itemSchema]],
+    assignedStaff:{
+        type:String
     },
 },{timestamps : true}); //fields created and updated AT by default with timestamp true
 
