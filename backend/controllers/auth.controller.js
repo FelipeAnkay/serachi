@@ -236,6 +236,32 @@ export const createService = async (req, res) => {
     }
 }
 
+export const updateService = async (req, res) => {
+    const  { id, ...updateFields } = req.body;
+    try{
+        if (!id){
+            throw new Error("Id field is required");
+        }
+
+        const service = await Service.findByIdAndUpdate(id, updateFields, {
+            new: true
+          });
+
+        //await service.save();
+
+        res.status(201).json({
+            sucess: true,
+            message: "service updated succesfully",
+            service:{
+                ...service._doc
+            }   
+        })
+
+    }catch (error){
+        res.status(400).json({sucess: false, message: error.message});
+    }
+}
+
 /*ACTIVITY FUNCTIONS */
 export const createActivity = async (req, res) => {
     const {name, price, currency} = req.body;
@@ -259,6 +285,62 @@ export const createActivity = async (req, res) => {
             activity:{
                 ...activity._doc
             }
+        })
+
+    }catch (error){
+        res.status(400).json({sucess: false, message: error.message});
+    }
+}
+
+/*STORE FUNCTIONS */
+export const createStore = async (req, res) => {
+    const {name, mainEmail, address, phone} = req.body;
+    try{
+        if (!name || !mainEmail || !phone){
+            throw new Error("All fields are required");
+        }
+
+        const store = new Store({
+            name,
+            mainEmail,
+            address,
+            phone
+        })
+
+        await store.save();
+
+        res.status(201).json({
+            sucess: true,
+            message: "Store created succesfully",
+            service:{
+                ...service._doc
+            }
+        })
+
+    }catch (error){
+        res.status(400).json({sucess: false, message: error.message});
+    }
+}
+
+export const updateStore = async (req, res) => {
+    const  { id, ...updateFields } = req.body;
+    try{
+        if (!id){
+            throw new Error("Id field is required");
+        }
+
+        const store = await Store.findByIdAndUpdate(id, updateFields, {
+            new: true
+          });
+
+        //await service.save();
+
+        res.status(201).json({
+            sucess: true,
+            message: "Store updated succesfully",
+            service:{
+                ...service._doc
+            }   
         })
 
     }catch (error){

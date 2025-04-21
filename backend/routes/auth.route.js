@@ -1,5 +1,5 @@
 import express from 'express';
-import { createService, login, logout, signup, verifyEmail, forgotPassword, resetPassword, checkAuth, createActivity } from '../controllers/auth.controller.js';
+import {updateStore, createStore,updateService, createService, login, logout, signup, verifyEmail, forgotPassword, resetPassword, checkAuth, createActivity } from '../controllers/auth.controller.js';
 import {verifyToken} from '../middleware/verifyToken.js';
 
 const router = express.Router();
@@ -22,7 +22,14 @@ router.post("/reset-password/:token", resetPassword);
 /* SERVICE ROUTES */
 router.post("/create-service", createService);
 
-/* activity ROUTES */
+router.post("/update-service", updateService);
+
+/* ACTIVITY ROUTES */
 router.post("/create-activity", createActivity);
+
+/* STORE ROUTES */
+router.post("/create-store", createStore);
+
+router.post("/update-store", updateStore);
 
 export default router;
