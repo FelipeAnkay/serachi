@@ -27,7 +27,7 @@ const experienceSchema = new mongoose.Schema({
     dateOut: {
         type:Date
     },
-    workFrame: [[itemSchema]],
+    workFrame: [[itemSchema]], //Object defined on top that will allow to display if an activity will be excecuted in the morning, afternooon, both or night
     assignedStaff:{
         type:String
     },

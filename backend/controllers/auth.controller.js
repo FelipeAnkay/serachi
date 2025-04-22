@@ -275,7 +275,7 @@ export const updateService = async (req, res) => {
 
 /*Product FUNCTIONS */
 export const createProduct = async (req, res) => {
-    const {name, price, currency, userId, storeId} = req.body;
+    const {name, price, currency, userId, storeId,durationDays} = req.body;
     try{
         if (!name || !price || !storeId || !currency){
             throw new Error("All fields are required");
@@ -286,6 +286,7 @@ export const createProduct = async (req, res) => {
             price,
             currency,
             userId,
+            durationDays,
             storeId
         })
 

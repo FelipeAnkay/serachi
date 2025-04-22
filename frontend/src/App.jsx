@@ -17,6 +17,8 @@ const ProtectedRoute = ({ children }) => {
   if (!isAuthenticated) {
     return <Navigate to="/login" replace />;
   }
+  console.log("El usuario está verificado?: ",user.isVerified );
+  console.log("El nombre de usuario es: ",user.name );
   if (!user.isVerified) {
     return <Navigate to="/verify-email" replace />;
   }

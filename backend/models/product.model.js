@@ -12,6 +12,10 @@ const productSchema = new mongoose.Schema({
         type:String,
         default: "USD"
     },
+    durationDays: {
+        type:Number,
+        default: 0
+    },
     storeId: {
         type:String,
         required: true
