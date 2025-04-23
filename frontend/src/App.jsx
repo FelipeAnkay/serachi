@@ -15,7 +15,11 @@ import { Menu } from "lucide-react";
 import Booking from './pages/Booking';
 import CashFlow from './pages/CashFlow';
 import Experiences from './pages/Experiences';
-import Settings from './pages/Settings';
+import Settings from './pages/SetProducts';
+import SetProducts from './pages/SetProducts';
+import SetRooms from './pages/SetRooms';
+import SetStore from './pages/SetStore';
+import SetUsers from './pages/SetUsers';
 
 const ProtectedRoute = ({ children }) => {
   const { isAuthenticated, user } = useAuthStore();
@@ -87,10 +91,31 @@ function App() {
                 </ProtectedRoute>}
             />
             <Route
-              path="/settings"
+              path="/set-products"
               element={
                 <ProtectedRoute>
-                  <Settings />
+                  <SetProducts />
+                </ProtectedRoute>}
+            />
+            <Route
+              path="/set-rooms"
+              element={
+                <ProtectedRoute>
+                  <SetRooms />
+                </ProtectedRoute>}
+            />
+            <Route
+              path="/set-store"
+              element={
+                <ProtectedRoute>
+                  <SetStore />
+                </ProtectedRoute>}
+            />
+            <Route
+              path="/set-users"
+              element={
+                <ProtectedRoute>
+                  <SetUsers />
                 </ProtectedRoute>}
             />
             <Route
