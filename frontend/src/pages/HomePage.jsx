@@ -3,7 +3,6 @@ import { motion } from 'framer-motion'
 import { useAuthStore } from '../store/authStore';
 import { formatDate } from "../utils/date";
 import { Navigate } from 'react-router-dom';
-import LeftMenu from "../components/LeftMenu";
 
 const HomePage = () => {
   const { user, logout } = useAuthStore();
@@ -12,10 +11,7 @@ const HomePage = () => {
     logout();
   };
   return (
-    <div className="flex h-screen w-screen bg-gray-950 text-white">
-      {/* Menú lateral */}
-      <LeftMenu />
-
+    <div className="flex h-screen w-screen bg-blue-950 text-white">
       {/* Contenido principal */}
       <motion.div
         initial={{ opacity: 0, scale: 0.9 }}

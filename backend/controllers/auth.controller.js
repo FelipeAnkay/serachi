@@ -13,7 +13,7 @@ import { Experience } from "../models/experience.model.js";
 
 /* USER FUNCTIONS*/
 export const signup = async (req, res) => {
-    const {email, password, name, phone} = req.body;
+    const {email, password, name, phone, roleList} = req.body;
     try{
         if (!email || !password || !name || !phone){
             throw new Error("All fields are required");
@@ -31,6 +31,7 @@ export const signup = async (req, res) => {
             name,
             phone,
             verificationToken: verificationCode,
+            roleList,
             verificationTokenexpiresAt: Date.now() + 24 * 60 * 60 * 1000 // 24 hrs
         })
 
@@ -91,6 +92,8 @@ export const login = async (req, res) => {
     try {
         const user = await User.findOne({email});
         const store = await Store.findOne({storeId});
+        console.log("Usuario:", user);
+        console.log("Store:", store);
 
         if (!user || !store) {
             return res.status(400).json({sucess: false, message: "Invalid credentials"});
@@ -210,6 +213,19 @@ export const checkAuth = async (req, res) => {
             return res.status(400).json({sucess: false, message: "User not found"});
         }
         res.status(200).json({sucess: true, user});
+    } catch (error) {
+        return res.status(400).json({sucess: false, message: error.message});
+    }
+}
+
+export const usersCompany = async (req, res) => {
+    try {
+        const userList = await Store.findOne(req.storeId).select("userList");
+        console.log("El listado de usuarios es:", userList);
+        if(!userList){
+            return res.status(400).json({sucess: false, message: "User not found"});
+        }
+        res.status(200).json({sucess: true, userList});
     } catch (error) {
         return res.status(400).json({sucess: false, message: error.message});
     }
