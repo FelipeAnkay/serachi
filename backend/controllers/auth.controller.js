@@ -108,7 +108,6 @@ export const login = async (req, res) => {
         generateTokenAndSetCookie(res, user._id);
         user.lastLogin = new Date();
         await user.save();
-
         res.status(200).json({
             sucess: true,
             message: "user logged in",
@@ -186,10 +185,10 @@ export const resetPassword = async (req, res) => {
 
         await user.save();
 
-        console.log("usuario actualizado, accediendo al envío de mail");
+        //console.log("usuario actualizado, accediendo al envío de mail");
 
         await sendResetPasswordSucessEmail(user.email);
-        console.log("mail de reseteo exitoso enviado");
+        //console.log("mail de reseteo exitoso enviado");
 
         res.status(200).json({
             sucess: true,
@@ -208,11 +207,19 @@ export const resetPassword = async (req, res) => {
 
 export const checkAuth = async (req, res) => {
     try {
-        const user = await User.findById(req.userId).select("password");
+        const user = await User.findById(req.userId);
+        //console.log("Usuario en CheckAuth", user._doc); 
         if(!user){
             return res.status(400).json({sucess: false, message: "User not found"});
         }
-        res.status(200).json({sucess: true, user});
+        res.status(200).json({
+            sucess: true,
+            message: "User Checked in",
+            user:{
+                ...user._doc,
+                password: undefined
+            }
+        })
     } catch (error) {
         return res.status(400).json({sucess: false, message: error.message});
     }

@@ -1,9 +1,9 @@
 import jwt from "jsonwebtoken";
 
 export const verifyToken = (req, res, next) => {
-     console.log("Start of VerifyToken function");
+    //console.log("Start of VerifyToken function");
     const token = req.cookies.token;
-    console.log("VerifyToken function: ", token);
+    //console.log("VerifyToken function: ", token);
     if (!token){
         return res.status(401).json({sucess: false, message: "Unauthorized - No token provided"});
     }
@@ -13,7 +13,7 @@ export const verifyToken = (req, res, next) => {
             return res.status(401).json({sucess: false, message: "Unauthorized - No token provided"});
         }
         req.userId = decoded.userId;
-        console.log("Accessing to Next()");
+        //console.log("Accessing to Next(): ", req.userId);
         next();
     } catch (error) {
 
