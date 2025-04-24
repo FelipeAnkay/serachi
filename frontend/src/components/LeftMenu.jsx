@@ -17,11 +17,11 @@ const LeftMenu = ({ show }) => {
                 <li className="px-4 py-2 rounded-lg  hover:bg-blue-700"><Link to="/bookings" className="flex items-center gap-2"><BedDouble />Bookings</Link></li>
                 <div className="px-4 py-2 block rounded-lg  hover:bg-blue-700 transition delay-200">
                    <li className="rounded-lg flex gap-2" onClick={() => setOpenSetting(!openSetting)}><Settings className="inline-block" /><span className="inline-block">Settings</span><ChevronDown className={openSetting ? "block rotate-180" : "block"}/></li>
-                    <div className={openSetting ? "py-4 w-64 p-4 transition ease-out duration-100 transform opacity-100 scale-100" : "transform h-0 scale-95 transition ease-in duration-75 overflow-hidden"}>
-                        <li><Link to="/set-users" className="flex items-center gap-2 py-1"><User/>Users</Link></li>
-                        <li><Link to="/set-rooms" className="flex items-center gap-2 py-1"><Bed/>Rooms</Link></li>
-                        <li><Link to="/set-products" className="flex items-center gap-2 py-1"><Boxes/>Products</Link></li>
-                        <li><Link to="/set-store" className="flex items-center gap-2 py-1"><Store/>Store</Link></li>
+                    <div className={openSetting ? "py-4 px-9 w-max p-4 transition ease-out duration-100 transform opacity-100 scale-100 hover:bg-blue-600 rounded-lg" : "transform h-0 scale-95 transition ease-in duration-75 overflow-hidden"}>
+                        <li className="hover:bg-blue-500 rounded-lg"><Link to="/set-users" className="flex items-center gap-2 py-1"><User/>Users</Link></li>
+                        <li className="hover:bg-blue-500 rounded-lg"><Link to="/set-rooms" className="flex items-center gap-2 py-1"><Bed/>Rooms</Link></li>
+                        <li className="hover:bg-blue-500 rounded-lg"><Link to="/set-products" className="flex items-center gap-2 py-1"><Boxes/>Products</Link></li>
+                        <li className="hover:bg-blue-500 rounded-lg"><Link to="/set-store" className="flex items-center gap-2 py-1"><Store/>Store</Link></li>
                     </div>
                 </div>
             </ul>

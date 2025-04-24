@@ -5,6 +5,7 @@ import { Mail, Lock, Loader, Building } from 'lucide-react';
 import { Link } from "react-router-dom";
 import Input from "../../components/Input";
 import { useAuthStore } from '../../store/authStore';
+import Cookies from 'js-cookie';
 
 const LoginPage = () => {
   const [email, setEmail] = useState('');
@@ -14,7 +15,10 @@ const LoginPage = () => {
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    await login(storeId,email, password);
+    const normalizedStore = storeId.toUpperCase();
+    await login(normalizedStore,email, password);
+    //console.log("almacenando cookie", storeId);
+    Cookies.set('storeId', storeId);
   }
   return (
     <motion.div

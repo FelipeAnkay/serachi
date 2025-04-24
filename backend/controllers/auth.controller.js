@@ -330,32 +330,37 @@ export const createProduct = async (req, res) => {
 
 /*STORE FUNCTIONS */
 export const createStore = async (req, res) => {
-    const {name, mainEmail, address, storeId ,phone} = req.body;
-    try{
-        if (!name || !mainEmail || !phone){
+    const { name, mainEmail, address, storeId, phone } = req.body;
+
+    try {
+        if (!name || !mainEmail || !phone) {
             throw new Error("All fields are required");
         }
+
+        const normalizedStoreId = storeId?.toUpperCase();
+
+        console.log("Tienda normalizada: ", normalizedStoreId)
 
         const store = new Store({
             name,
             mainEmail,
             address,
-            storeId,
+            storeId: normalizedStoreId,
             phone
-        })
+        });
 
         await store.save();
 
         res.status(201).json({
-            sucess: true,
-            message: "Store created succesfully",
-            service:{
+            success: true,
+            message: "Store created successfully",
+            service: {
                 ...store._doc
             }
-        })
+        });
 
-    }catch (error){
-        res.status(400).json({sucess: false, message: error.message});
+    } catch (error) {
+        res.status(400).json({ success: false, message: error.message });
     }
 }
 
@@ -365,12 +370,11 @@ export const updateStore = async (req, res) => {
         if (!id){
             throw new Error("Id field is required");
         }
-
-        const store = await Store.findByIdAndUpdate(id, updateFields, {
+        const normalizedStoreId = id?.toUpperCase();
+        const filter = {storeId:normalizedStoreId}
+        const store = await Store.findOneAndUpdate(filter, updateFields, {
             new: true
           });
-
-        //await service.save();
 
         res.status(201).json({
             sucess: true,

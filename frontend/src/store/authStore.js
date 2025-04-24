@@ -8,12 +8,14 @@ axios.defaults.withCredentials = true;
 
 export const useAuthStore = create((set) => ({
     user:null,
+    userList:null,
     isAuthenticated:false,
     error: null,
     isLoading: false,
     isCheckingAuth: true,
     message:null,
     roleList:null,
+    storeId:null,
     signup: async(email, password, name) => {
         set({isLoading:true,error:null});
         try {
@@ -40,8 +42,8 @@ export const useAuthStore = create((set) => ({
         try {
             const response = await axios.get(`${URL_API}/check-auth/`);
             set({user:response.data.user,isAuthenticated:true,isCheckingAuth: false});
-            console.log("Estoy en checkAuth", response);
-            //return response.data; 
+            //console.log("Estoy en checkAuth", response);
+            return response.data; 
         } catch (error) {
             set({error:null, isCheckingAuth: false, isAuthenticated:false});
             throw error;
@@ -63,7 +65,7 @@ export const useAuthStore = create((set) => ({
         set({isLoading:true,error:null});
         try {
            await axios.post(`${URL_API}/logout/`);
-           set({user: null, isAuthenticated:false, error:null, isLoading:false});
+           set({user: null, isAuthenticated:false, error:null, isLoading:false,userList:null,storeId:null});
         } catch (error) {
             set({error:error.response.data.message || "Error Logging out", isLoading: false});
             throw error;
@@ -89,6 +91,33 @@ export const useAuthStore = create((set) => ({
                 error:error.response.data.message || "Error reseting password", 
                 isLoading: false
             });
+            throw error;
+        }
+    },
+    userCompany:async(storeId) => {
+        set({isLoading:true,error:null});
+        try {
+            console.log("F: Llamado a userCompany");
+            const response = await axios.get(`${URL_API}/users-company`,{storeId});
+            set({userList:response.data.userList,isAuthenticated:true,isCheckingAuth: false});
+            return response.data; 
+        } catch (error) {
+            set({error:error.response.data.message || "Error user-company", isLoading: false});
+            throw error;
+        }
+    },
+    updateCompany:async(storeId,updatedVars) => {
+        set({isLoading:true,error:null});
+        try {
+            console.log("F: Llamado a updateCompany");
+            const response = await axios.post(`${URL_API}/update-store`,{
+                id: storeId,
+                ...updatedVars
+            });
+            set({userList:response.data.userList,isAuthenticated:true,isCheckingAuth: false});
+            return response.data; 
+        } catch (error) {
+            set({error:error.response.data.message || "Error user-company", isLoading: false});
             throw error;
         }
     }
