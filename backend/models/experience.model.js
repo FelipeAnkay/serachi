@@ -5,6 +5,10 @@ const itemSchema = new mongoose.Schema({
         timeFrame: String,
   }, { _id: false }); 
 const experienceSchema = new mongoose.Schema({
+    name:{
+        type:String,
+        required: true
+    },
     serviceId: {
         type:String,
         required: true
@@ -18,6 +22,14 @@ const experienceSchema = new mongoose.Schema({
         required: true
     },
     userId: {
+        type:String,
+        required: true
+    },
+    clientName: {
+        type:String,
+        required: true
+    },
+    clientEmail: {
         type:String,
         required: true
     },

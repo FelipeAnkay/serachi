@@ -5,7 +5,7 @@ import LoginPage from './pages/signing/LoginPage';
 import EmailVerificationPage from './pages/signing/EmailVerificationPage';
 import { Toaster } from 'react-hot-toast';
 import { useAuthStore } from './store/authStore';
-import { children, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import HomePage from './pages/HomePage';
 import LoadingSpinner from './components/LoadingSpinner';
 import ForgotPasswordPage from './pages/signing/ForgotPasswordPage';
@@ -75,7 +75,7 @@ function App() {
 
   return (
     <div
-      className='min-h-screen bg-blue-950 flex items-center justify-center relative overflow-hidden'
+      className='bg-blue-950 flex overflow-hidden'
     >
 
       <FloatingShape color="bg-green-500" size="w-64 h-64" top="-5%" left="10%" delay={0} />

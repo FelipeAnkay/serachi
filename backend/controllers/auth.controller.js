@@ -504,18 +504,23 @@ export const updateBook = async (req, res) => {
 
 /*EXPERIENCE FUNCTIONS */
 export const createExperience = async (req, res) => {
-    const {serviceId, bookId, storeId, userId, dateIn, dateOut, workFrame, assignedStaff } = req.body;
+    const {name,serviceId, bookId, storeId, userId, clientName, clientEmail, dateIn, dateOut, workFrame, assignedStaff } = req.body;
     try{
         console.log(dateIn,dateOut,workFrame,storeId,serviceId,bookId);
-        if (!dateIn || !dateOut || !workFrame || !storeId || !serviceId || !bookId){
+        if (!name || !dateIn || !dateOut || !workFrame || !storeId || !serviceId || !bookId || !clientName || !clientEmail){
             throw new Error("All fields are required");
         }
 
+        const normalizedStoreId = storeId?.toUpperCase();
+
         const experience = new Experience({
+            name,
             serviceId,
             bookId,
-            storeId,
+            storeId: normalizedStoreId,
             userId,
+            clientName,
+            clientEmail,
             dateIn,
             dateOut,
             workFrame,
@@ -558,5 +563,18 @@ export const updateExperience = async (req, res) => {
 
     }catch (error){
         res.status(400).json({sucess: false, message: error.message});
+    }
+}
+
+export const experienceList = async (req,res) =>{
+    try {
+        const experienceList = await Experience.find(req.storeId);
+        console.log("El listado de experiencias es:", experienceList);
+        if(!experienceList){
+            return res.status(400).json({sucess: false, message: "Experiences not found"});
+        }
+        res.status(200).json({sucess: true, experienceList});
+    } catch (error) {
+        return res.status(400).json({sucess: false, message: error.message});
     }
 }
