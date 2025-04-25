@@ -45,19 +45,6 @@ export const useExperienceServices = create((set) => ({
             throw error;
         }
     },
-    experienceList: async (storeId) => {
-        set({ isLoading: true, error: null });
-        try {
-            console.log("F: Llamado a getExperiences");
-            const response = await axios.get(`${URL_API}/get-experience`, { storeId });
-            console.log("F: Respueste de getExperiences: ", response);
-            set({ experienceList: response.data.experienceList, isLoading:false });
-            return response.data;
-        } catch (error) {
-            set({ error: error.response.data.message || "Error getting experiences", isLoading: false });
-            throw error;
-        }
-    },
     updateExperience: async (experienceId, updatedVars) => {
         set({ isLoading: true, error: null });
         try {
@@ -71,6 +58,19 @@ export const useExperienceServices = create((set) => ({
             return response.data;
         } catch (error) {
             set({ error: error.response.data.message || "Error updating experience", isLoading: false });
+            throw error;
+        }
+    },
+    getExperienceList: async (storeId) => {
+        set({ isLoading: true, error: null });
+        try {
+            console.log("F: Llamado a getExperiences");
+            const response = await axios.get(`${URL_API}/get-experience`, { storeId });
+            console.log("F: Respueste de getExperiences: ", response);
+            set({ experienceList: response.data.experienceList, isLoading:false });
+            return response.data;
+        } catch (error) {
+            set({ error: error.response.data.message || "Error getting experiences", isLoading: false });
             throw error;
         }
     }

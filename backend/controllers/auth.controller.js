@@ -240,69 +240,6 @@ export const usersCompany = async (req, res) => {
     }
 }
 
-/*SERVICE FUNCTIONS */
-export const createService = async (req, res) => {
-    const { name, finalPrice, currency, productId, staffEmail, customerEmail, dateIn, dateOut, storeId, userId } = req.body;
-    try {
-        if (!name || !finalPrice || !currency || !productId || !staffEmail || !customerEmail || !dateIn || !dateOut || !storeId || !userId) {
-            throw new Error("All fields are required");
-        }
-
-        const normalizeStoreID = storeId?.toUpperCase();
-
-        const service = new Service({
-            name,
-            finalPrice,
-            currency,
-            productId,
-            staffEmail,
-            customerEmail,
-            dateIn,
-            dateOut,
-            userId,
-            storeId: normalizeStoreID
-        })
-
-        await service.save();
-
-        res.status(201).json({
-            success: true,
-            message: "service created succesfully",
-            service: {
-                ...service._doc
-            }
-        })
-
-    } catch (error) {
-        res.status(400).json({ success: false, message: error.message });
-    }
-}
-
-export const updateService = async (req, res) => {
-    const { id, ...updateFields } = req.body;
-    try {
-        if (!id) {
-            throw new Error("Id field is required");
-        }
-
-        const service = await Service.findByIdAndUpdate(id, updateFields, {
-            new: true
-        });
-
-        //await service.save();
-
-        res.status(201).json({
-            success: true,
-            message: "service updated succesfully",
-            service: {
-                ...service._doc
-            }
-        })
-
-    } catch (error) {
-        res.status(400).json({ success: false, message: error.message });
-    }
-}
 
 export const serviceList = async (req, res) => {
     try {
@@ -317,58 +254,6 @@ export const serviceList = async (req, res) => {
             return res.status(400).json({ success: false, message: "Service not found" });
         }
         res.status(200).json({ success: true, serviceList });
-    } catch (error) {
-        return res.status(400).json({ success: false, message: error.message });
-    }
-}
-
-/*Product FUNCTIONS */
-export const createProduct = async (req, res) => {
-    const { name, price, currency, type, userId, storeId, durationDays } = req.body;
-    try {
-        if (!name || !price || !type || !storeId || !currency) {
-            throw new Error("All fields are required");
-        }
-
-        const normalizeStoreID = storeId?.toUpperCase();
-
-        const product = new Product({
-            name,
-            price,
-            currency,
-            type,
-            userId,
-            durationDays,
-            storeId: normalizeStoreID
-        })
-
-        await product.save();
-
-        res.status(201).json({
-            success: true,
-            message: "product created succesfully",
-            service: {
-                ...product._doc
-            }
-        })
-
-    } catch (error) {
-        res.status(400).json({ success: false, message: error.message });
-    }
-}
-export const productList = async (req, res) => {
-    try {
-        const storeId = req.storeId
-        if (!storeId) {
-            throw new Error("StoreID is required");
-        }
-        const normalizeStoreID = storeId?.toUpperCase();
-        const productList = await Product.find(normalizeStoreID);
-        console.log("El listado de productos es:", productList);
-        if (!productList) {
-            return res.status(400).json({ success: false, message: "Products not found" });
-        }
-        res.status(200).json({ success: true, productList });
     } catch (error) {
         return res.status(400).json({ success: false, message: error.message });
     }
@@ -623,6 +508,146 @@ export const experienceList = async (req, res) => {
             return res.status(400).json({ success: false, message: "Experiences not found" });
         }
         res.status(200).json({ success: true, experienceList });
+    } catch (error) {
+        return res.status(400).json({ success: false, message: error.message });
+    }
+}
+
+/*SERVICE FUNCTIONS */
+export const createService = async (req, res) => {
+    const { name, finalPrice, currency, productId, staffEmail, customerEmail, dateIn, dateOut, storeId, userId } = req.body;
+    try {
+        if (!name || !finalPrice || !currency || !productId || !staffEmail || !customerEmail || !dateIn || !dateOut || !storeId || !userId) {
+            throw new Error("All fields are required");
+        }
+
+        const normalizeStoreID = storeId?.toUpperCase();
+
+        const service = new Service({
+            name,
+            finalPrice,
+            currency,
+            productId,
+            staffEmail,
+            customerEmail,
+            dateIn,
+            dateOut,
+            userId,
+            storeId: normalizeStoreID
+        })
+
+        await service.save();
+
+        res.status(201).json({
+            success: true,
+            message: "service created succesfully",
+            service: {
+                ...service._doc
+            }
+        })
+
+    } catch (error) {
+        res.status(400).json({ success: false, message: error.message });
+    }
+}
+
+export const updateService = async (req, res) => {
+    const { id, ...updateFields } = req.body;
+    try {
+        if (!id) {
+            throw new Error("Id field is required");
+        }
+
+        const service = await Service.findByIdAndUpdate(id, updateFields, {
+            new: true
+        });
+
+        //await service.save();
+
+        res.status(201).json({
+            success: true,
+            message: "service updated succesfully",
+            service: {
+                ...service._doc
+            }
+        })
+
+    } catch (error) {
+        res.status(400).json({ success: false, message: error.message });
+    }
+}
+export const getServiceById = async (req, res) => {
+    try {
+        const {id} = req.body;
+        const service = await Service.findById(id);
+        if (!service) {
+            return res.status(400).json({ success: false, message: "Service not found" });
+        }
+        res.status(200).json({ success: true, service });
+    } catch (error) {
+        return res.status(400).json({ success: false, message: error.message });
+    }
+}
+
+/*Product FUNCTIONS */
+export const createProduct = async (req, res) => {
+    const { name, price, currency, type, userId, storeId, durationDays } = req.body;
+    try {
+        if (!name || !price || !type || !storeId || !currency) {
+            throw new Error("All fields are required");
+        }
+
+        const normalizeStoreID = storeId?.toUpperCase();
+
+        const product = new Product({
+            name,
+            price,
+            currency,
+            type,
+            userId,
+            durationDays,
+            storeId: normalizeStoreID
+        })
+
+        await product.save();
+
+        res.status(201).json({
+            success: true,
+            message: "product created succesfully",
+            service: {
+                ...product._doc
+            }
+        })
+
+    } catch (error) {
+        res.status(400).json({ success: false, message: error.message });
+    }
+}
+export const productList = async (req, res) => {
+    try {
+        const storeId = req.storeId
+        if (!storeId) {
+            throw new Error("StoreID is required");
+        }
+        const normalizeStoreID = storeId?.toUpperCase();
+        const productList = await Product.find(normalizeStoreID);
+        console.log("El listado de productos es:", productList);
+        if (!productList) {
+            return res.status(400).json({ success: false, message: "Products not found" });
+        }
+        res.status(200).json({ success: true, productList });
+    } catch (error) {
+        return res.status(400).json({ success: false, message: error.message });
+    }
+}
+export const getProductById = async (req, res) => {
+    try {
+        const {id} = req.body;
+        const product = await Product.findById(id);
+        if (!product) {
+            return res.status(400).json({ success: false, message: "product not found" });
+        }
+        res.status(200).json({ success: true, product });
     } catch (error) {
         return res.status(400).json({ success: false, message: error.message });
     }

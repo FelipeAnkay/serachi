@@ -9,7 +9,7 @@ import 'react-big-calendar/lib/css/react-big-calendar.css';
 const localizer = momentLocalizer(moment);
 
 const Experiences = () => {
-    const { experienceList } = useExperienceServices();
+    const { getExperienceList } = useExperienceServices();
     const storeId = Cookies.get("storeId");
     const [experiences, setExperiences] = useState([""]);
     const [loading, setLoading] = useState(true);
@@ -17,33 +17,26 @@ const Experiences = () => {
     const [events, setEvents] = useState([]);
 
     useEffect(() => {
-        console.log("Entre a useEffect");
         const fetchExperiences = async () => {
             try {
-                console.log("el StoreID es: ", storeId);
-                const response = await experienceList(storeId);
+                console.log("Llamaré a la API para obtener el listado de experiencias");
+                const response = await getExperienceList(storeId)
+                console.log("Entre a useEffect - el listado de experiencias es: ", response);
                 const data = response.experienceList;
-                console.log("la respuesta de getExperience es:", response);
                 setExperiences(data);
 
-                const formattedEvents = data.flatMap(exp =>
-                    exp.workFrame.map(entry => {
-                        const productId = entry.find(i => i.productId)?.productId;
-                        const date = entry.find(i => i.date)?.date;
-                        const timeFrame = entry.find(i => i.timeFrame)?.timeFrame;
+                const formattedEvents = data.flatMap(exp => {
+                    const lists = [...(exp.serviceList || []), ...(exp.productList || [])];
 
-                        let startHour = timeFrame === 'AM' ? 9 : 14;
-                        let endHour = timeFrame === 'AM' ? 12 : 17;
+                    return lists.map(item => ({
+                        title: `${exp.name} - ${item.name || item.productId || 'NoName'}`,
+                        start: new Date(item.dateIn),
+                        end: new Date(item.dateOut),
+                        allDay: false,
+                        resource: exp
+                    }));
+                });
 
-                        return {
-                            title: `${exp.name} - ${productId || ''}`,
-                            start: new Date(`${date}T${startHour}:00:00`),
-                            end: new Date(`${date}T${endHour}:00:00`),
-                            allDay: false,
-                            resource: exp
-                        };
-                    })
-                );
                 setEvents(formattedEvents);
             } catch (err) {
                 setError('Experiences not found');
