@@ -4,7 +4,7 @@ const serviceSchema = new mongoose.Schema({
         type:String,
         required: true
     },
-    price: {
+    finalPrice: {
         type:Number,
         required: true
     },
@@ -12,10 +12,24 @@ const serviceSchema = new mongoose.Schema({
         type:String,
         default: "USD"
     },
-    productList:[{
+    productId:{
+        type: String,
+        required: true
+    },
+    staffEmail:{
         type: String,
         default: false
-    }],
+    },
+    customerEmail:{
+        type: String,
+        default: false
+    },
+    dateIn: {
+        type:Date
+    },
+    dateOut: {
+        type:Date
+    },
     storeId: {
         type:String,
         required: true

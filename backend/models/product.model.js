@@ -8,6 +8,10 @@ const productSchema = new mongoose.Schema({
         type:Number,
         required: true
     },
+    type: {
+        type:String,
+        required: true
+    },
     currency: {
         type:String,
         default: "USD"

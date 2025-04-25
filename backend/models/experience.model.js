@@ -1,22 +1,19 @@
 import mongoose from "mongoose";
-const itemSchema = new mongoose.Schema({
-        productId: String,
-        date: String,
-        timeFrame: String,
-  }, { _id: false }); 
+
 const experienceSchema = new mongoose.Schema({
     name:{
         type:String,
         required: true
     },
-    serviceId: {
+    serviceList: [{
         type:String,
-        required: true
-    },
-    bookId: {
+    }],
+    productList: [{
         type:String,
-        required: true
-    },
+    }],
+    bookList: [{
+        type:String,
+    }],
     storeId: {
         type:String,
         required: true
@@ -25,11 +22,7 @@ const experienceSchema = new mongoose.Schema({
         type:String,
         required: true
     },
-    clientName: {
-        type:String,
-        required: true
-    },
-    clientEmail: {
+    customerEmail: {
         type:String,
         required: true
     },
@@ -38,10 +31,6 @@ const experienceSchema = new mongoose.Schema({
     },
     dateOut: {
         type:Date
-    },
-    workFrame: [[itemSchema]], //Object defined on top that will allow to display if an activity will be excecuted in the morning, afternooon, both or night
-    assignedStaff:{
-        type:String
     },
 },{timestamps : true}); //fields created and updated AT by default with timestamp true
 
