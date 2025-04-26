@@ -1,37 +1,42 @@
 import mongoose from "mongoose";
 
 const experienceSchema = new mongoose.Schema({
-    name:{
-        type:String,
+    name: {
+        type: String,
         required: true
     },
     serviceList: [{
-        type:String,
+        type: String,
     }],
-    productList: [{
-        type:String,
-    }],
+    productList: [
+        {
+            _id: false,
+            productID: { type: String },
+            Qty: { type: Number },
+            payed: { type: Boolean }
+        }
+    ],
     bookList: [{
-        type:String,
+        type: String,
     }],
     storeId: {
-        type:String,
+        type: String,
         required: true
     },
     userId: {
-        type:String,
+        type: String,
         required: true
     },
     customerEmail: {
-        type:String,
+        type: String,
         required: true
     },
     dateIn: {
-        type:Date
+        type: Date
     },
     dateOut: {
-        type:Date
+        type: Date
     },
-},{timestamps : true}); //fields created and updated AT by default with timestamp true
+}, { timestamps: true }); //fields created and updated AT by default with timestamp true
 
 export const Experience = mongoose.model('Experience', experienceSchema);

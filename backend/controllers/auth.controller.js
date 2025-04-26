@@ -437,8 +437,12 @@ export const updateBook = async (req, res) => {
 export const createExperience = async (req, res) => {
     const { name, serviceList, productList, bookList, storeId, userId, customerEmail, dateIn, dateOut } = req.body;
     try {
-
-        const hasAnyItem = serviceList.length > 0 || productList.length > 0 || bookList.length > 0;
+        console.log("El listado de productos es: ", productList)
+        const hasAnyItem = 
+        (Array.isArray(serviceList) && serviceList.length > 0) ||
+        (Array.isArray(productList) && productList.length > 0) ||
+        (Array.isArray(bookList) && bookList.length > 0);
+        
         if (!hasAnyItem) {
             throw new Error("At least one of serviceList, productList or bookList must have items");
         }
@@ -477,6 +481,7 @@ export const createExperience = async (req, res) => {
 }
 
 export const updateExperience = async (req, res) => {
+    //console.log("B: Llamado recibido con los siguientes parametros: ", req.body);
     const { id, ...updateFields } = req.body;
     try {
         if (!id) {
@@ -487,6 +492,8 @@ export const updateExperience = async (req, res) => {
             new: true
         });
 
+        //console.log("B: Experience encontrada: ", experience)
+
         res.status(201).json({
             success: true,
             message: "Experience updated succesfully",
@@ -496,6 +503,7 @@ export const updateExperience = async (req, res) => {
         })
 
     } catch (error) {
+        //console.log("B: Error en updateExperience", error)
         res.status(400).json({ success: false, message: error.message });
     }
 }
@@ -503,7 +511,7 @@ export const updateExperience = async (req, res) => {
 export const experienceList = async (req, res) => {
     try {
         const experienceList = await Experience.find(req.storeId);
-        console.log("El listado de experiencias es:", experienceList);
+        //console.log("El listado de experiencias es:", experienceList);
         if (!experienceList) {
             return res.status(400).json({ success: false, message: "Experiences not found" });
         }
@@ -553,6 +561,7 @@ export const createService = async (req, res) => {
 
 export const updateService = async (req, res) => {
     const { id, ...updateFields } = req.body;
+    console.log("B: Llamado recibido con los siguientes parametros: ", req.body);
     try {
         if (!id) {
             throw new Error("Id field is required");
@@ -561,6 +570,8 @@ export const updateService = async (req, res) => {
         const service = await Service.findByIdAndUpdate(id, updateFields, {
             new: true
         });
+
+        console.log("B: service encontrado ", service)
 
         //await service.save();
 
@@ -573,12 +584,14 @@ export const updateService = async (req, res) => {
         })
 
     } catch (error) {
+        console.log("B: Error en updateService", error)
         res.status(400).json({ success: false, message: error.message });
     }
 }
 export const getServiceById = async (req, res) => {
     try {
-        const {id} = req.body;
+        const { id } = req.params;
+        //console.log("B: Llamado a getServiceByID: ", id);
         const service = await Service.findById(id);
         if (!service) {
             return res.status(400).json({ success: false, message: "Service not found" });

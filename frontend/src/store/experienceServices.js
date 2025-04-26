@@ -18,6 +18,7 @@ export const useExperienceServices = create((set) => ({
     assignedStaff: null,
     isLoading:false,
     experienceList:null,
+    serviceList:null,
     createExperience: async (serviceId, bookId, storeId, userId, dateIn, dateOut, workFrame, assignedStaff) => {
         set({ isLoading: true, error: null });
         try {
@@ -48,7 +49,8 @@ export const useExperienceServices = create((set) => ({
     updateExperience: async (experienceId, updatedVars) => {
         set({ isLoading: true, error: null });
         try {
-            console.log("F: Llamado a updateExperience");
+            console.log("F: Llamado a updateExperience - ID: ", experienceId);
+            console.log("F: Llamado a updateExperience - vars: ", updatedVars);
             const response = await axios.post(`${URL_API}/update-experience`, {
                 id: experienceId,
                 ...updatedVars
@@ -64,13 +66,43 @@ export const useExperienceServices = create((set) => ({
     getExperienceList: async (storeId) => {
         set({ isLoading: true, error: null });
         try {
-            console.log("F: Llamado a getExperiences");
+            //console.log("F: Llamado a getExperiences");
             const response = await axios.get(`${URL_API}/get-experience`, { storeId });
-            console.log("F: Respueste de getExperiences: ", response);
+            //console.log("F: Respueste de getExperiences: ", response);
             set({ experienceList: response.data.experienceList, isLoading:false });
             return response.data;
         } catch (error) {
             set({ error: error.response.data.message || "Error getting experiences", isLoading: false });
+            throw error;
+        }
+    },
+    getServiceById: async (id) => {
+        set({ isLoading: true, error: null });
+        try {
+            //console.log("F: Llamado a getServiceById: ", id);
+            const response = await axios.get(`${URL_API}/get-service-id/${id}`);
+            //console.log("F: Respueste de getServiceById: ", response);
+            set({ service: response.data.service, isLoading:false });
+            return response.data;
+        } catch (error) {
+            set({ error: error.response.data.message || "Error getting experiences", isLoading: false });
+            throw error;
+        }
+    },
+    updateService: async (serviceId, updatedVars) => {
+        set({ isLoading: true, error: null });
+        try {
+            console.log("F: Llamado a updateService - ID: ", serviceId);
+            console.log("F: Llamado a updateService - vars: ", updatedVars);
+            const response = await axios.post(`${URL_API}//update-service`, {
+                id: serviceId,
+                ...updatedVars
+            });
+            console.log("F: Respueste de updateService: ", response);
+            set({ serviceList: response.data.serviceList, isLoading: false });
+            return response.data;
+        } catch (error) {
+            set({ error: error.response.data.message || "Error updating service", isLoading: false });
             throw error;
         }
     }

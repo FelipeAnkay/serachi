@@ -26,7 +26,7 @@ router.post("/create-service", createService);
 
 router.post("/update-service", updateService);
 
-router.get("/get-service-id", getServiceById);
+router.get("/get-service-id/:id", getServiceById);
 
 /* PRODUCT ROUTES */
 router.post("/create-product", createProduct);
