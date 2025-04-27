@@ -37,6 +37,9 @@ const experienceSchema = new mongoose.Schema({
     dateOut: {
         type: Date
     },
+    source:{
+        type:String,
+    }
 }, { timestamps: true }); //fields created and updated AT by default with timestamp true
 
 export const Experience = mongoose.model('Experience', experienceSchema);

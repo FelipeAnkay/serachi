@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-const customerSchema = new mongoose.Schema({
+const supplierSchema = new mongoose.Schema({
     email:{
         type:String,
         required: true,
@@ -14,20 +14,8 @@ const customerSchema = new mongoose.Schema({
     country: {
         type:String,
     },
-    birthdate: {
-        type:Date,
-    },
     nationalId: {
         type:String,
-    },
-    emergencyContact:{
-        _id: false,
-        emergencyContactName:{
-            type: String
-        },
-        emergencyContactPhone:{
-            type: String
-        }
     },
     storeId: {
         type:String,
@@ -36,4 +24,4 @@ const customerSchema = new mongoose.Schema({
 
 },{timestamps : true}); //fields created and updated AT by default with timestamp true
 
-export const Customer = mongoose.model('Customer', customerSchema);
+export const Supplier = mongoose.model('Supplier', supplierSchema);

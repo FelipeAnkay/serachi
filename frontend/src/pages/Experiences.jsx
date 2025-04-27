@@ -35,7 +35,7 @@ const Experiences = () => {
                 for (const exp of data) {
                     for (const serviceRef of exp.serviceList || []) {
                         const serviceDetail = await getServiceById(serviceRef);
-                        if (serviceDetail) {
+                        if (serviceDetail && serviceDetail.service.isActive) {
                             console.log("El detalle del servicio es:", serviceDetail.service)
                             allServiceEvents.push({
                                 title: `${serviceDetail.service.name} - ${serviceDetail.service.staffEmail}`,
@@ -105,16 +105,16 @@ const Experiences = () => {
     const handleCancelService = async () => {
         if (!selectedService) return;
 
-        if (!confirm('¿Estás seguro de cancelar este servicio?')) return;
+        if (!confirm('Are you sure that you want to cancel this service?')) return;
 
         try {
             await updateService(selectedService._id, { isActive: false });
-            alert('Servicio cancelado exitosamente');
+            toast.success('Service Canceled');
             closeModal();
             window.location.reload();
         } catch (error) {
             console.error('Error cancelando servicio:', error);
-            alert('Error cancelando servicio');
+            toast.error('Error - Canceling the service');
         }
     };
 

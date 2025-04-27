@@ -12,6 +12,8 @@ import { Book } from "../models/book.model.js";
 import { Experience } from "../models/experience.model.js";
 import { Customer } from "../models/customer.model.js";
 import { Staff } from "../models/staff.model.js";
+import { Facility } from "../models/facility.model.js";
+import { Supplier } from "../models/supplier.model.js";
 
 /* USER FUNCTIONS*/
 export const signup = async (req, res) => {
@@ -375,6 +377,62 @@ export const updateRoom = async (req, res) => {
     }
 }
 
+/*Facility FUNCTIONS */
+export const createFacility = async (req, res) => {
+    const { name, availability, storeId } = req.body;
+    try {
+        if (!name || !availability || !storeId) {
+            throw new Error("All fields are required");
+        }
+
+        const facility = new Facility({
+            name,
+            availability,
+            storeId
+        })
+
+        await facility.save();
+
+        res.status(201).json({
+            success: true,
+            message: "facility created succesfully",
+            service: {
+                _id,
+                ...facility._doc
+            }
+        })
+
+    } catch (error) {
+        res.status(400).json({ success: false, message: error.message });
+    }
+}
+
+export const updateFacility = async (req, res) => {
+    const { id, ...updateFields } = req.body;
+    try {
+        if (!id) {
+            throw new Error("Id field is required");
+        }
+
+        const facility = await Facility.findByIdAndUpdate(id, updateFields, {
+            new: true
+        });
+
+        //await service.save();
+
+        res.status(201).json({
+            success: true,
+            message: "facility updated succesfully",
+            service: {
+                ...facility._doc
+            }
+        })
+
+    } catch (error) {
+        res.status(400).json({ success: false, message: error.message });
+    }
+}
+
 /*BOOK FUNCTIONS */
 export const createBook = async (req, res) => {
     const { dateIn, dateOut, roomId, storeId, clientName, clientEmail, userId, clientQty } = req.body;
@@ -523,7 +581,7 @@ export const experienceList = async (req, res) => {
 
 /*SERVICE FUNCTIONS */
 export const createService = async (req, res) => {
-    const { name, finalPrice, currency, productId, staffEmail, customerEmail, dateIn, dateOut, storeId, userId } = req.body;
+    const { name, finalPrice, currency, productId, facilityId ,staffEmail, customerEmail, dateIn, dateOut, storeId, userId } = req.body;
     try {
         if (!name || !finalPrice || !currency || !productId || !staffEmail || !customerEmail || !dateIn || !dateOut || !storeId || !userId) {
             throw new Error("All fields are required");
@@ -536,6 +594,7 @@ export const createService = async (req, res) => {
             finalPrice,
             currency,
             productId,
+            facilityId,
             staffEmail,
             customerEmail,
             dateIn,
@@ -668,7 +727,7 @@ export const getProductById = async (req, res) => {
 
 /*Customer FUNCTIONS */
 export const createCustomer = async (req, res) => {
-    const { name, email, phone, country, birthdate, nationalId, storeId } = req.body;
+    const { name, email, phone, country, birthdate, nationalId, emergencyContact, storeId } = req.body;
     try {
         if (!name || !email || !phone || !country || !birthdate || !nationalId || !storeId) {
             throw new Error("All fields are required");
@@ -683,6 +742,7 @@ export const createCustomer = async (req, res) => {
             country,
             birthdate,
             nationalId,
+            emergencyContact,
             storeId: normalizedStoreId
         });
 
@@ -738,6 +798,82 @@ export const customerList = async (req, res) => {
             return res.status(400).json({ success: false, message: "Customer not found" });
         }
         res.status(200).json({ success: true, customerList });
+    } catch (error) {
+        return res.status(400).json({ success: false, message: error.message });
+    }
+}
+
+/*Supplier FUNCTIONS */
+export const createSupplier = async (req, res) => {
+    const { name, email, phone, country, birthdate, nationalId, emergencyContact, storeId } = req.body;
+    try {
+        if (!name || !email || !phone || !country || !birthdate || !nationalId || !storeId) {
+            throw new Error("All fields are required");
+        }
+
+        const normalizedStoreId = storeId?.toUpperCase();
+
+        const supplier = new Supplier({
+            name,
+            email,
+            phone,
+            country,
+            nationalId,
+            storeId: normalizedStoreId
+        });
+
+        await supplier.save();
+
+        res.status(201).json({
+            success: true,
+            message: "supplier created succesfully",
+            service: {
+                ...supplier._doc
+            }
+        })
+
+    } catch (error) {
+        res.status(400).json({ success: false, message: error.message });
+    }
+}
+
+export const updateSupplier = async (req, res) => {
+    const { email, ...updateFields } = req.body;
+    try {
+        if (!email) {
+            throw new Error("Id field is required");
+        }
+
+        const supplier = await Supplier.findOneAndUpdate(email, updateFields, {
+            new: true
+        });
+
+        res.status(201).json({
+            success: true,
+            message: "supplier updated succesfully",
+            service: {
+                ...supplier._doc
+            }
+        })
+
+    } catch (error) {
+        res.status(400).json({ success: false, message: error.message });
+    }
+}
+
+export const supplierList = async (req, res) => {
+    try {
+        const storeId = req.storeId
+        if (!storeId) {
+            throw new Error("StoreID is required");
+        }
+        const normalizeStoreID = storeId?.toUpperCase();
+        const supplierList = await Supplier.find(normalizeStoreID);
+        console.log("El listado de supplier es:", supplierList);
+        if (!supplierList) {
+            return res.status(400).json({ success: false, message: "supplier not found" });
+        }
+        res.status(200).json({ success: true, supplierList });
     } catch (error) {
         return res.status(400).json({ success: false, message: error.message });
     }

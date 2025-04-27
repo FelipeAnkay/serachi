@@ -32,6 +32,9 @@ const productSchema = new mongoose.Schema({
         type: Boolean,
         default: true
     },
+    supplierId:{
+        type:String
+    }
 },{timestamps : true}); //fields created and updated AT by default with timestamp true
 
 export const Product = mongoose.model('Product', productSchema);

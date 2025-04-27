@@ -16,6 +16,9 @@ const serviceSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    facilityId:{
+        type: String,
+    },
     staffEmail:{
         type: String,
         default: false
