@@ -21,11 +21,9 @@ const serviceSchema = new mongoose.Schema({
     },
     staffEmail:{
         type: String,
-        default: false
     },
     customerEmail:{
         type: String,
-        default: false
     },
     dateIn: {
         type:Date

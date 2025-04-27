@@ -14,11 +14,12 @@ import LeftMenu from "./components/LeftMenu";
 import { Menu } from "lucide-react";
 import Booking from './pages/Booking';
 import CashFlow from './pages/CashFlow';
-import Experiences from './pages/Experiences';
+import Experiences from './pages/experience/Experiences';
 import SetProducts from './pages/settings/SetProducts';
 import SetRooms from './pages/settings/SetRooms';
 import SetStore from './pages/settings/SetStore';
 import SetUsers from './pages/settings/SetUsers';
+import AssignStaff from './pages/experience/AssignStaff';
 
 const ProtectedRoute = ({ children }) => {
   const { isAuthenticated, user } = useAuthStore();
@@ -95,6 +96,13 @@ function App() {
           element={
             <ProtectedRoute>
               <Experiences />
+            </ProtectedRoute>}
+        />
+        <Route
+          path="/set-staff"
+          element={
+            <ProtectedRoute>
+              <AssignStaff />
             </ProtectedRoute>}
         />
         <Route

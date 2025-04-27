@@ -583,7 +583,7 @@ export const experienceList = async (req, res) => {
 export const createService = async (req, res) => {
     const { name, finalPrice, currency, productId, facilityId ,staffEmail, customerEmail, dateIn, dateOut, storeId, userId } = req.body;
     try {
-        if (!name || !finalPrice || !currency || !productId || !staffEmail || !customerEmail || !dateIn || !dateOut || !storeId || !userId) {
+        if (!name || !finalPrice || !currency || !productId || !customerEmail || !dateIn || !dateOut || !storeId || !userId) {
             throw new Error("All fields are required");
         }
 
@@ -660,7 +660,29 @@ export const getServiceById = async (req, res) => {
         return res.status(400).json({ success: false, message: error.message });
     }
 }
+export const getServiceNoStaff = async (req, res) => {
+    try {
+        const { storeId } = req.params;
+        console.log("B: Llamado a getServiceByID: ", storeId);
+        const normalizedStoreId = storeId?.toUpperCase();
+        
+        const service = await Service.find({
+            storeId: normalizedStoreId,
+            $or: [
+                { staffEmail: { $exists: false } },
+                { staffEmail: null },
+                { staffEmail: "" }
+            ]
+        });
 
+        if (!service) {
+            return res.status(400).json({ success: false, message: "Service not found" });
+        }
+        res.status(200).json({ success: true, service });
+    } catch (error) {
+        return res.status(400).json({ success: false, message: error.message });
+    }
+}
 /*Product FUNCTIONS */
 export const createProduct = async (req, res) => {
     const { name, price, currency, type, userId, storeId, durationDays } = req.body;
@@ -714,7 +736,7 @@ export const productList = async (req, res) => {
 }
 export const getProductById = async (req, res) => {
     try {
-        const {id} = req.body;
+        const {id} = req.params;
         const product = await Product.findById(id);
         if (!product) {
             return res.status(400).json({ success: false, message: "product not found" });
@@ -917,7 +939,9 @@ export const createStaff = async (req, res) => {
 
 export const staffList = async (req, res) => {
     try {
-        const storeId = req.storeId
+        console.log("Entre a staffList")
+        const {storeId} = req.params
+        console.log("B: el storeID para staffList es: ", storeId)
         if (!storeId) {
             throw new Error("StoreID is required");
         }

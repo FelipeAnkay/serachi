@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { useExperienceServices } from '../store/experienceServices';
+import { useExperienceServices } from '../../store/experienceServices';
 import Cookies from 'js-cookie';
 import { Calendar, momentLocalizer, Views } from 'react-big-calendar';
 import moment from 'moment';

@@ -1,5 +1,5 @@
 import express from 'express';
-import {updateStore, createStore,updateService, createService, login, logout, signup, verifyEmail, forgotPassword, resetPassword, checkAuth, createProduct, createRoom, updateRoom, createBook, updateBook, createExperience, updateExperience, usersCompany, experienceList, createCustomer, updateCustomer, customerList, createStaff, updateStaff, staffList, getServiceById, getProductById, createFacility, updateFacility } from '../controllers/auth.controller.js';
+import {updateStore, createStore,updateService, createService, login, logout, signup, verifyEmail, forgotPassword, resetPassword, checkAuth, createProduct, createRoom, updateRoom, createBook, updateBook, createExperience, updateExperience, usersCompany, experienceList, createCustomer, updateCustomer, customerList, createStaff, updateStaff, staffList, getServiceById, getProductById, createFacility, updateFacility, getServiceNoStaff } from '../controllers/auth.controller.js';
 import {verifyToken} from '../middleware/verifyToken.js';
 
 const router = express.Router();
@@ -27,10 +27,11 @@ router.post("/create-service", createService);
 router.post("/update-service", updateService);
 
 router.get("/get-service-id/:id", getServiceById);
+router.get("/get-service-nostaff/:storeId", getServiceNoStaff);
 
 /* PRODUCT ROUTES */
 router.post("/create-product", createProduct);
-router.get("/get-product-id", getProductById);
+router.get("/get-product-id/:id", getProductById);
 
 /* STORE ROUTES */
 router.post("/create-store", createStore);
@@ -66,7 +67,7 @@ router.post("/update-customer", updateCustomer);
 
 router.get("/get-customer", customerList);
 
-/* Customer ROUTES */
+/* SUPPLIER ROUTES */
 router.post("/create-supplier", createCustomer);
 
 router.post("/update-supplier", updateCustomer);
@@ -78,7 +79,7 @@ router.post("/create-staff", createStaff);
 
 router.post("/update-staff", updateStaff);
 
-router.get("/get-staff", staffList);
+router.get("/get-staff/:storeId", staffList);
 
 
 

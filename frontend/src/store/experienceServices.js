@@ -89,6 +89,32 @@ export const useExperienceServices = create((set) => ({
             throw error;
         }
     },
+    getProductById: async (id) => {
+        set({ isLoading: true, error: null });
+        try {
+            //console.log("F: Llamado a getServiceById: ", id);
+            const response = await axios.get(`${URL_API}/get-product-id/${id}`);
+            //console.log("F: Respueste de getServiceById: ", response);
+            set({ product: response.data.product, isLoading:false });
+            return response.data;
+        } catch (error) {
+            set({ error: error.response.data.message || "Error getting product", isLoading: false });
+            throw error;
+        }
+    },
+    getServicesNoStaff: async (storeId) => {
+        set({ isLoading: true, error: null });
+        try {
+            //console.log("F: Llamado a getServiceNoStaff: ", storeId);
+            const response = await axios.get(`${URL_API}/get-service-nostaff/${storeId}`);
+            //console.log("F: Respueste de getServiceNoStaff: ", response);
+            set({ service: response.data.service, isLoading:false });
+            return response.data;
+        } catch (error) {
+            set({ error: error.response.data.message || "Error getting services", isLoading: false });
+            throw error;
+        }
+    },
     updateService: async (serviceId, updatedVars) => {
         set({ isLoading: true, error: null });
         try {
