@@ -20,6 +20,7 @@ import SetRooms from './pages/settings/SetRooms';
 import SetStore from './pages/settings/SetStore';
 import SetUsers from './pages/settings/SetUsers';
 import AssignStaff from './pages/experience/AssignStaff';
+import SetStaff from './pages/settings/SetStaff';
 
 const ProtectedRoute = ({ children }) => {
   const { isAuthenticated, user } = useAuthStore();
@@ -99,7 +100,7 @@ function App() {
             </ProtectedRoute>}
         />
         <Route
-          path="/set-staff"
+          path="/set-service-staff"
           element={
             <ProtectedRoute>
               <AssignStaff />
@@ -145,6 +146,13 @@ function App() {
           element={
             <ProtectedRoute>
               <SetUsers />
+            </ProtectedRoute>}
+        />
+        <Route
+          path="/set-staff"
+          element={
+            <ProtectedRoute>
+              <SetStaff />
             </ProtectedRoute>}
         />
         <Route

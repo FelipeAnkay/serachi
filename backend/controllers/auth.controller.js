@@ -719,13 +719,14 @@ export const createProduct = async (req, res) => {
 }
 export const productList = async (req, res) => {
     try {
-        const storeId = req.storeId
+        const {storeId} = req.params
+        //console.log("B: Entre a ProductList:", storeId);
         if (!storeId) {
             throw new Error("StoreID is required");
         }
         const normalizeStoreID = storeId?.toUpperCase();
-        const productList = await Product.find(normalizeStoreID);
-        console.log("El listado de productos es:", productList);
+        const productList = await Product.find({storeId: normalizeStoreID});
+        //console.log("El listado de productos es:", productList);
         if (!productList) {
             return res.status(400).json({ success: false, message: "Products not found" });
         }
@@ -746,10 +747,62 @@ export const getProductById = async (req, res) => {
         return res.status(400).json({ success: false, message: error.message });
     }
 }
+export const updateProduct = async (req, res) => {
+    const { id, ...updateFields } = req.body;
+    try {
+        if (!id) {
+            throw new Error("Id field is required");
+        }
+
+        const product = await Product.findByIdAndUpdate(id, updateFields, {
+            new: true
+        });
+
+        res.status(201).json({
+            success: true,
+            message: "Product updated succesfully",
+            service: {
+                ...product._doc
+            }
+        })
+
+    } catch (error) {
+        res.status(400).json({ success: false, message: error.message });
+    }
+}
+export const removeProduct = async (req, res) => {
+    const {id} = req.body;
+    try {
+        console.log("B: Entre a removeProduct: ", id)
+        if (!id) {
+            throw new Error("ID field are required");
+        }
+        const product = await Product.findById(id);
+
+        if (!product) {
+            return res.status(404).json({ success: false, message: "Product not found" });
+        }
+
+        product.isActive = false;
+        await product.save();
+
+        res.status(201).json({
+            success: true,
+            message: "Staff updated succesfully",
+            service: {
+                ...product._doc
+            }
+        })
+
+    } catch (error) {
+        res.status(400).json({ success: false, message: error.message });
+    }
+}
+
 
 /*Customer FUNCTIONS */
 export const createCustomer = async (req, res) => {
-    const { name, email, phone, country, birthdate, nationalId, emergencyContact, storeId } = req.body;
+    const { name, email, phone, country, birthdate, nationalId, emergencyContact, divingCertificate,storeId } = req.body;
     try {
         if (!name || !email || !phone || !country || !birthdate || !nationalId || !storeId) {
             throw new Error("All fields are required");
@@ -765,6 +818,7 @@ export const createCustomer = async (req, res) => {
             birthdate,
             nationalId,
             emergencyContact,
+            divingCertificate,
             storeId: normalizedStoreId
         });
 
@@ -903,9 +957,9 @@ export const supplierList = async (req, res) => {
 
 /*Staff FUNCTIONS */
 export const createStaff = async (req, res) => {
-    const { name, email, phone, country, birthdate, nationalId, professionalCertificates, storeId } = req.body;
+    const { name, email, phone, country, birthdate, nationalId, languages, professionalCertificates, storeId } = req.body;
     try {
-        if (!name || !email || !phone || !country || !birthdate || !nationalId || !storeId || !professionalCertificates) {
+        if (!name || !email || !phone || !country || !birthdate || !languages|| !nationalId || !storeId || !professionalCertificates) {
             throw new Error("All fields are required");
         }
 
@@ -919,7 +973,8 @@ export const createStaff = async (req, res) => {
             birthdate,
             nationalId,
             professionalCertificates,
-            storeId: normalizedStoreId
+            languages,
+            storeId: [normalizedStoreId]
         });
 
         await staff.save();
@@ -960,11 +1015,12 @@ export const staffList = async (req, res) => {
 export const updateStaff = async (req, res) => {
     const { email, storeId, ...updateFields } = req.body;
     try {
+        console.log("B: Entre a updateStaff: ", email," StoreiD: ", storeId, " Variables a actualizar: ", updateFields)
         if (!email || !storeId) {
             throw new Error("Id field is required");
         }
-
-        const staff = await Staff.findOne(email);
+        const filter = { email: email }
+        const staff = await Staff.findOne(filter);
 
         if (!staff) {
             return res.status(404).json({ success: false, message: "Staff not found" });
@@ -972,10 +1028,11 @@ export const updateStaff = async (req, res) => {
 
         const normalizedStoreId = storeId.toUpperCase();
         const hasStore = staff.storeId.includes(normalizedStoreId);
-
+        
         if (!hasStore) {
-            return res.status(403).json({ success: false, message: "StoreID not authorized for this staff" });
+            staff.storeId.push(normalizedStoreId);
         }
+
         Object.assign(staff, updateFields);
         await staff.save();
 
@@ -989,5 +1046,61 @@ export const updateStaff = async (req, res) => {
 
     } catch (error) {
         res.status(400).json({ success: false, message: error.message });
+    }
+}
+
+export const removeStaff = async (req, res) => {
+    const {email, storeId} = req.body;
+    try {
+        console.log("B: Entre a removeStaff: ", email," StoreiD: ", storeId)
+        if (!email || !storeId) {
+            throw new Error("All field are required");
+        }
+        const filter = { email: email }
+        const staff = await Staff.findOne(filter);
+
+        if (!staff) {
+            return res.status(404).json({ success: false, message: "Staff not found" });
+        }
+
+        const normalizedStoreId = storeId.toUpperCase();
+        const hasStore = staff.storeId.includes(normalizedStoreId);
+        
+        if (!hasStore) {
+            return res.status(404).json({ success: false, message: "Staff not assigned to this Store" });
+        }
+        const index = staff.storeId.indexOf(normalizedStoreId);
+        staff.storeId.splice(index,1);
+        await staff.save();
+
+        res.status(201).json({
+            success: true,
+            message: "Staff updated succesfully",
+            service: {
+                ...staff._doc
+            }
+        })
+
+    } catch (error) {
+        res.status(400).json({ success: false, message: error.message });
+    }
+}
+
+export const staffByEmail = async (req, res) => {
+    try {
+        console.log("Entre a staffByEmail")
+        const {email} = req.params
+        console.log("B: el storeID para staffByEmail es: ", email)
+        if (!email) {
+            throw new Error("Email is required");
+        }
+        const staffList = await Staff.find({ email: email });
+        console.log("El listado de Staff es:", staffList);
+        if (!staffList || staffList.length === 0) {
+            return res.status(400).json({ success: false, message: "Staff not found" });
+        }
+        res.status(200).json({ success: true, staffList });
+    } catch (error) {
+        return res.status(400).json({ success: false, message: error.message });
     }
 }

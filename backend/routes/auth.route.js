@@ -1,5 +1,5 @@
 import express from 'express';
-import {updateStore, createStore,updateService, createService, login, logout, signup, verifyEmail, forgotPassword, resetPassword, checkAuth, createProduct, createRoom, updateRoom, createBook, updateBook, createExperience, updateExperience, usersCompany, experienceList, createCustomer, updateCustomer, customerList, createStaff, updateStaff, staffList, getServiceById, getProductById, createFacility, updateFacility, getServiceNoStaff } from '../controllers/auth.controller.js';
+import {updateStore, createStore,updateService, createService, login, logout, signup, verifyEmail, forgotPassword, resetPassword, checkAuth, createProduct, createRoom, updateRoom, createBook, updateBook, createExperience, updateExperience, usersCompany, experienceList, createCustomer, updateCustomer, customerList, createStaff, updateStaff, staffList, getServiceById, getProductById, createFacility, updateFacility, getServiceNoStaff, staffByEmail, removeStaff, updateProduct, productList, removeProduct } from '../controllers/auth.controller.js';
 import {verifyToken} from '../middleware/verifyToken.js';
 
 const router = express.Router();
@@ -32,6 +32,9 @@ router.get("/get-service-nostaff/:storeId", getServiceNoStaff);
 /* PRODUCT ROUTES */
 router.post("/create-product", createProduct);
 router.get("/get-product-id/:id", getProductById);
+router.post("/update-product", updateProduct);
+router.get("/get-product-store/:storeId", productList);
+router.post("/remove-product", removeProduct);
 
 /* STORE ROUTES */
 router.post("/create-store", createStore);
@@ -79,7 +82,11 @@ router.post("/create-staff", createStaff);
 
 router.post("/update-staff", updateStaff);
 
+router.post("/remove-staff", removeStaff);
+
 router.get("/get-staff/:storeId", staffList);
+
+router.get("/get-staff-email/:email", staffByEmail);
 
 
 

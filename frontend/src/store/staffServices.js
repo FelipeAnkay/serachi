@@ -6,6 +6,7 @@ const URL_API = import.meta.env.MODE === "development" ? "http://localhost:5000/
 
 axios.defaults.withCredentials = true;
 
+
 export const useStaffServices = create((set) => ({
     staff:null,
     staffId: null,
@@ -18,51 +19,85 @@ export const useStaffServices = create((set) => ({
     nationalId:null,
     professionalCertificates:null,
     storeId:null,
-    createStaff: async (serviceId, bookId, storeId, userId, dateIn, dateOut, workFrame, assignedStaff) => {
+    createStaff: async (staffData) => {
         set({ isLoading: true, error: null });
         try {
-
-            const payload = {
-                serviceId,
-                bookId,
-                storeId,
-                userId,
-                dateIn,
-                dateOut,
-                workFrame,        
-                assignedStaff
-            };
-            const response = await axios.post(`${URL_API}/create-experience`, payload);
-            console.log();
-            set({ service: response.data.service, isLoading:false});
+            const response = await axios.post(`${URL_API}/create-staff`, staffData);
+            set({ staffList: response.data.staffList, isLoading: false });
+            return response.data;
         } catch (error) {
-            set({ error: error.response.data.message || "Error Creating a Experience", isLoading: false });
+            set({ error: error.response.data.message || "Error creating staff", isLoading: false });
             throw error;
         }
     },
-    updateStaff: async (experienceId, updatedVars) => {
+    
+    updateStaff: async (email,storeId,updatedVars) => {
         set({ isLoading: true, error: null });
         try {
-            console.log("F: Llamado a updateExperience - ID: ", experienceId);
-            console.log("F: Llamado a updateExperience - vars: ", updatedVars);
-            const response = await axios.post(`${URL_API}/update-experience`, {
-                id: experienceId,
+            delete updatedVars._id;;
+            delete updatedVars.createdAt;
+            delete updatedVars.updatedAt;
+            delete updatedVars.__v;
+            delete updatedVars.storeId;
+            
+            /*console.log("Payload enviado a updateStaff:", {
+                email: email,
+                storeId: storeId,
                 ...updatedVars
             });
-            console.log("F: Respueste de updateExperiences: ", response);
-            set({ experienceList: response.data.experienceList, isLoading: false });
+            */
+            const response = await axios.post(`${URL_API}/update-staff`, {
+                email: email,
+                storeId: storeId,
+                ...updatedVars
+            });
+            //console.log("F: Respueste de updateStaff: ", response);
+            set({ staffList: response.data.staffList, isLoading: false });
             return response.data;
         } catch (error) {
-            set({ error: error.response.data.message || "Error updating experience", isLoading: false });
+            set({ error: error || "Error updating experience", isLoading: false });
+            throw error;
+        }
+    },
+    removeStaff: async (email,storeId) => {
+        set({ isLoading: true, error: null });
+        try {         
+            /*console.log("Payload enviado a removeStaff:", {
+                email: email,
+                storeId: storeId,
+            });
+            */
+            const response = await axios.post(`${URL_API}/remove-staff`, {
+                email: email,
+                storeId: storeId
+            });
+            //console.log("F: Respueste de updateStaff: ", response);
+            set({ staffList: response.data.staffList, isLoading: false });
+            return response.data;
+        } catch (error) {
+            set({ error: error || "Error updating experience", isLoading: false });
             throw error;
         }
     },
     getStaffList: async (storeId) => {
         set({ isLoading: true, error: null });
         try {
-            console.log("F: Llamado a getStaffList");
+            //console.log("F: Llamado a getStaffList");
             const response = await axios.get(`${URL_API}/get-staff/${storeId }`);
-            console.log("F: Respueste de getStaffList: ", response);
+            //console.log("F: Respueste de getStaffList: ", response);
+            set({ staffList: response.data.staffList, isLoading:false });
+            return response.data;
+        } catch (error) {
+            set({ error: error.response.data.message || "Error getting staff", isLoading: false });
+            throw error;
+        }
+    },
+    getStaffEmail: async (email) => {
+        set({ isLoading: true, error: null });
+        try {
+            //console.log("F: Llamado a getStaffEmail");
+            const response = await axios.get(`${URL_API}/get-staff-email/${email }`);
+            //console.log("F: Respueste de getStaffEmail: ", response);
             set({ staffList: response.data.staffList, isLoading:false });
             return response.data;
         } catch (error) {

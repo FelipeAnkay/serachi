@@ -1,4 +1,17 @@
 import mongoose from "mongoose";
+const divingCertificateSchema = new mongoose.Schema({
+    organization: {
+        type:String,
+        required: false
+    },
+    certificateName: {
+        type:String,
+        required: false
+    },
+    certificateId: {
+        type:String
+    }
+}, { _id: false }); 
 const customerSchema = new mongoose.Schema({
     email:{
         type:String,
@@ -14,6 +27,7 @@ const customerSchema = new mongoose.Schema({
     country: {
         type:String,
     },
+    languages:{type:[String]},
     birthdate: {
         type:Date,
     },
@@ -29,6 +43,7 @@ const customerSchema = new mongoose.Schema({
             type: String
         }
     },
+    professionalCertificates: [[divingCertificateSchema]],
     storeId: {
         type:String,
         required: true
