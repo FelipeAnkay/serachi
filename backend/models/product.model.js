@@ -1,35 +1,24 @@
 import mongoose from "mongoose";
-const serviceSchema = new mongoose.Schema({
+const productSchema = new mongoose.Schema({
     name: {
         type:String,
         required: true
     },
-    finalPrice: {
+    price: {
         type:Number,
+        required: true
+    },
+    type: {
+        type:String,
         required: true
     },
     currency: {
         type:String,
         default: "USD"
     },
-    productId:{
-        type: String,
-        required: true
-    },
-    facilityId:{
-        type: String,
-    },
-    staffEmail:{
-        type: String,
-    },
-    customerEmail:{
-        type: String,
-    },
-    dateIn: {
-        type:Date
-    },
-    dateOut: {
-        type:Date
+    durationDays: {
+        type:Number,
+        default: 0
     },
     storeId: {
         type:String,
@@ -43,6 +32,9 @@ const serviceSchema = new mongoose.Schema({
         type: Boolean,
         default: true
     },
+    supplierId:{
+        type:String
+    }
 },{timestamps : true}); //fields created and updated AT by default with timestamp true
 
-export const Service = mongoose.model('Service', serviceSchema);
+export const Product = mongoose.model('Product', productSchema);

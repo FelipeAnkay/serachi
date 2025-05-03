@@ -55,7 +55,7 @@ export const sendForgotPasswordEmail = async (email, resetUrl) => {
 }
 
 
-export const sendResetPasswordSucessEmail = async (email) => {
+export const sendResetPasswordSuccessEmail = async (email) => {
     const recipient = [{email}];
     try{
         const response = await mailtrapClient.send({
