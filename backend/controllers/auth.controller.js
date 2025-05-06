@@ -14,6 +14,8 @@ import { Customer } from "../models/customer.model.js";
 import { Staff } from "../models/staff.model.js";
 import { Facility } from "../models/facility.model.js";
 import { Supplier } from "../models/supplier.model.js";
+import { Quote } from "../models/quote.model.js";
+import { Partner } from "../models/partner.model.js";
 
 /* USER FUNCTIONS*/
 export const signup = async (req, res) => {
@@ -581,9 +583,9 @@ export const experienceList = async (req, res) => {
 
 /*SERVICE FUNCTIONS */
 export const createService = async (req, res) => {
-    const { name, finalPrice, currency, productId, facilityId ,staffEmail, customerEmail, dateIn, dateOut, storeId, userId } = req.body;
+    const { name, currency, productId, facilityId ,staffEmail, customerEmail, dateIn, dateOut, storeId, userId, quoteId } = req.body;
     try {
-        if (!name || !finalPrice || !currency || !productId || !customerEmail || !dateIn || !dateOut || !storeId || !userId) {
+        if (!name || !currency || !productId || !customerEmail || !dateIn || !dateOut || !storeId || !userId || !quoteId) {
             throw new Error("All fields are required");
         }
 
@@ -591,8 +593,6 @@ export const createService = async (req, res) => {
 
         const service = new Service({
             name,
-            finalPrice,
-            currency,
             productId,
             facilityId,
             staffEmail,
@@ -600,6 +600,7 @@ export const createService = async (req, res) => {
             dateIn,
             dateOut,
             userId,
+            quoteId,
             storeId: normalizeStoreID
         })
 
@@ -683,6 +684,7 @@ export const getServiceNoStaff = async (req, res) => {
         return res.status(400).json({ success: false, message: error.message });
     }
 }
+
 /*Product FUNCTIONS */
 export const createProduct = async (req, res) => {
     const { name, price, currency, type, userId, storeId, durationDays } = req.body;
@@ -802,9 +804,10 @@ export const removeProduct = async (req, res) => {
 
 /*Customer FUNCTIONS */
 export const createCustomer = async (req, res) => {
-    const { name, email, phone, country, birthdate, nationalId, emergencyContact, divingCertificate,storeId } = req.body;
+    const { name, email, phone, country, birthdate, nationalId, emergencyContact, divingCertificates,storeId,languages,diet } = req.body;
+    //console.log("Entre a create customer:", name,"-", email,"-", phone,"-", country,"-", birthdate,"-", nationalId,"-",emergencyContact,"-", divingCertificates,"-", storeId,"-", languages,"-", diet);
     try {
-        if (!name || !email || !phone || !country || !birthdate || !nationalId || !storeId) {
+        if (!name || !email || !phone || !country || !birthdate || !nationalId || !storeId ||!languages) {
             throw new Error("All fields are required");
         }
 
@@ -817,8 +820,10 @@ export const createCustomer = async (req, res) => {
             country,
             birthdate,
             nationalId,
+            diet,
+            languages,
             emergencyContact,
-            divingCertificate,
+            divingCertificates,
             storeId: normalizedStoreId
         });
 
@@ -863,7 +868,7 @@ export const updateCustomer = async (req, res) => {
 
 export const customerList = async (req, res) => {
     try {
-        const storeId = req.storeId
+        const storeId = req.params
         if (!storeId) {
             throw new Error("StoreID is required");
         }
@@ -878,12 +883,30 @@ export const customerList = async (req, res) => {
         return res.status(400).json({ success: false, message: error.message });
     }
 }
+export const customerByEmail = async (req, res) => {
+    try {
+        console.log("Entre a customerByEmail")
+        const {email} = req.params
+        console.log("B: el storeID para customerByEmail es: ", email)
+        if (!email) {
+            throw new Error("Email is required");
+        }
+        const customerList = await Customer.find({ email: email });
+        console.log("El listado de customer es:", customerList);
+        if (!customerList || customerList.length === 0) {
+            return res.status(400).json({ success: false, message: "Customer not found" });
+        }
+        res.status(200).json({ success: true, customerList });
+    } catch (error) {
+        return res.status(400).json({ success: false, message: error.message });
+    }
+}
 
 /*Supplier FUNCTIONS */
 export const createSupplier = async (req, res) => {
-    const { name, email, phone, country, birthdate, nationalId, emergencyContact, storeId } = req.body;
+    const { email, name, phone, country, nationalId, storeId } = req.body;
     try {
-        if (!name || !email || !phone || !country || !birthdate || !nationalId || !storeId) {
+        if (!name || !email || !phone || !country || !nationalId || !storeId) {
             throw new Error("All fields are required");
         }
 
@@ -957,7 +980,7 @@ export const supplierList = async (req, res) => {
 
 /*Staff FUNCTIONS */
 export const createStaff = async (req, res) => {
-    const { name, email, phone, country, birthdate, nationalId, languages, professionalCertificates, storeId } = req.body;
+    const { name, email, phone, country, birthdate, nationalId, languages, color, professionalCertificates, storeId } = req.body;
     try {
         if (!name || !email || !phone || !country || !birthdate || !languages|| !nationalId || !storeId || !professionalCertificates) {
             throw new Error("All fields are required");
@@ -972,6 +995,7 @@ export const createStaff = async (req, res) => {
             country,
             birthdate,
             nationalId,
+            color,
             professionalCertificates,
             languages,
             storeId: [normalizedStoreId]
@@ -1100,6 +1124,166 @@ export const staffByEmail = async (req, res) => {
             return res.status(400).json({ success: false, message: "Staff not found" });
         }
         res.status(200).json({ success: true, staffList });
+    } catch (error) {
+        return res.status(400).json({ success: false, message: error.message });
+    }
+}
+
+/*Quote FUNCTIONS */
+export const createQuote = async (req, res) => {
+    const { dateIn, dateOut, customerEmail, storeId, roomId, partnerId, productList, discount,finalPrice,currency,isConfirmed,isReturningCustomer,userEmail,tag } = req.body;
+    try {
+        if (!dateIn || !dateOut || !customerEmail || !productList || !finalPrice || !currency || !storeId || !userEmail) {
+            throw new Error("All fields are required");
+        }
+
+        const normalizedStoreId = storeId?.toUpperCase();
+
+        const quote = new Quote({
+            dateIn,
+            dateOut,
+            customerEmail,
+            roomId,
+            partnerId,
+            productList,
+            discount,
+            finalPrice,
+            currency,
+            isConfirmed,
+            isReturningCustomer,
+            userEmail,
+            tag,
+            storeId: normalizedStoreId
+        });
+
+        await quote.save();
+
+        res.status(201).json({
+            success: true,
+            message: "Quote created succesfully",
+            service: {
+                ...quote._doc
+            }
+        })
+
+    } catch (error) {
+        res.status(400).json({ success: false, message: error.message });
+    }
+}
+
+export const updateQuote = async (req, res) => {
+    const { id, ...updateFields } = req.body;
+    try {
+        if (!id) {
+            throw new Error("Id field is required");
+        }
+
+        const quote = await Quote.findByIdAndUpdate(id, updateFields, {
+            new: true
+        });
+
+        res.status(201).json({
+            success: true,
+            message: "Quote updated succesfully",
+            service: {
+                ...quote._doc
+            }
+        })
+
+    } catch (error) {
+        res.status(400).json({ success: false, message: error.message });
+    }
+}
+
+export const quoteList = async (req, res) => {
+    try {
+        const storeId = req.storeId
+        if (!storeId) {
+            throw new Error("StoreID is required");
+        }
+        const normalizeStoreID = storeId?.toUpperCase();
+        const quoteList = await Quote.find(normalizeStoreID);
+        console.log("El listado de quotes es:", quoteList);
+        if (!quoteList) {
+            return res.status(400).json({ success: false, message: "Quotes not found" });
+        }
+        res.status(200).json({ success: true, quoteList });
+    } catch (error) {
+        return res.status(400).json({ success: false, message: error.message });
+    }
+}
+
+/*Partner FUNCTIONS */
+export const createPartner = async (req, res) => {
+    const { name, email, phone, country, nationalId, emergencyContact, storeId } = req.body;
+    try {
+        if (!name || !email || !phone || !country || !nationalId || !storeId) {
+            throw new Error("All fields are required");
+        }
+
+        const normalizedStoreId = storeId?.toUpperCase();
+
+        const partner = new Partner({
+            name,
+            email,
+            phone,
+            country,
+            nationalId,
+            storeId: normalizedStoreId
+        });
+
+        await partner.save();
+
+        res.status(201).json({
+            success: true,
+            message: "partner created succesfully",
+            service: {
+                ...partner._doc
+            }
+        })
+
+    } catch (error) {
+        res.status(400).json({ success: false, message: error.message });
+    }
+}
+
+export const updatePartner = async (req, res) => {
+    const { email, ...updateFields } = req.body;
+    try {
+        if (!email) {
+            throw new Error("Id field is required");
+        }
+
+        const partner = await Partner.findOneAndUpdate(email, updateFields, {
+            new: true
+        });
+
+        res.status(201).json({
+            success: true,
+            message: "partner updated succesfully",
+            service: {
+                ...partner._doc
+            }
+        })
+
+    } catch (error) {
+        res.status(400).json({ success: false, message: error.message });
+    }
+}
+
+export const partnerList = async (req, res) => {
+    try {
+        const storeId = req.storeId
+        if (!storeId) {
+            throw new Error("StoreID is required");
+        }
+        const normalizeStoreID = storeId?.toUpperCase();
+        const partnerList = await Partner.find(normalizeStoreID);
+        console.log("El listado de supplier es:", partnerList);
+        if (!partnerList) {
+            return res.status(400).json({ success: false, message: "partner not found" });
+        }
+        res.status(200).json({ success: true, partnerList });
     } catch (error) {
         return res.status(400).json({ success: false, message: error.message });
     }

@@ -12,7 +12,7 @@ import ForgotPasswordPage from './pages/signing/ForgotPasswordPage';
 import ResetPasswordPage from './pages/signing/ResetPasswordPage';
 import LeftMenu from "./components/LeftMenu";
 import { Menu } from "lucide-react";
-import Booking from './pages/Booking';
+import Booking from './pages/booking/Booking';
 import CashFlow from './pages/CashFlow';
 import Experiences from './pages/experience/Experiences';
 import SetProducts from './pages/settings/SetProducts';
@@ -21,6 +21,9 @@ import SetStore from './pages/settings/SetStore';
 import SetUsers from './pages/settings/SetUsers';
 import AssignStaff from './pages/experience/AssignStaff';
 import SetStaff from './pages/settings/SetStaff';
+import NewQuote from './pages/booking/NewQuote';
+import OpenQuote from './pages/booking/OpenQuote';
+import ConfirmedQuote from './pages/booking/ConfirmedQuote';
 
 const ProtectedRoute = ({ children }) => {
   const { isAuthenticated, user } = useAuthStore();
@@ -111,6 +114,27 @@ function App() {
           element={
             <ProtectedRoute>
               <Booking />
+            </ProtectedRoute>}
+        />
+        <Route
+          path="/new-quote"
+          element={
+            <ProtectedRoute>
+              <NewQuote />
+            </ProtectedRoute>}
+        />
+        <Route
+          path="/open-quote"
+          element={
+            <ProtectedRoute>
+              <OpenQuote />
+            </ProtectedRoute>}
+        />
+        <Route
+          path="/confirmed-quote"
+          element={
+            <ProtectedRoute>
+              <ConfirmedQuote />
             </ProtectedRoute>}
         />
         <Route

@@ -1,5 +1,5 @@
 import express from 'express';
-import {updateStore, createStore,updateService, createService, login, logout, signup, verifyEmail, forgotPassword, resetPassword, checkAuth, createProduct, createRoom, updateRoom, createBook, updateBook, createExperience, updateExperience, usersCompany, experienceList, createCustomer, updateCustomer, customerList, createStaff, updateStaff, staffList, getServiceById, getProductById, createFacility, updateFacility, getServiceNoStaff, staffByEmail, removeStaff, updateProduct, productList, removeProduct } from '../controllers/auth.controller.js';
+import {updateStore, createStore,updateService, createService, login, logout, signup, verifyEmail, forgotPassword, resetPassword, checkAuth, createProduct, createRoom, updateRoom, createBook, updateBook, createExperience, updateExperience, usersCompany, experienceList, createCustomer, updateCustomer, customerList, createStaff, updateStaff, staffList, getServiceById, getProductById, createFacility, updateFacility, getServiceNoStaff, staffByEmail, removeStaff, updateProduct, productList, removeProduct, createQuote, updateQuote, customerByEmail } from '../controllers/auth.controller.js';
 import {verifyToken} from '../middleware/verifyToken.js';
 
 const router = express.Router();
@@ -68,7 +68,8 @@ router.post("/create-customer", createCustomer);
 
 router.post("/update-customer", updateCustomer);
 
-router.get("/get-customer", customerList);
+router.get("/get-customer-store/:storeId", customerList);
+router.get("/get-customer-email/:email", customerByEmail);
 
 /* SUPPLIER ROUTES */
 router.post("/create-supplier", createCustomer);
@@ -88,6 +89,12 @@ router.get("/get-staff/:storeId", staffList);
 
 router.get("/get-staff-email/:email", staffByEmail);
 
+/* Quote ROUTES */
+router.post("/create-quote", createQuote);
+
+router.post("/update-quote", updateQuote);
+
+router.get("/get-quote/:storeId", staffList);
 
 
 export default router;

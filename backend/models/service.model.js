@@ -4,15 +4,11 @@ const serviceSchema = new mongoose.Schema({
         type:String,
         required: true
     },
-    finalPrice: {
-        type:Number,
+    productId:{
+        type: String,
         required: true
     },
-    currency: {
-        type:String,
-        default: "USD"
-    },
-    productId:{
+    quoteId:{
         type: String,
         required: true
     },
