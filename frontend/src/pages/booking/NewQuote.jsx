@@ -3,17 +3,17 @@ import { motion } from 'framer-motion';
 import { useState, useEffect } from 'react';
 import toast from 'react-hot-toast';
 import { useQuoteServices } from '../../store/quoteServices';
-import { useProductServices } from '../../store/productServices';
 import { useAuthStore } from '../../store/authStore';
 import { useCustomerServices } from '../../store/customerServices';
-import { CircleX, Contact } from 'lucide-react';
+import { CircleX, Contact, Contact2, Search } from 'lucide-react';
 import languagesList from '../../components/languages.json';
 import { AnimatePresence } from 'framer-motion';
+import { useProductServices } from '../../store/productServices';
+import { CircleCheck } from 'lucide-react';
 
 export default function NewQuote() {
     const [productList, setProductList] = useState([]);
     const { createQuote } = useQuoteServices();
-    const { getProductByStoreId, getProductById, removeProduct, updateProduct, createProduct } = useProductServices();
     const storeId = Cookies.get('storeId');
     const { user } = useAuthStore();
     const [customerEditable, setCustomerEditable] = useState(false);
@@ -22,47 +22,65 @@ export default function NewQuote() {
     const [isNew, setIsNew] = useState(true);
     const [newCustomerEmail, setNewCustomerEmail] = useState('');
     const [quote, setQuote] = useState({});
-
-    const [customer, setCustomer] = useState({
-        email: '',
-        name: '',
-        phone: '',
-        country: '',
-        languages: [],
-        birthdate: '',
-        nationalId: '',
-        diet: '',
-        emergencyContactName: '',
-        emergencyContactPhone: '',
-        divingCertificates: [],
-    });
+    const [customer, setCustomer] = useState({});
+    const [products, setProducts] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const { getProductByStoreId, getProductById, removeProduct, updateProduct, createProduct } = useProductServices();
+    const [selectedProductIds, setSelectedProductIds] = useState([]);
+    const [finalPrice, setFinalPrice] = useState();
+    const [isSelected, setIsSelected] = useState();
 
     useEffect(() => {
-        console.log("F: USEEFFECT Datos de cliente", customer)
-        console.log("F: USEEFFECT Datos de quote", quote)
-        console.log("F: USEEFFECT el valor de isNew", isNew)
-        if (isNew) {
-            setQuote({
-                dateIn: '',
-                dateOut: '',
-                customerEmail: '',
-                storeId: '',
-                roomId: '',
-                partnerId: '',
-                productList: [],
-                discount: 0,
-                finalPrice: 0,
-                currency: 'USD',
-                isConfirmed: false,
-                isReturningCustomer: false,
-                tag: [],
-                userEmail: '',
-            })
-        } else {
-            console.log("F: USEEFFECT Entre con un cliente existente - customer", customer)
-            console.log("F: USEEFFECT Entre con un cliente existente - quote", quote)
+        const fetchProducts = async () => {
+            try {
+                const response = await getProductByStoreId(storeId);
+                console.log("ProductList Response: ", response);
+                setProducts(response.productList);
+                setLoading(false);
+                console.log("ProductList: ", products);
+            } catch (error) {
+                console.error('Error fetching products:', error);
+                setLoading(false);
+            }
         }
-    }, []);
+        if (storeId) {
+            fetchProducts();
+        }
+    }, [storeId]);
+
+    const handleProductSelected = (productId) => {
+
+        const fetchSelectProducts = () => {
+            setSelectedProductIds((prevSelected) => {
+                let updatedSelected;
+                if (prevSelected.includes(productId)) {
+                    // Deseleccionar
+                    updatedSelected = prevSelected.filter((id) => id !== productId);
+                    setIsSelected(false)
+                } else {
+                    // Seleccionar
+                    updatedSelected = [...prevSelected, productId];
+                    setIsSelected(true)
+                }
+
+                // Actualiza el precio total
+                const total = updatedSelected.reduce((sum, id) => {
+                    const product = products.find((p) => p._id === id);
+                    return sum + (product?.price || 0);
+                }, 0);
+                setFinalPrice(total);
+            });
+        }
+        const fetchFinalPrice = () => {
+            setQuote({ finalPrice: finalPrice })
+            console.log("Datos de Quote", quote);
+        }
+
+        fetchSelectProducts();
+        fetchFinalPrice();
+
+    };
+
 
     const handleQuoteChange = (e) => {
         const { name, value, type, checked } = e.target;
@@ -123,7 +141,7 @@ export default function NewQuote() {
                     })));
                 //console.log("F: El cliente es:", customer);
                 setCustomerEditable(false);
-                setQuote({customerEmail: found.email });
+                setQuote({ customerEmail: found.email });
                 setIsNew(false);
                 setIsCustomerModalOpen(false);
             } else {
@@ -213,7 +231,8 @@ export default function NewQuote() {
                 await createCustomer(customerPayload);
                 toast.success('Customer created');
                 setIsNew(false);
-                setNewCustomerEmail(customer.email)
+                setNewCustomerEmail(customer.email);
+                setIsCustomerModalOpen(false);
             }
         } catch (error) {
             toast.error('Error creating a Customer');
@@ -228,12 +247,13 @@ export default function NewQuote() {
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.9 }}
                 transition={{ duration: 0.5 }}
-                className="flex flex-col w-full max-w-4xl mx-auto bg-gray-900 bg-opacity-80 backdrop-filter backdrop-blur-lg rounded-xl shadow-2xl border border-gray-800 overflow-hidden"
+                className="flex flex-col w-full max-w-6xl mx-auto bg-gray-900 bg-opacity-80 backdrop-filter backdrop-blur-lg rounded-xl shadow-2xl border border-gray-800 overflow-hidden min-h-screen"
             >
-                <h1 className="text-3xl font-bold mb-6 text-center bg-gradient-to-r from-blue-400 to-blue-600 text-transparent bg-clip-text">Nueva Cotización</h1>
+                <h1 className="text-3xl font-bold mb-6 text-center bg-gradient-to-r from-blue-400 to-blue-600 text-transparent bg-clip-text">New Quote</h1>
                 <form onSubmit={handleSubmit} className="space-y-4 border p-4 rounded-md shadow bg-blue">
+                    {/* DATOS DE CLIENTE*/}
                     <fieldset className="border p-4 rounded bg-gray-800">
-                        <legend className="font-semibold text-lg">Datos del Cliente</legend>
+                        <legend className="font-semibold text-lg">Customer Details</legend>
                         <div className="flex items-center gap-2">
                             <input
                                 type="email"
@@ -248,24 +268,35 @@ export default function NewQuote() {
                                 onClick={handleCustomerEmailSearch}
                                 className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700"
                             >
-                                Buscar
+                                <Search />
                             </button>
+                            {!isNew && (
+                                <button
+                                    type="button"
+                                    variant="outline"
+                                    className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700"
+                                    onClick={() => setIsCustomerModalOpen(true)}
+                                >
+                                    <Contact2 />
+                                </button>
+                            )}
                             <AnimatePresence>
                                 {isCustomerModalOpen && (
                                     <motion.div
-                                        className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 overflow-y-auto"
+                                        className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 scrollbar-thin scrollbar-thumb-blue-600 scrollbar-track-gray-800 scrollbar-thumb-rounded-full max-h"
                                         initial={{ opacity: 0 }}
                                         animate={{ opacity: 1 }}
                                         exit={{ opacity: 0 }}
                                     >
                                         <motion.div
-                                            className="bg-blue-900 rounded-2xl p-6 max-w-lg w-[90%] max-h-[90vh] overflow-y-auto relative"
+                                            className="bg-blue-900 rounded-2xl p-6 max-w-lg w-[90%] h-[90%] overflow-y-auto relative"
                                             initial={{ scale: 0.8 }}
                                             animate={{ scale: 1 }}
                                             exit={{ scale: 0.8 }}
                                             transition={{ duration: 0.3 }}
                                         >
                                             <button
+                                                type='button'
                                                 className="absolute top-3 right-3 text-gray-600 hover:text-black"
                                                 onClick={() => setIsCustomerModalOpen(false)}
                                             >
@@ -437,6 +468,7 @@ export default function NewQuote() {
 
                                                 <button
                                                     className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded w-full mt-4"
+                                                    type="button"
                                                     onClick={handleSaveClient}
                                                 >
                                                     Save Customer
@@ -448,7 +480,7 @@ export default function NewQuote() {
                             </AnimatePresence>
                         </div>
                     </fieldset>
-
+                    {/* DATOS DE COTIZACION*/}
                     <div>
                         <label>Fecha de Entrada</label>
                         <input type="date" name="dateIn" value={quote.dateIn} onChange={handleQuoteChange} className="w-full border px-2 py-1 rounded" />
@@ -456,6 +488,42 @@ export default function NewQuote() {
                     <div>
                         <label>Fecha de Salida</label>
                         <input type="date" name="dateOut" value={quote.dateOut} onChange={handleQuoteChange} className="w-full border px-2 py-1 rounded" />
+                    </div>
+                    <div className="p-6 space-y-4">
+                        <h2 className="text-2xl font-bold">Product List</h2>
+                        {products.length === 0 ? (
+                            <p>No products found for this store.</p>
+                        ) : (
+                            products.map((product) => {
+                                <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 ml-3 mr-3 mb-3">
+                                    <div
+                                        key={product._id}
+                                        className={`border rounded-lg p-4 cursor-pointer bg-white hover:shadow transition relative ${isSelected ? 'border-green-500' : 'border-gray-300'
+                                            }`}
+                                        onClick={() => handleProductSelected(product._id)}
+                                    >
+                                        <h3 className="text-lg font-semibold">{product.name}</h3>
+                                        <p className="text-sm text-gray-600">Price: ${product.price}</p>
+                                        <p className="text-sm text-gray-600">Duration: {product.durationDays} days</p>
+                                        {isSelected && (
+                                            <CircleCheck className="absolute top-2 right-2 text-green-600" />
+                                        )}
+
+                                    </div>
+                                </div>
+                            }
+                            )
+
+                        )
+                        }
+                    </div>
+                    <div>
+                        <label>Discount</label>
+                        <input type="number" name="discount" value={quote.discount} onChange={handleQuoteChange} className="w-full border px-2 py-1 rounded" />
+                    </div>
+                    <div>
+                        <label>Final Price</label>
+                        <input type="number" name="finalPrice" value={quote.finalPrice} onChange={handleQuoteChange} className="w-full border px-2 py-1 rounded" />
                     </div>
 
                     <button type="submit" className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
