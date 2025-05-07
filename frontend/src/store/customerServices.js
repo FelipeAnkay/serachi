@@ -64,7 +64,7 @@ export const useCustomerServices = create((set) => ({
         set({ isLoading: true, error: null });
         try {
             //console.log("F: Llamado a customerList");
-            const response = await axios.get(`${URL_API}/get-customer.store/${storeId}`);
+            const response = await axios.get(`${URL_API}/get-customer-store/${storeId}`);
             //console.log("F: Respueste de customerList: ", response);
             set({ customerList: response.data.customerList, isLoading:false });
             return response.data;

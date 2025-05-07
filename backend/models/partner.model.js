@@ -20,6 +20,10 @@ const partnerSchema = new mongoose.Schema({
     storeId: {
         type:String,
         required: true
+    },
+    isActive:{
+        type: Boolean,
+        default: true,
     }
 
 },{timestamps : true}); //fields created and updated AT by default with timestamp true

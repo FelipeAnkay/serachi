@@ -1,18 +1,20 @@
 import Cookies from 'js-cookie';
 import { motion } from 'framer-motion';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import toast from 'react-hot-toast';
 import { useQuoteServices } from '../../store/quoteServices';
 import { useAuthStore } from '../../store/authStore';
 import { useCustomerServices } from '../../store/customerServices';
-import { CircleX, Contact, Contact2, Search } from 'lucide-react';
+import { CircleX, Contact, Contact2, QuoteIcon, Search } from 'lucide-react';
 import languagesList from '../../components/languages.json';
+import sourceList from '../../components/sourceList.json';
+import dietaryList from '../../components/dietaryList.json';
 import { AnimatePresence } from 'framer-motion';
 import { useProductServices } from '../../store/productServices';
 import { CircleCheck } from 'lucide-react';
+import { usePartnerServices } from '../../store/partnerServices';
 
 export default function NewQuote() {
-    const [productList, setProductList] = useState([]);
     const { createQuote } = useQuoteServices();
     const storeId = Cookies.get('storeId');
     const { user } = useAuthStore();
@@ -20,7 +22,6 @@ export default function NewQuote() {
     const { getCustomerEmail, createCustomer } = useCustomerServices();
     const [isCustomerModalOpen, setIsCustomerModalOpen] = useState(false);
     const [isNew, setIsNew] = useState(true);
-    const [newCustomerEmail, setNewCustomerEmail] = useState('');
     const [quote, setQuote] = useState({});
     const [customer, setCustomer] = useState({});
     const [products, setProducts] = useState([]);
@@ -28,71 +29,97 @@ export default function NewQuote() {
     const { getProductByStoreId, getProductById, removeProduct, updateProduct, createProduct } = useProductServices();
     const [selectedProductIds, setSelectedProductIds] = useState([]);
     const [finalPrice, setFinalPrice] = useState();
-    const [isSelected, setIsSelected] = useState();
+    const [productSearch, setProductSearch] = useState("");
+    const customerEmailRef = useRef(null);
+    const { getPartnerList } = usePartnerServices();
+    const [partners, setPartners] = useState([]);
 
     useEffect(() => {
+        console.log("El user es: ", user.email)
+        setQuote({
+            userEmail: user.email,
+            storeId: storeId,
+        })
         const fetchProducts = async () => {
             try {
                 const response = await getProductByStoreId(storeId);
-                console.log("ProductList Response: ", response);
+                //console.log("ProductList Response: ", response);
                 setProducts(response.productList);
                 setLoading(false);
-                console.log("ProductList: ", products);
+                //console.log("ProductList: ", products);
             } catch (error) {
-                console.error('Error fetching products:', error);
+                //console.error('Error fetching products:', error);
+                setLoading(false);
+            }
+        }
+        const fetchPartners = async () => {
+            try {
+                const response = await getPartnerList(storeId);
+                //console.log("ProductList Response: ", response);
+                setPartners(response.partnerList);
+                setLoading(false);
+                //console.log("ProductList: ", products);
+            } catch (error) {
+                //console.error('Error fetching products:', error);
                 setLoading(false);
             }
         }
         if (storeId) {
             fetchProducts();
+            fetchPartners();
         }
-    }, [storeId]);
+    }, []);
+    useEffect(() => {
+        console.log("F: El cliente actual es:", customer);
+    }, [customer]);
+    useEffect(() => {
+        console.log("F: Los datos de quote son: ", quote);
+    }, [quote]);
 
     const handleProductSelected = (productId) => {
+        setSelectedProductIds((prevSelected = []) => {
+            let updatedSelected;
 
-        const fetchSelectProducts = () => {
-            setSelectedProductIds((prevSelected) => {
-                let updatedSelected;
-                if (prevSelected.includes(productId)) {
-                    // Deseleccionar
-                    updatedSelected = prevSelected.filter((id) => id !== productId);
-                    setIsSelected(false)
-                } else {
-                    // Seleccionar
-                    updatedSelected = [...prevSelected, productId];
-                    setIsSelected(true)
-                }
+            if (prevSelected.includes(productId)) {
+                // Deseleccionar producto
+                updatedSelected = prevSelected.filter((id) => id !== productId);
+            } else {
+                // Seleccionar producto
+                updatedSelected = [...prevSelected, productId];
+            }
+            // Calcular precio total con los productos seleccionados
+            const total = updatedSelected.reduce((sum, id) => {
+                const product = products.find((p) => p._id === id);
+                return sum + (product?.price || 0);
+            }, 0);
 
-                // Actualiza el precio total
-                const total = updatedSelected.reduce((sum, id) => {
-                    const product = products.find((p) => p._id === id);
-                    return sum + (product?.price || 0);
-                }, 0);
-                setFinalPrice(total);
-            });
-        }
-        const fetchFinalPrice = () => {
-            setQuote({ finalPrice: finalPrice })
-            console.log("Datos de Quote", quote);
-        }
+            // Actualizar el estado del precio final
+            setFinalPrice(total);
 
-        fetchSelectProducts();
-        fetchFinalPrice();
-
+            // Actualizar el estado de la cotización con el nuevo precio
+            setQuote((prevQuote) => ({
+                ...prevQuote,
+                finalPrice: total,
+                productList: updatedSelected,
+            }));
+            console.log("Los datos de quote en handleProductSelected son: ", quote);
+            return updatedSelected;
+        });
     };
 
 
     const handleQuoteChange = (e) => {
         const { name, value, type, checked } = e.target;
+        console.log("Los datos en handleQuoteChange de las const son: ", name, " - ", value, " - ", type, " - ", checked);
         setQuote((prev) => ({
             ...prev,
-            [name]: type === 'checkbox' ? checked : value,
+            [name]: value,
         }));
+        console.log("Los datos de quote en handleQuoteChange son: ", quote);
     };
 
     const handleCustomerChange = (e) => {
         const { name, value } = e.target;
-        console.log("El valor de value es:", value)
         setCustomer((prev) => ({
             ...prev,
             email: value,
@@ -101,27 +128,14 @@ export default function NewQuote() {
             ...prev,
             [name]: value,
         }));
-        console.log("F: Datos de cliente", customer)
-        console.log("F: Datos de quote", quote)
     };
 
-    const handleCustomerEmailSearch = async () => {
+    const handleCustomerEmailSearch = async (customerEmail) => {
+        console.log("El email en handleCustomerEmailSearch es: ", customerEmail);
         try {
-            setCustomer({
-                email: customer.email,
-                name: '',
-                phone: '',
-                country: '',
-                languages: [],
-                birthdate: '',
-                nationalId: '',
-                diet: '',
-                emergencyContactName: '',
-                emergencyContactPhone: '',
-                divingCertificates: [],
-            });
-            const response = await getCustomerEmail(customer.email);
+            const response = await getCustomerEmail(customerEmail);
             const found = response.customerList;
+            console.log("F: el found es:", found);
             if (found) {
                 toast.success('Customer Found');
                 //console.log("El cliente encontrdo es:", found)
@@ -138,10 +152,13 @@ export default function NewQuote() {
                         emergencyContactName: cust.emergencyContact?.emergencyContactName || '',
                         emergencyContactPhone: cust.emergencyContact?.emergencyContactPhone || '',
                         divingCertificates: cust.divingCertificates || [],
-                    })));
-                //console.log("F: El cliente es:", customer);
+                    }
+                    )));
                 setCustomerEditable(false);
-                setQuote({ customerEmail: found.email });
+                setQuote((prev) => ({
+                    ...prev,
+                    customerEmail: found[0].email,
+                }));
                 setIsNew(false);
                 setIsCustomerModalOpen(false);
             } else {
@@ -247,25 +264,31 @@ export default function NewQuote() {
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.9 }}
                 transition={{ duration: 0.5 }}
-                className="flex flex-col w-full max-w-6xl mx-auto bg-gray-900 bg-opacity-80 backdrop-filter backdrop-blur-lg rounded-xl shadow-2xl border border-gray-800 overflow-hidden min-h-screen"
+                className="flex flex-col w-full max-w-8xl mx-auto bg-gray-900 bg-opacity-80 backdrop-filter backdrop-blur-lg rounded-xl shadow-2xl border border-gray-800 overflow-hidden min-h-screen"
             >
                 <h1 className="text-3xl font-bold mb-6 text-center bg-gradient-to-r from-blue-400 to-blue-600 text-transparent bg-clip-text">New Quote</h1>
-                <form onSubmit={handleSubmit} className="space-y-4 border p-4 rounded-md shadow bg-blue">
+                <form onSubmit={handleSubmit} className="space-y-4 border p-4 rounded-md shadow bg-blue ml-2 mr-2 mb-2">
                     {/* DATOS DE CLIENTE*/}
                     <fieldset className="border p-4 rounded bg-gray-800">
                         <legend className="font-semibold text-lg">Customer Details</legend>
                         <div className="flex items-center gap-2">
                             <input
+                                ref={customerEmailRef}
                                 type="email"
                                 name="customerEmail"
                                 value={quote.customerEmail}
-                                onChange={handleCustomerChange}
+                                onKeyDown={(e) => {
+                                    if (e.key === 'Enter') {
+                                        e.preventDefault();
+                                        handleCustomerEmailSearch(customerEmailRef.current.value);
+                                    }
+                                }}
                                 className="w-full border px-2 py-1 rounded"
-                                placeholder="Email del cliente"
+                                placeholder="Enter customer email"
                             />
                             <button
                                 type="button"
-                                onClick={handleCustomerEmailSearch}
+                                onClick={() => handleCustomerEmailSearch(customerEmailRef.current.value)}
                                 className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700"
                             >
                                 <Search />
@@ -355,12 +378,18 @@ export default function NewQuote() {
                                                 </div>
                                                 <div>
                                                     <label className="block text-sm font-medium">Dietary Restriction</label>
-                                                    <input
-                                                        type="text"
+                                                    <select
                                                         className="w-full border border-gray-300 rounded px-3 py-2 mt-1"
                                                         value={customer.diet || ''}
                                                         onChange={(e) => setCustomer({ ...customer, diet: e.target.value })}
-                                                    />
+                                                    >
+                                                        <option value="" className='text-blue-950'>Select Diet</option>
+                                                        {dietaryList.map((item, index) => (
+                                                            <option key={index} value={item.name} className='text-blue-950'>
+                                                                {item.name}
+                                                            </option>
+                                                        ))}
+                                                    </select>
                                                 </div>
                                                 <div>
                                                     <label className="block text-sm font-medium">Country</label>
@@ -481,54 +510,192 @@ export default function NewQuote() {
                         </div>
                     </fieldset>
                     {/* DATOS DE COTIZACION*/}
-                    <div>
-                        <label>Fecha de Entrada</label>
-                        <input type="date" name="dateIn" value={quote.dateIn} onChange={handleQuoteChange} className="w-full border px-2 py-1 rounded" />
+                    <div className='flex'>
+                        <div className="w-1/2 pr-2">
+                            <label>Fecha de Entrada</label>
+                            <input type="date" name="dateIn"
+                                value={quote.dateIn}
+                                onChange={handleQuoteChange}
+                                className="w-full border px-2 py-1 rounded"
+                                onKeyDown={(e) => {
+                                    if (e.key === 'Enter') {
+                                        e.preventDefault();
+                                        // Add logic if we want to do something when enter is pressed
+                                    }
+                                }}
+                            />
+                        </div>
+                        <div className="w-1/2">
+                            <label>Fecha de Salida</label>
+                            <input type="date" name="dateOut"
+                                value={quote.dateOut}
+                                onChange={handleQuoteChange}
+                                className="w-full border px-2 py-1 rounded"
+                                onKeyDown={(e) => {
+                                    if (e.key === 'Enter') {
+                                        e.preventDefault();
+                                        // Add logic if we want to do something when enter is pressed
+                                    }
+                                }}
+                            />
+                        </div>
                     </div>
-                    <div>
-                        <label>Fecha de Salida</label>
-                        <input type="date" name="dateOut" value={quote.dateOut} onChange={handleQuoteChange} className="w-full border px-2 py-1 rounded" />
-                    </div>
-                    <div className="p-6 space-y-4">
-                        <h2 className="text-2xl font-bold">Product List</h2>
-                        {products.length === 0 ? (
-                            <p>No products found for this store.</p>
-                        ) : (
-                            products.map((product) => {
-                                <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 ml-3 mr-3 mb-3">
-                                    <div
-                                        key={product._id}
-                                        className={`border rounded-lg p-4 cursor-pointer bg-white hover:shadow transition relative ${isSelected ? 'border-green-500' : 'border-gray-300'
-                                            }`}
-                                        onClick={() => handleProductSelected(product._id)}
+                    {/* DATOS DE PRODUCTOS Y PRECIOS */}
+                    <div className="flex gap-6 px-6">
+                        {/* DATOS DE PRODUCTOS*/}
+                        <div className="flex-grow space-y-4">
+                            <h2 className="text-2xl font-bold">Product List</h2>
+                            <input
+                                type="text"
+                                placeholder="Search product by name..."
+                                className="w-full p-2 border border-gray-300 rounded"
+                                value={productSearch}
+                                onChange={(e) => setProductSearch(e.target.value)}
+                                onKeyDown={(e) => {
+                                    if (e.key === 'Enter') {
+                                        e.preventDefault();
+                                        // Add logic if we want to do something when enter is pressed
+                                    }
+                                }}
+                            />
+                            <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-2">
+                                {products.length === 0 ? (
+                                    <p>No products found for this store.</p>
+                                ) : (
+                                    products
+                                        .filter(product =>
+                                            product.name.toLowerCase().includes(productSearch.toLowerCase())
+                                        )
+                                        .sort((a, b) => a.type.localeCompare(b.type))
+                                        .map((product) => {
+                                            const isSelected = selectedProductIds.includes(product._id);
+                                            return (
+                                                <div
+                                                    key={product._id}
+                                                    className={`border rounded-lg p-2 cursor-pointer hover:shadow transition relative ${isSelected ? ' bg-green-100 border-green-500 border-2 ' : 'border-gray-300 bg-blue-100'
+                                                        }`}
+                                                    onClick={() => handleProductSelected(product._id)}
+                                                >
+                                                    <h3 className="text-lg font-semibold text-gray-800">{product.name} - { product.durationDays ? product.durationDays + ' days -' : '' }  ${product.price}</h3>
+                                                    {isSelected && (
+                                                        <CircleCheck className="absolute top-2 right-2 text-green-600" />
+                                                    )}
+
+                                                </div>
+
+                                            );
+                                        })
+                                )}
+                            </div>
+                        </div>
+                        {/* Price Column */}
+                        <div className="w-64 space-y-4 bg-blue-950 rounded-2xl">
+                            <div className="ml-4 mr-4 mt-4">
+                                <label className="block text-sm font-medium">Source</label>
+                                <select
+                                    className="w-full border border-gray-300 rounded px-3 py-2 mt-1"
+                                    value={quote.source || ''}
+                                    onChange={(e) => {
+                                        const selected = e.target.value;
+                                        const updatedQuote = {
+                                            ...quote,
+                                            source: selected,
+                                        };
+                                        if(selected !== 'Other'){
+                                            updatedQuote.customSource = '';
+                                        }
+                                        if(selected !== 'Partner'){
+                                            updatedQuote.partnerId = '';
+                                        }
+                                        setQuote(updatedQuote);
+                                    }}
+                                >
+                                    <option value="" className='text-blue-950'>Select Source</option>
+                                    {sourceList.map((item, index) => (
+                                        <option key={index} value={item.name} className='text-blue-950'>
+                                            {item.name}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
+                            {quote.source === 'Partner' && (
+                                <div className="ml-4 mr-4">
+                                    <label className="block text-sm font-medium text-white">Partner</label>
+                                    <select
+                                        className="w-full mt-1 p-2 border border-gray-300 rounded"
+                                        value={quote.partnerId || ''}
+                                        onChange={(e) =>
+                                            setQuote((prev) => ({
+                                                ...prev,
+                                                partnerId: e.target.value,
+                                            }))
+                                        }
                                     >
-                                        <h3 className="text-lg font-semibold">{product.name}</h3>
-                                        <p className="text-sm text-gray-600">Price: ${product.price}</p>
-                                        <p className="text-sm text-gray-600">Duration: {product.durationDays} days</p>
-                                        {isSelected && (
-                                            <CircleCheck className="absolute top-2 right-2 text-green-600" />
-                                        )}
-
-                                    </div>
+                                        <option value="" className='text-blue-950'>Select a partner</option>
+                                        {partners.map((partner) => (
+                                            <option key={partner._id} value={partner._id} className='text-blue-950'>
+                                                {partner.name}
+                                            </option>
+                                        ))}
+                                    </select>
                                 </div>
-                            }
-                            )
-
-                        )
-                        }
+                            )}
+                            {/* Condicional: mostrar input si el source es "Other" */}
+                            {quote.source === 'Other' && (
+                                <div className="ml-4 mr-4">
+                                    <label className="block text-sm font-medium text-white">Specify Source</label>
+                                    <input
+                                        type="text"
+                                        className="w-full mt-1 p-2 border border-gray-300 rounded"
+                                        placeholder="Enter custom source"
+                                        value={quote.customSource || ''}
+                                        onChange={(e) =>
+                                            setQuote((prev) => ({
+                                                ...prev,
+                                                customSource: e.target.value,
+                                            }))
+                                        }
+                                    />
+                                </div>
+                            )}
+                            <div className="flex ml-4 mr-4 items-center justify-center">
+                                <label className=" text-white font-bold text-lg">Price: ${finalPrice}</label>
+                            </div>
+                            <div className="ml-4 mr-4">
+                                <div className="flex justify-between w-full">
+                                    <label className="block text-sm font-medium text-white">Discount</label>
+                                    <label className="block text-sm font-medium text-white">{(finalPrice && quote.discount) ? ((quote.discount / finalPrice) * 100).toFixed(2) : '0.00'}%</label>
+                                </div>
+                                <input
+                                    type="text"
+                                    className="w-full mt-1 p-2 border border-gray-300 rounded"
+                                    value={quote.discount || 0}
+                                    onChange={(e) => {
+                                        const discount = parseFloat(e.target.value) || 0;
+                                        setQuote((prev) => ({
+                                            ...prev,
+                                            discount,
+                                            finalPrice: finalPrice - discount,
+                                        }));
+                                    }}
+                                    onKeyDown={(e) => {
+                                        if (e.key === 'Enter') {
+                                            e.preventDefault();
+                                            // Add logic if we want to do something when enter is pressed
+                                        }
+                                    }}
+                                />
+                            </div>
+                            <div className="ml-4 mr-4 flex flex-col items-center justify-center">
+                                <label className=" text-white font-bold text-2xl">Final Price: ${quote.finalPrice}</label>
+                            </div>
+                            <div className="flex justify-center">
+                                <button type="submit" className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
+                                    Save Quote
+                                </button>
+                            </div>
+                        </div>
                     </div>
-                    <div>
-                        <label>Discount</label>
-                        <input type="number" name="discount" value={quote.discount} onChange={handleQuoteChange} className="w-full border px-2 py-1 rounded" />
-                    </div>
-                    <div>
-                        <label>Final Price</label>
-                        <input type="number" name="finalPrice" value={quote.finalPrice} onChange={handleQuoteChange} className="w-full border px-2 py-1 rounded" />
-                    </div>
-
-                    <button type="submit" className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
-                        Save Quote
-                    </button>
                 </form>
             </motion.div>
         </div>

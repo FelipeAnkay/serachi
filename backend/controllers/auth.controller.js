@@ -885,14 +885,14 @@ export const customerList = async (req, res) => {
 }
 export const customerByEmail = async (req, res) => {
     try {
-        console.log("Entre a customerByEmail")
+        //console.log("Entre a customerByEmail")
         const {email} = req.params
-        console.log("B: el storeID para customerByEmail es: ", email)
+        //console.log("B: el storeID para customerByEmail es: ", email)
         if (!email) {
             throw new Error("Email is required");
         }
         const customerList = await Customer.find({ email: email });
-        console.log("El listado de customer es:", customerList);
+        //console.log("El listado de customer es:", customerList);
         if (!customerList || customerList.length === 0) {
             return res.status(400).json({ success: false, message: "Customer not found" });
         }
@@ -1131,9 +1131,10 @@ export const staffByEmail = async (req, res) => {
 
 /*Quote FUNCTIONS */
 export const createQuote = async (req, res) => {
-    const { dateIn, dateOut, customerEmail, storeId, roomId, partnerId, productList, discount,finalPrice,currency,isConfirmed,isReturningCustomer,userEmail,tag } = req.body;
+    const { dateIn, dateOut, customerEmail, storeId, roomId, partnerId, productList, discount,finalPrice,currency,isConfirmed,isReturningCustomer,userEmail,tag, source, customSource } = req.body;
+    console.log("B: createQuote data: ", dateIn ," - ", dateOut," - ",customerEmail," - ",storeId," - ",roomId," - ",partnerId," - ",productList," - ",discount," - ",finalPrice," - ",currency," - ",isConfirmed," - ",isReturningCustomer," - ",userEmail," - ",tag)
     try {
-        if (!dateIn || !dateOut || !customerEmail || !productList || !finalPrice || !currency || !storeId || !userEmail) {
+        if (!dateIn || !dateOut || !customerEmail || !productList || !finalPrice || !storeId || !userEmail) {
             throw new Error("All fields are required");
         }
 
@@ -1153,6 +1154,8 @@ export const createQuote = async (req, res) => {
             isReturningCustomer,
             userEmail,
             tag,
+            source,
+            customSource,
             storeId: normalizedStoreId
         });
 
@@ -1215,12 +1218,12 @@ export const quoteList = async (req, res) => {
 
 /*Partner FUNCTIONS */
 export const createPartner = async (req, res) => {
-    const { name, email, phone, country, nationalId, emergencyContact, storeId } = req.body;
+    const { name, email, phone, country, nationalId, storeId } = req.body;
     try {
         if (!name || !email || !phone || !country || !nationalId || !storeId) {
             throw new Error("All fields are required");
         }
-
+        console.log("B: Creating Partner", name," - ",email," - ",phone," - ",country," - ",nationalId," - ",storeId)
         const normalizedStoreId = storeId?.toUpperCase();
 
         const partner = new Partner({
@@ -1273,18 +1276,65 @@ export const updatePartner = async (req, res) => {
 
 export const partnerList = async (req, res) => {
     try {
-        const storeId = req.storeId
+        const {storeId} = req.params
+        console.log("B: Estoy en partnerList", storeId);
         if (!storeId) {
             throw new Error("StoreID is required");
         }
         const normalizeStoreID = storeId?.toUpperCase();
-        const partnerList = await Partner.find(normalizeStoreID);
-        console.log("El listado de supplier es:", partnerList);
+        const partnerList = await Partner.find({storeId: normalizeStoreID});
+        console.log("El listado de partner es:", partnerList);
         if (!partnerList) {
             return res.status(400).json({ success: false, message: "partner not found" });
         }
         res.status(200).json({ success: true, partnerList });
     } catch (error) {
         return res.status(400).json({ success: false, message: error.message });
+    }
+}
+export const partnerByEmail = async (req, res) => {
+    try {
+        const {email} = req.params
+        console.log("B: el mail para partnerByEmail es: ", email)
+        if (!email) {
+            throw new Error("Email is required");
+        }
+        const partnerList = await Partner.find({ email: email });
+        console.log("El listado de partner es:", partnerList);
+        if (!partnerList || partnerList.length === 0) {
+            return res.status(400).json({ success: false, message: "partner not found" });
+        }
+        res.status(200).json({ success: true, partnerList });
+    } catch (error) {
+        return res.status(400).json({ success: false, message: error.message });
+    }
+}
+export const removePartner = async (req, res) => {
+    const {email} = req.body;
+    try {
+        //console.log("B: Entre a removeStaff: ", email," StoreiD: ", storeId)
+        if (!email) {
+            throw new Error("All field are required");
+        }
+        const filter = { email: email }
+        const partner = await Partner.findOne(filter);
+
+        if (!partner) {
+            return res.status(404).json({ success: false, message: "partner not found" });
+        }
+
+        partner.isActive = false;
+        await partner.save();
+
+        res.status(201).json({
+            success: true,
+            message: "partner updated succesfully",
+            service: {
+                ...partner._doc
+            }
+        })
+
+    } catch (error) {
+        res.status(400).json({ success: false, message: error.message });
     }
 }

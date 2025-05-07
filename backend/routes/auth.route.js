@@ -1,5 +1,5 @@
 import express from 'express';
-import {updateStore, createStore,updateService, createService, login, logout, signup, verifyEmail, forgotPassword, resetPassword, checkAuth, createProduct, createRoom, updateRoom, createBook, updateBook, createExperience, updateExperience, usersCompany, experienceList, createCustomer, updateCustomer, customerList, createStaff, updateStaff, staffList, getServiceById, getProductById, createFacility, updateFacility, getServiceNoStaff, staffByEmail, removeStaff, updateProduct, productList, removeProduct, createQuote, updateQuote, customerByEmail } from '../controllers/auth.controller.js';
+import {updateStore, createStore,updateService, createService, login, logout, signup, verifyEmail, forgotPassword, resetPassword, checkAuth, createProduct, createRoom, updateRoom, createBook, updateBook, createExperience, updateExperience, usersCompany, experienceList, createCustomer, updateCustomer, customerList, createStaff, updateStaff, staffList, getServiceById, getProductById, createFacility, updateFacility, getServiceNoStaff, staffByEmail, removeStaff, updateProduct, productList, removeProduct, createQuote, updateQuote, customerByEmail, createPartner, updatePartner, partnerList, partnerByEmail, removePartner } from '../controllers/auth.controller.js';
 import {verifyToken} from '../middleware/verifyToken.js';
 
 const router = express.Router();
@@ -96,5 +96,15 @@ router.post("/update-quote", updateQuote);
 
 router.get("/get-quote/:storeId", staffList);
 
+/* Partner ROUTES */
+router.post("/create-partner", createPartner);
+
+router.post("/update-partner", updatePartner);
+
+router.post("/remove-partner", removePartner);
+
+router.get("/get-partner-store/:storeId", partnerList);
+
+router.get("/get-partner-email/:email", partnerByEmail);
 
 export default router;

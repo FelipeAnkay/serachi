@@ -55,6 +55,12 @@ const quoteSchema = new mongoose.Schema({
     userEmail:{
         type:String,
         required: true
+    },
+    source:{
+        type:String
+    },
+    customSource:{
+        type:String
     }
 },{timestamps : true}); //fields created and updated AT by default with timestamp true
 
