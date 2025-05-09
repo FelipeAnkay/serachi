@@ -5,17 +5,19 @@ import toast from 'react-hot-toast';
 import { useQuoteServices } from '../../store/quoteServices';
 import { useAuthStore } from '../../store/authStore';
 import { useCustomerServices } from '../../store/customerServices';
-import { CircleX, Contact, Contact2, QuoteIcon, Search } from 'lucide-react';
+import { CircleX, Contact2, Search, CircleCheck, CirclePlus } from 'lucide-react';
 import languagesList from '../../components/languages.json';
 import sourceList from '../../components/sourceList.json';
 import dietaryList from '../../components/dietaryList.json';
 import { AnimatePresence } from 'framer-motion';
 import { useProductServices } from '../../store/productServices';
-import { CircleCheck } from 'lucide-react';
 import { usePartnerServices } from '../../store/partnerServices';
+import { useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 export default function NewQuote() {
-    const { createQuote } = useQuoteServices();
+    const { createQuote, getQuoteById, updateQuote } = useQuoteServices();
+    const { quoteId } = useParams();
     const storeId = Cookies.get('storeId');
     const { user } = useAuthStore();
     const [customerEditable, setCustomerEditable] = useState(false);
@@ -26,20 +28,68 @@ export default function NewQuote() {
     const [customer, setCustomer] = useState({});
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
-    const { getProductByStoreId, getProductById, removeProduct, updateProduct, createProduct } = useProductServices();
-    const [selectedProductIds, setSelectedProductIds] = useState([]);
+    const { getProductByStoreId } = useProductServices();
+    const [selectedProducts, setSelectedProducts] = useState({});
     const [finalPrice, setFinalPrice] = useState();
     const [productSearch, setProductSearch] = useState("");
     const customerEmailRef = useRef(null);
     const { getPartnerList } = usePartnerServices();
     const [partners, setPartners] = useState([]);
+    const [newTag, setNewTag] = useState({ name: '', code: '' });
+    const hasFetchedEmail = useRef(false);
+    const navigate = useNavigate();
 
     useEffect(() => {
-        console.log("El user es: ", user.email)
-        setQuote({
-            userEmail: user.email,
-            storeId: storeId,
-        })
+        const fetchQuote = async () => {
+            try {
+                const resp = await getQuoteById(quoteId);
+                const response = resp.quote;
+                if (!hasFetchedEmail.current && response.customerEmail) {
+                    handleCustomerEmailSearch(response.customerEmail);
+                    hasFetchedEmail.current = true;
+                }
+                //console.log("OLD Quote Found Response: ", response);
+                setQuote({
+                    ...response,
+                    userName: user.name,
+                    customerName: customer.name,
+                })
+
+                setLoading(false);
+
+                //console.log("F: Estoy en useEffect-productList:", response.productList)
+                if (response.productList && response.productList.length > 0) {
+                    const initialSelectedProducts = {};
+                    response.productList.forEach((p) => {
+                        initialSelectedProducts[p.productID] = p.Qty;
+                    });
+                    setSelectedProducts(initialSelectedProducts);
+                }
+                setFinalPrice(response.finalPrice + response.discount)
+            } catch (error) {
+                //console.error('Error fetching products:', error);
+                setLoading(false);
+            }
+        }
+
+        if (quoteId) {
+            // Si hay ID, carga la cotización existente
+            fetchQuote();
+        }
+    }, [quoteId]);
+
+
+    useEffect(() => {
+        //console.log("El user es: ", user.email)
+        if (!quoteId) {
+            setQuote({
+                userEmail: user.email,
+                userName: user.name,
+                storeId: storeId,
+                isConfirmed: false,
+                isReturningCustomer: false,
+            });
+        }
         const fetchProducts = async () => {
             try {
                 const response = await getProductByStoreId(storeId);
@@ -68,62 +118,79 @@ export default function NewQuote() {
             fetchProducts();
             fetchPartners();
         }
-    }, []);
+    }, [quoteId, storeId, user.email, user.name]);
+
+
     useEffect(() => {
-        console.log("F: El cliente actual es:", customer);
+        //console.log("F: El cliente actual es:", customer);
+        setQuote((prevQuote) => ({
+            ...prevQuote,
+            customerName: customer.name,
+        }));
     }, [customer]);
+
     useEffect(() => {
         console.log("F: Los datos de quote son: ", quote);
+        //console.log("F: Los datos de Selected Product son: ", selectedProducts);
+        //console.log("F: FinalPrice es:", finalPrice)
     }, [quote]);
 
-    const handleProductSelected = (productId) => {
-        setSelectedProductIds((prevSelected = []) => {
-            let updatedSelected;
+    const formatDateInput = (dateStr) => {
+        if (!dateStr) return "";
+        const date = new Date(dateStr);
+        const tzOffset = date.getTimezoneOffset() * 60000; // en milisegundos
+        const localISOTime = new Date(date.getTime() - tzOffset).toISOString().slice(0, 16);
+        return localISOTime;
+    };
 
-            if (prevSelected.includes(productId)) {
-                // Deseleccionar producto
-                updatedSelected = prevSelected.filter((id) => id !== productId);
-            } else {
-                // Seleccionar producto
-                updatedSelected = [...prevSelected, productId];
-            }
-            // Calcular precio total con los productos seleccionados
-            const total = updatedSelected.reduce((sum, id) => {
-                const product = products.find((p) => p._id === id);
-                return sum + (product?.price || 0);
-            }, 0);
-
-            // Actualizar el estado del precio final
-            setFinalPrice(total);
-
-            // Actualizar el estado de la cotización con el nuevo precio
-            setQuote((prevQuote) => ({
-                ...prevQuote,
-                finalPrice: total,
-                productList: updatedSelected,
-            }));
-            console.log("Los datos de quote en handleProductSelected son: ", quote);
-            return updatedSelected;
+    const incrementProduct = (productId) => {
+        setSelectedProducts((prev) => {
+            const updated = { ...prev, [productId]: (prev[productId] || 0) + 1 };
+            return updateQuoteFromSelected(updated);
         });
     };
 
+    const decrementProduct = (productId) => {
+        setSelectedProducts((prev) => {
+            if (!prev[productId]) return prev; // No hay que restar
+
+            const updated = { ...prev };
+            if (updated[productId] === 1) {
+                delete updated[productId];
+            } else {
+                updated[productId] -= 1;
+            }
+            return updateQuoteFromSelected(updated);
+        });
+    };
+
+    const updateQuoteFromSelected = (selected) => {
+        const structuredList = Object.entries(selected).map(([id, qty]) => {
+            const product = products.find((p) => p._id === id);
+            return {
+                productID: id,
+                productName: product?.name || '',
+                Qty: qty,
+                productUnitaryPrice: (product?.price || 0),
+                productFinalPrice: (product?.price || 0) * qty,
+            };
+        });
+
+        const total = structuredList.reduce((sum, item) => sum + item.productFinalPrice, 0);
+
+        setFinalPrice(total);
+        setQuote((prev) => ({
+            ...prev,
+            discount: 0,
+            finalPrice: total,
+            productList: structuredList,
+        }));
+
+        return selected;
+    };
 
     const handleQuoteChange = (e) => {
         const { name, value, type, checked } = e.target;
-        console.log("Los datos en handleQuoteChange de las const son: ", name, " - ", value, " - ", type, " - ", checked);
-        setQuote((prev) => ({
-            ...prev,
-            [name]: value,
-        }));
-        console.log("Los datos de quote en handleQuoteChange son: ", quote);
-    };
-
-    const handleCustomerChange = (e) => {
-        const { name, value } = e.target;
-        setCustomer((prev) => ({
-            ...prev,
-            email: value,
-        }));
         setQuote((prev) => ({
             ...prev,
             [name]: value,
@@ -164,61 +231,74 @@ export default function NewQuote() {
             } else {
                 toast.error('Cliente no encontrado, puedes completar sus datos');
                 setCustomerEditable(true);
-                setQuote((prev) => ({ ...prev, customerEmail: customer.email }));
+                setCustomer((prev) => ({ ...prev, email: customerEmail }))
+                setQuote((prev) => ({ ...prev, customerEmail: customerEmail }));
                 setIsNew(true);
                 setIsCustomerModalOpen(true);
             }
         } catch (err) {
             toast.success('Please create a customer');
+            setCustomer((prev) => ({ ...prev, email: customerEmail }))
             setCustomerEditable(true);
             setIsCustomerModalOpen(true);
         }
     };
 
     const handleSubmit = async (e) => {
-
+        e.preventDefault();
         if (!quote.dateIn || !quote.dateOut || !quote.customerEmail || !quote.storeId || !quote.userEmail) {
-            toast.error('Por favor completa los campos obligatorios.');
+            toast.error('Please fill all the mandatory data.');
             return;
         }
-
         try {
 
-            await createQuote(quote);
-            toast.success('Cotización creada correctamente');
+            if (!quote._id) {
+                await createQuote(quote);
+                toast.success('Quote Created');
+            } else {
+                await updateQuote(quote._id, quote);
+                toast.success('Quote Updated');
+                navigate(`/past-quote/`, { state: {}, replace: true });
+            }
 
-            setQuote({
-                dateIn: '',
-                dateOut: '',
-                customerEmail: '',
-                storeId: '',
-                roomId: '',
-                partnerId: '',
-                productList: [],
-                discount: 0,
-                finalPrice: 0,
-                currency: 'USD',
-                isConfirmed: false,
-                isReturningCustomer: false,
-                tag: [],
-                userEmail: '',
-            });
+            setTimeout(() => {
+                setQuote({
+                    dateIn: '',
+                    dateOut: '',
+                    customerEmail: '',
+                    roomId: '',
+                    partnerId: '',
+                    productList: [],
+                    discount: 0,
+                    finalPrice: 0,
+                    currency: 'USD',
+                    isReturningCustomer: false,
+                    tag: [],
+                    userEmail: user.email,
+                    userName: user.name,
+                    storeId: storeId,
+                    isConfirmed: false,
+                });
 
-            setCustomer({
-                email: '',
-                name: '',
-                phone: '',
-                country: '',
-                languages: [],
-                birthdate: '',
-                nationalId: '',
-                diet: '',
-                emergencyContactName: '',
-                emergencyContactPhone: '',
-                professionalCertificates: [],
-            });
+                setCustomer({
+                    email: '',
+                    name: '',
+                    phone: '',
+                    country: '',
+                    languages: [],
+                    birthdate: '',
+                    nationalId: '',
+                    diet: '',
+                    emergencyContactName: '',
+                    emergencyContactPhone: '',
+                    professionalCertificates: [],
+                });
+                setSelectedProducts({});
+                setCustomerEditable(false);
+                setIsNew(true);
+                setFinalPrice("0");
+            }, 0); // espera XXXms antes de reiniciar
 
-            setCustomerEditable(false);
         } catch (err) {
             toast.error('Error al guardar la cotización');
         }
@@ -244,11 +324,10 @@ export default function NewQuote() {
                     divingCertificates: customer.divingCertificates,
                     storeId: storeId,
                 };
-                //console.log("F: El cliente a crear es:", customerPayload);
+                console.log("F: El cliente a crear es:", customerPayload);
                 await createCustomer(customerPayload);
                 toast.success('Customer created');
                 setIsNew(false);
-                setNewCustomerEmail(customer.email);
                 setIsCustomerModalOpen(false);
             }
         } catch (error) {
@@ -264,287 +343,306 @@ export default function NewQuote() {
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.9 }}
                 transition={{ duration: 0.5 }}
-                className="flex flex-col w-full max-w-8xl mx-auto bg-gray-900 bg-opacity-80 backdrop-filter backdrop-blur-lg rounded-xl shadow-2xl border border-gray-800 overflow-hidden min-h-screen"
+                className="flex flex-col w-full max-w-8xl mx-auto bg-blue-900 bg-opacity-80 backdrop-filter backdrop-blur-lg rounded-2xl shadow-2xl border border-gray-800 overflow-hidden min-h-screen"
             >
-                <h1 className="text-3xl font-bold mb-6 text-center bg-gradient-to-r from-blue-400 to-blue-600 text-transparent bg-clip-text">New Quote</h1>
-                <form onSubmit={handleSubmit} className="space-y-4 border p-4 rounded-md shadow bg-blue ml-2 mr-2 mb-2">
+                <h1 className="text-3xl font-bold mt-6 mb-6 text-center text-white bg-clip-text">New Quote</h1>
+                <form onSubmit={handleSubmit} className="space-y-4 border p-4 rounded-2xl shadow bg-blue ml-2 mr-2 mb-2 bg-blue-800">
                     {/* DATOS DE CLIENTE*/}
-                    <fieldset className="border p-4 rounded bg-gray-800">
-                        <legend className="font-semibold text-lg">Customer Details</legend>
-                        <div className="flex items-center gap-2">
-                            <input
-                                ref={customerEmailRef}
-                                type="email"
-                                name="customerEmail"
-                                value={quote.customerEmail}
-                                onKeyDown={(e) => {
-                                    if (e.key === 'Enter') {
-                                        e.preventDefault();
-                                        handleCustomerEmailSearch(customerEmailRef.current.value);
+                    <div className='flex'>
+                        <fieldset className="border p-4 rounded-2xl w-1/2">
+                            <legend className="font-semibold text-lg">Customer Details</legend>
+                            <div className="flex items-center gap-2">
+                                <input
+                                    ref={customerEmailRef}
+                                    type="email"
+                                    name="customerEmail"
+                                    value={quote.customerEmail}
+                                    onChange={(e) =>
+                                        setQuote((prev) => ({
+                                            ...prev,
+                                            customerEmail: e.target.value,
+                                        }))
                                     }
-                                }}
-                                className="w-full border px-2 py-1 rounded"
-                                placeholder="Enter customer email"
-                            />
-                            <button
-                                type="button"
-                                onClick={() => handleCustomerEmailSearch(customerEmailRef.current.value)}
-                                className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700"
-                            >
-                                <Search />
-                            </button>
-                            {!isNew && (
+                                    onKeyDown={(e) => {
+                                        if (e.key === 'Enter') {
+                                            e.preventDefault();
+                                            handleCustomerEmailSearch(customerEmailRef.current.value);
+                                        }
+                                    }}
+                                    onBlur={() => {
+                                        handleCustomerEmailSearch(customerEmailRef.current.value);
+                                    }}
+                                    className="w-full border px-2 py-1 rounded bg-white text-blue-950"
+                                    placeholder="Enter customer email"
+                                />
                                 <button
                                     type="button"
-                                    variant="outline"
+                                    onClick={() => handleCustomerEmailSearch(customerEmailRef.current.value)}
                                     className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700"
-                                    onClick={() => setIsCustomerModalOpen(true)}
                                 >
-                                    <Contact2 />
+                                    <Search />
                                 </button>
-                            )}
-                            <AnimatePresence>
-                                {isCustomerModalOpen && (
-                                    <motion.div
-                                        className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 scrollbar-thin scrollbar-thumb-blue-600 scrollbar-track-gray-800 scrollbar-thumb-rounded-full max-h"
-                                        initial={{ opacity: 0 }}
-                                        animate={{ opacity: 1 }}
-                                        exit={{ opacity: 0 }}
+
+                                {!isNew && (
+                                    <button
+                                        type="button"
+                                        variant="outline"
+                                        className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700"
+                                        onClick={() => setIsCustomerModalOpen(true)}
                                     >
+                                        <Contact2 />
+                                    </button>
+                                )}
+                                <AnimatePresence>
+                                    {isCustomerModalOpen && (
                                         <motion.div
-                                            className="bg-blue-900 rounded-2xl p-6 max-w-lg w-[90%] h-[90%] overflow-y-auto relative"
-                                            initial={{ scale: 0.8 }}
-                                            animate={{ scale: 1 }}
-                                            exit={{ scale: 0.8 }}
-                                            transition={{ duration: 0.3 }}
+                                            className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 scrollbar-thin scrollbar-thumb-blue-600 scrollbar-track-gray-800 scrollbar-thumb-rounded-full max-h"
+                                            initial={{ opacity: 0 }}
+                                            animate={{ opacity: 1 }}
+                                            exit={{ opacity: 0 }}
                                         >
-                                            <button
-                                                type='button'
-                                                className="absolute top-3 right-3 text-gray-600 hover:text-black"
-                                                onClick={() => setIsCustomerModalOpen(false)}
+                                            <motion.div
+                                                className="bg-blue-900 rounded-2xl p-6 max-w-lg w-[90%] h-[90%] overflow-y-auto relative"
+                                                initial={{ scale: 0.8 }}
+                                                animate={{ scale: 1 }}
+                                                exit={{ scale: 0.8 }}
+                                                transition={{ duration: 0.3 }}
                                             >
-                                                <CircleX />
-                                            </button>
+                                                <button
+                                                    type='button'
+                                                    className="absolute top-3 right-3 text-gray-600 hover:text-black"
+                                                    onClick={() => setIsCustomerModalOpen(false)}
+                                                >
+                                                    <CircleX />
+                                                </button>
 
-                                            <h2 className="text-xl font-bold mb-4 text-center text-white">Cliente</h2>
+                                                <h2 className="text-xl font-bold mb-4 text-center text-white">Cliente</h2>
 
-                                            {/* Aquí colocas tu formulario de cliente completo */}
-                                            <div className="space-y-4">
-                                                {/* Ejemplo de campo: */}
-                                                <div>
-                                                    <label className="block text-sm font-medium">Name</label>
-                                                    <input
-                                                        type="text"
-                                                        className="w-full border border-gray-300 rounded px-3 py-2 mt-1"
-                                                        value={customer.name || ''}
-                                                        onChange={(e) => setCustomer({ ...customer, name: e.target.value })}
-                                                    />
-                                                </div>
-                                                <div>
-                                                    <label className="block text-sm font-medium">Email</label>
-                                                    <input
-                                                        type="text"
-                                                        className="w-full border border-gray-300 rounded px-3 py-2 mt-1"
-                                                        value={customer.email || ''}
-                                                        onChange={(e) => setCustomer({ ...customer, email: e.target.value })}
-                                                    />
-                                                </div>
-                                                <div>
-                                                    <label className="block text-sm font-medium">Phone</label>
-                                                    <input
-                                                        type="text"
-                                                        className="w-full border border-gray-300 rounded px-3 py-2 mt-1"
-                                                        value={customer.phone || ''}
-                                                        onChange={(e) => setCustomer({ ...customer, phone: e.target.value })}
-                                                    />
-                                                </div>
-                                                <div>
-                                                    <label className="block text-sm font-medium">Birthdate</label>
-                                                    <input
-                                                        type="date"
-                                                        className="w-full border border-gray-300 rounded px-3 py-2 mt-1"
-                                                        value={customer.birthdate || ''}
-                                                        onChange={(e) => setCustomer({ ...customer, birthdate: e.target.value })}
-                                                    />
-                                                </div>
-                                                <div>
-                                                    <label className="block text-sm font-medium">National ID</label>
-                                                    <input
-                                                        type="text"
-                                                        className="w-full border border-gray-300 rounded px-3 py-2 mt-1"
-                                                        value={customer.nationalId || ''}
-                                                        onChange={(e) => setCustomer({ ...customer, nationalId: e.target.value })}
-                                                    />
-                                                </div>
-                                                <div>
-                                                    <label className="block text-sm font-medium">Dietary Restriction</label>
+                                                {/* Aquí colocas tu formulario de cliente completo */}
+                                                <div className="space-y-4">
+                                                    {/* Ejemplo de campo: */}
+                                                    <div>
+                                                        <label className="block text-sm font-medium">Name</label>
+                                                        <input
+                                                            type="text"
+                                                            className="w-full border border-gray-300 rounded px-3 py-2 mt-1"
+                                                            value={customer.name || ''}
+                                                            onChange={(e) => setCustomer({ ...customer, name: e.target.value })}
+                                                        />
+                                                    </div>
+                                                    <div>
+                                                        <label className="block text-sm font-medium">Email</label>
+                                                        <input
+                                                            type="text"
+                                                            className="w-full border border-gray-300 rounded px-3 py-2 mt-1"
+                                                            value={customer.email || ''}
+                                                            onChange={(e) => setCustomer({ ...customer, email: e.target.value })}
+                                                        />
+                                                    </div>
+                                                    <div>
+                                                        <label className="block text-sm font-medium">Phone</label>
+                                                        <input
+                                                            type="text"
+                                                            className="w-full border border-gray-300 rounded px-3 py-2 mt-1"
+                                                            value={customer.phone || ''}
+                                                            onChange={(e) => setCustomer({ ...customer, phone: e.target.value })}
+                                                        />
+                                                    </div>
+                                                    <div>
+                                                        <label className="block text-sm font-medium">Birthdate</label>
+                                                        <input
+                                                            type="date"
+                                                            className="w-full border border-gray-300 rounded px-3 py-2 mt-1"
+                                                            value={customer.birthdate || ''}
+                                                            onChange={(e) => setCustomer({ ...customer, birthdate: e.target.value })}
+                                                        />
+                                                    </div>
+                                                    <div>
+                                                        <label className="block text-sm font-medium">National ID</label>
+                                                        <input
+                                                            type="text"
+                                                            className="w-full border border-gray-300 rounded px-3 py-2 mt-1"
+                                                            value={customer.nationalId || ''}
+                                                            onChange={(e) => setCustomer({ ...customer, nationalId: e.target.value })}
+                                                        />
+                                                    </div>
+                                                    <div>
+                                                        <label className="block text-sm font-medium">Dietary Restriction</label>
+                                                        <select
+                                                            className="w-full border border-gray-300 rounded px-3 py-2 mt-1"
+                                                            value={customer.diet || ''}
+                                                            onChange={(e) => setCustomer({ ...customer, diet: e.target.value })}
+                                                        >
+                                                            <option value="" className='text-blue-950'>Select Diet</option>
+                                                            {dietaryList.map((item, index) => (
+                                                                <option key={index} value={item.name} className='text-blue-950'>
+                                                                    {item.name}
+                                                                </option>
+                                                            ))}
+                                                        </select>
+                                                    </div>
+                                                    <div>
+                                                        <label className="block text-sm font-medium">Country</label>
+                                                        <input
+                                                            type="text"
+                                                            className="w-full border border-gray-300 rounded px-3 py-2 mt-1"
+                                                            value={customer.country || ''}
+                                                            onChange={(e) => setCustomer({ ...customer, country: e.target.value })}
+                                                        />
+                                                    </div>
                                                     <select
-                                                        className="w-full border border-gray-300 rounded px-3 py-2 mt-1"
-                                                        value={customer.diet || ''}
-                                                        onChange={(e) => setCustomer({ ...customer, diet: e.target.value })}
+                                                        multiple
+                                                        value={customer.languages}
+                                                        onChange={(e) =>
+                                                            setCustomer({
+                                                                ...customer,
+                                                                languages: Array.from(e.target.selectedOptions, option => option.value),
+                                                            })
+                                                        }
+                                                        className="w-full p-2 mt-1 rounded bg-gray-800 text-white"
                                                     >
-                                                        <option value="" className='text-blue-950'>Select Diet</option>
-                                                        {dietaryList.map((item, index) => (
-                                                            <option key={index} value={item.name} className='text-blue-950'>
-                                                                {item.name}
-                                                            </option>
+                                                        {languagesList.map((lang) => (
+                                                            <option key={lang.code} value={lang.code}>{lang.name}</option>
                                                         ))}
                                                     </select>
-                                                </div>
-                                                <div>
-                                                    <label className="block text-sm font-medium">Country</label>
-                                                    <input
-                                                        type="text"
-                                                        className="w-full border border-gray-300 rounded px-3 py-2 mt-1"
-                                                        value={customer.country || ''}
-                                                        onChange={(e) => setCustomer({ ...customer, country: e.target.value })}
-                                                    />
-                                                </div>
-                                                <select
-                                                    multiple
-                                                    value={customer.languages}
-                                                    onChange={(e) =>
-                                                        setCustomer({
-                                                            ...customer,
-                                                            languages: Array.from(e.target.selectedOptions, option => option.value),
-                                                        })
-                                                    }
-                                                    className="w-full p-2 mt-1 rounded bg-gray-800 text-white"
-                                                >
-                                                    {languagesList.map((lang) => (
-                                                        <option key={lang.code} value={lang.code}>{lang.name}</option>
-                                                    ))}
-                                                </select>
-                                                <div className="space-y-4 mt-6">
-                                                    <h3 className="text-lg font-semibold  text-white">
-                                                        Emergency Contact:
-                                                    </h3>
+                                                    <div className="space-y-4 mt-6">
+                                                        <h3 className="text-lg font-semibold  text-white">
+                                                            Emergency Contact:
+                                                        </h3>
 
-                                                    <div>
-                                                        <label className="block text-sm font-medium  text-white">Name:</label>
-                                                        <input
-                                                            type="text"
-                                                            className="w-full border border-gray-300 rounded px-3 py-2 mt-1"
-                                                            value={customer.emergencyContactName || ''}
-                                                            onChange={(e) =>
-                                                                setCustomer({
-                                                                    ...customer,
-                                                                    emergencyContactName: e.target.value,
+                                                        <div>
+                                                            <label className="block text-sm font-medium  text-white">Name:</label>
+                                                            <input
+                                                                type="text"
+                                                                className="w-full border border-gray-300 rounded px-3 py-2 mt-1"
+                                                                value={customer.emergencyContactName || ''}
+                                                                onChange={(e) =>
+                                                                    setCustomer({
+                                                                        ...customer,
+                                                                        emergencyContactName: e.target.value,
 
-                                                                })
-                                                            }
-                                                        />
-                                                    </div>
-
-                                                    <div>
-                                                        <label className="block text-sm font-medium  text-white">Phone</label>
-                                                        <input
-                                                            type="text"
-                                                            className="w-full border border-gray-300 rounded px-3 py-2 mt-1"
-                                                            value={customer.emergencyContactPhone || ''}
-                                                            onChange={(e) =>
-                                                                setCustomer({
-                                                                    ...customer,
-                                                                    emergencyContactPhone: e.target.value,
-                                                                })
-                                                            }
-                                                        />
-                                                    </div>
-                                                </div>
-                                                <div className="space-y-4">
-                                                    <h4 className="text-lg font-bold">Diving Certificates</h4>
-                                                    {(customer.divingCertificates || []).map((cert, certIndex) => (
-                                                        <div key={certIndex} className="border border-gray-700 rounded-lg p-4 relative space-y-2 bg-gray-800">
-                                                            <button
-                                                                type="button"
-                                                                className="absolute top-2 right-2 text-red-400 hover:text-red-600"
-                                                                onClick={() => {
-                                                                    const updated = customer.divingCertificates.filter((_, i) => i !== certIndex);
-                                                                    setCustomer({ ...customer, divingCertificates: updated });
-                                                                }}
-                                                            >
-                                                                Delete
-                                                            </button>
-                                                            {["organization", "certificateName", "certificateId"].map((key) => (
-                                                                <div key={key}>
-                                                                    <label className="capitalize">{key.replace(/([A-Z])/g, ' $1')}:</label>
-                                                                    <input
-                                                                        type="text"
-                                                                        className="w-full p-2 mt-1 rounded bg-gray-700 text-white"
-                                                                        value={cert[key] || ''}
-                                                                        onChange={(e) => {
-                                                                            const updated = [...customer.divingCertificates];
-                                                                            updated[certIndex][key] = e.target.value;
-                                                                            setCustomer({ ...customer, divingCertificates: updated });
-                                                                        }}
-                                                                    />
-                                                                </div>
-                                                            ))}
+                                                                    })
+                                                                }
+                                                            />
                                                         </div>
-                                                    ))}
+
+                                                        <div>
+                                                            <label className="block text-sm font-medium  text-white">Phone</label>
+                                                            <input
+                                                                type="text"
+                                                                className="w-full border border-gray-300 rounded px-3 py-2 mt-1"
+                                                                value={customer.emergencyContactPhone || ''}
+                                                                onChange={(e) =>
+                                                                    setCustomer({
+                                                                        ...customer,
+                                                                        emergencyContactPhone: e.target.value,
+                                                                    })
+                                                                }
+                                                            />
+                                                        </div>
+                                                    </div>
+                                                    <div className="space-y-4">
+                                                        <h4 className="text-lg font-bold">Diving Certificates</h4>
+                                                        {(customer.divingCertificates || []).map((cert, certIndex) => (
+                                                            <div key={certIndex} className="border border-gray-700 rounded-lg p-4 relative space-y-2 bg-gray-800">
+                                                                <button
+                                                                    type="button"
+                                                                    className="absolute top-2 right-2 text-red-400 hover:text-red-600"
+                                                                    onClick={() => {
+                                                                        const updated = customer.divingCertificates.filter((_, i) => i !== certIndex);
+                                                                        setCustomer({ ...customer, divingCertificates: updated });
+                                                                    }}
+                                                                >
+                                                                    Delete
+                                                                </button>
+                                                                {["organization", "certificateName", "certificateId"].map((key) => (
+                                                                    <div key={key}>
+                                                                        <label className="capitalize">{key.replace(/([A-Z])/g, ' $1')}:</label>
+                                                                        <input
+                                                                            type="text"
+                                                                            className="w-full p-2 mt-1 rounded bg-gray-700 text-white"
+                                                                            value={cert[key] || ''}
+                                                                            onChange={(e) => {
+                                                                                const updated = [...customer.divingCertificates];
+                                                                                updated[certIndex][key] = e.target.value;
+                                                                                setCustomer({ ...customer, divingCertificates: updated });
+                                                                            }}
+                                                                        />
+                                                                    </div>
+                                                                ))}
+                                                            </div>
+                                                        ))}
+                                                        <button
+                                                            type="button"
+                                                            className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded mt-4"
+                                                            onClick={() => {
+                                                                const updated = [...(customer.divingCertificates || [])];
+                                                                updated.push({ organization: '', certificateName: '', certificateId: '' });
+                                                                setCustomer({ ...customer, divingCertificates: updated });
+                                                            }}
+                                                        >
+                                                            Add Certificate
+                                                        </button>
+                                                    </div>
+
                                                     <button
+                                                        className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded w-full mt-4"
                                                         type="button"
-                                                        className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded mt-4"
-                                                        onClick={() => {
-                                                            const updated = [...(customer.divingCertificates || [])];
-                                                            updated.push({ organization: '', certificateName: '', certificateId: '' });
-                                                            setCustomer({ ...customer, divingCertificates: updated });
-                                                        }}
+                                                        onClick={handleSaveClient}
                                                     >
-                                                        Add Certificate
+                                                        Save Customer
                                                     </button>
                                                 </div>
-
-                                                <button
-                                                    className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded w-full mt-4"
-                                                    type="button"
-                                                    onClick={handleSaveClient}
-                                                >
-                                                    Save Customer
-                                                </button>
-                                            </div>
+                                            </motion.div>
                                         </motion.div>
-                                    </motion.div>
-                                )}
-                            </AnimatePresence>
-                        </div>
-                    </fieldset>
-                    {/* DATOS DE COTIZACION*/}
-                    <div className='flex'>
-                        <div className="w-1/2 pr-2">
-                            <label>Fecha de Entrada</label>
-                            <input type="date" name="dateIn"
-                                value={quote.dateIn}
-                                onChange={handleQuoteChange}
-                                className="w-full border px-2 py-1 rounded"
-                                onKeyDown={(e) => {
-                                    if (e.key === 'Enter') {
-                                        e.preventDefault();
-                                        // Add logic if we want to do something when enter is pressed
-                                    }
-                                }}
-                            />
-                        </div>
-                        <div className="w-1/2">
-                            <label>Fecha de Salida</label>
-                            <input type="date" name="dateOut"
-                                value={quote.dateOut}
-                                onChange={handleQuoteChange}
-                                className="w-full border px-2 py-1 rounded"
-                                onKeyDown={(e) => {
-                                    if (e.key === 'Enter') {
-                                        e.preventDefault();
-                                        // Add logic if we want to do something when enter is pressed
-                                    }
-                                }}
-                            />
-                        </div>
+                                    )}
+                                </AnimatePresence>
+                            </div>
+
+                        </fieldset>
+                        {/* DATOS DE COTIZACION*/}
+                        <fieldset className="border rounded-2xl w-1/2 flex pl-4 ml-4 justify-center">
+                            <legend className="font-semibold text-lg">Dates</legend>
+                            <div className="w-1/2">
+                                <label>Check-in</label>
+                                <input type="datetime-local"
+                                    name="dateIn"
+                                    value={formatDateInput(quote.dateIn)}
+                                    onChange={handleQuoteChange}
+                                    className="w-full border px-2 py-1 rounded bg-white text-blue-950"
+                                    min={new Date().toISOString().split('T')[0]}
+                                    onKeyDown={(e) => {
+                                        if (e.key === 'Enter') {
+                                            e.preventDefault();
+                                            // Add logic if we want to do something when enter is pressed
+                                        }
+                                    }}
+                                />
+                            </div>
+                            <div className="w-1/2 pl-2 pr-2">
+                                <label>Check-out</label>
+                                <input type="datetime-local"
+                                    name="dateOut"
+                                    value={formatDateInput(quote.dateOut)}
+                                    onChange={handleQuoteChange}
+                                    className={`w-full border px-2 py-1 rounded text-blue-950 ${!quote.dateIn ? 'bg-gray-400' : 'bg-white'}`}
+                                    min={quote.dateIn || new Date().toISOString().split('T')[0]}
+                                    disabled={!quote.dateIn}
+                                    onKeyDown={(e) => {
+                                        if (e.key === 'Enter') {
+                                            e.preventDefault();
+                                            // Add logic if we want to do something when enter is pressed
+                                        }
+                                    }}
+                                />
+                            </div>
+                        </fieldset>
                     </div>
                     {/* DATOS DE PRODUCTOS Y PRECIOS */}
-                    <div className="flex gap-6 px-6">
+                    <div className="flex gap-6">
                         {/* DATOS DE PRODUCTOS*/}
-                        <div className="flex-grow space-y-4">
-                            <h2 className="text-2xl font-bold">Product List</h2>
+                        <fieldset className="flex-grow space-y-4 border rounded-2xl p-4">
+                            <legend className="text-2xl font-bold">Product List</legend>
                             <input
                                 type="text"
                                 placeholder="Search product by name..."
@@ -568,96 +666,58 @@ export default function NewQuote() {
                                         )
                                         .sort((a, b) => a.type.localeCompare(b.type))
                                         .map((product) => {
-                                            const isSelected = selectedProductIds.includes(product._id);
+                                            const qty = selectedProducts[product._id] || 0;
+
                                             return (
                                                 <div
                                                     key={product._id}
-                                                    className={`border rounded-lg p-2 cursor-pointer hover:shadow transition relative ${isSelected ? ' bg-green-100 border-green-500 border-2 ' : 'border-gray-300 bg-blue-100'
+                                                    className={`border rounded-lg p-2 hover:shadow transition relative ${qty > 0 ? ' bg-green-100 border-green-500 border-2 ' : 'border-gray-300 bg-blue-100'
                                                         }`}
-                                                    onClick={() => handleProductSelected(product._id)}
                                                 >
-                                                    <h3 className="text-lg font-semibold text-gray-800">{product.name} - { product.durationDays ? product.durationDays + ' days -' : '' }  ${product.price}</h3>
-                                                    {isSelected && (
-                                                        <CircleCheck className="absolute top-2 right-2 text-green-600" />
+                                                    <h3 className="text-lg font-semibold text-gray-800">
+                                                        {product.name} - {product.durationDays ? product.durationDays + ' days -' : ''} ${product.price}
+                                                    </h3>
+
+                                                    {qty > 0 && (
+                                                        <div className="absolute top-2 right-2 flex gap-2 items-center">
+                                                            <button
+                                                                type="button"
+                                                                onClick={() => decrementProduct(product._id)}
+                                                                className="bg-red-500 text-white px-2 rounded hover:bg-red-600"
+                                                            >
+                                                                -
+                                                            </button>
+                                                            <span className="text-sm font-bold text-black">{qty}</span>
+                                                            <button
+                                                                type="button"
+                                                                onClick={() => incrementProduct(product._id)}
+                                                                className="bg-green-500 text-white px-2 rounded hover:bg-green-600"
+                                                            >
+                                                                +
+                                                            </button>
+                                                        </div>
                                                     )}
 
+                                                    {qty === 0 && (
+                                                        <div className="absolute top-2 right-2">
+                                                            <button
+                                                                type="button"
+                                                                onClick={() => incrementProduct(product._id)}
+                                                                className="bg-green-500 text-white px-2 rounded hover:bg-green-600"
+                                                            >
+                                                                +
+                                                            </button>
+                                                        </div>
+                                                    )}
                                                 </div>
-
                                             );
                                         })
                                 )}
                             </div>
-                        </div>
+                        </fieldset>
                         {/* Price Column */}
-                        <div className="w-64 space-y-4 bg-blue-950 rounded-2xl">
-                            <div className="ml-4 mr-4 mt-4">
-                                <label className="block text-sm font-medium">Source</label>
-                                <select
-                                    className="w-full border border-gray-300 rounded px-3 py-2 mt-1"
-                                    value={quote.source || ''}
-                                    onChange={(e) => {
-                                        const selected = e.target.value;
-                                        const updatedQuote = {
-                                            ...quote,
-                                            source: selected,
-                                        };
-                                        if(selected !== 'Other'){
-                                            updatedQuote.customSource = '';
-                                        }
-                                        if(selected !== 'Partner'){
-                                            updatedQuote.partnerId = '';
-                                        }
-                                        setQuote(updatedQuote);
-                                    }}
-                                >
-                                    <option value="" className='text-blue-950'>Select Source</option>
-                                    {sourceList.map((item, index) => (
-                                        <option key={index} value={item.name} className='text-blue-950'>
-                                            {item.name}
-                                        </option>
-                                    ))}
-                                </select>
-                            </div>
-                            {quote.source === 'Partner' && (
-                                <div className="ml-4 mr-4">
-                                    <label className="block text-sm font-medium text-white">Partner</label>
-                                    <select
-                                        className="w-full mt-1 p-2 border border-gray-300 rounded"
-                                        value={quote.partnerId || ''}
-                                        onChange={(e) =>
-                                            setQuote((prev) => ({
-                                                ...prev,
-                                                partnerId: e.target.value,
-                                            }))
-                                        }
-                                    >
-                                        <option value="" className='text-blue-950'>Select a partner</option>
-                                        {partners.map((partner) => (
-                                            <option key={partner._id} value={partner._id} className='text-blue-950'>
-                                                {partner.name}
-                                            </option>
-                                        ))}
-                                    </select>
-                                </div>
-                            )}
-                            {/* Condicional: mostrar input si el source es "Other" */}
-                            {quote.source === 'Other' && (
-                                <div className="ml-4 mr-4">
-                                    <label className="block text-sm font-medium text-white">Specify Source</label>
-                                    <input
-                                        type="text"
-                                        className="w-full mt-1 p-2 border border-gray-300 rounded"
-                                        placeholder="Enter custom source"
-                                        value={quote.customSource || ''}
-                                        onChange={(e) =>
-                                            setQuote((prev) => ({
-                                                ...prev,
-                                                customSource: e.target.value,
-                                            }))
-                                        }
-                                    />
-                                </div>
-                            )}
+                        <fieldset className="w-64 space-y-4 rounded-2xl border p-4">
+                            <legend className="text-2xl font-bold">Pricing</legend>
                             <div className="flex ml-4 mr-4 items-center justify-center">
                                 <label className=" text-white font-bold text-lg">Price: ${finalPrice}</label>
                             </div>
@@ -686,16 +746,242 @@ export default function NewQuote() {
                                     }}
                                 />
                             </div>
-                            <div className="ml-4 mr-4 flex flex-col items-center justify-center">
-                                <label className=" text-white font-bold text-2xl">Final Price: ${quote.finalPrice}</label>
+                            <div className="ml-4 mr-4 flex items-center justify-center">
+                                <label className=" text-white font-bold text-lg mt-6">Final Price: </label>
+                                <label className=" text-white font-bold text-2xl mt-6 ml-2">${quote.finalPrice}</label>
                             </div>
-                            <div className="flex justify-center">
+                        </fieldset>
+
+                    </div>
+                    {/* Other Details  Fieldset */}
+                    <fieldset className="w-full rounded-2xl border p-4 space-y-4">
+
+                        <legend className="text-2xl font-bold">Other Details</legend>
+
+                        {/* Fila principal con Source y Tags */}
+                        <div className="flex gap-4">
+                            {/* Source */}
+                            <div className="w-1/2 space-y-4">
+                                <div className="ml-4 mr-4">
+                                    <label className="block text-sm font-medium">Source</label>
+                                    <select
+                                        className="w-full border border-gray-300 rounded px-3 py-2 mt-1"
+                                        value={quote.source || ''}
+                                        onChange={(e) => {
+                                            const selected = e.target.value;
+                                            const updatedQuote = {
+                                                ...quote,
+                                                source: selected,
+                                            };
+                                            if (selected !== 'Other') updatedQuote.customSource = '';
+                                            if (selected !== 'Partner') updatedQuote.partnerId = '';
+                                            setQuote(updatedQuote);
+                                        }}
+                                    >
+                                        <option value="" className='text-blue-950'>Select Source</option>
+                                        {sourceList.map((item, index) => (
+                                            <option key={index} value={item.name} className='text-blue-950'>
+                                                {item.name}
+                                            </option>
+                                        ))}
+                                    </select>
+                                </div>
+
+                                {quote.source === 'Partner' && (
+                                    <div className="ml-4 mr-4">
+                                        <label className="block text-sm font-medium text-white">Partner</label>
+                                        <select
+                                            className="w-full mt-1 p-2 border border-gray-300 rounded"
+                                            value={quote.partnerId || ''}
+                                            onChange={(e) =>
+                                                setQuote((prev) => ({
+                                                    ...prev,
+                                                    partnerId: e.target.value,
+                                                }))
+                                            }
+                                        >
+                                            <option value="" className='text-blue-950'>Select a partner</option>
+                                            {partners.map((partner) => (
+                                                <option key={partner._id} value={partner._id} className='text-blue-950'>
+                                                    {partner.name}
+                                                </option>
+                                            ))}
+                                        </select>
+                                    </div>
+                                )}
+
+                                {quote.source === 'Other' && (
+                                    <div className="ml-4 mr-4">
+                                        <label className="block text-sm font-medium text-white">Specify Source</label>
+                                        <input
+                                            type="text"
+                                            className="w-full mt-1 p-2 border border-gray-300 rounded"
+                                            placeholder="Custom source"
+                                            value={quote.customSource || ''}
+                                            onChange={(e) =>
+                                                setQuote((prev) => ({
+                                                    ...prev,
+                                                    customSource: e.target.value,
+                                                }))
+                                            }
+                                            onKeyDown={(e) => {
+                                                if (e.key === 'Enter') {
+                                                    e.preventDefault();
+                                                    // Add logic if we want to do something when enter is pressed
+                                                }
+                                            }}
+                                        />
+                                    </div>
+                                )}
+                            </div>
+
+                            {/* Tags */}
+                            <fieldset className="w-1/2 space-y-4 rounded-2xl border p-4">
+                                <legend className="font-bold">Tags</legend>
+
+                                <div className="flex gap-2">
+                                    <input
+                                        type="text"
+                                        placeholder="Name"
+                                        className="w-1/2 p-2 border border-gray-300 rounded"
+                                        value={newTag.name}
+                                        onChange={(e) => setNewTag((prev) => ({ ...prev, name: e.target.value }))}
+                                        onKeyDown={(e) => {
+                                            if (e.key === 'Enter') {
+                                                e.preventDefault();
+                                                if (newTag.name || newTag.code) {
+                                                    setQuote((prev) => ({
+                                                        ...prev,
+                                                        tag: [...(prev.tag || []), newTag],
+                                                    }));
+                                                    setNewTag({ name: '', code: '' });
+                                                }
+                                            }
+                                        }}
+                                    />
+                                    <input
+                                        type="text"
+                                        placeholder="Code"
+                                        className="w-1/2 p-2 border border-gray-300 rounded"
+                                        value={newTag.code}
+                                        onChange={(e) => setNewTag((prev) => ({ ...prev, code: e.target.value }))}
+                                        onKeyDown={(e) => {
+                                            if (e.key === 'Enter') {
+                                                e.preventDefault();
+                                                if (newTag.name || newTag.code) {
+                                                    setQuote((prev) => ({
+                                                        ...prev,
+                                                        tag: [...(prev.tag || []), newTag],
+                                                    }));
+                                                    setNewTag({ name: '', code: '' });
+                                                }
+                                            }
+                                        }}
+                                    />
+                                    <button
+                                        type="button"
+                                        className=""
+                                        onClick={() => {
+                                            if (newTag.name || newTag.code) {
+                                                setQuote((prev) => ({
+                                                    ...prev,
+                                                    tag: [...(prev.tag || []), newTag],
+                                                }));
+                                                setNewTag({ name: '', code: '' });
+                                            }
+                                        }}
+                                    >
+                                        <CirclePlus className='hover:bg-green-500 rounded-4xl' />
+                                    </button>
+                                </div>
+
+                                <ul className="space-y-1">
+                                    {(quote.tag || []).map((tag, index) => (
+                                        <li
+                                            key={index}
+                                            className="flex justify-between items-center bg-blue-700 rounded px-3 py-2"
+                                        >
+                                            <span>{tag.name} - {tag.code}</span>
+                                            <button
+                                                type="button"
+                                                className="text-red-500 hover:text-red-700"
+                                                onClick={() => {
+                                                    const updatedTags = quote.tag.filter((_, i) => i !== index);
+                                                    setQuote((prev) => ({ ...prev, tag: updatedTags }));
+                                                }}
+                                            >
+                                                Delete
+                                            </button>
+                                        </li>
+                                    ))}
+                                </ul>
+                            </fieldset>
+                        </div>
+
+                        {/* Botón  y switch centrado */}
+                        <div className="flex flex-col items-center pt-4 space-y-4">
+                            <div className="flex">
+                                <div className="ml-4 mr-4 flex items-center gap-4 ">
+                                    <label className="text-sm font-medium text-white">Is Confirmed?</label>
+
+                                    {/* Switch */}
+                                    <label className="relative inline-flex items-center cursor-pointer">
+                                        <input
+                                            type="checkbox"
+                                            id="isConfirmed"
+                                            className="sr-only peer"
+                                            checked={quote.isConfirmed}
+                                            onChange={(e) =>
+                                                setQuote((prev) => ({
+                                                    ...prev,
+                                                    isConfirmed: e.target.checked,
+                                                }))
+                                            }
+                                        />
+                                        {/* Track */}
+                                        <div className="w-11 h-6 bg-gray-300 rounded-full peer-checked:bg-green-600 transition-colors duration-300"></div>
+
+                                        {/* Slider */}
+                                        <div className="absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full transition-transform duration-300 peer-checked:translate-x-5 pointer-events-none"></div>
+                                    </label>
+
+                                    <span className="text-sm text-white">{quote.isConfirmed ? "Yes" : "No"}</span>
+                                </div>
+                                <div className="ml-4 mr-4 flex items-center gap-4 ">
+                                    <label className="text-sm font-medium text-white">Is a returning customer?</label>
+
+                                    {/* Switch */}
+                                    <label className="relative inline-flex items-center cursor-pointer">
+                                        <input
+                                            type="checkbox"
+                                            id="isReturningCustomer"
+                                            className="sr-only peer"
+                                            checked={quote.isReturningCustomer}
+                                            onChange={(e) =>
+                                                setQuote((prev) => ({
+                                                    ...prev,
+                                                    isReturningCustomer: e.target.checked,
+                                                }))
+                                            }
+                                        />
+                                        {/* Track */}
+                                        <div className="w-11 h-6 bg-gray-300 rounded-full peer-checked:bg-green-600 transition-colors duration-300"></div>
+
+                                        {/* Slider */}
+                                        <div className="absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full transition-transform duration-300 peer-checked:translate-x-5 pointer-events-none"></div>
+                                    </label>
+
+                                    <span className="text-sm text-white">{quote.isReturningCustomer ? "Yes" : "No"}</span>
+                                </div>
+                            </div>
+                            <div>
                                 <button type="submit" className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
-                                    Save Quote
+                                    Send Quote
                                 </button>
                             </div>
+
                         </div>
-                    </div>
+                    </fieldset>
                 </form>
             </motion.div>
         </div>

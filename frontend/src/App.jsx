@@ -124,7 +124,14 @@ function App() {
             </ProtectedRoute>}
         />
         <Route
-          path="/open-quote"
+          path="/new-quote/:quoteId"
+          element={
+            <ProtectedRoute>
+              <NewQuote />
+            </ProtectedRoute>}
+        />
+        <Route
+          path="/past-quote"
           element={
             <ProtectedRoute>
               <OpenQuote />

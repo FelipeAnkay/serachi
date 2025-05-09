@@ -3,7 +3,7 @@ import crypto from 'node:crypto';
 import { User } from "../models/user.model.js";
 import { generateVerificationCode } from "../utils/generateVerificationCode.js";
 import { generateTokenAndSetCookie } from "../utils/generateTokenAndSetCookie.js";
-import { sendVerificationEmail, sendWelcomeEmail, sendForgotPasswordEmail, sendResetPasswordSuccessEmail } from "../mailtrap/emails.js";
+import { sendVerificationEmail, sendWelcomeEmail, sendForgotPasswordEmail, sendResetPasswordSuccessEmail, sendQuoteEmail } from "../mailtrap/emails.js";
 import { Service } from "../models/service.model.js";
 import { Product } from "../models/product.model.js";
 import { Store } from "../models/store.model.js"
@@ -321,6 +321,23 @@ export const updateStore = async (req, res) => {
 
     } catch (error) {
         res.status(400).json({ success: false, message: error.message });
+    }
+}
+
+export const getStoreById = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const normalizedStoreId = id?.toUpperCase();
+        const filter = { storeId: normalizedStoreId }
+        //console.log("B: Llamado a getStoreById: ", normalizedStoreId, " - ", filter);
+        const store = await Store.findOne(filter);
+        if (!store) {
+            return res.status(400).json({ success: false, message: "store not found" });
+        }
+        //console.log("B: Respuesta de getStoreById: ", store);
+        res.status(200).json({ success: true, store });
+    } catch (error) {
+        return res.status(400).json({ success: false, message: error.message });
     }
 }
 
@@ -1131,10 +1148,10 @@ export const staffByEmail = async (req, res) => {
 
 /*Quote FUNCTIONS */
 export const createQuote = async (req, res) => {
-    const { dateIn, dateOut, customerEmail, storeId, roomId, partnerId, productList, discount,finalPrice,currency,isConfirmed,isReturningCustomer,userEmail,tag, source, customSource } = req.body;
-    console.log("B: createQuote data: ", dateIn ," - ", dateOut," - ",customerEmail," - ",storeId," - ",roomId," - ",partnerId," - ",productList," - ",discount," - ",finalPrice," - ",currency," - ",isConfirmed," - ",isReturningCustomer," - ",userEmail," - ",tag)
+    const { dateIn, dateOut, customerEmail, customerName, storeId, roomId, partnerId, productList, discount,finalPrice,currency,isConfirmed,isReturningCustomer,userEmail, userName, tag, source, customSource} = req.body;
+    //console.log("B: createQuote data: ", dateIn ," - ", dateOut," - ",customerEmail," - ",customerName," - ",storeId," - ",roomId," - ",partnerId," - ",productList," - ",discount," - ",finalPrice," - ",currency," - ",isConfirmed," - ",isReturningCustomer," - ",userEmail," - ",userName," - "," - ",tag)
     try {
-        if (!dateIn || !dateOut || !customerEmail || !productList || !finalPrice || !storeId || !userEmail) {
+        if (!dateIn || !dateOut || !customerEmail || !productList || !finalPrice || !storeId || !userEmail || !customerName || !userName) {
             throw new Error("All fields are required");
         }
 
@@ -1160,6 +1177,12 @@ export const createQuote = async (req, res) => {
         });
 
         await quote.save();
+
+        const store = await Store.findOne({storeId: normalizedStoreId})
+
+        //console.log("B: Los datos para el envío de mail son: ", customerEmail," - ",customerName," - ",dateIn," - ",dateOut," - ",productList," - ",discount," - ",finalPrice," - ",userEmail," - ", userName," - ",store.name);
+       
+        await sendQuoteEmail(customerEmail, customerName,dateIn,dateOut,productList,discount,finalPrice, userEmail,userName, store.name);
 
         res.status(201).json({
             success: true,
@@ -1200,17 +1223,30 @@ export const updateQuote = async (req, res) => {
 
 export const quoteList = async (req, res) => {
     try {
-        const storeId = req.storeId
+        const {storeId} = req.params
         if (!storeId) {
             throw new Error("StoreID is required");
         }
         const normalizeStoreID = storeId?.toUpperCase();
-        const quoteList = await Quote.find(normalizeStoreID);
-        console.log("El listado de quotes es:", quoteList);
+        const quoteList = await Quote.find({storeId: normalizeStoreID});
+        //console.log("El listado de quotes es:", quoteList);
         if (!quoteList) {
             return res.status(400).json({ success: false, message: "Quotes not found" });
         }
         res.status(200).json({ success: true, quoteList });
+    } catch (error) {
+        return res.status(400).json({ success: false, message: error.message });
+    }
+}
+
+export const getQuoteById = async (req, res) => {
+    try {
+        const {id} = req.params;
+        const quote = await Quote.findById(id);
+        if (!quote) {
+            return res.status(400).json({ success: false, message: "quote not found" });
+        }
+        res.status(200).json({ success: true, quote });
     } catch (error) {
         return res.status(400).json({ success: false, message: error.message });
     }

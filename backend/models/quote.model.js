@@ -32,7 +32,16 @@ const quoteSchema = new mongoose.Schema({
     partnerId: {
         type:String
     },
-    productList: [{type:String}],
+    productList: [
+        {
+            _id: false,
+            productID: { type: String },
+            productName: { type: String },
+            Qty: { type: Number },
+            productUnitaryPrice: { type: Number },
+            productFinalPrice: { type: Number }
+        }
+    ],
     discount:{
         type:Number
     },

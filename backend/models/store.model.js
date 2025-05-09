@@ -26,6 +26,10 @@ const storeSchema = new mongoose.Schema({
         type:String,
         default: [""]
     }],
+    timezone: {
+        type:String,
+        default: "",
+    },
     isActive:{
         type: Boolean,
         default: true

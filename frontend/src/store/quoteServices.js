@@ -26,6 +26,7 @@ export const useQuoteServices = create((set) => ({
     createQuote: async (quoteData) => {
         set({ isLoading: true, error: null });
         try {
+            console.log("Los datos a enviar en createQuote son: ", quoteData)
             const response = await axios.post(`${URL_API}/create-quote`, quoteData);
             set({ quoteList: response.data.quoteList, isLoading: false });
             return response.data;
@@ -40,7 +41,7 @@ export const useQuoteServices = create((set) => ({
         try {
             delete updatedVars._id;;
             delete updatedVars.__v;
-            delete updatedVars.storeId;
+            //delete updatedVars.storeId;
             
             /*console.log("Payload enviado a updateStaff:", {
                 email: email,
@@ -64,7 +65,20 @@ export const useQuoteServices = create((set) => ({
         set({ isLoading: true, error: null });
         try {
             //console.log("F: Llamado a getStaffList");
-            const response = await axios.get(`${URL_API}/get-quote/${storeId }`);
+            const response = await axios.get(`${URL_API}/get-quote-store/${storeId }`);
+            //console.log("F: Respueste de getStaffList: ", response);
+            set({ quoteList: response.data.quoteList, isLoading:false });
+            return response.data;
+        } catch (error) {
+            set({ error: error.response.data.message || "Error getting quotes", isLoading: false });
+            throw error;
+        }
+    },
+    getQuoteById: async (id) => {
+        set({ isLoading: true, error: null });
+        try {
+            //console.log("F: Llamado a getStaffList");
+            const response = await axios.get(`${URL_API}/get-quote-id/${id}`);
             //console.log("F: Respueste de getStaffList: ", response);
             set({ quoteList: response.data.quoteList, isLoading:false });
             return response.data;

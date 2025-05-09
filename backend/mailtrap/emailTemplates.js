@@ -122,3 +122,86 @@ export const VERIFY_USER = `
 </body>
 </html>
 `;
+
+export const SEND_QUOTE = `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Quote Confirmation</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f6f9;
+      margin: 0;
+      padding: 20px;
+    }
+    .container {
+      max-width: 600px;
+      background-color: #ffffff;
+      padding: 30px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      margin: auto;
+    }
+    h1 {
+      color: #1d4ed8;
+      font-size: 22px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 15px;
+    }
+    th, td {
+      padding: 10px;
+      border-bottom: 1px solid #e2e8f0;
+      text-align: left;
+    }
+    th {
+      background-color: #f0f4f8;
+    }
+    .footer {
+      margin-top: 20px;
+      font-size: 14px;
+      color: #6b7280;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Hi {{customerName}},</h1>
+    <p>Thank you for choosing us! We are very excited to receive you. Below are the details of your reservation:</p>
+
+    <h2>Reservation Details</h2>
+    <p><strong>Check-In:</strong> {{dateIn}}<br/>
+       <strong>Check-Out:</strong> {{dateOut}}</p>
+
+    <h2>Product List</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Product Name</th>
+          <th>Un. Price</th>
+          <th>Quantity</th>
+          <th>Total Price</th>
+        </tr>
+      </thead>
+      <tbody>
+        {{productList}}
+      </tbody>
+    </table>
+
+    <h2>Pricing Summary</h2>
+    <p><strong>Discount: $</strong>{{discount}}</p>
+    <p><strong>Final Price: $</strong> <strong style="color:#16a34a;">{{finalPrice}}</strong></p>
+
+    <p class="footer">
+      If you have any questions or need to make changes, feel free to reply to this email.<br/>
+      We look forward to seeing you!
+    </p>
+  </div>
+</body>
+</html>
+`;

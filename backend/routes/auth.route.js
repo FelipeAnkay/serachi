@@ -1,5 +1,5 @@
 import express from 'express';
-import {updateStore, createStore,updateService, createService, login, logout, signup, verifyEmail, forgotPassword, resetPassword, checkAuth, createProduct, createRoom, updateRoom, createBook, updateBook, createExperience, updateExperience, usersCompany, experienceList, createCustomer, updateCustomer, customerList, createStaff, updateStaff, staffList, getServiceById, getProductById, createFacility, updateFacility, getServiceNoStaff, staffByEmail, removeStaff, updateProduct, productList, removeProduct, createQuote, updateQuote, customerByEmail, createPartner, updatePartner, partnerList, partnerByEmail, removePartner } from '../controllers/auth.controller.js';
+import {updateStore, createStore,updateService, createService, login, logout, signup, verifyEmail, forgotPassword, resetPassword, checkAuth, createProduct, createRoom, updateRoom, createBook, updateBook, createExperience, updateExperience, usersCompany, experienceList, createCustomer, updateCustomer, customerList, createStaff, updateStaff, staffList, getServiceById, getProductById, createFacility, updateFacility, getServiceNoStaff, staffByEmail, removeStaff, updateProduct, productList, removeProduct, createQuote, updateQuote, customerByEmail, createPartner, updatePartner, partnerList, partnerByEmail, removePartner, quoteList, getQuoteById, getStoreById } from '../controllers/auth.controller.js';
 import {verifyToken} from '../middleware/verifyToken.js';
 
 const router = express.Router();
@@ -40,6 +40,8 @@ router.post("/remove-product", removeProduct);
 router.post("/create-store", createStore);
 
 router.post("/update-store", updateStore);
+
+router.get("/get-store-id/:id", getStoreById);
 
 /* ROOM ROUTES */
 router.post("/create-room", createRoom);
@@ -94,7 +96,8 @@ router.post("/create-quote", createQuote);
 
 router.post("/update-quote", updateQuote);
 
-router.get("/get-quote/:storeId", staffList);
+router.get("/get-quote-store/:storeId", quoteList);
+router.get("/get-quote-id/:id", getQuoteById);
 
 /* Partner ROUTES */
 router.post("/create-partner", createPartner);
