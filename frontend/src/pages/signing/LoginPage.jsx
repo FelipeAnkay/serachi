@@ -11,12 +11,12 @@ const LoginPage = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [storeId, setStoreId] = useState('');
-  const {login, isLoading, error} = useAuthStore();
+  const { login, isLoading, error } = useAuthStore();
 
   const handleLogin = async (e) => {
     e.preventDefault();
     const normalizedStore = storeId.toUpperCase();
-    await login(normalizedStore,email, password);
+    await login(normalizedStore, email, password);
     //console.log("almacenando cookie", storeId);
     Cookies.set('storeId', storeId);
   }
@@ -25,7 +25,7 @@ const LoginPage = () => {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
-      className='max-w-md w-full bg-blue-950 bg-opacity-50 backdrop-filter backdrop-blur-xl rounded-2xl shadow-xl 
+      className='fixed inset-0 flex items-center justify-center z-50 bg-blue-950 bg-opacity-50 backdrop-filter backdrop-blur-xl rounded-2xl shadow-xl 
         overflow-hidden'
     >
       <div className="p-8">
@@ -61,7 +61,7 @@ const LoginPage = () => {
               Forgot password?
             </Link>
           </div>
-          {error && <p className='text-red-500 font-semibold mb-2'>{error}</p>} 
+          {error && <p className='text-red-500 font-semibold mb-2'>{error}</p>}
           <motion.button
             className='mt-5 w-full py-3 px-4 bg-gradient-to-r from-blue-500 to-blue-700 text-white 
                       font-bold rounded-lg shadow-lg hover:from-blue-600
@@ -72,17 +72,17 @@ const LoginPage = () => {
             type='submit'
             disabled={isLoading}
           >
-            {isLoading ? <Loader className='size-6 animate-spin mx-auto'/> : "Login"}
+            {isLoading ? <Loader className='size-6 animate-spin mx-auto' /> : "Login"}
           </motion.button>
         </form>
-      </div>
-      <div className='px-8 py-4 bg-gray-900 bg-opacity-50 flex justify-center'>
-        <p className='text-sm text-gray-400'>
-          Don&apos;t have an account?{" "}
-          <Link to={"/signup"} className='text-blue-400 hover:underline'>
-            Sign Up
-          </Link>
-        </p>
+        <div className='px-8 py-4 bg-gray-900 bg-opacity-50 flex justify-center mt-2'>
+          <p className='text-sm text-gray-400'>
+            Don&apos;t have an account?{" "}
+            <Link to={"/signup"} className='text-blue-400 hover:underline'>
+              Sign Up
+            </Link>
+          </p>
+        </div>
       </div>
     </motion.div>
   )

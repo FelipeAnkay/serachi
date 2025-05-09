@@ -34,6 +34,9 @@ const customerSchema = new mongoose.Schema({
     nationalId: {
         type:String,
     },
+    diet: {
+        type:String,
+    },
     emergencyContact:{
         _id: false,
         emergencyContactName:{
@@ -43,7 +46,7 @@ const customerSchema = new mongoose.Schema({
             type: String
         }
     },
-    professionalCertificates: [[divingCertificateSchema]],
+    divingCertificates: [divingCertificateSchema],
     storeId: {
         type:String,
         required: true

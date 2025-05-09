@@ -1,0 +1,122 @@
+[
+    {
+      "value": "America/Argentina/Buenos_Aires",
+      "label": "(UTC-03:00) Buenos Aires"
+    },
+    {
+      "value": "America/Argentina/Catamarca",
+      "label": "(UTC-03:00) Catamarca"
+    },
+    {
+      "value": "America/Argentina/ComodRivadavia",
+      "label": "(UTC-03:00) Comodoro Rivadavia"
+    },
+    {
+      "value": "America/Argentina/Buenos_Aires",
+      "label": "(UTC-03:00) Rosario"
+    },
+    {
+      "value": "America/Bogota",
+      "label": "(UTC-05:00) Bogotá / Panama"
+    },
+    {
+      "value": "America/Guatemala",
+      "label": "(UTC-06:00) Central America Costa Rica / Guatemala / Salvador"
+    },
+    {
+      "value": "America/Managua",
+      "label": "(UTC-06:00) Managua"
+    },
+    {
+      "value": "America/Mexico_City",
+      "label": "(UTC-06:00) Ciudad de México"
+    },
+    {
+      "value": "America/Chicago",
+      "label": "(UTC-06:00) Chicago"
+    },
+    {
+      "value": "America/New_York",
+      "label": "(UTC-05:00) Nueva York"
+    },
+    {
+      "value": "America/Toronto",
+      "label": "(UTC-05:00) Toronto"
+    },
+    {
+      "value": "Europe/Madrid",
+      "label": "(UTC+01:00) Madrid"
+    },
+    {
+      "value": "Europe/London",
+      "label": "(UTC+00:00) Londres"
+    },
+    {
+      "value": "Europe/Paris",
+      "label": "(UTC+01:00) París"
+    },
+    {
+      "value": "Europe/Berlin",
+      "label": "(UTC+01:00) Berlín"
+    },
+    {
+      "value": "Europe/Rome",
+      "label": "(UTC+01:00) Roma"
+    },
+    {
+      "value": "Asia/Tokyo",
+      "label": "(UTC+09:00) Tokio"
+    },
+    {
+      "value": "Asia/Shanghai",
+      "label": "(UTC+08:00) Shanghái"
+    },
+    {
+      "value": "Asia/Kolkata",
+      "label": "(UTC+05:30) Calcuta"
+    },
+    {
+      "value": "Asia/Singapore",
+      "label": "(UTC+08:00) Singapur"
+    },
+    {
+      "value": "Africa/Cairo",
+      "label": "(UTC+02:00) El Cairo"
+    },
+    {
+      "value": "Africa/Algiers",
+      "label": "(UTC+01:00) Argel"
+    },
+    {
+      "value": "Africa/Tripoli",
+      "label": "(UTC+02:00) Trípoli"
+    },
+    {
+      "value": "Australia/Sydney",
+      "label": "(UTC+10:00) Sídney"
+    },
+    {
+      "value": "Australia/Brisbane",
+      "label": "(UTC+10:00) Brisbane"
+    },
+    {
+      "value": "Australia/Melbourne",
+      "label": "(UTC+10:00) Melbourne"
+    },
+    {
+      "value": "Australia/Perth",
+      "label": "(UTC+08:00) Perth"
+    },
+    {
+      "value": "Asia/Dubai",
+      "label": "(UTC+04:00) Dubái"
+    },
+    {
+      "value": "Asia/Bangkok",
+      "label": "(UTC+07:00) Bangkok"
+    },
+    {
+      "value": "Asia/Seoul",
+      "label": "(UTC+09:00) Seúl"
+    }
+  ]

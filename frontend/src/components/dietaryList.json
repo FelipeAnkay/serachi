@@ -1,0 +1,8 @@
+[
+    { "name": "NONE" },
+    { "name": "VEGETARIAN" },
+    { "name": "PESCETARIAN" },
+    { "name": "VEGAN" },
+    { "name": "NO SEAFOOD" },
+    { "name": "CELIAC" }
+]

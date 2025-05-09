@@ -75,7 +75,7 @@ const SetStaff = () => {
                     ...staffFound,
                     storeId: updatedStoreId,
                     birthdate: staffFound.birthdate ? new Date(staffFound.birthdate).toISOString().slice(0, 10) : '',
-                    professionalCertificates: Array.isArray(staffFound.professionalCertificates) ? staffFound.professionalCertificates.map((certArray) => certArray[0]) : [],
+                    professionalCertificates: Array.isArray(staffFound.professionalCertificates) ? staffFound.professionalCertificates : [],
                     languages: Array.isArray(staffFound.languages) ? staffFound.languages : [],
                 });
                 console.log("F: Idioma del staff encontrado", staffFound.languages);

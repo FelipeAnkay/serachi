@@ -39,7 +39,10 @@ const staffSchema = new mongoose.Schema({
         type:[String],
         required: true,
     },
-    professionalCertificates: [[profesionalSchema]],
+    color:{
+        type:String,
+    },
+    professionalCertificates: [profesionalSchema],
     storeId: [{
         type:String,
         required: true
