@@ -16,6 +16,7 @@ export const useStoreServices = create((set) => ({
     userList:null,
     timezone:null,
     isActive:null,
+    timezone:null,
     storeList:null,
     createStore: async (storeData) => {
         set({ isLoading: true, error: null });

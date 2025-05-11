@@ -43,6 +43,8 @@ export const useProductServices = create((set) => ({
     updateProduct: async (id,updatedVars) => {
         set({ isLoading: true, error: null });
         try {
+            delete updatedVars._id;;
+            delete updatedVars.__v;
             /*console.log("Payload enviado a updateProduct:", {
                 id: id,
                 ...updatedVars

@@ -6,12 +6,14 @@ import { Link } from "react-router-dom";
 import Input from "../../components/Input";
 import { useAuthStore } from '../../store/authStore';
 import Cookies from 'js-cookie';
+import { useStoreServices } from '../../store/storeServices';
 
 const LoginPage = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [storeId, setStoreId] = useState('');
   const { login, isLoading, error } = useAuthStore();
+  const { getStoreById } = useStoreServices();
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -19,6 +21,9 @@ const LoginPage = () => {
     await login(normalizedStore, email, password);
     //console.log("almacenando cookie", storeId);
     Cookies.set('storeId', storeId);
+    const store = await getStoreById(storeId)
+    //console.log ("La store encontrada es:", store)
+    Cookies.set('timezone', store.store.timezone);
   }
   return (
     <motion.div

@@ -512,14 +512,15 @@ export const updateBook = async (req, res) => {
 
 /*EXPERIENCE FUNCTIONS */
 export const createExperience = async (req, res) => {
-    const { name, serviceList, productList, bookList, storeId, userId, customerEmail, dateIn, dateOut } = req.body;
+    const { name, serviceList, productList, bookList, storeId, userEmail, customerEmail, dateIn, dateOut, quoteId } = req.body;
     try {
-        console.log("El listado de productos es: ", productList)
         const hasAnyItem = 
         (Array.isArray(serviceList) && serviceList.length > 0) ||
         (Array.isArray(productList) && productList.length > 0) ||
         (Array.isArray(bookList) && bookList.length > 0);
         
+        console.log("B: hasAnyItem tiene: ", hasAnyItem)
+
         if (!hasAnyItem) {
             throw new Error("At least one of serviceList, productList or bookList must have items");
         }
@@ -536,9 +537,10 @@ export const createExperience = async (req, res) => {
             productList,
             bookList,
             storeId: normalizedStoreId,
-            userId,
+            userEmail,
             customerEmail,
             dateIn,
+            quoteId,
             dateOut
         });
 
@@ -600,24 +602,24 @@ export const experienceList = async (req, res) => {
 
 /*SERVICE FUNCTIONS */
 export const createService = async (req, res) => {
-    const { name, currency, productId, facilityId ,staffEmail, customerEmail, dateIn, dateOut, storeId, userId, quoteId } = req.body;
+    const { name, productId, quoteId, facilityId ,staffEmail, customerEmail, dateIn, dateOut, storeId, userEmail} = req.body;
     try {
-        if (!name || !currency || !productId || !customerEmail || !dateIn || !dateOut || !storeId || !userId || !quoteId) {
+        if (!name || !productId || !customerEmail || !storeId || !userEmail || !quoteId) {
             throw new Error("All fields are required");
         }
 
         const normalizeStoreID = storeId?.toUpperCase();
 
         const service = new Service({
-            name,
-            productId,
+            name, 
+            productId, 
+            quoteId, 
             facilityId,
-            staffEmail,
-            customerEmail,
-            dateIn,
-            dateOut,
-            userId,
-            quoteId,
+            staffEmail, 
+            customerEmail, 
+            dateIn, 
+            dateOut, 
+            userEmail,
             storeId: normalizeStoreID
         })
 
@@ -678,14 +680,61 @@ export const getServiceById = async (req, res) => {
         return res.status(400).json({ success: false, message: error.message });
     }
 }
+export const getServiceByStoreId = async (req, res) => {
+    try {
+        const {storeId} = req.params
+        //console.log("B: Llamado a getServiceByID: ", id);
+        const normalizeStoreID = storeId?.toUpperCase();
+        const service = await Service.find({storeId: normalizeStoreID});
+        if (!service) {
+            return res.status(400).json({ success: false, message: "Service not found" });
+        }
+        res.status(200).json({ success: true, service });
+    } catch (error) {
+        return res.status(400).json({ success: false, message: error.message });
+    }
+}
 export const getServiceNoStaff = async (req, res) => {
     try {
         const { storeId } = req.params;
-        console.log("B: Llamado a getServiceByID: ", storeId);
+        //console.log("B: Llamado a getServiceNoStaff: ", storeId);
         const normalizedStoreId = storeId?.toUpperCase();
         
         const service = await Service.find({
             storeId: normalizedStoreId,
+            $or: [
+                { staffEmail: { $exists: false } },
+                { staffEmail: null },
+                { staffEmail: "" }
+            ]
+        });
+
+        if (!service) {
+            return res.status(400).json({ success: false, message: "Service not found" });
+        }
+        res.status(200).json({ success: true, service });
+    } catch (error) {
+        return res.status(400).json({ success: false, message: error.message });
+    }
+}
+export const getServiceNoData = async (req, res) => {
+    try {
+        const { storeId } = req.params;
+        //console.log("B: Llamado a getServiceNoDates: ", storeId);
+        const normalizedStoreId = storeId?.toUpperCase();
+        
+        const service = await Service.find({
+            storeId: normalizedStoreId,
+            $or: [
+                { dateIn: { $exists: false } },
+                { dateIn: null },
+                { dateIn: "" }
+            ],
+            $or: [
+                { dateOut: { $exists: false } },
+                { dateOut: null },
+                { dateOut: "" }
+            ],
             $or: [
                 { staffEmail: { $exists: false } },
                 { staffEmail: null },
@@ -861,12 +910,13 @@ export const createCustomer = async (req, res) => {
 
 export const updateCustomer = async (req, res) => {
     const { email, ...updateFields } = req.body;
+    console.log("B: Entre a updateCustomer", email, " - ", updateFields)
     try {
         if (!email) {
             throw new Error("Id field is required");
         }
 
-        const customer = await Customer.findOneAndUpdate(email, updateFields, {
+        const customer = await Customer.findOneAndUpdate({email}, updateFields, {
             new: true
         });
 
@@ -911,7 +961,8 @@ export const customerByEmail = async (req, res) => {
         const customerList = await Customer.find({ email: email });
         //console.log("El listado de customer es:", customerList);
         if (!customerList || customerList.length === 0) {
-            return res.status(400).json({ success: false, message: "Customer not found" });
+            //console.log("B: NO ENCONTRE AL CLIENTE");
+            return res.status(200).json({ success: false, message: "Customer not found" });
         }
         res.status(200).json({ success: true, customerList });
     } catch (error) {
@@ -1239,6 +1290,42 @@ export const quoteList = async (req, res) => {
     }
 }
 
+export const openQuoteList = async (req, res) => {
+    try {
+        const {storeId} = req.params
+        if (!storeId) {
+            throw new Error("StoreID is required");
+        }
+        const normalizeStoreID = storeId?.toUpperCase();
+        const quoteList = await Quote.find({storeId: normalizeStoreID, isConfirmed: false});
+        //console.log("El listado de quotes es:", quoteList);
+        if (!quoteList) {
+            return res.status(400).json({ success: false, message: "Quotes not found" });
+        }
+        res.status(200).json({ success: true, quoteList });
+    } catch (error) {
+        return res.status(400).json({ success: false, message: error.message });
+    }
+}
+
+export const confirmQuoteList = async (req, res) => {
+    try {
+        const {storeId} = req.params
+        if (!storeId) {
+            throw new Error("StoreID is required");
+        }
+        const normalizeStoreID = storeId?.toUpperCase();
+        const quoteList = await Quote.find({storeId: normalizeStoreID, isConfirmed: true});
+        //console.log("El listado de quotes es:", quoteList);
+        if (!quoteList) {
+            return res.status(400).json({ success: false, message: "Quotes not found" });
+        }
+        res.status(200).json({ success: true, quoteList });
+    } catch (error) {
+        return res.status(400).json({ success: false, message: error.message });
+    }
+}
+
 export const getQuoteById = async (req, res) => {
     try {
         const {id} = req.params;
@@ -1313,13 +1400,13 @@ export const updatePartner = async (req, res) => {
 export const partnerList = async (req, res) => {
     try {
         const {storeId} = req.params
-        console.log("B: Estoy en partnerList", storeId);
+        //console.log("B: Estoy en partnerList", storeId);
         if (!storeId) {
             throw new Error("StoreID is required");
         }
         const normalizeStoreID = storeId?.toUpperCase();
         const partnerList = await Partner.find({storeId: normalizeStoreID});
-        console.log("El listado de partner es:", partnerList);
+        //console.log("El listado de partner es:", partnerList);
         if (!partnerList) {
             return res.status(400).json({ success: false, message: "partner not found" });
         }

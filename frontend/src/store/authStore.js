@@ -110,6 +110,8 @@ export const useAuthStore = create((set) => ({
         set({isLoading:true,error:null});
         try {
             console.log("F: Llamado a updateCompany");
+            delete updatedVars._id;;
+            delete updatedVars.__v;
             const response = await axios.post(`${URL_API}/update-store`,{
                 id: storeId,
                 ...updatedVars

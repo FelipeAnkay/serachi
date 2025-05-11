@@ -31,9 +31,13 @@ const serviceSchema = new mongoose.Schema({
         type:String,
         required: true
     },
-    userId:{
+    userEmail:{
         type:String,
         required: true
+    },
+    excecuted:{
+        type: Boolean,
+        default: false
     },
     isActive:{
         type: Boolean,

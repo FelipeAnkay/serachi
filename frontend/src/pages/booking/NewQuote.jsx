@@ -6,22 +6,22 @@ import { useQuoteServices } from '../../store/quoteServices';
 import { useAuthStore } from '../../store/authStore';
 import { useCustomerServices } from '../../store/customerServices';
 import { CircleX, Contact2, Search, CircleCheck, CirclePlus } from 'lucide-react';
-import languagesList from '../../components/languages.json';
 import sourceList from '../../components/sourceList.json';
-import dietaryList from '../../components/dietaryList.json';
 import { AnimatePresence } from 'framer-motion';
 import { useProductServices } from '../../store/productServices';
 import { usePartnerServices } from '../../store/partnerServices';
 import { useParams } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
+import CustomerDetails from '../../components/CustomerDetail'
+
 
 export default function NewQuote() {
     const { createQuote, getQuoteById, updateQuote } = useQuoteServices();
     const { quoteId } = useParams();
     const storeId = Cookies.get('storeId');
+    const clone = Cookies.get('clone');
     const { user } = useAuthStore();
-    const [customerEditable, setCustomerEditable] = useState(false);
-    const { getCustomerEmail, createCustomer } = useCustomerServices();
+    const { getCustomerEmail, createCustomer, updateCustomer } = useCustomerServices();
     const [isCustomerModalOpen, setIsCustomerModalOpen] = useState(false);
     const [isNew, setIsNew] = useState(true);
     const [quote, setQuote] = useState({});
@@ -49,11 +49,24 @@ export default function NewQuote() {
                     hasFetchedEmail.current = true;
                 }
                 //console.log("OLD Quote Found Response: ", response);
-                setQuote({
-                    ...response,
-                    userName: user.name,
-                    customerName: customer.name,
-                })
+                if (clone) {
+                    console.log("Entré a Clone:", response);
+                    const { _id, ...clonedQuote } = response; // elimina _id
+                    console.log("Elimine ID a Clone:", clonedQuote);
+                    setQuote({
+                        ...clonedQuote,
+                        userName: user.name,
+                        customerName: customer.name,
+                    });
+                    Cookies.remove('clone')
+                } else {
+                    setQuote({
+                        ...response,
+                        userName: user.name,
+                        customerName: customer.name,
+                    })
+                }
+
 
                 setLoading(false);
 
@@ -131,6 +144,7 @@ export default function NewQuote() {
 
     useEffect(() => {
         console.log("F: Los datos de quote son: ", quote);
+        console.log("F: Los datos de customer son: ", customer);
         //console.log("F: Los datos de Selected Product son: ", selectedProducts);
         //console.log("F: FinalPrice es:", finalPrice)
     }, [quote]);
@@ -198,16 +212,17 @@ export default function NewQuote() {
     };
 
     const handleCustomerEmailSearch = async (customerEmail) => {
-        console.log("El email en handleCustomerEmailSearch es: ", customerEmail);
+        //console.log("El email en handleCustomerEmailSearch es: ", customerEmail);
         try {
             const response = await getCustomerEmail(customerEmail);
             const found = response.customerList;
-            console.log("F: el found es:", found);
+            //console.log("F: el found es:", found);
             if (found) {
                 toast.success('Customer Found');
                 //console.log("El cliente encontrdo es:", found)
                 found.map((cust) => (
                     setCustomer({
+                        _id: cust._id,
                         email: cust.email,
                         name: cust.name || '',
                         phone: cust.phone || '',
@@ -221,7 +236,6 @@ export default function NewQuote() {
                         divingCertificates: cust.divingCertificates || [],
                     }
                     )));
-                setCustomerEditable(false);
                 setQuote((prev) => ({
                     ...prev,
                     customerEmail: found[0].email,
@@ -229,17 +243,41 @@ export default function NewQuote() {
                 setIsNew(false);
                 setIsCustomerModalOpen(false);
             } else {
-                toast.error('Cliente no encontrado, puedes completar sus datos');
-                setCustomerEditable(true);
-                setCustomer((prev) => ({ ...prev, email: customerEmail }))
+                toast.success('Customer not found, please create one');
+                setCustomer({
+                    _id: '',
+                    email: customerEmail,
+                    name: '',
+                    phone: '',
+                    country: '',
+                    languages: [],
+                    birthdate: '',
+                    nationalId: '',
+                    diet: '',
+                    emergencyContactName: '',
+                    emergencyContactPhone: '',
+                    divingCertificates: [],
+                });
                 setQuote((prev) => ({ ...prev, customerEmail: customerEmail }));
                 setIsNew(true);
                 setIsCustomerModalOpen(true);
             }
         } catch (err) {
-            toast.success('Please create a customer');
-            setCustomer((prev) => ({ ...prev, email: customerEmail }))
-            setCustomerEditable(true);
+            toast.success('Customer not found, please create one');
+            setCustomer({
+                _id: '',
+                email: customerEmail,
+                name: '',
+                phone: '',
+                country: '',
+                languages: [],
+                birthdate: '',
+                nationalId: '',
+                diet: '',
+                emergencyContactName: '',
+                emergencyContactPhone: '',
+                divingCertificates: [],
+            });
             setIsCustomerModalOpen(true);
         }
     };
@@ -258,7 +296,12 @@ export default function NewQuote() {
             } else {
                 await updateQuote(quote._id, quote);
                 toast.success('Quote Updated');
-                navigate(`/past-quote/`, { state: {}, replace: true });
+                if (quote.isConfirmed) {
+                    navigate(`/confirmed-quote/`, { state: {}, replace: true });
+                } else {
+                    navigate(`/past-quote/`, { state: {}, replace: true });
+                }
+
             }
 
             setTimeout(() => {
@@ -304,32 +347,39 @@ export default function NewQuote() {
         }
     };
 
-
     const handleSaveClient = async (e) => {
         try {
-            if (customerEditable) {
-                const customerPayload = {
-                    email: customer.email,
-                    name: customer.name,
-                    phone: customer.phone,
-                    country: customer.country,
-                    languages: customer.languages,
-                    birthdate: customer.birthdate,
-                    nationalId: customer.nationalId,
-                    diet: customer.diet,
-                    emergencyContact: {
-                        emergencyContactName: customer.emergencyContactName,
-                        emergencyContactPhone: customer.emergencyContactPhone,
-                    },
-                    divingCertificates: customer.divingCertificates,
-                    storeId: storeId,
-                };
-                console.log("F: El cliente a crear es:", customerPayload);
+            console.log("F: El cliente es:", customer);
+            const customerPayload = {
+                _id: customer._id,
+                email: customer.email,
+                name: customer.name,
+                phone: customer.phone,
+                country: customer.country,
+                languages: customer.languages,
+                birthdate: customer.birthdate,
+                nationalId: customer.nationalId,
+                diet: customer.diet,
+                emergencyContact: {
+                    emergencyContactName: customer.emergencyContactName,
+                    emergencyContactPhone: customer.emergencyContactPhone,
+                },
+                divingCertificates: customer.divingCertificates,
+                storeId: storeId,
+            };
+            console.log("F: El cliente a CREAR o EDITAR es:", customerPayload);
+            if (customerPayload._id) {
+                // El cliente ya existe: actualizar
+                //console.log("F: entré a modificar");
+                await updateCustomer(customerPayload.email, customerPayload); // Asegúrate de tener esta función
+                toast.success("Customer updated successfully");
+            } else {
+                // Crear nuevo cliente
                 await createCustomer(customerPayload);
-                toast.success('Customer created');
-                setIsNew(false);
-                setIsCustomerModalOpen(false);
+                toast.success("Customer created successfully");
             }
+            setIsCustomerModalOpen(false);
+            setIsNew(false);
         } catch (error) {
             toast.error('Error creating a Customer');
         }
@@ -393,210 +443,15 @@ export default function NewQuote() {
                                         <Contact2 />
                                     </button>
                                 )}
-                                <AnimatePresence>
-                                    {isCustomerModalOpen && (
-                                        <motion.div
-                                            className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 scrollbar-thin scrollbar-thumb-blue-600 scrollbar-track-gray-800 scrollbar-thumb-rounded-full max-h"
-                                            initial={{ opacity: 0 }}
-                                            animate={{ opacity: 1 }}
-                                            exit={{ opacity: 0 }}
-                                        >
-                                            <motion.div
-                                                className="bg-blue-900 rounded-2xl p-6 max-w-lg w-[90%] h-[90%] overflow-y-auto relative"
-                                                initial={{ scale: 0.8 }}
-                                                animate={{ scale: 1 }}
-                                                exit={{ scale: 0.8 }}
-                                                transition={{ duration: 0.3 }}
-                                            >
-                                                <button
-                                                    type='button'
-                                                    className="absolute top-3 right-3 text-gray-600 hover:text-black"
-                                                    onClick={() => setIsCustomerModalOpen(false)}
-                                                >
-                                                    <CircleX />
-                                                </button>
-
-                                                <h2 className="text-xl font-bold mb-4 text-center text-white">Cliente</h2>
-
-                                                {/* Aquí colocas tu formulario de cliente completo */}
-                                                <div className="space-y-4">
-                                                    {/* Ejemplo de campo: */}
-                                                    <div>
-                                                        <label className="block text-sm font-medium">Name</label>
-                                                        <input
-                                                            type="text"
-                                                            className="w-full border border-gray-300 rounded px-3 py-2 mt-1"
-                                                            value={customer.name || ''}
-                                                            onChange={(e) => setCustomer({ ...customer, name: e.target.value })}
-                                                        />
-                                                    </div>
-                                                    <div>
-                                                        <label className="block text-sm font-medium">Email</label>
-                                                        <input
-                                                            type="text"
-                                                            className="w-full border border-gray-300 rounded px-3 py-2 mt-1"
-                                                            value={customer.email || ''}
-                                                            onChange={(e) => setCustomer({ ...customer, email: e.target.value })}
-                                                        />
-                                                    </div>
-                                                    <div>
-                                                        <label className="block text-sm font-medium">Phone</label>
-                                                        <input
-                                                            type="text"
-                                                            className="w-full border border-gray-300 rounded px-3 py-2 mt-1"
-                                                            value={customer.phone || ''}
-                                                            onChange={(e) => setCustomer({ ...customer, phone: e.target.value })}
-                                                        />
-                                                    </div>
-                                                    <div>
-                                                        <label className="block text-sm font-medium">Birthdate</label>
-                                                        <input
-                                                            type="date"
-                                                            className="w-full border border-gray-300 rounded px-3 py-2 mt-1"
-                                                            value={customer.birthdate || ''}
-                                                            onChange={(e) => setCustomer({ ...customer, birthdate: e.target.value })}
-                                                        />
-                                                    </div>
-                                                    <div>
-                                                        <label className="block text-sm font-medium">National ID</label>
-                                                        <input
-                                                            type="text"
-                                                            className="w-full border border-gray-300 rounded px-3 py-2 mt-1"
-                                                            value={customer.nationalId || ''}
-                                                            onChange={(e) => setCustomer({ ...customer, nationalId: e.target.value })}
-                                                        />
-                                                    </div>
-                                                    <div>
-                                                        <label className="block text-sm font-medium">Dietary Restriction</label>
-                                                        <select
-                                                            className="w-full border border-gray-300 rounded px-3 py-2 mt-1"
-                                                            value={customer.diet || ''}
-                                                            onChange={(e) => setCustomer({ ...customer, diet: e.target.value })}
-                                                        >
-                                                            <option value="" className='text-blue-950'>Select Diet</option>
-                                                            {dietaryList.map((item, index) => (
-                                                                <option key={index} value={item.name} className='text-blue-950'>
-                                                                    {item.name}
-                                                                </option>
-                                                            ))}
-                                                        </select>
-                                                    </div>
-                                                    <div>
-                                                        <label className="block text-sm font-medium">Country</label>
-                                                        <input
-                                                            type="text"
-                                                            className="w-full border border-gray-300 rounded px-3 py-2 mt-1"
-                                                            value={customer.country || ''}
-                                                            onChange={(e) => setCustomer({ ...customer, country: e.target.value })}
-                                                        />
-                                                    </div>
-                                                    <select
-                                                        multiple
-                                                        value={customer.languages}
-                                                        onChange={(e) =>
-                                                            setCustomer({
-                                                                ...customer,
-                                                                languages: Array.from(e.target.selectedOptions, option => option.value),
-                                                            })
-                                                        }
-                                                        className="w-full p-2 mt-1 rounded bg-gray-800 text-white"
-                                                    >
-                                                        {languagesList.map((lang) => (
-                                                            <option key={lang.code} value={lang.code}>{lang.name}</option>
-                                                        ))}
-                                                    </select>
-                                                    <div className="space-y-4 mt-6">
-                                                        <h3 className="text-lg font-semibold  text-white">
-                                                            Emergency Contact:
-                                                        </h3>
-
-                                                        <div>
-                                                            <label className="block text-sm font-medium  text-white">Name:</label>
-                                                            <input
-                                                                type="text"
-                                                                className="w-full border border-gray-300 rounded px-3 py-2 mt-1"
-                                                                value={customer.emergencyContactName || ''}
-                                                                onChange={(e) =>
-                                                                    setCustomer({
-                                                                        ...customer,
-                                                                        emergencyContactName: e.target.value,
-
-                                                                    })
-                                                                }
-                                                            />
-                                                        </div>
-
-                                                        <div>
-                                                            <label className="block text-sm font-medium  text-white">Phone</label>
-                                                            <input
-                                                                type="text"
-                                                                className="w-full border border-gray-300 rounded px-3 py-2 mt-1"
-                                                                value={customer.emergencyContactPhone || ''}
-                                                                onChange={(e) =>
-                                                                    setCustomer({
-                                                                        ...customer,
-                                                                        emergencyContactPhone: e.target.value,
-                                                                    })
-                                                                }
-                                                            />
-                                                        </div>
-                                                    </div>
-                                                    <div className="space-y-4">
-                                                        <h4 className="text-lg font-bold">Diving Certificates</h4>
-                                                        {(customer.divingCertificates || []).map((cert, certIndex) => (
-                                                            <div key={certIndex} className="border border-gray-700 rounded-lg p-4 relative space-y-2 bg-gray-800">
-                                                                <button
-                                                                    type="button"
-                                                                    className="absolute top-2 right-2 text-red-400 hover:text-red-600"
-                                                                    onClick={() => {
-                                                                        const updated = customer.divingCertificates.filter((_, i) => i !== certIndex);
-                                                                        setCustomer({ ...customer, divingCertificates: updated });
-                                                                    }}
-                                                                >
-                                                                    Delete
-                                                                </button>
-                                                                {["organization", "certificateName", "certificateId"].map((key) => (
-                                                                    <div key={key}>
-                                                                        <label className="capitalize">{key.replace(/([A-Z])/g, ' $1')}:</label>
-                                                                        <input
-                                                                            type="text"
-                                                                            className="w-full p-2 mt-1 rounded bg-gray-700 text-white"
-                                                                            value={cert[key] || ''}
-                                                                            onChange={(e) => {
-                                                                                const updated = [...customer.divingCertificates];
-                                                                                updated[certIndex][key] = e.target.value;
-                                                                                setCustomer({ ...customer, divingCertificates: updated });
-                                                                            }}
-                                                                        />
-                                                                    </div>
-                                                                ))}
-                                                            </div>
-                                                        ))}
-                                                        <button
-                                                            type="button"
-                                                            className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded mt-4"
-                                                            onClick={() => {
-                                                                const updated = [...(customer.divingCertificates || [])];
-                                                                updated.push({ organization: '', certificateName: '', certificateId: '' });
-                                                                setCustomer({ ...customer, divingCertificates: updated });
-                                                            }}
-                                                        >
-                                                            Add Certificate
-                                                        </button>
-                                                    </div>
-
-                                                    <button
-                                                        className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded w-full mt-4"
-                                                        type="button"
-                                                        onClick={handleSaveClient}
-                                                    >
-                                                        Save Customer
-                                                    </button>
-                                                </div>
-                                            </motion.div>
-                                        </motion.div>
-                                    )}
-                                </AnimatePresence>
+                                {isCustomerModalOpen && (
+                                    <CustomerDetails
+                                        isOpen={isCustomerModalOpen}
+                                        onClose={() => setIsCustomerModalOpen(false)}
+                                        customer={customer}
+                                        setCustomer={setCustomer}
+                                        onSave={handleSaveClient}
+                                    />
+                                )}
                             </div>
 
                         </fieldset>

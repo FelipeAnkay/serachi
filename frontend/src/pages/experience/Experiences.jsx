@@ -27,6 +27,7 @@ const Experiences = () => {
         const fetchExperiences = async () => {
             try {
                 const response = await getExperienceList(storeId);
+                console.log("El listado de experiencias es: ", response);
                 const data = response.experienceList;
                 setExperiences(data);
 
@@ -34,6 +35,7 @@ const Experiences = () => {
 
                 for (const exp of data) {
                     for (const serviceRef of exp.serviceList || []) {
+                        console.log("Solicitare el siguiente servicio:", serviceRef)
                         const serviceDetail = await getServiceById(serviceRef);
                         if (serviceDetail && serviceDetail.service.isActive) {
                             console.log("El detalle del servicio es:", serviceDetail.service)

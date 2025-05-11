@@ -13,6 +13,7 @@ const experienceSchema = new mongoose.Schema({
             _id: false,
             productID: { type: String },
             Qty: { type: Number },
+            price: {type: Number},
             payed: { type: Boolean }
         }
     ],
@@ -23,7 +24,7 @@ const experienceSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    userId: {
+    userEmail: {
         type: String,
         required: true
     },
@@ -36,6 +37,9 @@ const experienceSchema = new mongoose.Schema({
     },
     dateOut: {
         type: Date
+    },
+    quoteId:{
+        type:String,
     },
     source:{
         type:String,

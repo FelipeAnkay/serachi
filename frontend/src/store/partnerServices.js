@@ -35,7 +35,6 @@ export const usePartnerServices = create((set) => ({
         try {
             delete updatedVars._id;;
             delete updatedVars.__v;
-            delete updatedVars.storeId;
             
             /*console.log("Payload enviado a updateStaff:", {
                 email: email,

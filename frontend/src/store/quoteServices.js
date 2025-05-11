@@ -74,6 +74,32 @@ export const useQuoteServices = create((set) => ({
             throw error;
         }
     },
+    getOpenQuoteList: async (storeId) => {
+        set({ isLoading: true, error: null });
+        try {
+            //console.log("F: Llamado a getStaffList");
+            const response = await axios.get(`${URL_API}/get-quote-open/${storeId }`);
+            //console.log("F: Respueste de getStaffList: ", response);
+            set({ quoteList: response.data.quoteList, isLoading:false });
+            return response.data;
+        } catch (error) {
+            set({ error: error.response.data.message || "Error getting quotes", isLoading: false });
+            throw error;
+        }
+    },
+    getConfirmedQuoteList: async (storeId) => {
+        set({ isLoading: true, error: null });
+        try {
+            //console.log("F: Llamado a getStaffList");
+            const response = await axios.get(`${URL_API}/get-quote-confirm/${storeId }`);
+            //console.log("F: Respueste de getStaffList: ", response);
+            set({ quoteList: response.data.quoteList, isLoading:false });
+            return response.data;
+        } catch (error) {
+            set({ error: error.response.data.message || "Error getting quotes", isLoading: false });
+            throw error;
+        }
+    },
     getQuoteById: async (id) => {
         set({ isLoading: true, error: null });
         try {

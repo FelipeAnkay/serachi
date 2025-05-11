@@ -24,6 +24,7 @@ import SetStaff from './pages/settings/SetStaff';
 import NewQuote from './pages/booking/NewQuote';
 import OpenQuote from './pages/booking/OpenQuote';
 import ConfirmedQuote from './pages/booking/ConfirmedQuote';
+import PendingServices from './pages/experience/PendingServices';
 
 const ProtectedRoute = ({ children }) => {
   const { isAuthenticated, user } = useAuthStore();
@@ -107,6 +108,13 @@ function App() {
           element={
             <ProtectedRoute>
               <AssignStaff />
+            </ProtectedRoute>}
+        />
+        <Route
+          path="/set-service-dates"
+          element={
+            <ProtectedRoute>
+              <PendingServices />
             </ProtectedRoute>}
         />
         <Route

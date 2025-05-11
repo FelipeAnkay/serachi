@@ -1,5 +1,5 @@
 import express from 'express';
-import {updateStore, createStore,updateService, createService, login, logout, signup, verifyEmail, forgotPassword, resetPassword, checkAuth, createProduct, createRoom, updateRoom, createBook, updateBook, createExperience, updateExperience, usersCompany, experienceList, createCustomer, updateCustomer, customerList, createStaff, updateStaff, staffList, getServiceById, getProductById, createFacility, updateFacility, getServiceNoStaff, staffByEmail, removeStaff, updateProduct, productList, removeProduct, createQuote, updateQuote, customerByEmail, createPartner, updatePartner, partnerList, partnerByEmail, removePartner, quoteList, getQuoteById, getStoreById } from '../controllers/auth.controller.js';
+import {updateStore, createStore,updateService, createService, login, logout, signup, verifyEmail, forgotPassword, resetPassword, checkAuth, createProduct, createRoom, updateRoom, createBook, updateBook, createExperience, updateExperience, usersCompany, experienceList, createCustomer, updateCustomer, customerList, createStaff, updateStaff, staffList, getServiceById, getProductById, createFacility, updateFacility, getServiceNoStaff, staffByEmail, removeStaff, updateProduct, productList, removeProduct, createQuote, updateQuote, customerByEmail, createPartner, updatePartner, partnerList, partnerByEmail, removePartner, quoteList, getQuoteById, getStoreById, openQuoteList, confirmQuoteList, getServiceByStoreId, getServiceNoData } from '../controllers/auth.controller.js';
 import {verifyToken} from '../middleware/verifyToken.js';
 
 const router = express.Router();
@@ -27,7 +27,9 @@ router.post("/create-service", createService);
 router.post("/update-service", updateService);
 
 router.get("/get-service-id/:id", getServiceById);
+router.get("/get-service-store/:storeId", getServiceByStoreId);
 router.get("/get-service-nostaff/:storeId", getServiceNoStaff);
+router.get("/get-service-nodata/:storeId", getServiceNoData);
 
 /* PRODUCT ROUTES */
 router.post("/create-product", createProduct);
@@ -97,6 +99,8 @@ router.post("/create-quote", createQuote);
 router.post("/update-quote", updateQuote);
 
 router.get("/get-quote-store/:storeId", quoteList);
+router.get("/get-quote-open/:storeId", openQuoteList);
+router.get("/get-quote-confirm/:storeId", confirmQuoteList);
 router.get("/get-quote-id/:id", getQuoteById);
 
 /* Partner ROUTES */

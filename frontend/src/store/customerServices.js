@@ -34,22 +34,19 @@ export const useCustomerServices = create((set) => ({
         }
     },
     
-    updateCustomer: async (email,storeId,updatedVars) => {
+    updateCustomer: async (email,updatedVars) => {
         set({ isLoading: true, error: null });
         try {
             delete updatedVars._id;;
             delete updatedVars.__v;
-            delete updatedVars.storeId;
             
-            /*console.log("Payload enviado a updateStaff:", {
+            console.log("Payload enviado a updateCustomer:", {
                 email: email,
-                storeId: storeId,
                 ...updatedVars
             });
-            */
+            
             const response = await axios.post(`${URL_API}/update-customer`, {
                 email: email,
-                storeId: storeId,
                 ...updatedVars
             });
             //console.log("F: Respueste de updateStaff: ", response);

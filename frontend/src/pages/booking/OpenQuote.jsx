@@ -1,32 +1,20 @@
 import Cookies from 'js-cookie';
 import { motion } from 'framer-motion';
 import { useState, useEffect, useRef } from 'react';
-import toast from 'react-hot-toast';
 import { useQuoteServices } from '../../store/quoteServices';
-import { useStoreServices } from '../../store/storeServices';
-import { useAuthStore } from '../../store/authStore';
-import { useCustomerServices } from '../../store/customerServices';
-import { CircleX, Contact2, Search, CircleCheck, CirclePlus } from 'lucide-react';
-import languagesList from '../../components/languages.json';
-import sourceList from '../../components/sourceList.json';
-import dietaryList from '../../components/dietaryList.json';
-import { AnimatePresence } from 'framer-motion';
-import { useProductServices } from '../../store/productServices';
-import { usePartnerServices } from '../../store/partnerServices';
 import { useNavigate, useLocation } from "react-router-dom";
+import { Copy, Pencil } from 'lucide-react';
 
 
 export default function OpenQuote() {
-    const { getQuoteList, updateQuote } = useQuoteServices();
-    const { getStoreById } = useStoreServices();
+    const { getOpenQuoteList } = useQuoteServices();
     const [quotes, setQuotes] = useState([]);
     const [loading, setLoading] = useState(true);
     const storeId = Cookies.get('storeId');
+    const timezone = Cookies.get('timezone');
     const [quoteSearch, setQuoteSearch] = useState("");
-    const [isQuoteModalOpen, setIsQuoteModalOpen] = useState(false);
-    const [selectedQuote, setSelectedQuote] = useState(null);
-    const [store, setStore]= useState(null);
-    
+
+
 
     const location = useLocation();
     const navigate = useNavigate();
@@ -34,12 +22,16 @@ export default function OpenQuote() {
     const handleQuoteClick = (quoteId) => {
         navigate(`/new-quote/${quoteId}`);
     };
+    const handleCloneClick = (quoteId) => {
+        Cookies.set('clone',true)
+        navigate(`/new-quote/${quoteId}`);
+    };
 
     useEffect(() => {
-        console.log("Entre a useEffect [storeId, location.key]");
+        console.log("Entre a useEffect [storeId, location.key]", timezone);
         const fetchQuotes = async () => {
             try {
-                const response = await getQuoteList(storeId);
+                const response = await getOpenQuoteList(storeId);
                 //console.log("Quote Response: ", response);
                 setQuotes(response.quoteList);
             } catch (error) {
@@ -48,19 +40,9 @@ export default function OpenQuote() {
                 setLoading(false);
             }
         };
-    
-        const fetchStore = async () => {
-            try {
-                const response = await getStoreById(storeId);
-                setStore(response.store);
-            } catch (error) {
-                console.error('Error fetching store:', error);
-            }
-        };
-    
+
         if (storeId) {
             fetchQuotes();
-            fetchStore();
         }
     }, [storeId, location.key]);
 
@@ -70,24 +52,6 @@ export default function OpenQuote() {
             navigate(location.pathname, { replace: true, state: {} });
         }
     }, [location]);
-
-
-    useEffect(() => {
-        const handleKeyDown = (e) => {
-            if (e.key === 'Escape') {
-                setIsQuoteModalOpen(false);
-            }
-        };
-
-        if (isQuoteModalOpen) {
-            window.addEventListener('keydown', handleKeyDown);
-        }
-
-        return () => {
-            window.removeEventListener('keydown', handleKeyDown);
-        };
-    }, [isQuoteModalOpen]);
-
 
     return (
         <div className="flex flex-col min-h-screen w-full bg-blue-950 text-white px-4 py-6 sm:px-8 sm:py-10">
@@ -127,24 +91,52 @@ export default function OpenQuote() {
                                         return (
                                             <div
                                                 key={quote._id}
-                                                className={`border rounded-lg p-2 hover:shadow transition relative border-gray-300 bg-blue-100`}
-                                                onClick={() => handleQuoteClick(quote._id)}
+                                                className={`border rounded-lg p-2 hover:shadow transition relative border-gray-300 bg-blue-100 flex flex-row justify-between items-center`}
+
                                             >
                                                 < h3 className="text-lg font-semibold text-gray-800">
                                                     {quote.customerEmail} - From: {new Date(quote.dateIn).toLocaleDateString("en-US", {
-                                                        timeZone: store?.timezone,
+                                                        timeZone: timezone || "America/Guatemala",
                                                         year: "numeric",
                                                         month: "long",
                                                         day: "numeric",
                                                     })}
                                                     {' to ' + new Date(quote.dateOut).toLocaleDateString("en-US", {
-                                                        timeZone: store?.timezone,
+                                                        timeZone: timezone || "America/Guatemala",
                                                         year: "numeric",
                                                         month: "long",
                                                         day: "numeric",
                                                     })}
                                                     {' - ' + quote.productList.length + ' Products '} -  ${quote.finalPrice}
                                                 </h3>
+                                                <div className='flex flex-row justify-between items-center w-1/4'>
+                                                    <motion.button
+                                                        type='button'
+                                                        whileHover={{ scale: 1.05 }}
+                                                        whileTap={{ scale: 0.95 }}
+                                                        onClick={() => handleCloneClick(quote._id)}
+                                                        className='w-full py-3 px-4 mr-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white font-bold rounded-lg shadow-lg
+                                                         hover:from-blue-600 hover:to-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-gray-900'
+                                                    >
+                                                        <div className='flex flex-col justify-center items-center'>
+                                                            <Copy    className="" />
+                                                            <span className="">Clone Quote</span>
+                                                        </div>
+                                                    </motion.button>
+                                                    <motion.button
+                                                        type='button'
+                                                        whileHover={{ scale: 1.05 }}
+                                                        whileTap={{ scale: 0.95 }}
+                                                        onClick={() => handleQuoteClick(quote._id)}
+                                                        className='w-full py-3 px-4 bg-gradient-to-r from-blue-500 to-blue-600 text-white font-bold rounded-lg shadow-lg
+                                                         hover:from-blue-600 hover:to-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-gray-900'
+                                                    >
+                                                        <div className='flex flex-col justify-center items-center'>
+                                                            <Pencil className="" />
+                                                            <span className="">Edit Quote</span>
+                                                        </div>
+                                                    </motion.button>
+                                                </div>
                                             </div>
                                         );
                                     })

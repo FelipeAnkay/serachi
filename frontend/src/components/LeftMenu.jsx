@@ -1,9 +1,10 @@
-import { BanknoteArrowDown, Bed, BedDouble, Boxes, CalendarHeart, ChevronDown, Contact, DollarSign, Home, MapPinCheckInside, PiggyBank, Receipt, Settings, ShieldUser, Ship, Store, TicketCheck, User, User2, UserPlus } from "lucide-react"
+import { BanknoteArrowDown, Bed, BedDouble, Boxes, CalendarHeart, CalendarPlus2, ChevronDown, Contact, DollarSign, Home, MapPinCheckInside, PiggyBank, Receipt, Settings, ShieldUser, Ship, Store, TicketCheck, User, User2, UserPlus } from "lucide-react"
 import logo from "../../public/Serachi_logo-nobg.png"
 import { Link } from "react-router-dom"
 import { useState } from "react"
 import { useAuthStore } from '../store/authStore';
 import { motion } from 'framer-motion'
+import Cookies from 'js-cookie';
 
 const LeftMenu = ({ show }) => {
     const [openSetting, setOpenSetting] = useState(false);
@@ -12,6 +13,8 @@ const LeftMenu = ({ show }) => {
     const { user, logout } = useAuthStore();
 
     const handleLogout = () => {
+        Cookies.remove('storeId');
+        Cookies.remove('timezone');
         logout();
     };
 
@@ -35,6 +38,7 @@ const LeftMenu = ({ show }) => {
                     <li className="rounded-lg flex gap-2" onClick={() => setOpenExperience(!openExperience)}><MapPinCheckInside className="inline-block" /><span className="inline-block">Experiences</span><ChevronDown className={openExperience ? "block rotate-180" : "block"} /></li>
                     <div className={openExperience ? "w-full py-4 px-5 p-4 transition ease-out duration-100 transform opacity-100 scale-100 hover:bg-blue-600 rounded-lg" : "transform h-0 scale-95 transition ease-in duration-75 overflow-hidden"}>
                         <li className="hover:bg-blue-500 rounded-lg flex"><Link to="/experiences" className="flex items-center gap-2 py-1"><CalendarHeart />Exp Calendar</Link></li>
+                        <li className="hover:bg-blue-500 rounded-lg flex"><Link to="/set-service-dates" className="flex items-center gap-2 py-1"><CalendarPlus2 />Assign Dates</Link></li>
                         <li className="hover:bg-blue-500 rounded-lg flex"><Link to="/set-service-staff" className="flex items-center gap-2 py-1"><UserPlus />Assign Staff</Link></li>
                         <li className="hover:bg-blue-500 rounded-lg flex"><Link to="/set-staff" className="flex items-center gap-2 py-1"><Ship />Assign Boat</Link></li>
                     </div>

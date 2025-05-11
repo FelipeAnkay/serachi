@@ -38,7 +38,6 @@ export const useStaffServices = create((set) => ({
             delete updatedVars.createdAt;
             delete updatedVars.updatedAt;
             delete updatedVars.__v;
-            delete updatedVars.storeId;
             
             /*console.log("Payload enviado a updateStaff:", {
                 email: email,
