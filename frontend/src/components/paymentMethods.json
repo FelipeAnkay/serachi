@@ -1,0 +1,15 @@
+[
+    { "name": "CASH" },
+    { "name": "CC - VISA" },
+    { "name": "CC - MASTERCARD" },
+    { "name": "CC - AMEX" },
+    { "name": "DEBIT CARD" },
+    { "name": "PAYPAL" },
+    { "name": "APPLE PAY" },
+    { "name": "GOOGLE PAY" },
+    { "name": "BANK TRANSFER" },
+    { "name": "GIFT CARD" },
+    { "name": "TRADE" },
+    { "name": "CRYPTO" },
+    { "name": "OTHER" }
+]

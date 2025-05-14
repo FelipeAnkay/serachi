@@ -1,6 +1,21 @@
 import express from 'express';
-import {updateStore, createStore,updateService, createService, login, logout, signup, verifyEmail, forgotPassword, resetPassword, checkAuth, createProduct, createRoom, updateRoom, createBook, updateBook, createExperience, updateExperience, usersCompany, experienceList, createCustomer, updateCustomer, customerList, createStaff, updateStaff, staffList, getServiceById, getProductById, createFacility, updateFacility, getServiceNoStaff, staffByEmail, removeStaff, updateProduct, productList, removeProduct, createQuote, updateQuote, customerByEmail, createPartner, updatePartner, partnerList, partnerByEmail, removePartner, quoteList, getQuoteById, getStoreById, openQuoteList, confirmQuoteList, getServiceByStoreId, getServiceNoData } from '../controllers/auth.controller.js';
+import {login, logout, signup, verifyEmail, forgotPassword, resetPassword, checkAuth } from '../controllers/auth.controller.js';
+import {createBook, updateBook } from '../controllers/book.controller.js';
+import {createCustomer, updateCustomer, customerList, customerByEmail } from '../controllers/customer.controller.js';
+import {createExperience, updateExperience, experienceList} from '../controllers/experience.controller.js';
+import {createFacility, updateFacility} from '../controllers/facility.controller.js';
+import {createPartner, updatePartner, partnerList, partnerByEmail, removePartner } from '../controllers/partner.controller.js';
+import {createProduct, getProductById, updateProduct, productList, removeProduct } from '../controllers/product.controller.js';
+import {createQuote, updateQuote, quoteList, getQuoteById, openQuoteList, confirmQuoteList, getQuoteByEmail } from '../controllers/quote.controller.js';
+import {createRoom, updateRoom } from '../controllers/room.controller.js';
+import {updateService, createService, getServiceById, getServiceNoStaff, getServiceByStoreId, getServiceNoData } from '../controllers/service.controller.js';
+import {createStaff, updateStaff, staffList, staffByEmail, removeStaff } from '../controllers/staff.controller.js';
+import {updateStore, createStore, getStoreById, usersCompany } from '../controllers/store.controller.js';
 import {verifyToken} from '../middleware/verifyToken.js';
+import { createIncome, getIncomeById, incomeList, updateIncome } from '../controllers/income.controller.js';
+import { createExpense, expenseList, getExpenseById, updateExpense } from '../controllers/expense.controller.js';
+import { createSupplier, supplierList, updateSupplier } from '../controllers/supplier.controller.js';
+import { createPayRate, getPayRateByEmail, getPayRateById, payrateList, removePayrate, updatePayRate } from '../controllers/payrate.controller.js';
 
 const router = express.Router();
 
@@ -23,9 +38,7 @@ router.post("/reset-password/:token", resetPassword);
 
 /* SERVICE ROUTES */
 router.post("/create-service", createService);
-
 router.post("/update-service", updateService);
-
 router.get("/get-service-id/:id", getServiceById);
 router.get("/get-service-store/:storeId", getServiceByStoreId);
 router.get("/get-service-nostaff/:storeId", getServiceNoStaff);
@@ -76,11 +89,11 @@ router.get("/get-customer-store/:storeId", customerList);
 router.get("/get-customer-email/:email", customerByEmail);
 
 /* SUPPLIER ROUTES */
-router.post("/create-supplier", createCustomer);
+router.post("/create-supplier", createSupplier);
 
-router.post("/update-supplier", updateCustomer);
+router.post("/update-supplier", updateSupplier);
 
-router.get("/get-supplier", customerList);
+router.get("/get-supplier-store/:storeId", supplierList);
 
 /* Staff ROUTES */
 router.post("/create-staff", createStaff);
@@ -95,13 +108,12 @@ router.get("/get-staff-email/:email", staffByEmail);
 
 /* Quote ROUTES */
 router.post("/create-quote", createQuote);
-
 router.post("/update-quote", updateQuote);
-
 router.get("/get-quote-store/:storeId", quoteList);
 router.get("/get-quote-open/:storeId", openQuoteList);
 router.get("/get-quote-confirm/:storeId", confirmQuoteList);
 router.get("/get-quote-id/:id", getQuoteById);
+router.get("/get-quote-email/:email", getQuoteByEmail);
 
 /* Partner ROUTES */
 router.post("/create-partner", createPartner);
@@ -113,5 +125,30 @@ router.post("/remove-partner", removePartner);
 router.get("/get-partner-store/:storeId", partnerList);
 
 router.get("/get-partner-email/:email", partnerByEmail);
+
+/* Income ROUTES */
+router.post("/create-income", createIncome);
+router.post("/update-income", updateIncome);
+router.get("/get-income-store/:storeId", incomeList);
+router.get("/get-income-id/:id", getIncomeById);
+
+/* Expense ROUTES */
+router.post("/create-expense", createExpense);
+router.post("/update-expense", updateExpense);
+router.get("/get-expense-store/:storeId", expenseList);
+router.get("/get-expense-id/:id", getExpenseById);
+
+/* Payrate ROUTES */
+router.post("/create-payrate", createPayRate);
+
+router.post("/update-payrate", updatePayRate);
+
+router.post("/remove-payrate", removePayrate);
+
+router.get("/get-payrate-store/:storeId", payrateList);
+
+router.get("/get-payrate-email/:email/:storeId", getPayRateByEmail);
+
+router.get("/get-payrate-email/:id", getPayRateById);
 
 export default router;

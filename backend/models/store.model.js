@@ -34,6 +34,9 @@ const storeSchema = new mongoose.Schema({
         type: Boolean,
         default: true
     },
+    daysClosed:[{
+        type: Date
+    }]
 },{timestamps : true}); //fields created and updated AT by default with timestamp true
 
 export const Store = mongoose.model('Store', storeSchema);

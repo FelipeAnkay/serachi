@@ -22,9 +22,12 @@ import SetUsers from './pages/settings/SetUsers';
 import AssignStaff from './pages/experience/AssignStaff';
 import SetStaff from './pages/settings/SetStaff';
 import NewQuote from './pages/booking/NewQuote';
+import NewIncome from './pages/cashflow/NewIncome';
 import OpenQuote from './pages/booking/OpenQuote';
 import ConfirmedQuote from './pages/booking/ConfirmedQuote';
 import PendingServices from './pages/experience/PendingServices';
+import NewExpense from './pages/cashflow/NewExpense';
+import SetStaffFee from './pages/settings/SetStaffFee';
 
 const ProtectedRoute = ({ children }) => {
   const { isAuthenticated, user } = useAuthStore();
@@ -118,6 +121,13 @@ function App() {
             </ProtectedRoute>}
         />
         <Route
+          path="/set-staff-rates"
+          element={
+            <ProtectedRoute>
+              <SetStaffFee />
+            </ProtectedRoute>}
+        />
+        <Route
           path="/bookings"
           element={
             <ProtectedRoute>
@@ -157,6 +167,20 @@ function App() {
           element={
             <ProtectedRoute>
               <CashFlow />
+            </ProtectedRoute>}
+        />
+        <Route
+          path="/new-income"
+          element={
+            <ProtectedRoute>
+              <NewIncome />
+            </ProtectedRoute>}
+        />
+        <Route
+          path="/new-expense"
+          element={
+            <ProtectedRoute>
+              <NewExpense />
             </ProtectedRoute>}
         />
         <Route

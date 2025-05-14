@@ -1,0 +1,6 @@
+[
+    { "code": "DAY", "name": "Daily" },
+    { "code": "WEEK", "name": "Weekly" },
+    { "code": "MONTH", "name": "Monthly" },
+    { "code": "ALL", "name": "Unique" }
+]
