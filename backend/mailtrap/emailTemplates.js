@@ -192,6 +192,20 @@ export const SEND_QUOTE = `
         {{productList}}
       </tbody>
     </table>
+    <h2>Booking</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Room Name</th>
+          <th>From</th>
+          <th>To</th>
+          <th>Total Price</th>
+        </tr>
+      </thead>
+      <tbody>
+        {{roomList}}
+      </tbody>
+    </table>
 
     <h2>Pricing Summary</h2>
     <p><strong>Discount: $</strong>{{discount}}</p>

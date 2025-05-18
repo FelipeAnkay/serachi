@@ -5,10 +5,12 @@ import Cookies from 'js-cookie';
 import toast from 'react-hot-toast';
 import { useProductServices } from '../../store/productServices';
 import { useAuthStore } from '../../store/authStore'
+import { useTypeServices } from '../../store/typeServices'
 
 
 const SetProduct = () => {
     const { getProductByStoreId, getProductById, removeProduct, updateProduct, createProduct } = useProductServices();
+    const { getTypeByCategory } = useTypeServices();
     const storeId = Cookies.get('storeId');
     const [productList, setProductList] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -19,6 +21,7 @@ const SetProduct = () => {
     const [confirmDelete, setConfirmDelete] = useState(null);
     const [showActive, setShowActive] = useState(true);
     const { user } = useAuthStore();
+    const [typeList, setTypeList] = useState([]);
     const [selectedType, setSelectedType] = useState(null);
 
     useEffect(() => {
@@ -33,12 +36,27 @@ const SetProduct = () => {
                 setLoading(false);
             }
         };
+        const fetchTypes = async () => {
+            try {
+                const auxTypeList = await getTypeByCategory("PRODUCT", storeId);
+                console.log("F: Respuesta de getTypeByCategory:", auxTypeList);
+                setTypeList(auxTypeList.typeList || []);
+            } catch (error) {
+                console.error('Error fetching product list:', error);
+            } finally {
+                setLoading(false);
+            }
+        };
 
         if (storeId) {
             fetchProducts();
+            fetchTypes();
         }
     }, []);
 
+    useEffect(() => {
+        console.log("Cambio el TypeList: ", typeList)
+    }, [typeList]);
 
     const openNewProductModal = () => {
         setProductData({ name: '' });
@@ -164,7 +182,6 @@ const SetProduct = () => {
                                     <h3 className="font-semibold text-lg mb-1">{product.name}</h3>
                                     <p className="text-sm text-gray-700">Price: {product.price}</p>
                                     <p className="text-sm text-gray-700">Type: {product.type || 'N/A'}</p>
-                                    <p className="text-sm text-gray-700">Days of Duration: {product.durationDays || 'N/A'}</p>
                                 </div>
                                 {product.isActive ? (
                                     <button
@@ -252,7 +269,7 @@ const SetProduct = () => {
                                     {isEditing ? 'Edit Product' : 'New Product'}
                                 </h3>
                                 <div className="space-y-4 text-sm">
-                                    {["name", "price", "type", "durationDays"].map((field) => (
+                                    {["name", "price"].map((field) => (
                                         <div key={field}>
                                             <label className="capitalize">{field}:</label>
                                             <input
@@ -263,6 +280,22 @@ const SetProduct = () => {
                                             />
                                         </div>
                                     ))}
+                                    <div className='mt-2 flex flex-row ml-2'>
+                                        <label className="block text-sm font-medium">Product Type:</label>
+                                        <select
+                                            name="type"
+                                            className="ml-2 w-full border border-gray-300 bg-white text-blue-950 rounded px-3 py-2"
+                                            value={productData.type || ''}
+                                            onChange={(e) => setProductData({ ...productData, type: e.target.value })}
+                                        >
+                                            <option value="">Select a Type</option>
+                                            {typeList.map((t) => (
+                                                <option key={t.name} value={t.name}>
+                                                    {t.name}
+                                                </option>
+                                            ))}
+                                        </select>
+                                    </div>
 
                                     <div className="flex justify-center mt-6">
                                         <button

@@ -1,27 +1,31 @@
 import mongoose from "mongoose";
-const roomSchema = new mongoose.Schema({
-    name: {
+const roomReservationSchema = new mongoose.Schema({
+    roomId: {
         type:String,
         required: true
     },
-    availability:{
-        type:Number,
+    quoteId:{
+        type:String,
         required: true,
     },
-    type:{
+    customerEmail:{
         type: String,
     },
     storeId:{
         type:String,
         required: true,
     },
-    price:{
-        type:Number,
+    dateIn:{
+        type:Date,
         required: true,
     },
-    currency:{
-        type: String,
+    dateOut:{
+        type: Date,
         default:"USD"
+    },
+    bedsReserved: { 
+        type: Number, 
+        default: 1 
     },
     userEmail:{
         type: String,
@@ -33,4 +37,4 @@ const roomSchema = new mongoose.Schema({
     }
 },{timestamps : true}); //fields created and updated AT by default with timestamp true
 
-export const Room = mongoose.model('Room', roomSchema);
+export const RoomReservation = mongoose.model('RoomReservation', roomReservationSchema);

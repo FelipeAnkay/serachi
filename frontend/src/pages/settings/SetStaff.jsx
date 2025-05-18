@@ -34,12 +34,29 @@ const SetStaff = () => {
 
         if (storeId) {
             fetchStaff();
-            console.log("La lista de staff es: ", staffList)
+            //console.log("La lista de staff es: ", staffList)
         }
     }, []);
+
     useEffect(() => {
-        console.log("El staffData es: ", staffData)
+        //console.log("El staffData es: ", staffData)
     }, [staffData]);
+
+
+    useEffect(() => {
+        if (!modalOpen) return; // solo activa listener si el modal está abierto
+
+        const handleEsc = (event) => {
+            if (event.key === 'Escape') {
+                closeModal(); // tu función para cerrar el modal
+            }
+        };
+        window.addEventListener('keydown', handleEsc);
+        // Cleanup: remover listener cuando modal se cierra o componente desmonta
+        return () => {
+            window.removeEventListener('keydown', handleEsc);
+        };
+    }, [modalOpen]); // se ejecuta cuando cambia modalOpen
 
     const openNewStaffModal = () => {
         setStaffData({ email: '' });
@@ -49,7 +66,7 @@ const SetStaff = () => {
     };
 
     const openEditStaffModal = (staff) => {
-        console.log("El staff es: ", staff)
+        //console.log("El staff es: ", staff)
         setStaffData({
             ...staff,
             birthdate: staff.birthdate ? new Date(staff.birthdate).toISOString().slice(0, 10) : '',
@@ -73,7 +90,7 @@ const SetStaff = () => {
         try {
             const res = await getStaffEmail(staffData.email);
             const staffFound = res.staffList?.[0];
-            console.log("handleEmailCheck staffFound:", staffFound);
+            //console.log("handleEmailCheck staffFound:", staffFound);
             if (staffFound) {
                 const alreadyAssigned = staffFound.storeId?.includes(storeId.toUpperCase());
                 const updatedStoreId = alreadyAssigned
@@ -86,7 +103,7 @@ const SetStaff = () => {
                     professionalCertificates: Array.isArray(staffFound.professionalCertificates) ? staffFound.professionalCertificates : [],
                     languages: Array.isArray(staffFound.languages) ? staffFound.languages : [],
                 });
-                console.log("F: Idioma del staff encontrado", staffFound.languages);
+                //console.log("F: Idioma del staff encontrado", staffFound.languages);
                 setIsEditing(true);
                 toast.success('Staff founded');
             } else {
@@ -110,8 +127,8 @@ const SetStaff = () => {
                 professionalCertificates: staffData.professionalCertificates,
                 storeId: storeId,
             };
-            console.log("Is Editing? ", isEditing);
-            console.log("El payload es: ", payload);
+            //console.log("Is Editing? ", isEditing);
+            //console.log("El payload es: ", payload);
             if (isEditing) {
                 await updateStaff(staffData.email, storeId, payload);
                 toast.success('Staff updated successfully');

@@ -28,7 +28,7 @@ export default function OpenQuote() {
     };
 
     useEffect(() => {
-        console.log("Entre a useEffect [storeId, location.key]", timezone);
+        //console.log("Entre a useEffect [storeId, location.key]", timezone);
         const fetchQuotes = async () => {
             try {
                 const response = await getOpenQuoteList(storeId);

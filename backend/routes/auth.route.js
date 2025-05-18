@@ -5,9 +5,10 @@ import {createCustomer, updateCustomer, customerList, customerByEmail } from '..
 import {createExperience, updateExperience, experienceList} from '../controllers/experience.controller.js';
 import {createFacility, updateFacility} from '../controllers/facility.controller.js';
 import {createPartner, updatePartner, partnerList, partnerByEmail, removePartner } from '../controllers/partner.controller.js';
-import {createProduct, getProductById, updateProduct, productList, removeProduct } from '../controllers/product.controller.js';
+import {createProduct, getProductById, updateProduct, productList, removeProduct, getProductByType } from '../controllers/product.controller.js';
 import {createQuote, updateQuote, quoteList, getQuoteById, openQuoteList, confirmQuoteList, getQuoteByEmail } from '../controllers/quote.controller.js';
-import {createRoom, updateRoom } from '../controllers/room.controller.js';
+import {createRoom, getRoomById, roomList, updateRoom } from '../controllers/room.controller.js';
+import {createRoomReservation, getAvailableRooms, roomReservationList, splitRoomReservation, updateRoomReservation } from '../controllers/roomReservation.controller.js';
 import {updateService, createService, getServiceById, getServiceNoStaff, getServiceByStoreId, getServiceNoData, getServiceByDates } from '../controllers/service.controller.js';
 import {createStaff, updateStaff, staffList, staffByEmail, removeStaff, staffListByType } from '../controllers/staff.controller.js';
 import {updateStore, createStore, getStoreById, usersCompany } from '../controllers/store.controller.js';
@@ -53,6 +54,7 @@ router.get("/get-product-id/:id", getProductById);
 router.post("/update-product", updateProduct);
 router.get("/get-product-store/:storeId", productList);
 router.post("/remove-product", removeProduct);
+router.get("/get-product-type/:type/:storeId", getProductByType);
 
 /* STORE ROUTES */
 router.post("/create-store", createStore);
@@ -65,6 +67,20 @@ router.get("/get-store-id/:id", getStoreById);
 router.post("/create-room", createRoom);
 
 router.post("/update-room", updateRoom);
+
+router.get("/get-room-store/:storeId", roomList);
+router.get("/get-room-id/:id", getRoomById);
+
+/* ROOM Reservation ROUTES */
+router.post("/create-room-reservation", createRoomReservation);
+
+router.post("/update-room-reservation", updateRoomReservation);
+
+router.get("/get-room-reservation-store/:storeId", roomReservationList);
+
+router.post("/get-available-rooms", getAvailableRooms);
+
+router.post("/split-room-reservation",splitRoomReservation)
 
 /* FACILITY ROUTES */
 router.post("/create-facility", createFacility);
@@ -109,7 +125,7 @@ router.get("/get-staff/:storeId", staffList);
 
 router.get("/get-staff-email/:email", staffByEmail);
 
-router.get("/get-staff-type/:storeId/:type", staffListByType);
+router.get("/get-staff-type/:type/:storeId", staffListByType);
 
 /* Quote ROUTES */
 router.post("/create-quote", createQuote);

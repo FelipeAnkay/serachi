@@ -13,10 +13,12 @@ import { usePartnerServices } from '../../store/partnerServices';
 import { useParams } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import CustomerDetails from '../../components/CustomerDetail'
+import { useRoomServices } from '../../store/roomServices';
 
 
 export default function NewQuote() {
     const { createQuote, getQuoteById, updateQuote } = useQuoteServices();
+    const { getRoomList, getAvailableRooms, splitReservationAcrossRooms, createRoomReservation } = useRoomServices();
     const { quoteId } = useParams();
     const storeId = Cookies.get('storeId');
     const clone = Cookies.get('clone');
@@ -35,65 +37,38 @@ export default function NewQuote() {
     const customerEmailRef = useRef(null);
     const { getPartnerList } = usePartnerServices();
     const [partners, setPartners] = useState([]);
+    const [rooms, setRooms] = useState([]);
+    const [selectedRooms, setSelectedRooms] = useState({});
+    const [isRoomVisible, setIsRoomVisible] = useState(false);
+    const [isRoomPrivate, setIsRoomPrivate] = useState({});
+    const [roomSearch, setRoomSearch] = useState("");
     const [newTag, setNewTag] = useState({ name: '', code: '' });
     const hasFetchedEmail = useRef(false);
     const navigate = useNavigate();
+    const [roomNote, setRoomNote] = useState(null);
+    const [roomDateRanges, setRoomDateRanges] = useState({});
+    const [roomStartDates, setRoomStartDates] = useState({});
+    let isSplit = false;
+    const [numberOfPeople, setNumberOfPeople] = useState(1);
+    const [isPeopleLock, setIsPeopleLock] = useState(false);
+    const [firstCall, setFirstCall] = useState(1);
+    const hasInteractedWithToggle = useRef(false);
 
-    useEffect(() => {
-        const fetchQuote = async () => {
-            try {
-                const resp = await getQuoteById(quoteId);
-                const response = resp.quote;
-                if (!hasFetchedEmail.current && response.customerEmail) {
-                    handleCustomerEmailSearch(response.customerEmail);
-                    hasFetchedEmail.current = true;
-                }
-                //console.log("OLD Quote Found Response: ", response);
-                if (clone) {
-                    console.log("Entré a Clone:", response);
-                    const { _id, ...clonedQuote } = response; // elimina _id
-                    console.log("Elimine ID a Clone:", clonedQuote);
-                    setQuote({
-                        ...clonedQuote,
-                        userName: user.name,
-                        customerName: customer.name,
-                    });
-                    Cookies.remove('clone')
-                } else {
-                    setQuote({
-                        ...response,
-                        userName: user.name,
-                        customerName: customer.name,
-                    })
-                }
+    const roomFill = (roomList) => {
+        setSelectedRooms(roomList);
+    }
 
-
-                setLoading(false);
-
-                //console.log("F: Estoy en useEffect-productList:", response.productList)
-                if (response.productList && response.productList.length > 0) {
-                    const initialSelectedProducts = {};
-                    response.productList.forEach((p) => {
-                        initialSelectedProducts[p.productID] = p.Qty;
-                    });
-                    setSelectedProducts(initialSelectedProducts);
-                }
-                setFinalPrice(response.finalPrice + response.discount)
-            } catch (error) {
-                //console.error('Error fetching products:', error);
-                setLoading(false);
-            }
-        }
-
-        if (quoteId) {
-            // Si hay ID, carga la cotización existente
-            fetchQuote();
-        }
-    }, [quoteId]);
+    const quoteFill = (quote) => {
+        setQuote({
+            ...quote,
+            userName: user.name,
+            customerName: customer.name,
+        })
+    };
 
 
     useEffect(() => {
-        //console.log("El user es: ", user.email)
+        //console.log("Entre a UE 2");
         if (!quoteId) {
             setQuote({
                 userEmail: user.email,
@@ -106,15 +81,14 @@ export default function NewQuote() {
         const fetchProducts = async () => {
             try {
                 const response = await getProductByStoreId(storeId);
-                //console.log("ProductList Response: ", response);
-                setProducts(response.productList);
+                const roomProducts = response.productList.filter(product => product.type != "ROOM");
+                setProducts(roomProducts);
                 setLoading(false);
-                //console.log("ProductList: ", products);
             } catch (error) {
-                //console.error('Error fetching products:', error);
                 setLoading(false);
+                // console.error('Error fetching products:', error);
             }
-        }
+        };
         const fetchPartners = async () => {
             try {
                 const response = await getPartnerList(storeId);
@@ -127,6 +101,7 @@ export default function NewQuote() {
                 setLoading(false);
             }
         }
+
         if (storeId) {
             fetchProducts();
             fetchPartners();
@@ -136,18 +111,173 @@ export default function NewQuote() {
 
     useEffect(() => {
         //console.log("F: El cliente actual es:", customer);
+        //console.log("Entre a UE 3");
         setQuote((prevQuote) => ({
             ...prevQuote,
             customerName: customer.name,
         }));
     }, [customer]);
 
+    // Cuando cambian las fechas, buscar habitaciones disponibles
     useEffect(() => {
-        console.log("F: Los datos de quote son: ", quote);
-        console.log("F: Los datos de customer son: ", customer);
+        //console.log("Entre a UE 4");
+        const fetchAvailableRooms = async () => {
+            if (!quote.dateIn || !quote.dateOut) {
+                setIsPeopleLock(false);
+                return;
+            }
+            try {
+                const response = await getAvailableRooms({
+                    dateIn: quote.dateIn,
+                    dateOut: quote.dateOut,
+                    bedsRequired: numberOfPeople,
+                    storeId,
+                });
+                const availableRooms = response.availableRooms || [];
+                setRooms(availableRooms);
+
+                const range = [];
+                let d = new Date(quote.dateIn);
+                const end = new Date(quote.dateOut);
+                while (d < end) {
+                    range.push(d.toISOString().split('T')[0]);
+                    d.setDate(d.getDate() + 1);
+                }
+
+                const dailySum = {};
+                for (const date of range) dailySum[date] = 0;
+                const roomRanges = {};
+                for (const room of availableRooms) {
+                    const days = room.dailyAvailability || {};
+                    if (!room.availableEveryNight) {
+                        isSplit = true;
+                    }
+                    for (const date of range) {
+                        dailySum[date] += days[date] || 0;
+                    }
+
+                    // Agrupar fechas contiguas donde hay al menos 1 cama
+                    const activeDates = range.filter(date => (days[date] || 0) > 0);
+                    const segments = [];
+                    let start = null;
+                    for (let i = 0; i < activeDates.length; i++) {
+                        if (!start) start = activeDates[i];
+                        const curr = new Date(activeDates[i]);
+                        const next = new Date(activeDates[i + 1]);
+                        const diff = next ? (next - curr) / (1000 * 3600 * 24) : null;
+                        if (diff !== 1) {
+                            segments.push({ from: start, to: activeDates[i] });
+                            start = null;
+                        }
+                    }
+                    if (start) {
+                        segments.push({ from: start, to: activeDates[activeDates.length - 1] });
+                    }
+                    roomRanges[room._id] = segments.length > 0 ? segments : null;
+                }
+
+                setRoomDateRanges(roomRanges);
+                const uncoveredDays = range.filter(date => dailySum[date] < 1);
+                const allDaysCovered = uncoveredDays.length === 0;
+                if (!allDaysCovered) {
+                    setRoomNote("No room(s) available(s) for the selected dates");
+                } else {
+                    setRoomNote(
+                        isSplit ?
+                            "The stay may require a room change during the selected period" :
+                            null
+                    );
+                }
+                setIsPeopleLock(true);
+                setIsRoomVisible(true);
+            } catch (error) {
+                console.error('Error fetching available rooms:', error);
+            }
+        };
+
+        fetchAvailableRooms();
+        const nights = daysCalc(quote.dateIn, quote.dateOut)
+        setQuote((prev) => ({
+            ...prev,
+            numberOfNights: nights
+        }));
+    }, [quote.dateIn, quote.dateOut, storeId]);
+
+    useEffect(() => {
+        //console.log("Entre a UE 5");
+        //console.log("F: Los datos de quote son: ", quote);
+        //console.log("F: Los datos de customer son: ", customer);
         //console.log("F: Los datos de Selected Product son: ", selectedProducts);
         //console.log("F: FinalPrice es:", finalPrice)
     }, [quote]);
+
+    useEffect(() => {
+        if (quoteId && !hasInteractedWithToggle.current) return;
+        //console.log("Entre a UE 6");
+        updateQuoteFromSelectedRoom(selectedRooms);
+    }, [isRoomPrivate]);
+
+    useEffect(() => {
+        //console.log("Entre a UE 1");
+        const fetchQuote = async () => {
+            try {
+                const resp = await getQuoteById(quoteId);
+                const response = resp.quote;
+                if (!hasFetchedEmail.current && response.customerEmail) {
+                    handleCustomerEmailSearch(response.customerEmail);
+                    hasFetchedEmail.current = true;
+                }
+                //console.log("OLD Quote Found Response: ", response);
+                if (clone) {
+                    //console.log("Entré a Clone:", response);
+                    const { _id, ...clonedQuote } = response; // elimina _id
+                    //console.log("Elimine ID a Clone:", clonedQuote);
+                    setQuote({
+                        ...clonedQuote,
+                        userName: user.name,
+                        customerName: customer.name,
+                    });
+                    Cookies.remove('clone')
+                } else {
+                    quoteFill(response);
+                }
+
+                setLoading(false);
+
+                //console.log("F: Estoy en useEffect-productList:", response.productList)
+                if (response.productList && response.productList.length > 0) {
+                    const initialSelectedProducts = {};
+                    response.productList.forEach((p) => {
+                        initialSelectedProducts[p.productID] = p.Qty;
+                    });
+                    setSelectedProducts(initialSelectedProducts);
+                }
+                //console.log("F: Estoy en useEffect-roomList:", response.roomList)
+                if (response.roomList && response.roomList.length > 0) {
+                    const initialSelectedRooms = {};
+                    const initialPrivateSelectedRooms = {};
+                    response.roomList.forEach((p) => {
+                        initialSelectedRooms[p.roomId] = p.roomNights;
+                        if (p.isPrivate) {
+                            initialPrivateSelectedRooms[p.roomId] = p.roomId
+                        }
+                    });
+                    roomFill(initialSelectedRooms);
+                    setIsRoomPrivate(initialPrivateSelectedRooms);
+                }
+                setFinalPrice(response.finalPrice + response.discount)
+            } catch (error) {
+                //console.error('Error fetching products:', error);
+                setLoading(false);
+            }
+        }
+
+        if (quoteId) {
+            // Si hay ID, carga la cotización existente
+            fetchQuote();
+            setFirstCall(2);
+        }
+    }, [quoteId]);
 
     const formatDateInput = (dateStr) => {
         if (!dateStr) return "";
@@ -160,7 +290,7 @@ export default function NewQuote() {
     const incrementProduct = (productId) => {
         setSelectedProducts((prev) => {
             const updated = { ...prev, [productId]: (prev[productId] || 0) + 1 };
-            return updateQuoteFromSelected(updated);
+            return updateQuoteFromSelectedProduct(updated);
         });
     };
 
@@ -174,11 +304,12 @@ export default function NewQuote() {
             } else {
                 updated[productId] -= 1;
             }
-            return updateQuoteFromSelected(updated);
+            return updateQuoteFromSelectedProduct(updated);
         });
     };
 
-    const updateQuoteFromSelected = (selected) => {
+    const updateQuoteFromSelectedProduct = (selected) => {
+        console.log("Entre a updateQuoteFromSelectedProduct", selected);
         const structuredList = Object.entries(selected).map(([id, qty]) => {
             const product = products.find((p) => p._id === id);
             return {
@@ -190,7 +321,10 @@ export default function NewQuote() {
             };
         });
 
-        const total = structuredList.reduce((sum, item) => sum + item.productFinalPrice, 0);
+        const productSubtotal = structuredList.reduce((sum, item) => sum + item.productFinalPrice, 0);
+        const roomSubtotal = quote.roomList?.reduce((sum, r) => sum + r.roomFinalPrice, 0) || 0;
+
+        const total = productSubtotal + roomSubtotal;
 
         setFinalPrice(total);
         setQuote((prev) => ({
@@ -198,6 +332,77 @@ export default function NewQuote() {
             discount: 0,
             finalPrice: total,
             productList: structuredList,
+        }));
+
+        return selected;
+    };
+
+    const incrementRoom = (roomId) => {
+        setSelectedRooms((prev) => {
+            const updated = { ...prev, [roomId]: (prev[roomId] || 0) + 1 };
+            return updateQuoteFromSelectedRoom(updated);
+        });
+    };
+
+    const decrementRoom = (roomId) => {
+        setSelectedRooms((prev) => {
+            if (!prev[roomId]) return prev; // No hay que restar
+
+            const updated = { ...prev };
+            if (updated[roomId] === 1) {
+                delete updated[roomId];
+            } else {
+                updated[roomId] -= 1;
+            }
+            return updateQuoteFromSelectedRoom(updated);
+        });
+    };
+
+    const handleToggleRoomPrivate = (roomId) => {
+        hasInteractedWithToggle.current = true;
+        setIsRoomPrivate(prev => {
+            const newState = { ...prev, [roomId]: !prev[roomId] };
+            return newState;
+        });
+    };
+
+    const updateQuoteFromSelectedRoom = (selected) => {
+        //console.log("Entre a updateQuoteFromSelectedRoom ROOM: ", selected)
+        const structuredList = Object.entries(selected).map(([id, qty]) => {
+            //console.log("La lista de rooms es: ", rooms)
+            const room = rooms.find((p) => p._id === id);
+            const startDate = roomStartDates[id] ? new Date(roomStartDates[id]) : new Date(quote.dateIn);
+            const endDate = new Date(startDate);
+            endDate.setDate(startDate.getDate() + qty);
+            const isPrivate = isRoomPrivate[id];
+            //console.log("El isPrivate es: ", isPrivate)
+            const adjustedQty = isPrivate ? room.availability : numberOfPeople;
+            //console.log("El adjustedQty es: ", adjustedQty)
+            //console.log("El startDate es: ", startDate)
+            return {
+                roomId: id,
+                roomName: room?.name || '',
+                Qty: adjustedQty,
+                roomUnitaryPrice: (room?.price || 0),
+                roomNights: (qty || 0),
+                isPrivate: isPrivate,
+                roomFinalPrice: (room?.price || 0) * qty * adjustedQty,
+                roomDateIn: isNaN(startDate) ? '' : startDate.toISOString(),
+                roomDateOut: isNaN(endDate) ? '' : endDate.toISOString(),
+            };
+        });
+
+        const roomSubtotal = structuredList.reduce((sum, item) => sum + item.roomFinalPrice, 0);
+        const productSubtotal = quote.productList?.reduce((sum, p) => sum + p.productFinalPrice, 0) || 0;
+
+        const total = productSubtotal + roomSubtotal;
+
+        setFinalPrice(total);
+        setQuote((prev) => ({
+            ...prev,
+            discount: 0,
+            finalPrice: total,
+            roomList: structuredList,
         }));
 
         return selected;
@@ -289,7 +494,6 @@ export default function NewQuote() {
             return;
         }
         try {
-
             if (!quote._id) {
                 await createQuote(quote);
                 toast.success('Quote Created');
@@ -301,7 +505,6 @@ export default function NewQuote() {
                 } else {
                     navigate(`/past-quote/`, { state: {}, replace: true });
                 }
-
             }
 
             setTimeout(() => {
@@ -309,7 +512,7 @@ export default function NewQuote() {
                     dateIn: '',
                     dateOut: '',
                     customerEmail: '',
-                    roomId: '',
+                    roomList: [],
                     partnerId: '',
                     productList: [],
                     discount: 0,
@@ -336,10 +539,13 @@ export default function NewQuote() {
                     emergencyContactPhone: '',
                     professionalCertificates: [],
                 });
-                setSelectedProducts({});
-                setCustomerEditable(false);
-                setIsNew(true);
+                setNumberOfPeople("1")
+                setIsPeopleLock(false)
+                setIsRoomPrivate({})
                 setFinalPrice("0");
+                setSelectedRooms({})
+                setSelectedProducts({});
+                setIsNew(true);
             }, 0); // espera XXXms antes de reiniciar
 
         } catch (err) {
@@ -347,6 +553,46 @@ export default function NewQuote() {
         }
     };
 
+    const handleReset = (e) => {
+        setQuote({
+            dateIn: '',
+            dateOut: '',
+            customerEmail: '',
+            roomList: [],
+            partnerId: '',
+            productList: [],
+            discount: 0,
+            finalPrice: 0,
+            currency: 'USD',
+            isReturningCustomer: false,
+            tag: [],
+            userEmail: user.email,
+            userName: user.name,
+            storeId: storeId,
+            isConfirmed: false,
+        });
+
+        setCustomer({
+            email: '',
+            name: '',
+            phone: '',
+            country: '',
+            languages: [],
+            birthdate: '',
+            nationalId: '',
+            diet: '',
+            emergencyContactName: '',
+            emergencyContactPhone: '',
+            professionalCertificates: [],
+        });
+        setNumberOfPeople("1")
+        setIsPeopleLock(false)
+        setIsRoomPrivate({})
+        setFinalPrice("0");
+        setSelectedRooms({})
+        setSelectedProducts({});
+        setIsNew(true);
+    }
     const handleSaveClient = async (e) => {
         try {
             console.log("F: El cliente es:", customer);
@@ -384,6 +630,14 @@ export default function NewQuote() {
             toast.error('Error creating a Customer');
         }
 
+    };
+
+    const daysCalc = (datein, dateout) => {
+        const initialDate = new Date(datein);
+        const endDate = new Date(dateout);
+        const msDiff = endDate.getTime() - initialDate.getTime();
+        const dias = Math.floor(msDiff / (1000 * 60 * 60 * 24));
+        return dias;
     };
 
     return (
@@ -453,7 +707,28 @@ export default function NewQuote() {
                                     />
                                 )}
                             </div>
-
+                            <div className='flex flex-row justify-center text-center mt-2'>
+                                Number of people:
+                                <div className="top-2 right-2 gap-2 items-center">
+                                    <button
+                                        type="button"
+                                        onClick={() => setNumberOfPeople(prev => Math.max(1, prev - 1))}
+                                        className={`${isPeopleLock ? 'bg-gray-500' : 'bg-red-500 hover:bg-red-600'} text-white px-2 rounded  ml-2`}
+                                        disabled={isPeopleLock || numberOfPeople <= 1}
+                                    >
+                                        -
+                                    </button>
+                                    <span className="text-sm font-bold text-white ml-2 mr-2">{numberOfPeople}</span>
+                                    <button
+                                        type="button"
+                                        onClick={() => setNumberOfPeople(prev => prev + 1)}
+                                        className={`${isPeopleLock ? 'bg-gray-500' : 'bg-green-500 hover:bg-green-600'} text-white px-2 rounded `}
+                                        disabled={isPeopleLock}
+                                    >
+                                        +
+                                    </button>
+                                </div>
+                            </div>
                         </fieldset>
                         {/* DATOS DE COTIZACION*/}
                         <fieldset className="border rounded-2xl w-1/2 flex pl-4 ml-4 justify-center">
@@ -494,105 +769,17 @@ export default function NewQuote() {
                         </fieldset>
                     </div>
                     {/* DATOS DE PRODUCTOS Y PRECIOS */}
-                    <div className="flex gap-6">
-                        {/* DATOS DE PRODUCTOS*/}
-                        <fieldset className="flex-grow space-y-4 border rounded-2xl p-4">
-                            <legend className="text-2xl font-bold">Product List</legend>
-                            <input
-                                type="text"
-                                placeholder="Search product by name..."
-                                className="w-full p-2 border border-gray-300 rounded"
-                                value={productSearch}
-                                onChange={(e) => setProductSearch(e.target.value)}
-                                onKeyDown={(e) => {
-                                    if (e.key === 'Enter') {
-                                        e.preventDefault();
-                                        // Add logic if we want to do something when enter is pressed
-                                    }
-                                }}
-                            />
-                            <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-2">
-                                {products.length === 0 ? (
-                                    <p>No products found for this store.</p>
-                                ) : (
-                                    products
-                                        .filter(product =>
-                                            product.name.toLowerCase().includes(productSearch.toLowerCase())
-                                        )
-                                        .sort((a, b) => a.type.localeCompare(b.type))
-                                        .map((product) => {
-                                            const qty = selectedProducts[product._id] || 0;
-
-                                            return (
-                                                <div
-                                                    key={product._id}
-                                                    className={`border rounded-lg p-2 hover:shadow transition relative ${qty > 0 ? ' bg-green-100 border-green-500 border-2 ' : 'border-gray-300 bg-blue-100'
-                                                        }`}
-                                                >
-                                                    <h3 className="text-lg font-semibold text-gray-800">
-                                                        {product.name} - {product.durationDays ? product.durationDays + ' days -' : ''} ${product.price}
-                                                    </h3>
-
-                                                    {qty > 0 && (
-                                                        <div className="absolute top-2 right-2 flex gap-2 items-center">
-                                                            <button
-                                                                type="button"
-                                                                onClick={() => decrementProduct(product._id)}
-                                                                className="bg-red-500 text-white px-2 rounded hover:bg-red-600"
-                                                            >
-                                                                -
-                                                            </button>
-                                                            <span className="text-sm font-bold text-black">{qty}</span>
-                                                            <button
-                                                                type="button"
-                                                                onClick={() => incrementProduct(product._id)}
-                                                                className="bg-green-500 text-white px-2 rounded hover:bg-green-600"
-                                                            >
-                                                                +
-                                                            </button>
-                                                        </div>
-                                                    )}
-
-                                                    {qty === 0 && (
-                                                        <div className="absolute top-2 right-2">
-                                                            <button
-                                                                type="button"
-                                                                onClick={() => incrementProduct(product._id)}
-                                                                className="bg-green-500 text-white px-2 rounded hover:bg-green-600"
-                                                            >
-                                                                +
-                                                            </button>
-                                                        </div>
-                                                    )}
-                                                </div>
-                                            );
-                                        })
-                                )}
-                            </div>
-                        </fieldset>
-                        {/* Price Column */}
-                        <fieldset className="w-64 space-y-4 rounded-2xl border p-4">
-                            <legend className="text-2xl font-bold">Pricing</legend>
-                            <div className="flex ml-4 mr-4 items-center justify-center">
-                                <label className=" text-white font-bold text-lg">Price: ${finalPrice}</label>
-                            </div>
-                            <div className="ml-4 mr-4">
-                                <div className="flex justify-between w-full">
-                                    <label className="block text-sm font-medium text-white">Discount</label>
-                                    <label className="block text-sm font-medium text-white">{(finalPrice && quote.discount) ? ((quote.discount / finalPrice) * 100).toFixed(2) : '0.00'}%</label>
-                                </div>
+                    <div className="flex flex-row gap-6">
+                        {/* DATOS DE PRODUCTOS y ROOMS*/}
+                        <div className='w-3/4'>
+                            <fieldset className="flex-grow space-y-4 border rounded-2xl p-4">
+                                <legend className="text-2xl font-bold">Product List</legend>
                                 <input
                                     type="text"
-                                    className="w-full mt-1 p-2 border border-gray-300 rounded"
-                                    value={quote.discount || 0}
-                                    onChange={(e) => {
-                                        const discount = parseFloat(e.target.value) || 0;
-                                        setQuote((prev) => ({
-                                            ...prev,
-                                            discount,
-                                            finalPrice: finalPrice - discount,
-                                        }));
-                                    }}
+                                    placeholder="Search product by name..."
+                                    className="w-full p-2 border border-gray-300 rounded"
+                                    value={productSearch}
+                                    onChange={(e) => setProductSearch(e.target.value)}
                                     onKeyDown={(e) => {
                                         if (e.key === 'Enter') {
                                             e.preventDefault();
@@ -600,13 +787,301 @@ export default function NewQuote() {
                                         }
                                     }}
                                 />
-                            </div>
-                            <div className="ml-4 mr-4 flex items-center justify-center">
-                                <label className=" text-white font-bold text-lg mt-6">Final Price: </label>
-                                <label className=" text-white font-bold text-2xl mt-6 ml-2">${quote.finalPrice}</label>
-                            </div>
-                        </fieldset>
+                                <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-2">
+                                    {products.length === 0 ? (
+                                        <p>No products found for this store.</p>
+                                    ) : (
+                                        products
+                                            .filter(product =>
+                                                product.name.toLowerCase().includes(productSearch.toLowerCase())
+                                            )
+                                            .sort((a, b) => a.type.localeCompare(b.type))
+                                            .map((product) => {
+                                                const qty = selectedProducts[product._id] || 0;
 
+                                                return (
+                                                    <div
+                                                        key={product._id}
+                                                        className={`border rounded-lg p-2 hover:shadow transition relative ${qty > 0 ? ' bg-green-100 border-green-500 border-2 ' : 'border-gray-300 bg-blue-100'
+                                                            }`}
+                                                    >
+                                                        <h3 className="text-lg font-semibold text-gray-800">
+                                                            {product.name} - {product.durationDays ? product.durationDays + ' days -' : ''} ${product.price}
+                                                        </h3>
+
+                                                        {qty > 0 && (
+                                                            <div className="absolute top-2 right-2 flex gap-2 items-center">
+                                                                <button
+                                                                    type="button"
+                                                                    onClick={() => decrementProduct(product._id)}
+                                                                    className="bg-red-500 text-white px-2 rounded hover:bg-red-600"
+                                                                >
+                                                                    -
+                                                                </button>
+                                                                <span className="text-sm font-bold text-black">{qty}</span>
+                                                                <button
+                                                                    type="button"
+                                                                    onClick={() => incrementProduct(product._id)}
+                                                                    className="bg-green-500 text-white px-2 rounded hover:bg-green-600"
+                                                                >
+                                                                    +
+                                                                </button>
+                                                            </div>
+                                                        )}
+
+                                                        {qty === 0 && (
+                                                            <div className="absolute top-2 right-2">
+                                                                <button
+                                                                    type="button"
+                                                                    onClick={() => incrementProduct(product._id)}
+                                                                    className="bg-green-500 text-white px-2 rounded hover:bg-green-600"
+                                                                >
+                                                                    +
+                                                                </button>
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                );
+                                            })
+                                    )}
+                                </div>
+                            </fieldset>
+                            {/*ROOMS*/}
+                            {isRoomVisible && (
+                                <fieldset className="flex-grow space-y-4 border rounded-2xl p-4">
+                                    <legend className="text-2xl font-bold">Room List - Nights: {quote.numberOfNights || 0}</legend>
+                                    <input
+                                        type="text"
+                                        placeholder="Search room by name..."
+                                        className="w-full p-2 border border-gray-300 rounded"
+                                        value={roomSearch}
+                                        onChange={(e) => setRoomSearch(e.target.value)}
+                                        onKeyDown={(e) => {
+                                            if (e.key === 'Enter') {
+                                                e.preventDefault();
+                                                // Add logic if we want to do something when enter is pressed
+                                            }
+                                        }}
+                                    />
+                                    {roomNote && (
+                                        <div>
+                                            <p className='text-yellow-500 font-bold text-sm'>*** {roomNote.toUpperCase()} ***</p>
+                                        </div>
+                                    )}
+                                    <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+                                        {rooms.length === 0 ? (
+                                            <p>No room found for this store.</p>
+                                        ) : (
+                                            rooms
+                                                .filter(room =>
+                                                    room.name.toLowerCase().includes(roomSearch.toLowerCase())
+                                                )
+                                                .sort((a, b) => a.type.localeCompare(b.type))
+                                                .map((room) => {
+                                                    const Qty = isRoomPrivate[room._id] ? room.availability : numberOfPeople;
+                                                    const qty = selectedRooms[room._id] || 0;
+                                                    const unitPrice = room.price;
+                                                    const dateSegments = roomDateRanges[room._id] || [];
+                                                    const maxContiguousDays = Math.max(
+                                                        0,
+                                                        ...dateSegments.map(seg => {
+                                                            const from = new Date(seg.from);
+                                                            const to = new Date(seg.to);
+                                                            const diffDays = Math.floor((to - from) / (1000 * 60 * 60 * 24)) + 1;
+                                                            return diffDays;
+                                                        })
+                                                    );
+                                                    const maxQty = maxContiguousDays;
+                                                    const totalPrice = unitPrice * qty * Qty;
+
+                                                    return (
+                                                        <div
+                                                            key={room._id}
+                                                            className="bg-gray-100 p-4 rounded shadow text-black flex flex-row justify-between"
+                                                        >
+                                                            <div>
+                                                                <h4 className="font-semibold text-lg">{room.name} - ${room.price}</h4>
+                                                                <p className="text-sm text-gray-700">Tipo: {room.type}</p>
+                                                                <p className="text-sm text-gray-700">Capacidad: {room.availability}</p>
+                                                                <div className='flex flex-row'>
+                                                                    {roomDateRanges[room._id]?.map((range, idx) => (
+                                                                        <p key={idx} className="text-xs text-green-500">
+                                                                            Available: {range.from} to {range.to}
+                                                                        </p>
+                                                                    ))}
+                                                                </div>
+                                                                {roomDateRanges[room._id] === null && (
+                                                                    <p className="text-xs text-red-400">No availability in this room for selected dates.</p>
+                                                                )}
+                                                                {roomDateRanges[room._id]?.length > 0 && !room.availableEveryNight && (
+                                                                    <div className="mt-2">
+                                                                        <label className="block text-sm font-bold">Select start date:</label>
+                                                                        <input
+                                                                            type="date"
+                                                                            className="border rounded px-2 py-1"
+                                                                            value={roomStartDates[room._id] || ''}
+                                                                            min={roomDateRanges[room._id][0].from}
+                                                                            max={roomDateRanges[room._id][roomDateRanges[room._id].length - 1].to}
+                                                                            onChange={(e) =>
+                                                                                setRoomStartDates((prev) => ({
+                                                                                    ...prev,
+                                                                                    [room._id]: e.target.value
+                                                                                }))
+                                                                            }
+                                                                        />
+                                                                    </div>
+                                                                )}
+                                                            </div>
+                                                            <div className='text-center'>
+                                                                Nights:
+                                                                <div className="flex items-center gap-2">
+                                                                    <button
+                                                                        type="button"
+                                                                        className="bg-red-500 text-white px-2 rounded"
+                                                                        disabled={qty <= 0}
+                                                                        onClick={() => decrementRoom(room._id)}
+                                                                    >
+                                                                        -
+                                                                    </button>
+                                                                    <span>{qty}</span>
+                                                                    <button
+                                                                        type="button"
+                                                                        className={`px-2 rounded ${roomDateRanges[room._id]?.length > 0 && !room.availableEveryNight && !roomStartDates[room._id]
+                                                                            ? "bg-gray-400 cursor-not-allowed"
+                                                                            : "bg-green-600 hover:bg-green-700 text-white"
+                                                                            }`}
+                                                                        disabled={
+                                                                            qty >= maxQty ||
+                                                                            (roomDateRanges[room._id]?.length > 0 && !room.availableEveryNight && !roomStartDates[room._id])
+                                                                        }
+                                                                        onClick={() => {
+                                                                            if (roomDateRanges[room._id]?.length > 0 && !room.availableEveryNight && !roomStartDates[room._id]) {
+                                                                                toast.error("Please select a start date for this room before increasing quantity.");
+                                                                                return;
+                                                                            }
+                                                                            incrementRoom(room._id);
+                                                                        }}
+                                                                    >
+                                                                        +
+                                                                    </button>
+                                                                </div>
+
+                                                                <div className="mt-2 text-sm">
+                                                                    <div>
+                                                                        Total: ${totalPrice.toFixed(2)}
+                                                                    </div>
+                                                                    {room.type === "SHARED" && roomDateRanges[room._id]?.length > 0 && (
+                                                                        <div className="mt-2">
+                                                                            <label className="text-sm flex items-center gap-2">
+                                                                                <input
+                                                                                    type="checkbox"
+                                                                                    checked={!!isRoomPrivate[room._id]}
+                                                                                    onChange={() => handleToggleRoomPrivate(room._id)}
+                                                                                />
+                                                                                Is Private?
+                                                                            </label>
+                                                                        </div>
+                                                                    )}
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                    );
+                                                })
+                                        )}
+                                    </div>
+
+                                </fieldset>
+                            )}
+                        </div>
+                        {/* Price Column */}
+                        <div className='w-1/4'>
+                            <fieldset className="h-full space-y-4 rounded-2xl border p-4 flex flex-col">
+                                <legend className="text-2xl font-bold">Pricing</legend>
+                                {/* Detalle de productos y rooms en la cotización */}
+                                <div>
+                                    <div className='flex flex-col'>
+                                        <h2 className='text-lg font-bold text-center'>Selected Products and Rooms</h2>
+                                    </div>
+                                    {(!quote.productList) ? (
+                                        <p className='mt-5'></p>
+                                    ) : (
+                                        quote.productList
+                                            .map((product) => {
+
+                                                return (
+                                                    <div
+                                                        key={product.productID}
+                                                        className='mt-5 mb-5 ml-5 flex flex-row text-sm text-white'
+                                                    >
+                                                        <div className="w-3/4">
+                                                            {product.productName}
+                                                        </div>
+                                                        <div className="w-1/4 text-right mr-5">
+                                                            ${product.productFinalPrice}
+                                                        </div>
+
+                                                    </div>
+                                                )
+                                            }))}
+
+                                    {(!quote.roomList) ? (
+                                        <p></p>
+                                    ) : (
+                                        quote.roomList
+                                            .map((room) => {
+                                                return (
+                                                    <div
+                                                        key={room.roomId}
+                                                        className='ml-5 flex flex-row text-sm text-white'
+                                                    >
+                                                        <div className="w-3/4">
+                                                            {room.roomName}  ({room.roomNights} Nights)
+                                                        </div>
+                                                        <div className="w-1/4 text-right mr-5">
+                                                            ${room.roomFinalPrice}
+                                                        </div>
+
+                                                    </div>
+                                                )
+                                            }))}
+
+                                </div>
+
+                                <div className="flex ml-4 mr-4 items-center justify-center">
+                                    <label className=" text-white font-bold text-lg">Price: ${finalPrice}</label>
+                                </div>
+                                <div className="ml-4 mr-4">
+                                    <div className="flex justify-between w-full">
+                                        <label className="block text-sm font-medium text-white">Discount</label>
+                                        <label className="block text-sm font-medium text-white">{(finalPrice && quote.discount) ? ((quote.discount / finalPrice) * 100).toFixed(2) : '0.00'}%</label>
+                                    </div>
+                                    <input
+                                        type="text"
+                                        className="w-full mt-1 p-2 border border-gray-300 rounded"
+                                        value={quote.discount || 0}
+                                        onChange={(e) => {
+                                            const discount = parseFloat(e.target.value) || 0;
+                                            setQuote((prev) => ({
+                                                ...prev,
+                                                discount,
+                                                finalPrice: finalPrice - discount,
+                                            }));
+                                        }}
+                                        onKeyDown={(e) => {
+                                            if (e.key === 'Enter') {
+                                                e.preventDefault();
+                                                // Add logic if we want to do something when enter is pressed
+                                            }
+                                        }}
+                                    />
+                                </div>
+                                <div className="ml-4 mr-4 flex items-center justify-center">
+                                    <label className=" text-white font-bold text-lg mt-6">Final Price: </label>
+                                    <label className=" text-white font-bold text-2xl mt-6 ml-2">${quote.finalPrice}</label>
+                                </div>
+                            </fieldset>
+                        </div>
                     </div>
                     {/* Other Details  Fieldset */}
                     <fieldset className="w-full rounded-2xl border p-4 space-y-4">
@@ -832,6 +1307,13 @@ export default function NewQuote() {
                             <div>
                                 <button type="submit" className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
                                     Send Quote
+                                </button>
+                                <button
+                                    type="button"
+                                    className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-700 ml-10"
+                                    onClick={() => handleReset()}
+                                >
+                                    New Quote
                                 </button>
                             </div>
 
