@@ -181,6 +181,7 @@ const SetProduct = () => {
                                 <div onClick={() => openEditProductModal(product)}>
                                     <h3 className="font-semibold text-lg mb-1">{product.name}</h3>
                                     <p className="text-sm text-gray-700">Price: {product.price}</p>
+                                    <p className="text-sm text-gray-700">Tax: {product.tax}</p>
                                     <p className="text-sm text-gray-700">Type: {product.type || 'N/A'}</p>
                                 </div>
                                 {product.isActive ? (
@@ -273,13 +274,64 @@ const SetProduct = () => {
                                         <div key={field}>
                                             <label className="capitalize">{field}:</label>
                                             <input
-                                                type={field === 'birthdate' ? 'date' : 'text'}
+                                                type="text"
                                                 className="w-full p-2 mt-1 rounded bg-gray-800 text-white"
                                                 value={productData[field] || ''}
-                                                onChange={(e) => setProductData({ ...productData, [field]: e.target.value })}
+                                                onChange={(e) => {
+                                                    const value = field === "price" ? parseFloat(e.target.value) || 0 : e.target.value;
+                                                    const updatedData = { ...productData, [field]: value };
+
+                                                    if (field === "price" && updatedData.taxPercent >= 0) {
+                                                        updatedData.tax = (value * updatedData.taxPercent) / 100;
+                                                        updatedData.finalPrice = value + updatedData.tax;
+                                                    }
+
+                                                    setProductData(updatedData);
+                                                }}
                                             />
                                         </div>
                                     ))}
+
+
+
+                                    <div>
+                                        <label className="capitalize">Tax %:</label>
+                                        <input
+                                            type="number"
+                                            className="w-full p-2 mt-1 rounded bg-gray-800 text-white"
+                                            value={productData.taxPercent || ''}
+                                            onChange={(e) => {
+                                                const percent = parseFloat(e.target.value) || 0;
+                                                const price = parseFloat(productData.price) || 0;
+                                                const tax = (price * percent) / 100;
+                                                setProductData({
+                                                    ...productData,
+                                                    taxPercent: percent,
+                                                    tax: tax,
+                                                    finalPrice: price + tax
+                                                });
+                                            }}
+                                        />
+                                    </div>
+
+                                    <div>
+                                        <label className="capitalize">Tax (value):</label>
+                                        <input
+                                            type="text"
+                                            className="w-full p-2 mt-1 rounded bg-gray-800 text-white"
+                                            value={productData.tax?.toFixed(2) || ''}
+                                            disabled
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="capitalize">Final Price:</label>
+                                        <input
+                                            type="text"
+                                            className="w-full p-2 mt-1 rounded bg-gray-800 text-white"
+                                            value={productData.finalPrice?.toFixed(2) || ''}
+                                            disabled
+                                        />
+                                    </div>
                                     <div className='mt-2 flex flex-row ml-2'>
                                         <label className="block text-sm font-medium">Product Type:</label>
                                         <select

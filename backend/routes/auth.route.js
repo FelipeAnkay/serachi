@@ -1,5 +1,5 @@
 import express from 'express';
-import {login, logout, signup, verifyEmail, forgotPassword, resetPassword, checkAuth } from '../controllers/auth.controller.js';
+import {login, logout, signup, verifyEmail, forgotPassword, resetPassword, checkAuth, updateUser } from '../controllers/auth.controller.js';
 import {createBook, updateBook } from '../controllers/book.controller.js';
 import {createCustomer, updateCustomer, customerList, customerByEmail } from '../controllers/customer.controller.js';
 import {createExperience, updateExperience, experienceList} from '../controllers/experience.controller.js';
@@ -38,6 +38,8 @@ router.post("/verify-email", verifyEmail);
 router.post("/forgot-password", forgotPassword);
 
 router.post("/reset-password/:token", resetPassword);
+
+router.post("/update-user", updateUser);
 
 /* SERVICE ROUTES */
 router.post("/create-service", createService);
