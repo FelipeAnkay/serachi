@@ -72,9 +72,9 @@ export const sendResetPasswordSuccessEmail = async (email) => {
     }
 }
 
-export const sendQuoteEmail = async (email, customerName, dateIn, dateOut, productList, discount, finalPrice, userEmail, userName, storeName) => {
+export const sendQuoteEmail = async (email, customerName, dateIn, dateOut, productList, roomList, discount, finalPrice, userEmail, userName, storeName) => {
 
-    const recipient = [{email}];
+    const recipient = [{ email }];
 
     const customSender = {
         email: userEmail,
@@ -91,13 +91,39 @@ export const sendQuoteEmail = async (email, customerName, dateIn, dateOut, produ
           </tr>
         `;
     }).join("");
-    
+
+    let roomRows;
+
+    if (roomList && roomList.length > 0) {
+        roomRows = roomList.map((room) => {
+            return `
+      <tr>
+        <td>${room.roomName || '-'}</td>
+        <td>${new Date(room.roomDateIn).toISOString().split('T')[0] || '-'}</td>
+        <td>${new Date(room.roomDateOut).toISOString().split('T')[0] || '-'}</td>
+        <td>${room.roomFinalPrice !== undefined ? `$${room.roomFinalPrice}` : '-'}</td>
+      </tr>
+    `;
+        }).join("");
+    } else {
+        roomRows = `
+    <tr>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+    </tr>
+  `;
+    }
+
+
     const html = SEND_QUOTE
         .replace('{{customerName}}', customerName)
         .replace('{{dateIn}}', dateIn)
         .replace('{{dateOut}}', dateOut)
         .replace('{{discount}}', discount)
         .replace('{{finalPrice}}', finalPrice)
+        .replace('{{roomList}}', roomRows)
         .replace('{{productList}}', productRows // reemplaza el bloque con las filas generadas
         );
 

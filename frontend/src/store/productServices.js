@@ -8,19 +8,19 @@ axios.defaults.withCredentials = true;
 
 
 export const useProductServices = create((set) => ({
-    name:null,
+    name: null,
     price: null,
-    type:null,
-    currency:null,
-    durationDays:null,
-    storeId:null,
-    userId:null,
-    isActive:null,
-    supplierId:null,
-    productList:null,
-    product:null,
-    error:null,
-    createProduct: async (productData,storeId,userId) => {
+    type: null,
+    currency: null,
+    durationDays: null,
+    storeId: null,
+    userId: null,
+    isActive: null,
+    supplierId: null,
+    productList: null,
+    product: null,
+    error: null,
+    createProduct: async (productData, storeId, userId) => {
         set({ isLoading: true, error: null });
         try {
             const payload = {
@@ -39,8 +39,8 @@ export const useProductServices = create((set) => ({
             throw error;
         }
     },
-    
-    updateProduct: async (id,updatedVars) => {
+
+    updateProduct: async (id, updatedVars) => {
         set({ isLoading: true, error: null });
         try {
             /*console.log("Payload enviado a updateProduct:", {
@@ -62,11 +62,11 @@ export const useProductServices = create((set) => ({
     },
     removeProduct: async (id) => {
         set({ isLoading: true, error: null });
-        try {         
+        try {
             console.log("Payload enviado a removeProduct:", {
                 id: id,
             });
-            
+
             const response = await axios.post(`${URL_API}/remove-product`, {
                 id: id
             });
@@ -84,7 +84,7 @@ export const useProductServices = create((set) => ({
             //console.log("F: Llamado a getServiceById: ", id);
             const response = await axios.get(`${URL_API}/get-product-id/${id}`);
             //console.log("F: Respueste de getServiceById: ", response);
-            set({ productList: response.data.product, isLoading:false });
+            set({ productList: response.data.product, isLoading: false });
             return response.data;
         } catch (error) {
             set({ error: error.response.data.message || "Error getting product", isLoading: false });
@@ -97,7 +97,7 @@ export const useProductServices = create((set) => ({
             //console.log("F: Llamado a getProductByStoreId: ", storeId);
             const response = await axios.get(`${URL_API}/get-product-store/${storeId}`);
             //console.log("F: Respueste de getProductByStoreId: ", response);
-            set({ productList: response.data.productList, isLoading:false });
+            set({ productList: response.data.productList, isLoading: false });
             return response.data;
         } catch (error) {
             //console.log("F: El error en getProductByStoreId: ", error);
@@ -105,5 +105,18 @@ export const useProductServices = create((set) => ({
             throw error;
         }
     },
-    
+    getProductByType: async (type, storeId) => {
+        set({ isLoading: true, error: null });
+        try {
+            //console.log("F: Llamado a getProductList");
+            const response = await axios.get(`${URL_API}/get-product-type/${type}/${storeId}`);
+            //console.log("F: Respueste de getProductList: ", response);
+            set({ productList: response.data.productList, isLoading: false });
+            return response.data;
+        } catch (error) {
+            set({ error: error.response.data.message || "Error getting products", isLoading: false });
+            throw error;
+        }
+    }
+
 }))

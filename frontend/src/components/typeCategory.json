@@ -1,0 +1,15 @@
+[
+    { "name": "Product" },
+    { "name": "Service" },
+    { "name": "Experience" },
+    { "name": "Book" },
+    { "name": "Customer" },
+    { "name": "Facility" },
+    { "name": "Income" },
+    { "name": "Supplier" },
+    { "name": "Facility" },
+    { "name": "Partner" },
+    { "name": "Room" },
+    { "name": "Staff" },
+    { "name": "User" }
+]
