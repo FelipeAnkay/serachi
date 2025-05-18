@@ -23,6 +23,7 @@
     { "code": "AT", "name": "Austria" },
     { "code": "SE", "name": "Sweden" },
     { "code": "NO", "name": "Norway" },
+    { "code": "US", "name": "United States" },
     { "code": "DK", "name": "Denmark" },
     { "code": "IE", "name": "Ireland" },
     { "code": "PL", "name": "Poland" },

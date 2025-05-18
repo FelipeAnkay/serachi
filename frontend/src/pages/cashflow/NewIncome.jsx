@@ -199,7 +199,18 @@ export default function NewIncome() {
                 <form onSubmit={handleSubmit} className="space-y-6 border rounded-lg p-6 shadow-sm bg-blue-900 text-white">
                     <div>
                         <label className="block font-medium mb-1">Customer Email</label>
-                        <input type="email" name="customerEmail" value={formData.customerEmail} onChange={handleChange} className="w-full border rounded px-3 py-2 bg-gray-200 text-blue-950" />
+                        <input
+                            type="email"
+                            name="customerEmail"
+                            value={formData.customerEmail}
+                            onChange={handleChange}
+                            onKeyDown={(e) => {
+                                if (e.key === 'Enter') {
+                                    e.preventDefault();
+                                }
+                            }}
+                            className="w-full border rounded px-3 py-2 bg-gray-200 text-blue-950"
+                        />
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
@@ -213,6 +224,11 @@ export default function NewIncome() {
                                 name="amount"
                                 value={formData.amount}
                                 onChange={handleAmountChange}
+                                onKeyDown={(e) => {
+                                    if (e.key === 'Enter') {
+                                        e.preventDefault();
+                                    }
+                                }}
                                 className="w-full border rounded px-3 py-2 bg-gray-200 text-blue-950"
                             />
                         </div>

@@ -26,9 +26,20 @@ const quoteSchema = new mongoose.Schema({
         type:String,
         required: true
     },
-    roomId: {
-        type:String
-    },
+    roomList: [
+        {
+            _id: false,
+            roomId: { type: String },
+            roomName: { type: String },
+            roomDateIn:{type: Date},
+            roomDateOut:{type: Date},
+            Qty: { type: Number },
+            roomNights: { type: Number },
+            roomUnitaryPrice: { type: Number },
+            roomFinalPrice: { type: Number },
+            isPrivate: {type: Boolean}
+        }
+    ],
     partnerId: {
         type:String
     },

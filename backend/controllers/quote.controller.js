@@ -4,7 +4,7 @@ import { Quote } from "../models/quote.model.js";
 
 /*Quote FUNCTIONS */
 export const createQuote = async (req, res) => {
-    const { dateIn, dateOut, customerEmail, customerName, storeId, roomId, partnerId, productList, discount,finalPrice,currency,isConfirmed,isReturningCustomer,userEmail, userName, tag, source, customSource} = req.body;
+    const { dateIn, dateOut, customerEmail, customerName, storeId, roomList, partnerId, productList, discount,finalPrice,currency,isConfirmed,isReturningCustomer,userEmail, userName, tag, source, customSource} = req.body;
     //console.log("B: createQuote data: ", dateIn ," - ", dateOut," - ",customerEmail," - ",customerName," - ",storeId," - ",roomId," - ",partnerId," - ",productList," - ",discount," - ",finalPrice," - ",currency," - ",isConfirmed," - ",isReturningCustomer," - ",userEmail," - ",userName," - "," - ",tag)
     try {
         if (!dateIn || !dateOut || !customerEmail || !productList || !finalPrice || !storeId || !userEmail || !customerName || !userName) {
@@ -17,7 +17,7 @@ export const createQuote = async (req, res) => {
             dateIn,
             dateOut,
             customerEmail,
-            roomId,
+            roomList,
             partnerId,
             productList,
             discount,
@@ -38,7 +38,7 @@ export const createQuote = async (req, res) => {
 
         //console.log("B: Los datos para el envío de mail son: ", customerEmail," - ",customerName," - ",dateIn," - ",dateOut," - ",productList," - ",discount," - ",finalPrice," - ",userEmail," - ", userName," - ",store.name);
        
-        await sendQuoteEmail(customerEmail, customerName,dateIn,dateOut,productList,discount,finalPrice, userEmail,userName, store.name);
+        await sendQuoteEmail(customerEmail, customerName,dateIn,dateOut,productList, roomList, discount,finalPrice, userEmail,userName, store.name);
 
         res.status(201).json({
             success: true,

@@ -197,6 +197,11 @@ export default function NewExpense() {
                                 name="amount"
                                 value={formData.amount}
                                 onChange={handleAmountChange}
+                                onKeyDown={(e) => {
+                                    if (e.key === 'Enter') {
+                                        e.preventDefault();
+                                    }
+                                }}
                                 className="w-full border rounded px-3 py-2 bg-gray-200 text-blue-950"
                             />
                         </div>

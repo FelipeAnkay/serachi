@@ -115,3 +115,21 @@ export const removeProduct = async (req, res) => {
         res.status(400).json({ success: false, message: error.message });
     }
 }
+export const getProductByType = async (req, res) => {
+    try {
+        const {storeId, type} = req.params
+        //console.log("B: Entre a productList:", storeId);
+        if (!storeId) {
+            throw new Error("StoreID is required");
+        }
+        const normalizeStoreID = storeId?.toUpperCase();
+        const productList = await Product.find({storeId: normalizeStoreID, type: type});
+        //console.log("El listado de product es:", productList);
+        if (!productList) {
+            return res.status(400).json({ success: false, message: "product not found" });
+        }
+        res.status(200).json({ success: true, productList });
+    } catch (error) {
+        return res.status(400).json({ success: false, message: error.message });
+    }
+}
