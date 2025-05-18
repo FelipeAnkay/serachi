@@ -30,6 +30,7 @@ import NewExpense from './pages/cashflow/NewExpense';
 import SetStaffFee from './pages/settings/SetStaffFee';
 import PRCalculator from './pages/payroll/PRCalculator';
 import CreateService from './pages/experience/CreateService';
+import SetPartner from './pages/settings/SetPartner';
 
 const ProtectedRoute = ({ children }) => {
   const { isAuthenticated, user } = useAuthStore();
@@ -225,6 +226,13 @@ function App() {
           element={
             <ProtectedRoute>
               <SetUsers />
+            </ProtectedRoute>}
+        />
+        <Route
+          path="/set-partner"
+          element={
+            <ProtectedRoute>
+              <SetPartner />
             </ProtectedRoute>}
         />
         <Route
