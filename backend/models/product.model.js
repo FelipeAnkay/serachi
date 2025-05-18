@@ -1,40 +1,48 @@
 import mongoose from "mongoose";
 const productSchema = new mongoose.Schema({
     name: {
-        type:String,
+        type: String,
         required: true
     },
     price: {
-        type:Number,
+        type: Number,
+        required: true
+    },
+    tax: {
+        type: Number,
+        required: true
+    },
+    finalPrice: {
+        type: Number,
         required: true
     },
     type: {
-        type:String,
+        type: String,
         required: true
     },
     currency: {
-        type:String,
+        type: String,
         default: "USD"
     },
     durationDays: {
-        type:Number,
+        type: Number,
         default: 0
     },
     storeId: {
-        type:String,
+        type: String,
         required: true
     },
-    userId:{
-        type:String,
+    userId: {
+        type: String,
         required: true
     },
-    isActive:{
+    isActive: {
         type: Boolean,
         default: true
     },
-    supplierId:{
-        type:String
+    supplierId: {
+        type: String
     }
-},{timestamps : true}); //fields created and updated AT by default with timestamp true
+}, { timestamps: true }); //fields created and updated AT by default with timestamp true
 
 export const Product = mongoose.model('Product', productSchema);

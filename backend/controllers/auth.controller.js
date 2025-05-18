@@ -219,3 +219,28 @@ export const checkAuth = async (req, res) => {
         return res.status(400).json({ success: false, message: error.message });
     }
 }
+export const updateUser = async (req, res) => {
+    const { email, ...updateFields } = req.body;
+    console.log("B: Entre a updateUser", email, " - ", updateFields)
+    try {
+        if (!email) {
+            throw new Error("Id field is required");
+        }
+
+        const user = await User.findOneAndUpdate({email}, updateFields, {
+            new: true
+        });
+
+        res.status(201).json({
+            success: true,
+            message: "user updated succesfully",
+            service: {
+                ...user._doc
+            }
+        })
+
+    } catch (error) {
+        res.status(400).json({ success: false, message: error.message });
+    }
+}
+

@@ -2,7 +2,7 @@ import { Product } from "../models/product.model.js";
 
 /*Product FUNCTIONS */
 export const createProduct = async (req, res) => {
-    const { name, price, currency, type, userId, storeId, durationDays } = req.body;
+    const { name, price, tax, finalPrice,currency, type, userId, storeId, durationDays } = req.body;
     try {
         if (!name || !price || !type || !storeId || !currency) {
             throw new Error("All fields are required");
@@ -13,6 +13,8 @@ export const createProduct = async (req, res) => {
         const product = new Product({
             name,
             price,
+            tax,
+            finalPrice,
             currency,
             type,
             userId,
