@@ -71,9 +71,9 @@ export const usePartnerServices = create((set) => ({
     getPartnerEmail: async (email) => {
         set({ isLoading: true, error: null });
         try {
-            //console.log("F: Llamado a customerEmail");
+            console.log("F: Llamado a customerEmail", email);
             const response = await axios.get(`${URL_API}/get-partner-email/${email}`);
-            //console.log("F: Respueste de customerEmail: ", response);
+            console.log("F: Respueste de customerEmail: ", response);
             set({ partnerList: response.data.partnerList, isLoading:false });
             return response.data;
         } catch (error) {
@@ -83,6 +83,7 @@ export const usePartnerServices = create((set) => ({
     },
     removePartner: async (email) => {
         set({ isLoading: true, error: null });
+        console.log("Entre a removePartner: ", email)
         try {
             const response = await axios.post(`${URL_API}/remove-partner`, {
                 email: email,

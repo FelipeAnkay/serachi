@@ -1,4 +1,4 @@
-import { Banknote, BanknoteArrowDown, Bed, BedDouble, BookMarked, Boxes, Calculator, CalendarHeart, CalendarPlus2, ChevronDown, Contact, DollarSign, HandCoins, Home, MapPinCheckInside, PiggyBank, Receipt, Settings, ShieldUser, Ship, Store, TicketCheck, User, User2, UserPlus, Wallet } from "lucide-react"
+import { Banknote, BanknoteArrowDown, Bed, BedDouble, BookMarked, Boxes, Calculator, CalendarHeart, CalendarPlus2, ChevronDown, Contact, DollarSign, HandCoins, Handshake, Home, MapPinCheckInside, PiggyBank, Receipt, Settings, ShieldUser, Ship, Store, TicketCheck, User, User2, UserPlus, Wallet } from "lucide-react"
 import logo from "../../public/Serachi_logo-nobg.png"
 import { Link } from "react-router-dom"
 import { useState } from "react"
@@ -21,7 +21,7 @@ const LeftMenu = ({ show }) => {
     };
 
     return (
-        <div className={show ? "h-screen w-64 bg-gray-900/30 text-white p-4 ease-in duration-300 ml-0" : "h-screen w-0 overflow-hidden ease-out duration-300"}>
+        <div className={show ? "h-screen w-64 bg-gray-900/30 text-white p-4 ease-in duration-300 ml-0 overflow-y-auto" : "h-screen w-0 overflow-hidden ease-out duration-300"}>
             <div className="flex flex-col items-center justify-center mb-6">
                 <img src={logo} alt="logo" className="w-20 h-20" />
                 <h2 className="text-xl font-bold text-center">Serachi</h2>
@@ -67,6 +67,7 @@ const LeftMenu = ({ show }) => {
                         <li className="hover:bg-blue-500 rounded-lg"><Link to="/set-staff-rates" className="flex items-center gap-2 py-1"><Banknote />Staff Fees</Link></li>
                         <li className="hover:bg-blue-500 rounded-lg"><Link to="/set-rooms" className="flex items-center gap-2 py-1"><Bed />Rooms</Link></li>
                         <li className="hover:bg-blue-500 rounded-lg"><Link to="/set-products" className="flex items-center gap-2 py-1"><Boxes />Products</Link></li>
+                        <li className="hover:bg-blue-500 rounded-lg"><Link to="/set-partner" className="flex items-center gap-2 py-1"><Handshake />Partners</Link></li>
                         <li className="hover:bg-blue-500 rounded-lg"><Link to="/set-store" className="flex items-center gap-2 py-1"><Store />Store</Link></li>
                     </div>
                 </div>
