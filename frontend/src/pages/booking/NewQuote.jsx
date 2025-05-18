@@ -316,14 +316,13 @@ export default function NewQuote() {
                 productID: id,
                 productName: product?.name || '',
                 Qty: qty,
-                productUnitaryPrice: (product?.price || 0),
-                productFinalPrice: (product?.price || 0) * qty,
+                productUnitaryPrice: (product?.finalPrice || 0),
+                productFinalPrice: (product?.finalPrice || 0) * qty,
             };
         });
 
         const productSubtotal = structuredList.reduce((sum, item) => sum + item.productFinalPrice, 0);
         const roomSubtotal = quote.roomList?.reduce((sum, r) => sum + r.roomFinalPrice, 0) || 0;
-
         const total = productSubtotal + roomSubtotal;
 
         setFinalPrice(total);
@@ -806,7 +805,7 @@ export default function NewQuote() {
                                                             }`}
                                                     >
                                                         <h3 className="text-lg font-semibold text-gray-800">
-                                                            {product.name} - {product.durationDays ? product.durationDays + ' days -' : ''} ${product.price}
+                                                            {product.name} - {product.durationDays ? product.durationDays + ' days -' : ''} ${product.finalPrice}
                                                         </h3>
 
                                                         {qty > 0 && (
