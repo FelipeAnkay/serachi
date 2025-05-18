@@ -270,29 +270,38 @@ const SetProduct = () => {
                                     {isEditing ? 'Edit Product' : 'New Product'}
                                 </h3>
                                 <div className="space-y-4 text-sm">
-                                    {["name", "price"].map((field) => (
-                                        <div key={field}>
-                                            <label className="capitalize">{field}:</label>
-                                            <input
-                                                type="text"
-                                                className="w-full p-2 mt-1 rounded bg-gray-800 text-white"
-                                                value={productData[field] || ''}
-                                                onChange={(e) => {
-                                                    const value = field === "price" ? parseFloat(e.target.value) || 0 : e.target.value;
-                                                    const updatedData = { ...productData, [field]: value };
+                                    <div>
+                                        <label className="capitalize">Name:</label>
+                                        <input
+                                            type="text"
+                                            className="w-full p-2 mt-1 rounded bg-gray-800 text-white"
+                                            value={productData.name || ''}
+                                            onChange={(e) =>
+                                                setProductData({ ...productData, name: e.target.value })
+                                            }
+                                        />
+                                    </div>
 
-                                                    if (field === "price" && updatedData.taxPercent >= 0) {
-                                                        updatedData.tax = (value * updatedData.taxPercent) / 100;
-                                                        updatedData.finalPrice = value + updatedData.tax;
-                                                    }
-
-                                                    setProductData(updatedData);
-                                                }}
-                                            />
-                                        </div>
-                                    ))}
-
-
+                                    {/* Price (número con decimales) */}
+                                    <div>
+                                        <label className="capitalize">Price:</label>
+                                        <input
+                                            type="number"
+                                            step="0.01"
+                                            className="w-full p-2 mt-1 rounded bg-gray-800 text-white"
+                                            value={productData.price || ''}
+                                            onChange={(e) => {
+                                                const price = parseFloat(e.target.value.replace(',', '.')) || 0;
+                                                const tax = (price * (productData.taxPercent || 0)) / 100;
+                                                setProductData({
+                                                    ...productData,
+                                                    price,
+                                                    tax,
+                                                    finalPrice: price + tax,
+                                                });
+                                            }}
+                                        />
+                                    </div>
 
                                     <div>
                                         <label className="capitalize">Tax %:</label>
@@ -301,7 +310,8 @@ const SetProduct = () => {
                                             className="w-full p-2 mt-1 rounded bg-gray-800 text-white"
                                             value={productData.taxPercent || ''}
                                             onChange={(e) => {
-                                                const percent = parseFloat(e.target.value) || 0;
+                                                const raw = e.target.value.replace(',', '.');
+                                                const percent = parseFloat(raw) || 0;
                                                 const price = parseFloat(productData.price) || 0;
                                                 const tax = (price * percent) / 100;
                                                 setProductData({

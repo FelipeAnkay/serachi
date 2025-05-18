@@ -56,6 +56,12 @@ const quoteSchema = new mongoose.Schema({
     discount:{
         type:Number
     },
+    taxes:{
+        type:Number
+    },
+    grossPrice:{
+        type:Number
+    },
     finalPrice:{
         type:Number
     },
