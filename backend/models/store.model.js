@@ -22,6 +22,9 @@ const storeSchema = new mongoose.Schema({
         type:String,
         required: true
     },
+    taxDefault: {
+        type: Number,
+    },
     userList: [{
         type:String,
         default: [""]
