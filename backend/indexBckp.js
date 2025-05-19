@@ -5,6 +5,7 @@ import cors from 'cors';
 import authRoutes from "./routes/auth.route.js";
 import cookieParser from 'cookie-parser';
 import path from "path";
+import rateLimit from 'express-rate-limit';
 
 
 dotenv.config();
@@ -21,7 +22,16 @@ app.use(cors({origin: process.env.CLIENT_URL, credentials:true}));
 app.use(express.json());  //Allows us to parse incoming request with JSON
 app.use(cookieParser());
 
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 min
+  max: 20, // máximo 20 peticiones por IP
+  message: "Too many requests from this IP, please try again later.",
+});
+
+app.use("/api/auth", authLimiter);
+
 app.use("/api/auth", authRoutes);
+
 if (process.env.NODE_ENV === "production"){
     app.use(express.static(path.join(__dirname,"/frontend/dist")));
     app.get("*", (req,res) => {

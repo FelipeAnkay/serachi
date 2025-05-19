@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import axios from 'axios';
 
-const URL_API = import.meta.env.MODE === "development" ? "http://localhost:5000/api/auth" : "/api/auth";
+const URL_API = import.meta.env.MODE === "development" ? "http://localhost:5000/api/types" : "/api/types";
 
 
 axios.defaults.withCredentials = true;
@@ -17,7 +17,7 @@ export const useTypeServices = create((set) => ({
         set({ isLoading: true, error: null });
         try {
             console.log("Los datos a enviar en createtype son: ", typeData)
-            const response = await axios.post(`${URL_API}/create-type`, typeData);
+            const response = await axios.post(`${URL_API}/create`, typeData);
             set({ typeList: response.data.typeList, isLoading: false });
             return response.data;
         } catch (error) {
@@ -39,7 +39,7 @@ export const useTypeServices = create((set) => ({
                 ...updatedVars
             });
             */
-            const response = await axios.post(`${URL_API}/update-type`, {
+            const response = await axios.post(`${URL_API}/update`, {
                 id: id,
                 ...updatedVars
             });
@@ -55,7 +55,7 @@ export const useTypeServices = create((set) => ({
         set({ isLoading: true, error: null });
         try {
             //console.log("F: Llamado a gettypeList");
-            const response = await axios.get(`${URL_API}/get-type-store/${storeId}`);
+            const response = await axios.get(`${URL_API}/list/${storeId}`);
             //console.log("F: Respueste de gettypeList: ", response);
             set({ typeList: response.data.typeList, isLoading: false });
             return response.data;
@@ -68,7 +68,7 @@ export const useTypeServices = create((set) => ({
         set({ isLoading: true, error: null });
         try {
             //console.log("F: Llamado a gettypeList");
-            const response = await axios.get(`${URL_API}/get-type-category/${category}/${storeId}`);
+            const response = await axios.get(`${URL_API}/category/${category}/${storeId}`);
             //console.log("F: Respueste de gettypeList: ", response);
             set({ typeList: response.data.typeList, isLoading: false });
             return response.data;

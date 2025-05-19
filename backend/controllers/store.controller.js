@@ -84,7 +84,8 @@ export const getStoreById = async (req, res) => {
 
 export const usersCompany = async (req, res) => {
     try {
-        const userList = await Store.findOne(req.storeId).select("userList");
+        const { storeId } = req.params;
+        const userList = await Store.findOne(storeId).select("userList");
         console.log("El listado de usuarios es:", userList);
         if (!userList) {
             return res.status(400).json({ success: false, message: "User not found" });

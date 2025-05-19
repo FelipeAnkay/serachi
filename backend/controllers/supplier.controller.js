@@ -75,3 +75,22 @@ export const supplierList = async (req, res) => {
         return res.status(400).json({ success: false, message: error.message });
     }
 }
+
+export const supplierByEmail = async (req, res) => {
+    try {
+        console.log("Entre a supplierByEmail")
+        const {email} = req.params
+        console.log("B: el storeID para supplierByEmail es: ", email)
+        if (!email) {
+            throw new Error("Email is required");
+        }
+        const supplierList = await Supplier.find({ email: email });
+        console.log("El listado de supplier es:", supplierList);
+        if (!supplierList || supplierList.length === 0) {
+            return res.status(200).json({ success: false, message: "supplier not found" });
+        }
+        res.status(200).json({ success: true, supplierList });
+    } catch (error) {
+        return res.status(400).json({ success: false, message: error.message });
+    }
+}

@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import axios from 'axios';
 
-const URL_API = import.meta.env.MODE === "development" ? "http://localhost:5000/api/auth" : "/api/auth";
+const URL_API = import.meta.env.MODE === "development" ? "http://localhost:5000/api/quotes" : "/api/quotes";
 
 
 axios.defaults.withCredentials = true;
@@ -27,7 +27,7 @@ export const useQuoteServices = create((set) => ({
         set({ isLoading: true, error: null });
         try {
             console.log("Los datos a enviar en createQuote son: ", quoteData)
-            const response = await axios.post(`${URL_API}/create-quote`, quoteData);
+            const response = await axios.post(`${URL_API}/create`, quoteData);
             set({ quoteList: response.data.quoteList, isLoading: false });
             return response.data;
         } catch (error) {
@@ -49,7 +49,7 @@ export const useQuoteServices = create((set) => ({
                 ...updatedVars
             });
             */
-            const response = await axios.post(`${URL_API}/update-quote`, {
+            const response = await axios.post(`${URL_API}/update`, {
                 id: id,
                 ...updatedVars
             });
@@ -65,7 +65,7 @@ export const useQuoteServices = create((set) => ({
         set({ isLoading: true, error: null });
         try {
             //console.log("F: Llamado a getStaffList");
-            const response = await axios.get(`${URL_API}/get-quote-store/${storeId }`);
+            const response = await axios.get(`${URL_API}/list/${storeId}`);
             //console.log("F: Respueste de getStaffList: ", response);
             set({ quoteList: response.data.quoteList, isLoading:false });
             return response.data;
@@ -78,7 +78,7 @@ export const useQuoteServices = create((set) => ({
         set({ isLoading: true, error: null });
         try {
             //console.log("F: Llamado a getStaffList");
-            const response = await axios.get(`${URL_API}/get-quote-open/${storeId }`);
+            const response = await axios.get(`${URL_API}/open/${storeId }`);
             //console.log("F: Respueste de getStaffList: ", response);
             set({ quoteList: response.data.quoteList, isLoading:false });
             return response.data;
@@ -91,7 +91,7 @@ export const useQuoteServices = create((set) => ({
         set({ isLoading: true, error: null });
         try {
             //console.log("F: Llamado a getStaffList");
-            const response = await axios.get(`${URL_API}/get-quote-confirm/${storeId }`);
+            const response = await axios.get(`${URL_API}/confirm/${storeId }`);
             //console.log("F: Respueste de getStaffList: ", response);
             set({ quoteList: response.data.quoteList, isLoading:false });
             return response.data;
@@ -104,7 +104,7 @@ export const useQuoteServices = create((set) => ({
         set({ isLoading: true, error: null });
         try {
             //console.log("F: Llamado a getStaffList");
-            const response = await axios.get(`${URL_API}/get-quote-id/${id}`);
+            const response = await axios.get(`${URL_API}/get/${id}`);
             //console.log("F: Respueste de getStaffList: ", response);
             set({ quoteList: response.data.quoteList, isLoading:false });
             return response.data;
@@ -117,7 +117,7 @@ export const useQuoteServices = create((set) => ({
         set({ isLoading: true, error: null });
         try {
             //console.log("F: Llamado a getStaffList");
-            const response = await axios.get(`${URL_API}/get-quote-email/${email}`);
+            const response = await axios.get(`${URL_API}/email/${email}`);
             //console.log("F: Respueste de getStaffList: ", response);
             set({ quoteList: response.data.quoteList, isLoading:false });
             return response.data;

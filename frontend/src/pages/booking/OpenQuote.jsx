@@ -1,6 +1,6 @@
 import Cookies from 'js-cookie';
 import { motion } from 'framer-motion';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { useQuoteServices } from '../../store/quoteServices';
 import { useNavigate, useLocation } from "react-router-dom";
 import { Copy, Pencil } from 'lucide-react';

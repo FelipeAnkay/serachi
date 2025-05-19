@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import axios from 'axios';
 
-const URL_API = import.meta.env.MODE === "development" ? "http://localhost:5000/api/auth" : "/api/auth";
+const URL_API = import.meta.env.MODE === "development" ? "http://localhost:5000/api/partners" : "/api/partners";
 
 
 axios.defaults.withCredentials = true;
@@ -21,7 +21,7 @@ export const usePartnerServices = create((set) => ({
         set({ isLoading: true, error: null });
         try {
             //console.log("Entre a createCustomer", customerData);
-            const response = await axios.post(`${URL_API}/create-partner`, partnerData);
+            const response = await axios.post(`${URL_API}/create`, partnerData);
             set({ partnerList: response.data.partnerList, isLoading: false });
             return response.data;
         } catch (error) {
@@ -42,7 +42,7 @@ export const usePartnerServices = create((set) => ({
                 ...updatedVars
             });
             */
-            const response = await axios.post(`${URL_API}/update-partner`, {
+            const response = await axios.post(`${URL_API}/update`, {
                 email: email,
                 storeId: storeId,
                 ...updatedVars
@@ -59,7 +59,7 @@ export const usePartnerServices = create((set) => ({
         set({ isLoading: true, error: null });
         try {
             //console.log("F: Llamado a customerList");
-            const response = await axios.get(`${URL_API}/get-partner-store/${storeId}`);
+            const response = await axios.get(`${URL_API}/list/${storeId}`);
             //console.log("F: Respueste de customerList: ", response);
             set({ partnerList: response.data.partnerList, isLoading:false });
             return response.data;
@@ -72,7 +72,7 @@ export const usePartnerServices = create((set) => ({
         set({ isLoading: true, error: null });
         try {
             console.log("F: Llamado a customerEmail", email);
-            const response = await axios.get(`${URL_API}/get-partner-email/${email}`);
+            const response = await axios.get(`${URL_API}/get/${email}`);
             console.log("F: Respueste de customerEmail: ", response);
             set({ partnerList: response.data.partnerList, isLoading:false });
             return response.data;
@@ -85,7 +85,7 @@ export const usePartnerServices = create((set) => ({
         set({ isLoading: true, error: null });
         console.log("Entre a removePartner: ", email)
         try {
-            const response = await axios.post(`${URL_API}/remove-partner`, {
+            const response = await axios.post(`${URL_API}/remove`, {
                 email: email,
             });
             //console.log("F: Respueste de updateStaff: ", response);

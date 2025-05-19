@@ -8,7 +8,6 @@ import { PlusCircle, Loader2, CirclePlus, Trash2 } from "lucide-react";
 import { usePartnerServices } from '../../store/partnerServices';
 import { useProductServices } from '../../store/productServices';
 import { useQuoteServices } from '../../store/quoteServices';
-import { useCustomerServices } from '../../store/customerServices';
 import { useAuthStore } from '../../store/authStore';
 import paymentMethods from '../../components/paymentMethods.json'
 
@@ -17,7 +16,7 @@ export default function NewIncome() {
     const storeId = Cookies.get('storeId');
     const { getPartnerList } = usePartnerServices();
     const { getProductByStoreId } = useProductServices();
-    const { getConfirmedQuoteList, getQuoteByCustomerEmail } = useQuoteServices();
+    const { getQuoteByCustomerEmail } = useQuoteServices();
     const { user } = useAuthStore();
     const [newTag, setNewTag] = useState({ name: '', code: '' });
 

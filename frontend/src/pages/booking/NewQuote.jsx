@@ -5,20 +5,19 @@ import toast from 'react-hot-toast';
 import { useQuoteServices } from '../../store/quoteServices';
 import { useAuthStore } from '../../store/authStore';
 import { useCustomerServices } from '../../store/customerServices';
-import { CircleX, Contact2, Search, CircleCheck, CirclePlus } from 'lucide-react';
+import { Contact2, Search, CirclePlus } from 'lucide-react';
 import sourceList from '../../components/sourceList.json';
-import { AnimatePresence } from 'framer-motion';
 import { useProductServices } from '../../store/productServices';
 import { usePartnerServices } from '../../store/partnerServices';
 import { useParams } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import CustomerDetails from '../../components/CustomerDetail'
-import { useRoomServices } from '../../store/roomServices';
+import {useRoomReservationServices} from '../../store/roomReservationServices';
 
 
 export default function NewQuote() {
     const { createQuote, getQuoteById, updateQuote } = useQuoteServices();
-    const { getRoomList, getAvailableRooms, splitReservationAcrossRooms, createRoomReservation } = useRoomServices();
+    const { getAvailableRooms  } = useRoomReservationServices();
     const { quoteId } = useParams();
     const storeId = Cookies.get('storeId');
     const clone = Cookies.get('clone');
@@ -51,7 +50,6 @@ export default function NewQuote() {
     let isSplit = false;
     const [numberOfPeople, setNumberOfPeople] = useState(1);
     const [isPeopleLock, setIsPeopleLock] = useState(false);
-    const [firstCall, setFirstCall] = useState(1);
     const hasInteractedWithToggle = useRef(false);
 
     const roomFill = (roomList) => {
@@ -275,7 +273,6 @@ export default function NewQuote() {
         if (quoteId) {
             // Si hay ID, carga la cotización existente
             fetchQuote();
-            setFirstCall(2);
         }
     }, [quoteId]);
 

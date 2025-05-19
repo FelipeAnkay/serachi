@@ -1,7 +1,6 @@
 import Cookies from 'js-cookie';
 import { AnimatePresence, motion } from 'framer-motion';
-import { useState, useEffect, useRef } from 'react';
-import { CircleX, ConeIcon, Copy, MapPinCheckInside, MapPinPlus } from 'lucide-react';
+import { useState, useEffect } from 'react';
 import { useAuthStore } from '../../store/authStore';
 import toast from 'react-hot-toast';
 import { useServiceServices } from '../../store/serviceServices';
@@ -108,8 +107,8 @@ export default function CreateService() {
                     type: auxService.type,
                     staffEmail: auxService.staffEmail
                 }
-                console.log("El servicePayload es:", servicePayload);
-                //const service = await createService(servicePayload);
+                //console.log("El servicePayload es:", servicePayload);
+                const service = await createService(servicePayload);
                 //console.log("Respuesta de createService es:", service);
             };
             toast.success("Services created");

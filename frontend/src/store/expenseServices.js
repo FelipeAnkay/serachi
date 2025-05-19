@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import axios from 'axios';
 
-const URL_API = import.meta.env.MODE === "development" ? "http://localhost:5000/api/auth" : "/api/auth";
+const URL_API = import.meta.env.MODE === "development" ? "http://localhost:5000/api/expenses" : "/api/expenses";
 
 
 axios.defaults.withCredentials = true;
@@ -23,7 +23,7 @@ export const useExpenseServices = create((set) => ({
         set({ isLoading: true, error: null });
         try {
             console.log("Los datos a enviar en createexpense son: ", expenseData)
-            const response = await axios.post(`${URL_API}/create-expense`, expenseData);
+            const response = await axios.post(`${URL_API}/create`, expenseData);
             set({ expenseList: response.data.expenseList, isLoading: false });
             return response.data;
         } catch (error) {
@@ -45,7 +45,7 @@ export const useExpenseServices = create((set) => ({
                 ...updatedVars
             });
             */
-            const response = await axios.post(`${URL_API}/update-expense`, {
+            const response = await axios.post(`${URL_API}/update`, {
                 id: id,
                 ...updatedVars
             });
@@ -61,7 +61,7 @@ export const useExpenseServices = create((set) => ({
         set({ isLoading: true, error: null });
         try {
             //console.log("F: Llamado a getexpenseList");
-            const response = await axios.get(`${URL_API}/get-expense-store/${storeId}`);
+            const response = await axios.get(`${URL_API}/list/${storeId}`);
             //console.log("F: Respueste de getexpenseList: ", response);
             set({ expenseList: response.data.expenseList, isLoading: false });
             return response.data;
@@ -74,7 +74,7 @@ export const useExpenseServices = create((set) => ({
         set({ isLoading: true, error: null });
         try {
             //console.log("F: Llamado a getStaffList");
-            const response = await axios.get(`${URL_API}/get-expense-id/${id}`);
+            const response = await axios.get(`${URL_API}/get/${id}`);
             //console.log("F: Respueste de getStaffList: ", response);
             set({ expenseList: response.data.expenseList, isLoading: false });
             return response.data;

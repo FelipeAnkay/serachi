@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import axios from 'axios';
 
-const URL_API = import.meta.env.MODE === "development" ? "http://localhost:5000/api/auth" : "/api/auth";
+const URL_API = import.meta.env.MODE === "development" ? "http://localhost:5000/api/products" : "/api/products";
 
 
 axios.defaults.withCredentials = true;
@@ -31,7 +31,7 @@ export const useProductServices = create((set) => ({
                 userId: userId
             }
             console.log("F: El producto que voy a crear es: ", payload);
-            const response = await axios.post(`${URL_API}/create-product`, payload);
+            const response = await axios.post(`${URL_API}/create`, payload);
             set({ productList: response.data.product, isLoading: false });
             return response.data;
         } catch (error) {
@@ -50,7 +50,7 @@ export const useProductServices = create((set) => ({
                 ...updatedVars
             });
             */
-            const response = await axios.post(`${URL_API}/update-product`, {
+            const response = await axios.post(`${URL_API}/update`, {
                 id: id,
                 ...updatedVars
             });
@@ -69,7 +69,7 @@ export const useProductServices = create((set) => ({
                 id: id,
             });
 
-            const response = await axios.post(`${URL_API}/remove-product`, {
+            const response = await axios.post(`${URL_API}/remove`, {
                 id: id
             });
             console.log("F: Respueste de removeProduct: ", response);
@@ -84,7 +84,7 @@ export const useProductServices = create((set) => ({
         set({ isLoading: true, error: null });
         try {
             //console.log("F: Llamado a getServiceById: ", id);
-            const response = await axios.get(`${URL_API}/get-product-id/${id}`);
+            const response = await axios.get(`${URL_API}/get/${id}`);
             //console.log("F: Respueste de getServiceById: ", response);
             set({ productList: response.data.product, isLoading: false });
             return response.data;
@@ -97,7 +97,7 @@ export const useProductServices = create((set) => ({
         set({ isLoading: true, error: null });
         try {
             //console.log("F: Llamado a getProductByStoreId: ", storeId);
-            const response = await axios.get(`${URL_API}/get-product-store/${storeId}`);
+            const response = await axios.get(`${URL_API}/list/${storeId}`);
             //console.log("F: Respueste de getProductByStoreId: ", response);
             set({ productList: response.data.productList, isLoading: false });
             return response.data;
@@ -111,7 +111,7 @@ export const useProductServices = create((set) => ({
         set({ isLoading: true, error: null });
         try {
             //console.log("F: Llamado a getProductList");
-            const response = await axios.get(`${URL_API}/get-product-type/${type}/${storeId}`);
+            const response = await axios.get(`${URL_API}/type/${type}/${storeId}`);
             //console.log("F: Respueste de getProductList: ", response);
             set({ productList: response.data.productList, isLoading: false });
             return response.data;

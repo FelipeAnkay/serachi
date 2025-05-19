@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import axios from 'axios';
 
-const URL_API = import.meta.env.MODE === "development" ? "http://localhost:5000/api/auth" : "/api/auth";
+const URL_API = import.meta.env.MODE === "development" ? "http://localhost:5000/api/payrates" : "/api/payrates";
 
 
 axios.defaults.withCredentials = true;
@@ -22,7 +22,7 @@ export const usePayRateServices = create((set) => ({
         set({ isLoading: true, error: null });
         try {
             console.log("Los datos a enviar en createpayrate son: ", payrateData)
-            const response = await axios.post(`${URL_API}/create-payrate`, payrateData);
+            const response = await axios.post(`${URL_API}/create`, payrateData);
             set({ payrateList: response.data.payrateList, isLoading: false });
             return response.data;
         } catch (error) {
@@ -44,7 +44,7 @@ export const usePayRateServices = create((set) => ({
                 ...updatedVars
             });
             */
-            const response = await axios.post(`${URL_API}/update-payrate`, {
+            const response = await axios.post(`${URL_API}/update`, {
                 id: id,
                 ...updatedVars
             });
@@ -60,7 +60,7 @@ export const usePayRateServices = create((set) => ({
         set({ isLoading: true, error: null });
         try {
             //console.log("F: Llamado a getpayrateList");
-            const response = await axios.get(`${URL_API}/get-payrate-store/${storeId}`);
+            const response = await axios.get(`${URL_API}/list/${storeId}`);
             //console.log("F: Respueste de getpayrateList: ", response);
             set({ payrateList: response.data.payrateList, isLoading: false });
             return response.data;
@@ -73,7 +73,7 @@ export const usePayRateServices = create((set) => ({
         set({ isLoading: true, error: null });
         try {
             //console.log("F: Llamado a getpayrateList");
-            const response = await axios.get(`${URL_API}/get-payrate-id/${id}`);
+            const response = await axios.get(`${URL_API}/get/${id}`);
             //console.log("F: Respueste de getpayrateList: ", response);
             set({ payrateList: response.data.payrateList, isLoading: false });
             return response.data;
@@ -86,7 +86,7 @@ export const usePayRateServices = create((set) => ({
         set({ isLoading: true, error: null });
         try {
             //console.log("F: Llamado a getpayrateList");
-            const response = await axios.get(`${URL_API}/get-payrate-email/${email}/${storeId}`);
+            const response = await axios.get(`${URL_API}/email/${email}/${storeId}`);
             //console.log("F: Respueste de getpayrateList: ", response);
             set({ payrateList: response.data.payrateList, isLoading: false });
             return response.data;
@@ -99,7 +99,7 @@ export const usePayRateServices = create((set) => ({
         set({ isLoading: true, error: null });
         try {
             console.log("F: Llamado a removePayrate");
-            const response = await axios.post(`${URL_API}/remove-payrate`, {
+            const response = await axios.post(`${URL_API}/remove`, {
                 id: id,
             });
             //console.log("F: Respueste de removePayrate: ", response);
