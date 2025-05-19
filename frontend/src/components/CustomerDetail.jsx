@@ -84,7 +84,7 @@ export default function CustomerDetails({ isOpen, onClose, customer, setCustomer
                             />
                         </div>
                         <div>
-                            <label className="block text-sm font-medium">National ID</label>
+                            <label className="block text-sm font-medium">National Id or Passport</label>
                             <input
                                 type="text"
                                 className="w-full border border-gray-300 rounded px-3 py-2 mt-1"
@@ -142,21 +142,28 @@ export default function CustomerDetails({ isOpen, onClose, customer, setCustomer
                                 ))}
                             </select>
                         </div>
-                        <select
-                            multiple
-                            value={customer.languages}
-                            onChange={(e) =>
-                                setCustomer({
-                                    ...customer,
-                                    languages: Array.from(e.target.selectedOptions, option => option.value),
-                                })
-                            }
-                            className="w-full p-2 mt-1 rounded bg-gray-800 text-white"
-                        >
-                            {languagesList.map((lang) => (
-                                <option key={lang.code} value={lang.code}>{lang.name}</option>
-                            ))}
-                        </select>
+                        <div>
+                            <label className="block text-sm font-medium mb-2">Languages:</label>
+                            <div className="space-y-2">
+                                {languagesList.map((lang) => (
+                                    <label key={lang.code} className="flex items-center space-x-2">
+                                        <input
+                                            type="checkbox"
+                                            value={lang.code}
+                                            checked={customer.languages.includes(lang.code)}
+                                            onChange={(e) => {
+                                                const updatedLanguages = customer.languages.includes(lang.code)
+                                                    ? customer.languages.filter((code) => code !== lang.code)
+                                                    : [...customer.languages, lang.code];
+                                                setCustomer({ ...customer, languages: updatedLanguages });
+                                            }}
+                                            className="accent-blue-500"
+                                        />
+                                        <span>{lang.name}</span>
+                                    </label>
+                                ))}
+                            </div>
+                        </div>
                         <div className="space-y-4 mt-6">
                             <h3 className="text-lg font-semibold  text-white">
                                 Emergency Contact:
