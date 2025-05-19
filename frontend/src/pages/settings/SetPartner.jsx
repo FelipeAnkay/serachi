@@ -288,7 +288,7 @@ const SetPartner = () => {
                                 ) : (
                                     <div className="space-y-4 text-sm">
                                         <div className="space-y-4">
-                                            <label>Email del partner:</label>
+                                            <label>Email del partner:*</label>
                                             <input
                                                 type="email"
                                                 className="w-full p-2 rounded bg-gray-800 text-white"
@@ -296,19 +296,37 @@ const SetPartner = () => {
                                                 onChange={(e) => setPartnerData({ ...partnerData, email: e.target.value })}
                                             />
                                         </div>
-                                        {["name", "phone", "nationalId"].map((field) => (
-                                            <div key={field}>
-                                                <label className="capitalize">{field}:</label>
-                                                <input
-                                                    type='text'
-                                                    className="w-full p-2 mt-1 rounded bg-gray-800 text-white"
-                                                    value={partnerData[field] || ''}
-                                                    onChange={(e) => setPartnerData({ ...partnerData, [field]: e.target.value })}
-                                                />
-                                            </div>
-                                        ))}
                                         <div>
-                                            <label className="block text-sm font-medium">Country</label>
+                                            <label className="">Name:*</label>
+                                            <input
+                                                type="text"
+                                                className="w-full p-2 mt-1 rounded bg-gray-800 text-white"
+                                                value={partnerData.name || ''}
+                                                onChange={(e) => setPartnerData({ ...partnerData, name: e.target.value })}
+                                            />
+                                        </div>
+
+                                        <div>
+                                            <label className="">Phone (+Country Code-Phone):</label>
+                                            <input
+                                                type="text"
+                                                className="w-full p-2 mt-1 rounded bg-gray-800 text-white"
+                                                value={partnerData.phone || ''}
+                                                onChange={(e) => setPartnerData({ ...partnerData, phone: e.target.value })}
+                                            />
+                                        </div>
+
+                                        <div>
+                                            <label className="capitalize">National Id or Tax Id:</label>
+                                            <input
+                                                type="text"
+                                                className="w-full p-2 mt-1 rounded bg-gray-800 text-white"
+                                                value={partnerData.nationalId || ''}
+                                                onChange={(e) => setPartnerData({ ...partnerData, nationalId: e.target.value })}
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-medium">Country: *</label>
                                             <select
                                                 className="w-full border border-gray-300 rounded px-3 py-2 mt-1"
                                                 value={partnerData.country}
@@ -325,12 +343,15 @@ const SetPartner = () => {
                                                 ))}
                                             </select>
                                         </div>
-
+                                        <div>
+                                            <p>Fields with * are mandatory</p>
+                                        </div>
                                         <div className="flex justify-center mt-6">
                                             <button
                                                 className="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded flex items-center gap-2"
                                                 onClick={handleSave}
                                             >
+
                                                 <p>Save</p><Save />
                                             </button>
                                         </div>

@@ -12,12 +12,12 @@ import { usePartnerServices } from '../../store/partnerServices';
 import { useParams } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import CustomerDetails from '../../components/CustomerDetail'
-import {useRoomReservationServices} from '../../store/roomReservationServices';
+import { useRoomReservationServices } from '../../store/roomReservationServices';
 
 
 export default function NewQuote() {
     const { createQuote, getQuoteById, updateQuote } = useQuoteServices();
-    const { getAvailableRooms  } = useRoomReservationServices();
+    const { getAvailableRooms } = useRoomReservationServices();
     const { quoteId } = useParams();
     const storeId = Cookies.get('storeId');
     const clone = Cookies.get('clone');
@@ -203,7 +203,7 @@ export default function NewQuote() {
 
     useEffect(() => {
         //console.log("Entre a UE 5");
-        //console.log("F: Los datos de quote son: ", quote);
+        console.log("F: Los datos de quote son: ", quote);
         //console.log("F: Los datos de customer son: ", customer);
         //console.log("F: Los datos de Selected Product son: ", selectedProducts);
         //console.log("F: FinalPrice es:", finalPrice)
@@ -306,15 +306,15 @@ export default function NewQuote() {
     };
 
     const updateQuoteFromSelectedProduct = (selected) => {
-        console.log("Entre a updateQuoteFromSelectedProduct", selected);
+        //console.log("Entre a updateQuoteFromSelectedProduct", selected);
         const structuredList = Object.entries(selected).map(([id, qty]) => {
             const product = products.find((p) => p._id === id);
             return {
                 productID: id,
                 productName: product?.name || '',
                 Qty: qty,
-                productUnitaryPrice: Number(product?.finalPrice || 0).toFixed(2),
-                productFinalPrice: Number((product?.finalPrice || 0) * qty).toFixed(2),
+                productUnitaryPrice: (product?.finalPrice || 0),
+                productFinalPrice: ((product?.finalPrice || 0) * qty),
             };
         });
 
@@ -322,11 +322,11 @@ export default function NewQuote() {
         const roomSubtotal = quote.roomList?.reduce((sum, r) => sum + r.roomFinalPrice, 0) || 0;
         const total = productSubtotal + roomSubtotal;
 
-        setFinalPrice(Number(total).toFixed(2));
+        setFinalPrice(total);
         setQuote((prev) => ({
             ...prev,
             discount: 0,
-            finalPrice: Number(total).toFixed(2),
+            finalPrice: total,
             productList: structuredList,
         }));
 
@@ -379,10 +379,10 @@ export default function NewQuote() {
                 roomId: id,
                 roomName: room?.name || '',
                 Qty: adjustedQty,
-                roomUnitaryPrice: Number(room?.price || 0).toFixed(2),
+                roomUnitaryPrice: (room?.price || 0),
                 roomNights: (qty || 0),
                 isPrivate: isPrivate,
-                roomFinalPrice: Number((room?.price || 0) * qty * adjustedQty).toFixed(2),
+                roomFinalPrice: ((room?.price || 0) * qty * adjustedQty),
                 roomDateIn: isNaN(startDate) ? '' : startDate.toISOString(),
                 roomDateOut: isNaN(endDate) ? '' : endDate.toISOString(),
             };
@@ -393,11 +393,11 @@ export default function NewQuote() {
 
         const total = productSubtotal + roomSubtotal;
 
-        setFinalPrice(Number(total).toFixed(2));
+        setFinalPrice(total);
         setQuote((prev) => ({
             ...prev,
             discount: 0,
-            finalPrice: Number(total).toFixed(2),
+            finalPrice: total,
             roomList: structuredList,
         }));
 
@@ -627,6 +627,28 @@ export default function NewQuote() {
         }
 
     };
+    const handleSetProductQty = (productId, newQty) => {
+        setSelectedProducts((prev) => {
+            const updated = { ...prev };
+            if (newQty <= 0) {
+                delete updated[productId];
+            } else {
+                updated[productId] = newQty;
+            }
+            return updateQuoteFromSelectedProduct(updated);
+        });
+    };
+    const handleSetRoomtQty = (roomId, newQty) => {
+        setSelectedRooms((prev) => {
+            const updated = { ...prev };
+            if (newQty <= 0) {
+                delete updated[roomId];
+            } else {
+                updated[roomId] = newQty;
+            }
+            return updateQuoteFromSelectedRoom(updated);
+        });
+    };
 
     const daysCalc = (datein, dateout) => {
         const initialDate = new Date(datein);
@@ -798,23 +820,48 @@ export default function NewQuote() {
                                                 return (
                                                     <div
                                                         key={product._id}
-                                                        className={`border rounded-lg p-2 hover:shadow transition relative ${qty > 0 ? ' bg-green-100 border-green-500 border-2 ' : 'border-gray-300 bg-blue-100'
+                                                        className={`border rounded-lg p-2 hover:shadow transition relative flex flex-col sm:flex-row items-center sm:items-start gap-2 ${qty > 0 ? 'bg-green-100 border-green-500 border-2' : 'border-gray-300 bg-blue-100'
                                                             }`}
                                                     >
-                                                        <h3 className="text-lg font-semibold text-gray-800">
-                                                            {product.name} - {product.durationDays ? product.durationDays + ' days -' : ''} ${product.finalPrice.toFixed(2)}
-                                                        </h3>
+                                                        <div className='w-full sm:w-3/4'>
+                                                            <h3 className="text-lg font-semibold text-gray-800">
+                                                                {product.name} - {product.durationDays ? product.durationDays + ' days -' : ''} ${product.finalPrice.toFixed(2)}
+                                                            </h3>
+                                                        </div>
 
-                                                        {qty > 0 && (
-                                                            <div className="absolute top-2 right-2 flex gap-2 items-center">
-                                                                <button
-                                                                    type="button"
-                                                                    onClick={() => decrementProduct(product._id)}
-                                                                    className="bg-red-500 text-white px-2 rounded hover:bg-red-600"
-                                                                >
-                                                                    -
-                                                                </button>
-                                                                <span className="text-sm font-bold text-black">{qty}</span>
+                                                        <div className='w-full sm:w-1/4 flex justify-center sm:justify-end'>
+                                                            {qty > 0 ? (
+                                                                <div className="flex gap-2 items-center">
+                                                                    <button
+                                                                        type="button"
+                                                                        onClick={() => decrementProduct(product._id)}
+                                                                        className="bg-red-500 text-white px-2 rounded hover:bg-red-600"
+                                                                    >
+                                                                        -
+                                                                    </button>
+
+                                                                    <input
+                                                                        type="number"
+                                                                        min="0"
+                                                                        value={qty}
+                                                                        onChange={(e) => {
+                                                                            const newQty = parseInt(e.target.value, 10);
+                                                                            if (!isNaN(newQty)) {
+                                                                                handleSetProductQty(product._id, newQty);
+                                                                            }
+                                                                        }}
+                                                                        className="w-12 text-center font-bold text-black border rounded"
+                                                                    />
+
+                                                                    <button
+                                                                        type="button"
+                                                                        onClick={() => incrementProduct(product._id)}
+                                                                        className="bg-green-500 text-white px-2 rounded hover:bg-green-600"
+                                                                    >
+                                                                        +
+                                                                    </button>
+                                                                </div>
+                                                            ) : (
                                                                 <button
                                                                     type="button"
                                                                     onClick={() => incrementProduct(product._id)}
@@ -822,20 +869,8 @@ export default function NewQuote() {
                                                                 >
                                                                     +
                                                                 </button>
-                                                            </div>
-                                                        )}
-
-                                                        {qty === 0 && (
-                                                            <div className="absolute top-2 right-2">
-                                                                <button
-                                                                    type="button"
-                                                                    onClick={() => incrementProduct(product._id)}
-                                                                    className="bg-green-500 text-white px-2 rounded hover:bg-green-600"
-                                                                >
-                                                                    +
-                                                                </button>
-                                                            </div>
-                                                        )}
+                                                            )}
+                                                        </div>
                                                     </div>
                                                 );
                                             })
@@ -893,9 +928,9 @@ export default function NewQuote() {
                                                     return (
                                                         <div
                                                             key={room._id}
-                                                            className="bg-gray-100 p-4 rounded shadow text-black flex flex-row justify-between"
+                                                            className="bg-gray-100 p-2 rounded shadow text-black flex flex-col sm:flex-row"
                                                         >
-                                                            <div>
+                                                            <div className='w-full sm:w-3/4'>
                                                                 <h4 className="font-semibold text-lg">{room.name} - ${room.price.toFixed(2)}</h4>
                                                                 <p className="text-sm text-gray-700">Tipo: {room.type}</p>
                                                                 <p className="text-sm text-gray-700">Capacidad: {room.availability}</p>
@@ -928,9 +963,9 @@ export default function NewQuote() {
                                                                     </div>
                                                                 )}
                                                             </div>
-                                                            <div className='text-center'>
+                                                            <div className='text-center w-full sm:w-1/4 mt-4 sm:mt-0'>
                                                                 Nights:
-                                                                <div className="flex items-center gap-2">
+                                                                <div className="flex items-center justify-center gap-2">
                                                                     <button
                                                                         type="button"
                                                                         className="bg-red-500 text-white px-2 rounded"
@@ -939,20 +974,41 @@ export default function NewQuote() {
                                                                     >
                                                                         -
                                                                     </button>
-                                                                    <span>{qty}</span>
+                                                                    <input
+                                                                        type="number"
+                                                                        min="0"
+                                                                        value={qty}
+                                                                        onChange={(e) => {
+                                                                            const newQty = parseInt(e.target.value, 10);
+                                                                            if (!isNaN(newQty)) {
+                                                                                handleSetRoomtQty(room._id, newQty);
+                                                                            }
+                                                                        }}
+                                                                        className="w-12 text-center font-bold text-black border rounded"
+                                                                    />
                                                                     <button
                                                                         type="button"
-                                                                        className={`px-2 rounded ${roomDateRanges[room._id]?.length > 0 && !room.availableEveryNight && !roomStartDates[room._id]
+                                                                        className={`px-2 rounded ${roomDateRanges[room._id]?.length > 0 &&
+                                                                            !room.availableEveryNight &&
+                                                                            !roomStartDates[room._id]
                                                                             ? "bg-gray-400 cursor-not-allowed"
                                                                             : "bg-green-600 hover:bg-green-700 text-white"
                                                                             }`}
                                                                         disabled={
                                                                             qty >= maxQty ||
-                                                                            (roomDateRanges[room._id]?.length > 0 && !room.availableEveryNight && !roomStartDates[room._id])
+                                                                            (roomDateRanges[room._id]?.length > 0 &&
+                                                                                !room.availableEveryNight &&
+                                                                                !roomStartDates[room._id])
                                                                         }
                                                                         onClick={() => {
-                                                                            if (roomDateRanges[room._id]?.length > 0 && !room.availableEveryNight && !roomStartDates[room._id]) {
-                                                                                toast.error("Please select a start date for this room before increasing quantity.");
+                                                                            if (
+                                                                                roomDateRanges[room._id]?.length > 0 &&
+                                                                                !room.availableEveryNight &&
+                                                                                !roomStartDates[room._id]
+                                                                            ) {
+                                                                                toast.error(
+                                                                                    "Please select a start date for this room before increasing quantity."
+                                                                                );
                                                                                 return;
                                                                             }
                                                                             incrementRoom(room._id);
@@ -967,7 +1023,7 @@ export default function NewQuote() {
                                                                         Total: ${totalPrice.toFixed(2)}
                                                                     </div>
                                                                     {room.type === "SHARED" && roomDateRanges[room._id]?.length > 0 && (
-                                                                        <div className="mt-2">
+                                                                        <div className="flex mt-2 text-center justify-center">
                                                                             <label className="text-sm flex items-center gap-2">
                                                                                 <input
                                                                                     type="checkbox"

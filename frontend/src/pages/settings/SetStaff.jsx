@@ -300,17 +300,45 @@ const SetStaff = () => {
                                     </div>
                                 ) : (
                                     <div className="space-y-4 text-sm">
-                                        {["name", "phone", "birthdate", "nationalId"].map((field) => (
-                                            <div key={field}>
-                                                <label className="capitalize">{field}:</label>
-                                                <input
-                                                    type={field === 'birthdate' ? 'date' : 'text'}
-                                                    className="w-full p-2 mt-1 rounded bg-gray-800 text-white"
-                                                    value={staffData[field] || ''}
-                                                    onChange={(e) => setStaffData({ ...staffData, [field]: e.target.value })}
-                                                />
-                                            </div>
-                                        ))}
+                                        <div>
+                                            <label className="">Name:</label>
+                                            <input
+                                                type="text"
+                                                className="w-full p-2 mt-1 rounded bg-gray-800 text-white"
+                                                value={staffData.name || ''}
+                                                onChange={(e) => setStaffData({ ...staffData, name: e.target.value })}
+                                            />
+                                        </div>
+
+                                        <div>
+                                            <label className="">Phone (+Country Code-Phone):</label>
+                                            <input
+                                                type="text"
+                                                className="w-full p-2 mt-1 rounded bg-gray-800 text-white"
+                                                value={staffData.phone || ''}
+                                                onChange={(e) => setStaffData({ ...staffData, phone: e.target.value })}
+                                            />
+                                        </div>
+
+                                        <div>
+                                            <label className="">Birthdate:</label>
+                                            <input
+                                                type="date"
+                                                className="w-full p-2 mt-1 rounded bg-gray-800 text-white"
+                                                value={staffData.birthdate || ''}
+                                                onChange={(e) => setStaffData({ ...staffData, birthdate: e.target.value })}
+                                            />
+                                        </div>
+
+                                        <div>
+                                            <label className="capitalize">National Id or Passport:</label>
+                                            <input
+                                                type="text"
+                                                className="w-full p-2 mt-1 rounded bg-gray-800 text-white"
+                                                value={staffData.nationalId || ''}
+                                                onChange={(e) => setStaffData({ ...staffData, nationalId: e.target.value })}
+                                            />
+                                        </div>
                                         <div>
                                             <label className="block text-sm font-medium">Country</label>
                                             <select
@@ -330,21 +358,26 @@ const SetStaff = () => {
                                             </select>
                                         </div>
                                         <div>
-                                            <select
-                                                multiple
-                                                value={staffData.languages}
-                                                onChange={(e) =>
-                                                    setStaffData({
-                                                        ...staffData,
-                                                        languages: Array.from(e.target.selectedOptions, option => option.value),
-                                                    })
-                                                }
-                                                className="w-full p-2 mt-1 rounded bg-gray-800 text-white"
-                                            >
+                                            <label className="block text-sm font-medium mb-2">Speaking Languages:</label>
+                                            <div className="space-y-2">
                                                 {languagesList.map((lang) => (
-                                                    <option key={lang.code} value={lang.code}>{lang.name}</option>
+                                                    <label key={lang.code} className="flex items-center space-x-2">
+                                                        <input
+                                                            type="checkbox"
+                                                            value={lang.code}
+                                                            checked={staffData.languages.includes(lang.code)}
+                                                            onChange={(e) => {
+                                                                const selected = staffData.languages.includes(lang.code)
+                                                                    ? staffData.languages.filter((code) => code !== lang.code)
+                                                                    : [...staffData.languages, lang.code];
+                                                                setStaffData({ ...staffData, languages: selected });
+                                                            }}
+                                                            className="accent-blue-500"
+                                                        />
+                                                        <span>{lang.name}</span>
+                                                    </label>
                                                 ))}
-                                            </select>
+                                            </div>
                                         </div>
                                         <div className="space-y-4">
                                             <h4 className="text-lg font-bold">Professional Certificates</h4>

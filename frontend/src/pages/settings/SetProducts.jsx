@@ -271,7 +271,7 @@ const SetProduct = () => {
                                 </h3>
                                 <div className="space-y-4 text-sm">
                                     <div>
-                                        <label className="capitalize">Name:</label>
+                                        <label className="capitalize">Name:*</label>
                                         <input
                                             type="text"
                                             className="w-full p-2 mt-1 rounded bg-gray-800 text-white"
@@ -281,18 +281,19 @@ const SetProduct = () => {
                                             }
                                         />
                                     </div>
-
-                                    {/* Price (número con decimales) */}
+                                    {/* Price */}
                                     <div>
-                                        <label className="capitalize">Price:</label>
+                                        <label className="capitalize">Price: *</label>
                                         <input
-                                            type="number"
-                                            step="0.01"
+                                            type="text"
+                                            inputMode="decimal"
                                             className="w-full p-2 mt-1 rounded bg-gray-800 text-white"
-                                            value={productData.price || ''}
+                                            value={productData.price?.toString().replace('.', ',') || ''}
                                             onChange={(e) => {
-                                                const price = parseFloat(e.target.value.replace(',', '.')) || 0;
-                                                const tax = (price * (productData.taxPercent || 0)) / 100;
+                                                const raw = e.target.value.replace(',', '.');
+                                                const price = parseFloat(raw) || 0;
+                                                const taxPercent = productData.taxPercent || 0;
+                                                const tax = (price * taxPercent) / 100;
                                                 setProductData({
                                                     ...productData,
                                                     price,
@@ -303,47 +304,77 @@ const SetProduct = () => {
                                         />
                                     </div>
 
+                                    {/* Tax % (editable) */}
                                     <div>
                                         <label className="capitalize">Tax %:</label>
                                         <input
-                                            type="number"
+                                            type="text"
+                                            inputMode="decimal"
                                             className="w-full p-2 mt-1 rounded bg-gray-800 text-white"
-                                            value={productData.taxPercent || ''}
+                                            value={productData.taxPercent?.toString().replace('.', ',') || ''}
                                             onChange={(e) => {
                                                 const raw = e.target.value.replace(',', '.');
-                                                const percent = parseFloat(raw) || 0;
-                                                const price = parseFloat(productData.price) || 0;
-                                                const tax = (price * percent) / 100;
+                                                const taxPercent = parseFloat(raw) || 0;
+                                                const price = productData.price || 0;
+                                                const tax = (price * taxPercent) / 100;
                                                 setProductData({
                                                     ...productData,
-                                                    taxPercent: percent,
-                                                    tax: tax,
-                                                    finalPrice: price + tax
+                                                    taxPercent,
+                                                    tax,
+                                                    finalPrice: price + tax,
                                                 });
                                             }}
                                         />
                                     </div>
 
+                                    {/* Tax (editable) */}
                                     <div>
                                         <label className="capitalize">Tax (value):</label>
                                         <input
                                             type="text"
+                                            inputMode="decimal"
                                             className="w-full p-2 mt-1 rounded bg-gray-800 text-white"
-                                            value={productData.tax?.toFixed(2) || ''}
-                                            disabled
+                                            value={productData.tax?.toString().replace('.', ',') || ''}
+                                            onChange={(e) => {
+                                                const raw = e.target.value.replace(',', '.');
+                                                const tax = parseFloat(raw) || 0;
+                                                const price = productData.price || 0;
+                                                const taxPercent = price ? (tax / price) * 100 : 0;
+                                                setProductData({
+                                                    ...productData,
+                                                    tax,
+                                                    taxPercent,
+                                                    finalPrice: price + tax,
+                                                });
+                                            }}
                                         />
                                     </div>
+
+                                    {/* Final Price (editable) */}
                                     <div>
                                         <label className="capitalize">Final Price:</label>
                                         <input
                                             type="text"
+                                            inputMode="decimal"
                                             className="w-full p-2 mt-1 rounded bg-gray-800 text-white"
-                                            value={productData.finalPrice?.toFixed(2) || ''}
-                                            disabled
+                                            value={productData.finalPrice?.toString().replace('.', ',') || ''}
+                                            onChange={(e) => {
+                                                const raw = e.target.value.replace(',', '.');
+                                                const finalPrice = parseFloat(raw) || 0;
+                                                const price = productData.price || 0;
+                                                const tax = finalPrice - price;
+                                                const taxPercent = price ? (tax / price) * 100 : 0;
+                                                setProductData({
+                                                    ...productData,
+                                                    finalPrice,
+                                                    tax,
+                                                    taxPercent,
+                                                });
+                                            }}
                                         />
                                     </div>
                                     <div className='mt-2 flex flex-row ml-2'>
-                                        <label className="block text-sm font-medium">Product Type:</label>
+                                        <label className="block text-sm font-medium">Product Type:*</label>
                                         <select
                                             name="type"
                                             className="ml-2 w-full border border-gray-300 bg-white text-blue-950 rounded px-3 py-2"
@@ -358,7 +389,9 @@ const SetProduct = () => {
                                             ))}
                                         </select>
                                     </div>
-
+                                    <div>
+                                        <p>Fields with * are mandatory</p>
+                                    </div>
                                     <div className="flex justify-center mt-6">
                                         <button
                                             className="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded flex items-center gap-2"
