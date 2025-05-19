@@ -16,7 +16,7 @@ export const useAuthStore = create((set) => ({
     message:null,
     roleList:null,
     storeId:null,
-    signup: async(email, password, name) => {
+    signup: async(email, password, name, phone) => {
         set({isLoading:true,error:null});
         try {
            const response = await axios.post(`${URL_API}/signup`,{email,password,name,phone});
