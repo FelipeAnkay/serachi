@@ -749,40 +749,45 @@ export default function NewQuote() {
                             </div>
                         </fieldset>
                         {/* DATOS DE COTIZACION*/}
-                        <fieldset className="border rounded-2xl w-1/2 flex pl-4 ml-4 justify-center">
+                        <fieldset className="border rounded-2xl w-1/2 flex flex-col pl-4 ml-4 justify-center">
                             <legend className="font-semibold text-lg">Dates</legend>
-                            <div className="w-1/2">
-                                <label>Check-in</label>
-                                <input type="datetime-local"
-                                    name="dateIn"
-                                    value={formatDateInput(quote.dateIn)}
-                                    onChange={handleQuoteChange}
-                                    className="w-full border px-2 py-1 rounded bg-white text-blue-950"
-                                    min={new Date().toISOString().split('T')[0]}
-                                    onKeyDown={(e) => {
-                                        if (e.key === 'Enter') {
-                                            e.preventDefault();
-                                            // Add logic if we want to do something when enter is pressed
-                                        }
-                                    }}
-                                />
+                            <div className='flex flex-row'>
+                                <div className="w-1/2">
+                                    <label>Check-in</label>
+                                    <input type="datetime-local"
+                                        name="dateIn"
+                                        value={formatDateInput(quote.dateIn)}
+                                        onChange={handleQuoteChange}
+                                        className="w-full border px-2 py-1 rounded bg-white text-blue-950"
+                                        min={new Date().toISOString().split('T')[0]}
+                                        onKeyDown={(e) => {
+                                            if (e.key === 'Enter') {
+                                                e.preventDefault();
+                                                // Add logic if we want to do something when enter is pressed
+                                            }
+                                        }}
+                                    />
+                                </div>
+                                <div className="w-1/2 pl-2 pr-2">
+                                    <label>Check-out</label>
+                                    <input type="datetime-local"
+                                        name="dateOut"
+                                        value={formatDateInput(quote.dateOut)}
+                                        onChange={handleQuoteChange}
+                                        className={`w-full border px-2 py-1 rounded text-blue-950 ${!quote.dateIn ? 'bg-gray-400' : 'bg-white'}`}
+                                        min={quote.dateIn || new Date().toISOString().split('T')[0]}
+                                        disabled={!quote.dateIn}
+                                        onKeyDown={(e) => {
+                                            if (e.key === 'Enter') {
+                                                e.preventDefault();
+                                                // Add logic if we want to do something when enter is pressed
+                                            }
+                                        }}
+                                    />
+                                </div>
                             </div>
-                            <div className="w-1/2 pl-2 pr-2">
-                                <label>Check-out</label>
-                                <input type="datetime-local"
-                                    name="dateOut"
-                                    value={formatDateInput(quote.dateOut)}
-                                    onChange={handleQuoteChange}
-                                    className={`w-full border px-2 py-1 rounded text-blue-950 ${!quote.dateIn ? 'bg-gray-400' : 'bg-white'}`}
-                                    min={quote.dateIn || new Date().toISOString().split('T')[0]}
-                                    disabled={!quote.dateIn}
-                                    onKeyDown={(e) => {
-                                        if (e.key === 'Enter') {
-                                            e.preventDefault();
-                                            // Add logic if we want to do something when enter is pressed
-                                        }
-                                    }}
-                                />
+                            <div className='flex justify-center mt-1'>
+                                <p className='text-sm'> * Rooms will not be visible until you pick dates</p>
                             </div>
                         </fieldset>
                     </div>

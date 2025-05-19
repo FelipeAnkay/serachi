@@ -71,8 +71,8 @@ export const roomReservationList = async (req, res) => {
         }
         const normalizeStoreID = storeId?.toUpperCase();
         const roomReservationList = await RoomReservation.find({ storeId: normalizeStoreID });
-        console.log("El listado de Reservation es:", roomReservationList);
-        if (!roomReservationList || roomReservationList.length === 0) {
+        //console.log("El listado de Reservation es:", roomReservationList);
+        if (!roomReservationList) {
             return res.status(200).json({ success: false, message: "Reservation not found" });
         }
         res.status(200).json({ success: true, roomReservationList });

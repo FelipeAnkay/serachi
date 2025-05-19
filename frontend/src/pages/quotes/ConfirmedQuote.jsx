@@ -70,6 +70,7 @@ export default function ConfirmedQuote() {
         };
         const fetchReservations = async () => {
             const response = await getReservations(storeId);
+            //console.log("getReservations Response: ", response);
             setExistingReservations(response.roomReservationList);
         }
 
