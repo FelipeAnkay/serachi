@@ -316,8 +316,8 @@ export default function NewQuote() {
                 productID: id,
                 productName: product?.name || '',
                 Qty: qty,
-                productUnitaryPrice: (product?.finalPrice || 0),
-                productFinalPrice: ((product?.finalPrice || 0) * qty),
+                productUnitaryPrice: Number(product?.finalPrice || 0).toFixed(2),
+                productFinalPrice: Number((product?.finalPrice || 0) * qty).toFixed(2),
             };
         });
 
@@ -325,11 +325,11 @@ export default function NewQuote() {
         const roomSubtotal = quote.roomList?.reduce((sum, r) => sum + r.roomFinalPrice, 0) || 0;
         const total = productSubtotal + roomSubtotal;
 
-        setFinalPrice(total);
+        setFinalPrice(Number(total).toFixed(2));
         setQuote((prev) => ({
             ...prev,
             discount: 0,
-            finalPrice: total,
+            finalPrice: Number(total).toFixed(2),
             productList: structuredList,
         }));
 
@@ -382,10 +382,10 @@ export default function NewQuote() {
                 roomId: id,
                 roomName: room?.name || '',
                 Qty: adjustedQty,
-                roomUnitaryPrice: (room?.price || 0),
+                roomUnitaryPrice: Number(room?.price || 0).toFixed(2),
                 roomNights: (qty || 0),
                 isPrivate: isPrivate,
-                roomFinalPrice: ((room?.price || 0) * qty * adjustedQty).toFixed(2),
+                roomFinalPrice: Number((room?.price || 0) * qty * adjustedQty).toFixed(2),
                 roomDateIn: isNaN(startDate) ? '' : startDate.toISOString(),
                 roomDateOut: isNaN(endDate) ? '' : endDate.toISOString(),
             };
@@ -396,11 +396,11 @@ export default function NewQuote() {
 
         const total = productSubtotal + roomSubtotal;
 
-        setFinalPrice(total);
+        setFinalPrice(Number(total).toFixed(2));
         setQuote((prev) => ({
             ...prev,
             discount: 0,
-            finalPrice: total.toFixed(2),
+            finalPrice: Number(total).toFixed(2),
             roomList: structuredList,
         }));
 
@@ -1048,7 +1048,7 @@ export default function NewQuote() {
                                 </div>
 
                                 <div className="flex ml-4 mr-4 items-center justify-center">
-                                    <label className=" text-white font-bold text-lg">Price: ${finalPrice}</label>
+                                    <label className=" text-white font-bold text-lg">Price: ${Number(finalPrice).toFixed(2)}</label>
                                 </div>
                                 <div className="ml-4 mr-4">
                                     <div className="flex justify-between w-full">
@@ -1056,28 +1056,35 @@ export default function NewQuote() {
                                         <label className="block text-sm font-medium text-white">{(finalPrice && quote.discount) ? ((quote.discount / finalPrice) * 100).toFixed(2) : '0.00'}%</label>
                                     </div>
                                     <input
-                                        type="text"
+                                        type="number"
+                                        step="0.01"
+                                        min="0"
                                         className="w-full mt-1 p-2 border border-gray-300 rounded"
-                                        value={quote.discount || 0}
+                                        value={quote.discount}
                                         onChange={(e) => {
-                                            const discount = parseFloat(e.target.value) || 0;
+                                            let raw = e.target.value.replace(',', '.'); // Soporta coma decimal
+                                            const parsed = parseFloat(raw);
+                                            const discount = isNaN(parsed) ? 0 : parsed;
+
+                                            const updatedFinalPrice = Math.max(0, parseFloat(finalPrice) - discount); // evita negativos
+
                                             setQuote((prev) => ({
                                                 ...prev,
                                                 discount,
-                                                finalPrice: finalPrice - discount,
+                                                finalPrice: updatedFinalPrice,
                                             }));
                                         }}
                                         onKeyDown={(e) => {
                                             if (e.key === 'Enter') {
                                                 e.preventDefault();
-                                                // Add logic if we want to do something when enter is pressed
+                                                // Lógica extra opcional
                                             }
                                         }}
                                     />
                                 </div>
                                 <div className="ml-4 mr-4 flex items-center justify-center">
                                     <label className=" text-white font-bold text-lg mt-6">Final Price: </label>
-                                    <label className=" text-white font-bold text-2xl mt-6 ml-2">${quote.finalPrice}</label>
+                                    <label className=" text-white font-bold text-2xl mt-6 ml-2">${Number(quote.finalPrice).toFixed(2)}</label>
                                 </div>
                             </fieldset>
                         </div>
