@@ -21,7 +21,7 @@ const SignUpPage = () => {
     e.preventDefault();
     try {
       //console.log("Creare el siguiente usuario:", email, " - ", password, " - ", email, " - ", phone)
-      await signup(email,password,name,phone);
+      await signup(email, password, name, phone);
       navigate("/verify-email");
     } catch (error) {
       console.log(error);
