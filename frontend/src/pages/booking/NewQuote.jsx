@@ -867,7 +867,7 @@ export default function NewQuote() {
                                             <p className='text-yellow-500 font-bold text-sm'>*** {roomNote.toUpperCase()} ***</p>
                                         </div>
                                     )}
-                                    <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+                                    <div className="grid gap-4 grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-2">
                                         {rooms.length === 0 ? (
                                             <p>No room found for this store.</p>
                                         ) : (
