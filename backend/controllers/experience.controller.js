@@ -82,7 +82,8 @@ export const experienceList = async (req, res) => {
         const experienceList = await Experience.find(req.storeId);
         //console.log("El listado de experiencias es:", experienceList);
         if (!experienceList) {
-            return res.status(400).json({ success: false, message: "Experiences not found" });
+            //console.log("ENTRE A NoExp");
+            return res.status(200).json({ success: false, message: "Experiences not found" });
         }
         res.status(200).json({ success: true, experienceList });
     } catch (error) {

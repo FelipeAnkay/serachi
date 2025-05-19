@@ -89,7 +89,7 @@ export const quoteList = async (req, res) => {
         const quoteList = await Quote.find({storeId: normalizeStoreID});
         //console.log("El listado de quotes es:", quoteList);
         if (!quoteList) {
-            return res.status(400).json({ success: false, message: "Quotes not found" });
+            return res.status(200).json({ success: false, message: "Quotes not found" });
         }
         res.status(200).json({ success: true, quoteList });
     } catch (error) {
