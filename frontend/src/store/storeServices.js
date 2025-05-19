@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import axios from 'axios';
 
-const URL_API = import.meta.env.MODE === "development" ? "http://localhost:5000/api/auth" : "/api/auth";
+const URL_API = import.meta.env.MODE === "development" ? "http://localhost:5000/api/stores" : "/api/stores";
 
 
 axios.defaults.withCredentials = true;
@@ -22,7 +22,7 @@ export const useStoreServices = create((set) => ({
         set({ isLoading: true, error: null });
         try {
             //console.log("Los datos a enviar en createstore son: ", storeData)
-            const response = await axios.post(`${URL_API}/create-store`, storeData);
+            const response = await axios.post(`${URL_API}/create`, storeData);
             set({ storeList: response.data.storeList, isLoading: false });
             return response.data;
         } catch (error) {
@@ -42,7 +42,7 @@ export const useStoreServices = create((set) => ({
                 ...updatedVars
             });
             */
-            const response = await axios.post(`${URL_API}/update-store`, {
+            const response = await axios.post(`${URL_API}/update`, {
                 id: id,
                 ...updatedVars
             });
@@ -58,7 +58,20 @@ export const useStoreServices = create((set) => ({
         set({ isLoading: true, error: null });
         try {
             //console.log("F: Llamado a getStoreById");
-            const response = await axios.get(`${URL_API}/get-store-id/${id}`);
+            const response = await axios.get(`${URL_API}/get/${id}`);
+            //console.log("F: Respueste de getStoreById: ", response);
+            set({ storeList: response.data.storeList, isLoading:false });
+            return response.data;
+        } catch (error) {
+            set({ error: error.response.data.message || "Error getting quotes", isLoading: false });
+            throw error;
+        }
+    },
+    getUsers: async (storeId) => {
+        set({ isLoading: true, error: null });
+        try {
+            //console.log("F: Llamado a getStoreById");
+            const response = await axios.get(`${URL_API}/users/${storeId}`);
             //console.log("F: Respueste de getStoreById: ", response);
             set({ storeList: response.data.storeList, isLoading:false });
             return response.data;

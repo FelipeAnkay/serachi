@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import axios from 'axios';
 
-const URL_API = import.meta.env.MODE === "development" ? "http://localhost:5000/api/auth" : "/api/auth";
+const URL_API = import.meta.env.MODE === "development" ? "http://localhost:5000/api/incomes" : "/api/incomes";
 
 
 axios.defaults.withCredentials = true;
@@ -23,7 +23,7 @@ export const useIncomeServices = create((set) => ({
         set({ isLoading: true, error: null });
         try {
             console.log("Los datos a enviar en createIncome son: ", incomeData)
-            const response = await axios.post(`${URL_API}/create-income`, incomeData);
+            const response = await axios.post(`${URL_API}/create`, incomeData);
             set({ incomeList: response.data.incomeList, isLoading: false });
             return response.data;
         } catch (error) {
@@ -45,7 +45,7 @@ export const useIncomeServices = create((set) => ({
                 ...updatedVars
             });
             */
-            const response = await axios.post(`${URL_API}/update-income`, {
+            const response = await axios.post(`${URL_API}/update`, {
                 id: id,
                 ...updatedVars
             });
@@ -61,7 +61,7 @@ export const useIncomeServices = create((set) => ({
         set({ isLoading: true, error: null });
         try {
             //console.log("F: Llamado a getincomeList");
-            const response = await axios.get(`${URL_API}/get-income-store/${storeId }`);
+            const response = await axios.get(`${URL_API}/list/${storeId }`);
             //console.log("F: Respueste de getincomeList: ", response);
             set({ incomeList: response.data.incomeList, isLoading:false });
             return response.data;
@@ -74,7 +74,7 @@ export const useIncomeServices = create((set) => ({
         set({ isLoading: true, error: null });
         try {
             //console.log("F: Llamado a getStaffList");
-            const response = await axios.get(`${URL_API}/get-income-id/${id}`);
+            const response = await axios.get(`${URL_API}/get/${id}`);
             //console.log("F: Respueste de getStaffList: ", response);
             set({ incomeList: response.data.incomeList, isLoading:false });
             return response.data;

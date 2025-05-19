@@ -79,7 +79,7 @@ const SetRooms = () => {
         try {
             const payload = {
                 ...roomData,
-                storeId: storeId,
+                storeId: storeId?.toUpperCase(),
                 userEmail: user.email,
             };
             console.log("Payload a enviar: ", payload)
@@ -289,6 +289,15 @@ const SetRooms = () => {
                                             className="w-full p-2 mt-1 rounded bg-gray-800 text-white"
                                             value={roomData.availability || ''}
                                             onChange={(e) => setRoomData({ ...roomData, availability: e.target.value })}
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="capitalize">Price:</label>
+                                        <input
+                                            type='number'
+                                            className="w-full p-2 mt-1 rounded bg-gray-800 text-white"
+                                            value={roomData.price || ''}
+                                            onChange={(e) => setRoomData({ ...roomData, price: e.target.value })}
                                         />
                                     </div>
                                     <div className='mt-2 flex flex-row ml-2'>

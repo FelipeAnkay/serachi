@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useExperienceServices } from '../../store/experienceServices';
 import { useStaffServices } from '../../store/staffServices';
 import Cookies from 'js-cookie';
-import { CircleX, Save, User, UserPlus } from 'lucide-react';
+import { CircleX, Save } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 const AssignStaff = () => {

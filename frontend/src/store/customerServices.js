@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import axios from 'axios';
 
-const URL_API = import.meta.env.MODE === "development" ? "http://localhost:5000/api/auth" : "/api/auth";
+const URL_API = import.meta.env.MODE === "development" ? "http://localhost:5000/api/customers" : "/api/customers";
 
 
 axios.defaults.withCredentials = true;
@@ -25,7 +25,7 @@ export const useCustomerServices = create((set) => ({
         set({ isLoading: true, error: null });
         try {
             //console.log("Entre a createCustomer", customerData);
-            const response = await axios.post(`${URL_API}/create-customer`, customerData);
+            const response = await axios.post(`${URL_API}/create`, customerData);
             set({ customerList: response.data.customerList, isLoading: false });
             return response.data;
         } catch (error) {
@@ -45,7 +45,7 @@ export const useCustomerServices = create((set) => ({
                 ...updatedVars
             });
             
-            const response = await axios.post(`${URL_API}/update-customer`, {
+            const response = await axios.post(`${URL_API}/update`, {
                 email: email,
                 ...updatedVars
             });
@@ -61,7 +61,7 @@ export const useCustomerServices = create((set) => ({
         set({ isLoading: true, error: null });
         try {
             //console.log("F: Llamado a customerList");
-            const response = await axios.get(`${URL_API}/get-customer-store/${storeId}`);
+            const response = await axios.get(`${URL_API}/list/${storeId}`);
             //console.log("F: Respueste de customerList: ", response);
             set({ customerList: response.data.customerList, isLoading:false });
             return response.data;
@@ -74,7 +74,7 @@ export const useCustomerServices = create((set) => ({
         set({ isLoading: true, error: null });
         try {
             //console.log("F: Llamado a customerEmail");
-            const response = await axios.get(`${URL_API}/get-customer-email/${email}`);
+            const response = await axios.get(`${URL_API}/get/${email}`);
             //console.log("F: Respueste de customerEmail: ", response);
             set({ customerList: response.data.customerList, isLoading:false });
             return response.data;

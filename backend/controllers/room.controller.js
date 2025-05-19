@@ -45,8 +45,6 @@ export const updateRoom = async (req, res) => {
             new: true
         });
 
-        //await service.save();
-
         res.status(201).json({
             success: true,
             message: "Room updated succesfully",

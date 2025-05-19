@@ -10,11 +10,11 @@ import toast from 'react-hot-toast';
 import { useServiceServices } from '../../store/serviceServices';
 import { useStaffServices } from '../../store/staffServices';
 import { useProductServices } from '../../store/productServices';
-import { useRoomServices } from '../../store/roomServices';
+import {useRoomReservationServices} from '../../store/roomReservationServices';
 
 export default function ConfirmedQuote() {
     const { getConfirmedQuoteList } = useQuoteServices();
-    const { createRoomReservation, getReservations } = useRoomServices();
+    const { createRoomReservation, getReservations }=useRoomReservationServices();
     const { getProductByStoreId } = useProductServices();
     const { createService } = useServiceServices();
     const { createExperience, getExperienceList } = useExperienceServices();

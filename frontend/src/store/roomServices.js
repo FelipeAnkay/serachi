@@ -3,57 +3,19 @@ import { create } from 'zustand';
 import axios from 'axios';
 
 const URL_API = import.meta.env.MODE === 'development'
-    ? 'http://localhost:5000/api/auth'
-    : '/api/auth';
+    ? 'http://localhost:5000/api/rooms'
+    : '/api/rooms';
 
 axios.defaults.withCredentials = true;
 
 export const useRoomServices = create((set) => ({
-
-    /**
-     * Obtiene todas las habitaciones disponibles para un rango de fechas y cantidad de camas
-     */
-    getAvailableRooms: async ({ dateIn, dateOut, bedsRequired, storeId }) => {
-        try {
-            //console.log("B: Entre a getAvailableRooms", dateIn, " - ", dateOut, " - ", bedsRequired, " - ", storeId)
-            const response = await axios.post(`${URL_API}/get-available-rooms`, {
-                dateIn,
-                dateOut,
-                bedsRequired,
-                storeId,
-            });
-            return response.data; // { availableRooms: [...] }
-        } catch (error) {
-            console.error("Error getting available rooms:", error);
-            throw error;
-        }
-    },
-
-    /**
-     * Sugiere reservas divididas si no hay disponibilidad completa en una sola habitación
-     */
-    splitReservationAcrossRooms: async ({ dateIn, dateOut, bedsRequired = 1, storeId }) => {
-        try {
-            const response = await axios.post(`${URL_API}/split-room-reservation`, {
-                dateIn,
-                dateOut,
-                bedsRequired,
-                storeId,
-            });
-            return response.data; // { segments: [{roomId, dateIn, dateOut, beds}], suggestionText }
-        } catch (error) {
-            console.error("Error splitting room reservation:", error);
-            throw error;
-        }
-    },
-
     /**
      * Obtiene todas las habitaciones del sistema
      */
     getRoomList: async (storeId) => {
         try {
             console.log("Entre a getRoomList", storeId)
-            const response = await axios.get(`${URL_API}/get-room-store/${storeId}`);
+            const response = await axios.get(`${URL_API}/list/${storeId}`);
             console.log("getRoomList: ", response)
             return response.data; // { roomList: [...] }
         } catch (error) {
@@ -67,7 +29,7 @@ export const useRoomServices = create((set) => ({
      */
     createRoom: async (roomData) => {
         try {
-            const response = await axios.post(`${URL_API}/create-room`, roomData);
+            const response = await axios.post(`${URL_API}/create`, roomData);
             return response.data;
         } catch (error) {
             console.error("Error creating room:", error);
@@ -75,27 +37,41 @@ export const useRoomServices = create((set) => ({
         }
     },
 
-    /**
-     * Registra una reserva
-     */
-    createRoomReservation: async (reservationData) => {
+    updateRoom: async (id, updatedVars) => {
+        set({ isLoading: true, error: null });
         try {
-            const response = await axios.post(`${URL_API}/create-room-reservation`, reservationData);
+            delete updatedVars._id;;
+            delete updatedVars.__v;
+            /*console.log("Payload enviado a updateRoom:", {
+                id: id,
+                ...updatedVars
+            });
+            */
+            const response = await axios.post(`${URL_API}/update`, {
+                id: id,
+                ...updatedVars
+            });
+            //console.log("F: Respueste de updateStaff: ", response);
+            set({ roomList: response.data.room, isLoading: false });
             return response.data;
         } catch (error) {
-            console.error("Error creating reservation:", error);
+            set({ error: error || "Error updating room", isLoading: false });
+            throw error;
+        }
+    },
+    getRoomById: async (id) => {
+        set({ isLoading: true, error: null });
+        try {
+            //console.log("F: Llamado a getServiceById: ", id);
+            const response = await axios.get(`${URL_API}/get/${id}`);
+            //console.log("F: Respueste de getServiceById: ", response);
+            set({ roomList: response.data.room, isLoading: false });
+            return response.data;
+        } catch (error) {
+            set({ error: error.response.data.message || "Error getting room", isLoading: false });
             throw error;
         }
     },
 
-    getReservations: async (storeId) => {
-        try {
-            const response = await axios.get(`${URL_API}/get-room-reservation-store/${storeId}`);
-            return response.data;
-        } catch (error) {
-            console.error("Error getting reservation:", error);
-            throw error;
-        }
-    }
 
 }));

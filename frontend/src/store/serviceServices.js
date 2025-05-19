@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import axios from 'axios';
 
-const URL_API = import.meta.env.MODE === "development" ? "http://localhost:5000/api/auth" : "/api/auth";
+const URL_API = import.meta.env.MODE === "development" ? "http://localhost:5000/api/services" : "/api/services";
 
 
 axios.defaults.withCredentials = true;
@@ -24,7 +24,7 @@ export const useServiceServices = create((set) => ({
         set({ isLoading: true, error: null });
         try {
             console.log("Payload de createService",serviceData );
-            const response = await axios.post(`${URL_API}/create-service`, serviceData);
+            const response = await axios.post(`${URL_API}/create`, serviceData);
             console.log("Respuesta de createService:",response );
             set({ service: response.data.service, isLoading:false});
             return response.data.service;
@@ -38,7 +38,7 @@ export const useServiceServices = create((set) => ({
         try {
             delete updatedVars._id;;
             delete updatedVars.__v;
-            const response = await axios.post(`${URL_API}/update-service`, {
+            const response = await axios.post(`${URL_API}/update`, {
                 id: serviceId,
                 ...updatedVars
             });
@@ -54,7 +54,7 @@ export const useServiceServices = create((set) => ({
         set({ isLoading: true, error: null });
         try {
             //console.log("F: Llamado a getExperiences");
-            const response = await axios.get(`${URL_API}/get-service-store/${storeId}`);
+            const response = await axios.get(`${URL_API}/store/${storeId}`);
             //console.log("F: Respueste de getExperiences: ", response);
             set({ serviceList: response.data.serviceList, isLoading:false });
             return response.data;
@@ -67,7 +67,7 @@ export const useServiceServices = create((set) => ({
         set({ isLoading: true, error: null });
         try {
             //console.log("F: Llamado a getServiceById: ", id);
-            const response = await axios.get(`${URL_API}/get-service-id/${id}`);
+            const response = await axios.get(`${URL_API}/get/${id}`);
             //console.log("F: Respueste de getServiceById: ", response);
             set({ service: response.data.service, isLoading:false });
             return response.data;
@@ -76,24 +76,12 @@ export const useServiceServices = create((set) => ({
             throw error;
         }
     },
-    getProductById: async (id) => {
-        set({ isLoading: true, error: null });
-        try {
-            //console.log("F: Llamado a getServiceById: ", id);
-            const response = await axios.get(`${URL_API}/get-product-id/${id}`);
-            //console.log("F: Respueste de getServiceById: ", response);
-            set({ product: response.data.product, isLoading:false });
-            return response.data;
-        } catch (error) {
-            set({ error: error.response.data.message || "Error getting product", isLoading: false });
-            throw error;
-        }
-    },
+
     getServicesNoStaff: async (storeId) => {
         set({ isLoading: true, error: null });
         try {
             //console.log("F: Llamado a getServiceNoStaff: ", storeId);
-            const response = await axios.get(`${URL_API}/get-service-nostaff/${storeId}`);
+            const response = await axios.get(`${URL_API}/nostaff/${storeId}`);
             //console.log("F: Respueste de getServiceNoStaff: ", response);
             set({ service: response.data.service, isLoading:false });
             return response.data;
@@ -106,7 +94,7 @@ export const useServiceServices = create((set) => ({
         set({ isLoading: true, error: null });
         try {
             //console.log("F: Llamado a getServiceNoStaff: ", storeId);
-            const response = await axios.get(`${URL_API}/get-service-nodata/${storeId}`);
+            const response = await axios.get(`${URL_API}/nodata/${storeId}`);
             //console.log("F: Respueste de getServiceNoStaff: ", response);
             set({ service: response.data.service, isLoading:false });
             return response.data;
@@ -119,7 +107,7 @@ export const useServiceServices = create((set) => ({
         set({ isLoading: true, error: null });
         try {
             //console.log("F: Llamado a getServiceNoStaff: ", storeId);
-            const response = await axios.get(`${URL_API}/get-service-dates/${storeId}/${dateIn}/${dateOut}`);
+            const response = await axios.get(`${URL_API}/dates/${storeId}/${dateIn}/${dateOut}`);
             //console.log("F: Respueste de getServiceNoStaff: ", response);
             set({ service: response.data.service, isLoading:false });
             return response.data;
@@ -128,21 +116,4 @@ export const useServiceServices = create((set) => ({
             throw error;
         }
     },
-    updateService: async (serviceId, updatedVars) => {
-        set({ isLoading: true, error: null });
-        try {
-            console.log("F: Llamado a updateService - ID: ", serviceId);
-            console.log("F: Llamado a updateService - vars: ", updatedVars);
-            const response = await axios.post(`${URL_API}//update-service`, {
-                id: serviceId,
-                ...updatedVars
-            });
-            console.log("F: Respueste de updateService: ", response);
-            set({ serviceList: response.data.serviceList, isLoading: false });
-            return response.data;
-        } catch (error) {
-            set({ error: error.response.data.message || "Error updating service", isLoading: false });
-            throw error;
-        }
-    }
 }))

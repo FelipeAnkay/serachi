@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import Cookies from 'js-cookie';
 import toast from 'react-hot-toast';
 import { motion, AnimatePresence } from "framer-motion";
-import { PlusCircle, Loader2, CirclePlus, Trash2 } from "lucide-react";
+import { Loader2, CirclePlus, Trash2 } from "lucide-react";
 import { useSupplierServices } from '../../store/supplierServices';
 import { useAuthStore } from '../../store/authStore';
 import paymentMethods from '../../components/paymentMethods.json'

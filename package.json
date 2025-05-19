@@ -1,10 +1,10 @@
 {
   "name": "serachi",
   "version": "1.0.0",
-  "main": "backend/index.js",
+  "main": "backend/secureExpress.js",
   "scripts": {
-    "dev": "SET NODE_ENV=development&& nodemon backend/index.js",
-    "start": "NODE_ENV=production &&node backend/index.js",
+    "dev": "SET NODE_ENV=development&& nodemon backend/secureExpress.js",
+    "start": "NODE_ENV=production &&node backend/secureExpress.js",
     "build": "npm install --include=dev && npm install --prefix frontend --include=dev && npm run build --prefix frontend"
   },
   "keywords": [],
@@ -16,13 +16,18 @@
     "bcryptjs": "^3.0.2",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
-    "dotenv": "^16.4.7",
+    "dotenv": "^16.5.0",
     "express": "^4.21.2",
+    "express-mongo-sanitize": "^2.2.0",
+    "express-rate-limit": "^7.5.0",
+    "helmet": "^8.1.0",
     "jsonwebtoken": "^9.0.2",
     "mailtrap": "^4.0.0",
     "mongodb": "^6.15.0",
     "mongoose": "^8.13.0",
-    "serverless-http": "^3.2.0"
+    "morgan": "^1.10.0",
+    "serverless-http": "^3.2.0",
+    "xss-clean": "^0.1.4"
   },
   "devDependencies": {
     "nodemon": "^3.1.9"

@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import axios from 'axios';
 
-const URL_API = import.meta.env.MODE === "development" ? "http://localhost:5000/api/auth" : "/api/auth";
+const URL_API = import.meta.env.MODE === "development" ? "http://localhost:5000/api/prrecords" : "/api/prrecords";
 
 
 axios.defaults.withCredentials = true;
@@ -20,7 +20,7 @@ export const usePRrecordServices = create((set) => ({
         set({ isLoading: true, error: null });
         try {
             console.log("Los datos a enviar en createPRrecord son: ", prrecordData)
-            const response = await axios.post(`${URL_API}/create-prrecord`, prrecordData);
+            const response = await axios.post(`${URL_API}/create`, prrecordData);
             set({ prrecordList: response.data.prrecordList, isLoading: false });
             return response.data;
         } catch (error) {
@@ -42,7 +42,7 @@ export const usePRrecordServices = create((set) => ({
                 ...updatedVars
             });
             */
-            const response = await axios.post(`${URL_API}/update-prrecord`, {
+            const response = await axios.post(`${URL_API}/update`, {
                 id: id,
                 ...updatedVars
             });
@@ -58,7 +58,7 @@ export const usePRrecordServices = create((set) => ({
         set({ isLoading: true, error: null });
         try {
             //console.log("F: Llamado a getprrecordList");
-            const response = await axios.get(`${URL_API}/get-prrecord-store/${storeId}`);
+            const response = await axios.get(`${URL_API}/list/${storeId}`);
             //console.log("F: Respueste de getprrecordList: ", response);
             set({ prrecordList: response.data.prrecordList, isLoading: false });
             return response.data;
@@ -71,7 +71,7 @@ export const usePRrecordServices = create((set) => ({
         set({ isLoading: true, error: null });
         try {
             //console.log("F: Llamado a getprrecordList");
-            const response = await axios.get(`${URL_API}/get-prrecord-id/${id}`);
+            const response = await axios.get(`${URL_API}/get/${id}`);
             //console.log("F: Respueste de getprrecordList: ", response);
             set({ prrecordList: response.data.prrecordList, isLoading: false });
             return response.data;
