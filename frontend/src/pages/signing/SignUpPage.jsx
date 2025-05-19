@@ -20,8 +20,8 @@ const SignUpPage = () => {
   const handleSignUp = async (e) => {
     e.preventDefault();
     try {
-      console.log("Creare el siguiente usuario:", email, " - ", password, " - ", email, " - ", phone)
-      //await signup(email,password,name,phone);
+      //console.log("Creare el siguiente usuario:", email, " - ", password, " - ", email, " - ", phone)
+      await signup(email,password,name,phone);
       navigate("/verify-email");
     } catch (error) {
       console.log(error);
