@@ -4,7 +4,7 @@ import { Staff } from "../models/staff.model.js";
 export const createStaff = async (req, res) => {
     const { name, email, phone, country, birthdate, nationalId, languages, type,color, professionalCertificates, storeId } = req.body;
     try {
-        if (!name || !email || !phone || !country || !birthdate || !languages|| !nationalId || !storeId || !professionalCertificates) {
+        if (!name || !email || !phone || !country || !birthdate || !languages|| !nationalId || !storeId) {
             throw new Error("All fields are required");
         }
 

@@ -5,14 +5,11 @@ import Cookies from 'js-cookie';
 import toast from 'react-hot-toast';
 import { useRoomServices } from '../../store/roomServices';
 import { useAuthStore } from '../../store/authStore'
-import { useProductServices } from '../../store/productServices';
 import { useTypeServices } from '../../store/typeServices';
 
 
 const SetRooms = () => {
     const { createRoom, updateRoom, getRoomList } = useRoomServices();
-    const { getProductByType } = useProductServices();
-    const [productList, setProductList] = useState([]);
     const { getTypeByCategory } = useTypeServices();
     const storeId = Cookies.get('storeId');
     const [roomList, setRoomList] = useState([]);
@@ -49,22 +46,9 @@ const SetRooms = () => {
                 setLoading(false);
             }
         };
-        const fetchProducts = async () => {
-            try {
-                const auxProductList = await getProductByType("ROOM", storeId);
-                console.log("F: Respuesta de getTypeByCategory:", auxProductList);
-                setProductList(auxProductList.productList || []);
-            } catch (error) {
-                console.error('Error fetching product list:', error);
-            } finally {
-                setLoading(false);
-            }
-        };
-
         if (storeId) {
             fetchRooms();
             fetchTypes();
-            fetchProducts();
         }
     }, []);
 
@@ -199,9 +183,9 @@ const SetRooms = () => {
                             >
                                 <div onClick={() => openEditRoomModal(room)}>
                                     <h3 className="font-semibold text-lg mb-1">{room.name}</h3>
-                                    <p className="text-sm text-gray-700">Base Availability: {room.availability}</p>
-                                    <p className="text-sm text-gray-700">Actual Availability: {room.actualAvailability}</p>
+                                    <p className="text-sm text-gray-700">Availability: {room.availability}</p>
                                     <p className="text-sm text-gray-700">Type: {room.type || 'N/A'}</p>
+                                    <p className="text-sm text-gray-700">Price: ${room.price}</p>
                                 </div>
                                 {room.isActive ? (
                                     <button
@@ -299,21 +283,12 @@ const SetRooms = () => {
                                         />
                                     </div>
                                     <div>
-                                        <label className="capitalize">Base Availability:</label>
+                                        <label className="capitalize">Availability:</label>
                                         <input
                                             type='number'
                                             className="w-full p-2 mt-1 rounded bg-gray-800 text-white"
                                             value={roomData.availability || ''}
                                             onChange={(e) => setRoomData({ ...roomData, availability: e.target.value })}
-                                        />
-                                    </div>
-                                    <div>
-                                        <label className="capitalize">Actual Availability:</label>
-                                        <input
-                                            type='number'
-                                            className="w-full p-2 mt-1 rounded bg-gray-800 text-white"
-                                            value={roomData.actualAvailability || ''}
-                                            onChange={(e) => setRoomData({ ...roomData, actualAvailability: e.target.value })}
                                         />
                                     </div>
                                     <div className='mt-2 flex flex-row ml-2'>
@@ -328,22 +303,6 @@ const SetRooms = () => {
                                             {typeList.map((t) => (
                                                 <option key={t.name} value={t.name}>
                                                     {t.name}
-                                                </option>
-                                            ))}
-                                        </select>
-                                    </div>
-                                    <div className='mt-2 flex flex-row ml-2'>
-                                        <label className="block text-sm font-medium">Room related Product:</label>
-                                        <select
-                                            name="productId"
-                                            className="ml-2 w-full border border-gray-300 bg-white text-blue-950 rounded px-3 py-2"
-                                            value={roomData.productId || ''}
-                                            onChange={(e) => setRoomData({ ...roomData, productId: e.target.value })}
-                                        >
-                                            <option value="">Select a product</option>
-                                            {productList.map((t) => (
-                                                <option key={t._id} value={t._id}>
-                                                    {t.name} - ${t.price}
                                                 </option>
                                             ))}
                                         </select>
