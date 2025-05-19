@@ -4,7 +4,7 @@ import { Partner } from "../models/partner.model.js";
 export const createPartner = async (req, res) => {
     const { name, email, phone, country, nationalId, storeId } = req.body;
     try {
-        if (!name || !email || !phone || !country || !nationalId || !storeId) {
+        if (!name || !email || !country || !storeId) {
             throw new Error("All fields are required");
         }
         console.log("B: Creating Partner", name, " - ", email, " - ", phone, " - ", country, " - ", nationalId, " - ", storeId)

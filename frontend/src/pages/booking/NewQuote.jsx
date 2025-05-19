@@ -317,7 +317,7 @@ export default function NewQuote() {
                 productName: product?.name || '',
                 Qty: qty,
                 productUnitaryPrice: (product?.finalPrice || 0),
-                productFinalPrice: (product?.finalPrice || 0) * qty,
+                productFinalPrice: ((product?.finalPrice || 0) * qty),
             };
         });
 
@@ -385,7 +385,7 @@ export default function NewQuote() {
                 roomUnitaryPrice: (room?.price || 0),
                 roomNights: (qty || 0),
                 isPrivate: isPrivate,
-                roomFinalPrice: (room?.price || 0) * qty * adjustedQty,
+                roomFinalPrice: ((room?.price || 0) * qty * adjustedQty).toFixed(2),
                 roomDateIn: isNaN(startDate) ? '' : startDate.toISOString(),
                 roomDateOut: isNaN(endDate) ? '' : endDate.toISOString(),
             };
@@ -400,7 +400,7 @@ export default function NewQuote() {
         setQuote((prev) => ({
             ...prev,
             discount: 0,
-            finalPrice: total,
+            finalPrice: total.toFixed(2),
             roomList: structuredList,
         }));
 
@@ -805,7 +805,7 @@ export default function NewQuote() {
                                                             }`}
                                                     >
                                                         <h3 className="text-lg font-semibold text-gray-800">
-                                                            {product.name} - {product.durationDays ? product.durationDays + ' days -' : ''} ${product.finalPrice}
+                                                            {product.name} - {product.durationDays ? product.durationDays + ' days -' : ''} ${product.finalPrice.toFixed(2)}
                                                         </h3>
 
                                                         {qty > 0 && (
@@ -899,7 +899,7 @@ export default function NewQuote() {
                                                             className="bg-gray-100 p-4 rounded shadow text-black flex flex-row justify-between"
                                                         >
                                                             <div>
-                                                                <h4 className="font-semibold text-lg">{room.name} - ${room.price}</h4>
+                                                                <h4 className="font-semibold text-lg">{room.name} - ${room.price.toFixed(2)}</h4>
                                                                 <p className="text-sm text-gray-700">Tipo: {room.type}</p>
                                                                 <p className="text-sm text-gray-700">Capacidad: {room.availability}</p>
                                                                 <div className='flex flex-row'>
