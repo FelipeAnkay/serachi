@@ -62,9 +62,9 @@ export const updateRoom = async (req, res) => {
 
 export const roomList = async (req, res) => {
     try {
-        console.log("Entre a staffList")
+        console.log("Entre a roomList")
         const { storeId } = req.params
-        console.log("B: el storeID para staffList es: ", storeId)
+        console.log("B: el storeID para roomList es: ", storeId)
         if (!storeId) {
             throw new Error("StoreID is required");
         }

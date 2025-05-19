@@ -52,7 +52,9 @@ export const useRoomServices = create((set) => ({
      */
     getRoomList: async (storeId) => {
         try {
-            const response = await axios.get(`${URL_API}/get-room-list/${storeId}`);
+            console.log("Entre a getRoomList", storeId)
+            const response = await axios.get(`${URL_API}/get-room-store/${storeId}`);
+            console.log("getRoomList: ", response)
             return response.data; // { roomList: [...] }
         } catch (error) {
             console.error("Error fetching room list:", error);
