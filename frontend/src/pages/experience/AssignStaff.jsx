@@ -1,13 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useExperienceServices } from '../../store/experienceServices';
 import { useStaffServices } from '../../store/staffServices';
 import Cookies from 'js-cookie';
 import { CircleX, Save } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { useServiceServices } from '../../store/serviceServices';
+import { useProductServices } from '../../store/productServices';
 
 const AssignStaff = () => {
-    const { getServicesNoStaff, updateService, getProductById } = useExperienceServices();
+    const { getServiceById, updateService, getServicesNoStaff } = useServiceServices();
+    const { getProductById } = useProductServices();
     const { getStaffList } = useStaffServices();
     const storeId = Cookies.get("storeId");
     const [services, setServices] = useState([]);
@@ -49,7 +51,7 @@ const AssignStaff = () => {
         const fetchStaff = async () => {
             try {
                 const staffResponse = await getStaffList(storeId); // Obtener la lista de staff
-                console.log("F: La respuesta de getStaffList es: ",staffResponse)
+                console.log("F: La respuesta de getStaffList es: ", staffResponse)
                 setStaffList(staffResponse.staffList || []);
             } catch (err) {
                 console.error("Error fetching staff:", err);

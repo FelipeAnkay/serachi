@@ -8,11 +8,13 @@ import 'react-big-calendar/lib/css/react-big-calendar.css';
 import { CircleX, Save, Ban } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { useStaffServices } from '../../store/staffServices';
+import { useServiceServices } from '../../store/serviceServices';
 
 const localizer = momentLocalizer(moment);
 
 const Experiences = () => {
-    const { getExperienceList, getServiceById, updateService } = useExperienceServices();
+    const { getExperienceList } = useExperienceServices();
+    const { getServiceById, updateService } = useServiceServices();
     const { getStaffEmail } = useStaffServices();
     const storeId = Cookies.get("storeId");
     const [events, setEvents] = useState([]);
@@ -56,7 +58,7 @@ const Experiences = () => {
         for (const exp of data.experienceList) {
             for (const serviceRef of exp.serviceList || []) {
                 const serviceDetail = await getServiceById(serviceRef);
-                //console.log("La respuesta de getServiceById ", serviceDetail);
+                console.log("La respuesta de getServiceById ", serviceDetail);
                 if (serviceDetail && serviceDetail.service.isActive) {
                     const staffEmail = serviceDetail.service.staffEmail;
                     const color = await getColorForStaff(staffEmail);
