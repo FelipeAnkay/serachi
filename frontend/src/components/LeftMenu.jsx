@@ -1,4 +1,4 @@
-import { Banknote, BanknoteArrowDown, Bed, BedDouble, BookMarked, Boxes, Calculator, CalendarHeart, CalendarPlus2, ChevronDown, Contact, DollarSign, HandCoins, Handshake, Home, MapPinCheckInside, PiggyBank, Receipt, Settings, ShieldUser, Ship, Store, TicketCheck, User, User2, UserPlus, Wallet } from "lucide-react"
+import { Banknote, BanknoteArrowDown, Bed, BedDouble, BookMarked, Boxes, Calculator, CalendarCheck, CalendarHeart, CalendarPlus2, ChevronDown, Contact, DollarSign, HandCoins, Handshake, Home, MapPinCheckInside, PiggyBank, Receipt, Settings, ShieldUser, Ship, Store, TicketCheck, User, User2, UserPlus, Wallet } from "lucide-react"
 import logo from "../../public/Serachi_logo-nobg.png"
 import { Link } from "react-router-dom"
 import { useState } from "react"
@@ -9,9 +9,10 @@ import Cookies from 'js-cookie';
 const LeftMenu = ({ show }) => {
     const [openSetting, setOpenSetting] = useState(false);
     const [openExperience, setOpenExperience] = useState(false);
-    const [openBooking, setOpenBooking] = useState(false);
+    const [openQuotes, setOpenQuotes] = useState(false);
     const [openCashFlow, setOpenCashFlow] = useState(false);
     const [openPayRoll, setOpenPayRoll] = useState(false);
+    const [openBooking, setOpenBooking] = useState(false);
     const { user, logout } = useAuthStore();
 
     const handleLogout = () => {
@@ -29,8 +30,8 @@ const LeftMenu = ({ show }) => {
             <ul className="space-y-3">
                 <li className="px-4 py-2 rounded-lg  hover:bg-blue-700"><Link to="/" className="flex items-center gap-2"><Home />Home</Link></li>
                 <div className="px-4 py-2 block rounded-lg  hover:bg-blue-700 transition delay-200">
-                    <li className="rounded-lg flex gap-2" onClick={() => setOpenBooking(!openBooking)}><PiggyBank className="inline-block" /><span className="inline-block">Quotes</span><ChevronDown className={openBooking ? "block rotate-180" : "block"} /></li>
-                    <div className={openBooking ? "w-full py-4 px-5 p-4 transition ease-out duration-100 transform opacity-100 scale-100 hover:bg-blue-600 rounded-lg" : "transform h-0 scale-95 transition ease-in duration-75 overflow-hidden"}>
+                    <li className="rounded-lg flex gap-2" onClick={() => setOpenQuotes(!openQuotes)}><PiggyBank className="inline-block" /><span className="inline-block">Quotes</span><ChevronDown className={openQuotes ? "block rotate-180" : "block"} /></li>
+                    <div className={openQuotes ? "w-full py-4 px-5 p-4 transition ease-out duration-100 transform opacity-100 scale-100 hover:bg-blue-600 rounded-lg" : "transform h-0 scale-95 transition ease-in duration-75 overflow-hidden"}>
                         <li className="hover:bg-blue-500 rounded-lg flex"><Link to="/new-quote" className="flex items-center gap-2 py-1"><Receipt />New</Link></li>
                         <li className="hover:bg-blue-500 rounded-lg flex"><Link to="/past-quote" className="flex items-center gap-2 py-1"><BanknoteArrowDown />Past</Link></li>
                         <li className="hover:bg-blue-500 rounded-lg flex"><Link to="/confirmed-quote" className="flex items-center gap-2 py-1"><TicketCheck />Confirmed</Link></li>
@@ -52,7 +53,12 @@ const LeftMenu = ({ show }) => {
                         <li className="hover:bg-blue-500 rounded-lg flex"><Link to="/new-expense" className="flex items-center gap-2 py-1"><BanknoteArrowDown />New Expense</Link></li>
                     </div>
                 </div>
-                <li className="px-4 py-2 rounded-lg  hover:bg-blue-700"><Link to="/bookings" className="flex items-center gap-2"><BedDouble />Rooms</Link></li>
+                <div className="px-4 py-2 block rounded-lg  hover:bg-blue-700 transition delay-200">
+                    <li className="rounded-lg flex gap-2" onClick={() => setOpenBooking(!openBooking)}><BedDouble className="inline-block" /><span className="inline-block">Room Bookings</span><ChevronDown className={openBooking ? "block rotate-180" : "block"} /></li>
+                    <div className={openBooking ? "w-full py-4 px-5 p-4 transition ease-out duration-100 transform opacity-100 scale-100 hover:bg-blue-600 rounded-lg" : "transform h-0 scale-95 transition ease-in duration-75 overflow-hidden"}>
+                        <li className="hover:bg-blue-500 rounded-lg flex"><Link to="/booking-calendar" className="flex items-center gap-2 py-1"><CalendarCheck />Room Calendar</Link></li>
+                    </div>
+                </div>
                 <div className="px-4 py-2 block rounded-lg  hover:bg-blue-700 transition delay-200">
                     <li className="rounded-lg flex gap-2" onClick={() => setOpenPayRoll(!openPayRoll)}><Wallet className="inline-block" /><span className="inline-block">PayRoll</span><ChevronDown className={openPayRoll ? "block rotate-180" : "block"} /></li>
                     <div className={openPayRoll ? "w-full py-4 px-5 p-4 transition ease-out duration-100 transform opacity-100 scale-100 hover:bg-blue-600 rounded-lg" : "transform h-0 scale-95 transition ease-in duration-75 overflow-hidden"}>

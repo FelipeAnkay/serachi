@@ -28,7 +28,7 @@ const serviceSchema = new mongoose.Schema({
     },
     type: {
         type:String,
-        default:"Customer",
+        default:"Front",
     },
     storeId: {
         type:String,
@@ -44,6 +44,10 @@ const serviceSchema = new mongoose.Schema({
     },
     payrollList:[{type:String}],
     isActive:{
+        type: Boolean,
+        default: true
+    },
+    isPaid:{
         type: Boolean,
         default: true
     },

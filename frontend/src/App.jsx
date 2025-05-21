@@ -31,6 +31,7 @@ import SetStaffFee from './pages/settings/SetStaffFee';
 import PRCalculator from './pages/payroll/PRCalculator';
 import CreateService from './pages/experience/CreateService';
 import SetPartner from './pages/settings/SetPartner';
+import BookingSchedule from './pages/booking/BookingSchedule';
 
 const ProtectedRoute = ({ children }) => {
   const { isAuthenticated, user } = useAuthStore();
@@ -142,6 +143,13 @@ function App() {
           element={
             <ProtectedRoute>
               <Booking />
+            </ProtectedRoute>}
+        />
+         <Route
+          path="/booking-calendar"
+          element={
+            <ProtectedRoute>
+              <BookingSchedule />
             </ProtectedRoute>}
         />
         <Route

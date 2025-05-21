@@ -2,7 +2,7 @@ import { Service } from "../models/service.model.js";
 
 /*SERVICE FUNCTIONS */
 export const createService = async (req, res) => {
-    const { name, productId, quoteId, facilityId ,staffEmail, customerEmail, dateIn, dateOut, storeId, userEmail, type, payrollList} = req.body;
+    const { name, productId, quoteId, facilityId ,staffEmail, customerEmail, dateIn, dateOut, storeId, userEmail, type, payrollList, isPaid} = req.body;
     try {
         if (!name || !productId || !storeId || !userEmail) {
             throw new Error("All fields are required");
@@ -22,6 +22,7 @@ export const createService = async (req, res) => {
             type, 
             userEmail,
             payrollList,
+            isPaid,
             storeId: normalizeStoreID
         })
 

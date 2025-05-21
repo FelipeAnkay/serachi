@@ -116,6 +116,7 @@ export default function ConfirmedQuote() {
                     quoteId: quote._id,
                     customerEmail: quote.customerEmail,
                     storeId: quote.storeId,
+                    isPaid:true,
                     userEmail: quote.userEmail
                 }
                 console.log("El servicePayload es:", servicePayload);
@@ -189,6 +190,7 @@ export default function ConfirmedQuote() {
                     userEmail: quote.userEmail,
                     dateIn: auxService.dateIn,
                     dateOut: auxService.dateOut,
+                    isPaid: true,
                     staffEmail: auxService.staffEmail
                 }
                 console.log("El servicePayload es:", servicePayload);
