@@ -2,7 +2,7 @@ import { Service } from "../models/service.model.js";
 
 /*SERVICE FUNCTIONS */
 export const createService = async (req, res) => {
-    const { name, productId, quoteId, facilityId ,staffEmail, customerEmail, dateIn, dateOut, storeId, userEmail, type, payrollList, isPaid} = req.body;
+    const { name, productId, quoteId, facilityId, staffEmail, customerEmail, dateIn, dateOut, storeId, userEmail, type, payrollList, isPaid } = req.body;
     try {
         if (!name || !productId || !storeId || !userEmail) {
             throw new Error("All fields are required");
@@ -11,15 +11,15 @@ export const createService = async (req, res) => {
         const normalizeStoreID = storeId?.toUpperCase();
 
         const service = new Service({
-            name, 
-            productId, 
-            quoteId, 
+            name,
+            productId,
+            quoteId,
             facilityId,
-            staffEmail, 
-            customerEmail, 
-            dateIn, 
+            staffEmail,
+            customerEmail,
+            dateIn,
             dateOut,
-            type, 
+            type,
             userEmail,
             payrollList,
             isPaid,
@@ -85,10 +85,10 @@ export const getServiceById = async (req, res) => {
 }
 export const getServiceByStoreId = async (req, res) => {
     try {
-        const {storeId} = req.params
+        const { storeId } = req.params
         //console.log("B: Llamado a getServiceByID: ", id);
         const normalizeStoreID = storeId?.toUpperCase();
-        const service = await Service.find({storeId: normalizeStoreID, type:"Customer"});
+        const service = await Service.find({ storeId: normalizeStoreID, type: "Customer" });
         if (!service) {
             return res.status(400).json({ success: false, message: "Service not found" });
         }
@@ -102,10 +102,10 @@ export const getServiceNoStaff = async (req, res) => {
         const { storeId } = req.params;
         //console.log("B: Llamado a getServiceNoStaff: ", storeId);
         const normalizedStoreId = storeId?.toUpperCase();
-        
+
         const service = await Service.find({
             storeId: normalizedStoreId,
-            type:"Customer",
+            type: "Customer",
             $or: [
                 { staffEmail: { $exists: false } },
                 { staffEmail: null },
@@ -126,10 +126,10 @@ export const getServiceNoData = async (req, res) => {
         const { storeId } = req.params;
         //console.log("B: Llamado a getServiceNoDates: ", storeId);
         const normalizedStoreId = storeId?.toUpperCase();
-        
+
         const service = await Service.find({
             storeId: normalizedStoreId,
-            type:"Customer",
+            type: "Customer",
             $or: [
                 { dateIn: { $exists: false } },
                 { dateIn: null },
@@ -178,12 +178,16 @@ export const getServiceByDates = async (req, res) => {
         const { storeId, dateIn, dateOut } = req.params;
         const normalizedStoreId = storeId?.toUpperCase();
 
+        console.log("Entre a getServiceByDates: ", normalizedStoreId, " - ", dateIn, " - ", dateOut);
+
         const service = await Service.find({
             storeId: normalizedStoreId,
             type: "Customer",
             dateIn: { $gte: new Date(dateIn) },
             dateOut: { $lte: new Date(dateOut) },
         });
+
+        console.log("Respuesta de Service.find: ", service);
 
         if (!service || service.length === 0) {
             return res.status(404).json({ success: false, message: "No services found in date range" });
@@ -194,3 +198,26 @@ export const getServiceByDates = async (req, res) => {
         return res.status(400).json({ success: false, message: error.message });
     }
 };
+
+export const ChangeType = async (req, res) => {
+    try {
+        console.log("Entre a ChangeType: ");
+
+        const service = await Service.updateMany(
+            { type: "Front" },
+            { $set: { type: "Customer" } }
+        );
+
+        console.log("Respuesta de Service.find: ", service);
+
+        if (!service || service.length === 0) {
+            return res.status(404).json({ success: false, message: "No services found in date range" });
+        }
+
+        res.status(200).json({ success: true, service });
+    } catch (error) {
+        return res.status(400).json({ success: false, message: error.message });
+    }
+};
+
+

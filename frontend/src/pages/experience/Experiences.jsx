@@ -14,7 +14,7 @@ const localizer = momentLocalizer(moment);
 
 const Experiences = () => {
     const { getExperienceList } = useExperienceServices();
-    const { getServiceById, updateService } = useServiceServices();
+    const { getServiceById, updateService, getServicesByDate } = useServiceServices();
     const { getStaffEmail } = useStaffServices();
     const storeId = Cookies.get("storeId");
     const [events, setEvents] = useState([]);
@@ -25,14 +25,17 @@ const Experiences = () => {
     const [selectedService, setSelectedService] = useState(null);
     const [modalOpen, setModalOpen] = useState(false);
     const [editData, setEditData] = useState({});
+    const [loadedRange, setLoadedRange] = useState({ start: null, end: null });
 
     useEffect(() => {
-        fetchExperiences();
+        const now = new Date();
+        const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
+        const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+        fetchExperiences(firstDay, lastDay);
     }, []);
 
-    const fetchExperiences = async () => {
-        const data = await getExperienceList(storeId);
-        //console.log("La respuesta de getExperienceList: ", data);
+    const fetchExperiences = async (startDate, endDate) => {
+        setLoading(true);
         const allServiceEvents = [];
         const staffColorMap = {};
 
@@ -55,27 +58,25 @@ const Experiences = () => {
             }
         };
 
-        for (const exp of data.experienceList) {
-            for (const serviceRef of exp.serviceList || []) {
-                const serviceDetail = await getServiceById(serviceRef);
-                console.log("La respuesta de getServiceById ", serviceDetail);
-                if (serviceDetail && serviceDetail.service.isActive) {
-                    const staffEmail = serviceDetail.service.staffEmail;
-                    const color = await getColorForStaff(staffEmail);
-
-                    allServiceEvents.push({
-                        title: `${serviceDetail.service.name} - ${staffEmail}`,
-                        start: new Date(serviceDetail.service.dateIn),
-                        end: new Date(serviceDetail.service.dateOut),
-                        allDay: false,
-                        resource: serviceDetail.service,
-                        staffColor: color,
-                    });
-                }
+        const serviceDetail = await getServicesByDate(storeId, startDate, endDate);
+        //console.log("La respuesta de getServiceById ", serviceDetail);
+        for (const serviceRef of serviceDetail.service) {
+            //console.log("serviceRef: ", serviceRef)
+            if (serviceRef && serviceRef.isActive) {
+                const staffEmail = serviceRef.staffEmail;
+                const color = await getColorForStaff(staffEmail);
+                allServiceEvents.push({
+                    title: `${serviceRef.name} - ${serviceRef.staffEmail}`,
+                    start: new Date(serviceRef.dateIn),
+                    end: new Date(serviceRef.dateOut),
+                    allDay: false,
+                    resource: serviceRef,
+                    staffColor: color,
+                });
             }
         }
-
         setEvents(allServiceEvents);
+        setLoadedRange({ start: startDate, end: endDate });
         setLoading(false);
     };
 
@@ -151,6 +152,28 @@ const Experiences = () => {
         }
     };
 
+    const handleNavigate = (newDate) => {
+
+        console.log("Entre a handleNavigate: ", newDate)
+        setSelectedDate(newDate);
+
+        const newMonthStart = new Date(newDate.getFullYear(), newDate.getMonth(), 1);
+        const newMonthEnd = new Date(newDate.getFullYear(), newDate.getMonth() + 1, 0);
+
+        const isSameMonth =
+            loadedRange.start &&
+            loadedRange.end &&
+            loadedRange.start.getFullYear() === newMonthStart.getFullYear() &&
+            loadedRange.start.getMonth() === newMonthStart.getMonth();
+
+        console.log("isSameMonth: ", isSameMonth)
+        if (!isSameMonth) {
+            console.log("newMonthStart: ", newMonthStart)
+            console.log("newMonthEnd: ", newMonthEnd)
+            fetchExperiences(newMonthStart, newMonthEnd);
+        }
+    };
+
     if (loading) return <div className="text-white text-center mt-10">Cargando...</div>;
     if (error) return <div className="text-red-500 text-center mt-10">{error}</div>;
 
@@ -176,11 +199,11 @@ const Experiences = () => {
                             selectable
                             onSelectSlot={handleSelectSlot}
                             onSelectEvent={handleSelectEvent}
+                            onNavigate={handleNavigate}
                             defaultView={Views.MONTH}
                             view={view}
                             onView={setView}
                             date={selectedDate}
-                            onNavigate={setSelectedDate}
                             style={{ height: '100%', width: '100%' }}
                             eventPropGetter={(event) => {
                                 const color = event.staffColor || "#6b7280"; // valor por defecto (gray-500)
