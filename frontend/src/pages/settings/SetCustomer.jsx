@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { CircleX, Delete, Handshake, Save, Trash2, UserPlus, UsersRound } from 'lucide-react';
+import { CircleX, Copy, Delete, Handshake, Save, Trash2, UserPlus, UsersRound } from 'lucide-react';
 import Cookies from 'js-cookie';
 import toast from 'react-hot-toast';
 import { useCustomerServices } from '../../store/customerServices';
@@ -195,9 +195,19 @@ const SetCustomer = () => {
                                     key={customer._id}
                                     className="relative text-black rounded-lg shadow p-4 bg-gray-200 hover:bg-blue-100 transition-all"
                                 >
-                                    <div onClick={() => openEditCustomerModal(customer)}>
+                                    <div className='flex flex-col' onClick={() => openEditCustomerModal(customer)}>
                                         <p><strong>Name:</strong> {customer.name}</p>
-                                        <p><strong>Email:</strong> {customer.email}</p>
+                                        <p className='flex flex-row'><strong>Email:</strong> {customer.email}
+                                            <Copy
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    navigator.clipboard.writeText(customer.email)
+                                                        .then(() => toast.success("Email copied!"))
+                                                        .catch(() => toast.error("Failed to copy"));
+                                                }}
+                                                className='text-blue-500 hover:text-blue-900 ml-2'
+                                            />
+                                        </p>
                                         <p><strong>Phone:</strong> {customer.phone || 'N/A'}</p>
                                     </div>
                                     <button
