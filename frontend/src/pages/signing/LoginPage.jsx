@@ -45,6 +45,7 @@ const LoginPage = () => {
             type='text'
             placeholder='Company ID'
             value={storeId}
+            autoFocus
             onChange={(e) => setStoreId(e.target.value)}
           />
           <Input

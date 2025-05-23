@@ -818,6 +818,7 @@ export default function NewQuote() {
                                             .filter(product =>
                                                 product.name.toLowerCase().includes(productSearch.toLowerCase())
                                             )
+                                            .filter(p => p.isActive === true)
                                             .sort((a, b) => a.type.localeCompare(b.type))
                                             .map((product) => {
                                                 const qty = selectedProducts[product._id] || 0;

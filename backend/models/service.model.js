@@ -28,7 +28,7 @@ const serviceSchema = new mongoose.Schema({
     },
     type: {
         type:String,
-        default:"Front",
+        default:"Customer",
     },
     storeId: {
         type:String,
