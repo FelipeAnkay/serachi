@@ -10,11 +10,12 @@ import toast from 'react-hot-toast';
 import { useServiceServices } from '../../store/serviceServices';
 import { useStaffServices } from '../../store/staffServices';
 import { useProductServices } from '../../store/productServices';
-import {useRoomReservationServices} from '../../store/roomReservationServices';
+import { useRoomReservationServices } from '../../store/roomReservationServices';
+import ProductSelect from '../../components/ProductSelect';
 
 export default function ConfirmedQuote() {
     const { getConfirmedQuoteList } = useQuoteServices();
-    const { createRoomReservation, getReservations }=useRoomReservationServices();
+    const { createRoomReservation, getReservations } = useRoomReservationServices();
     const { getProductByStoreId } = useProductServices();
     const { createService } = useServiceServices();
     const { createExperience, getExperienceList } = useExperienceServices();
@@ -109,19 +110,20 @@ export default function ConfirmedQuote() {
             const formDateIn = new Date(quote.dateIn).toISOString().split("T")[0]
             const formDateOut = new Date(quote.dateOut).toISOString().split("T")[0]
             for (const product of quote.productList) {
-                console.log("El product es:", product);
+                //console.log("El product es:", product);
                 const servicePayload = {
                     name: "S: " + quote.customerEmail + " - " + product.productName,
                     productId: product.productID,
                     quoteId: quote._id,
                     customerEmail: quote.customerEmail,
                     storeId: quote.storeId,
-                    isPaid:true,
+                    type: "Customer",
+                    isPaid: true,
                     userEmail: quote.userEmail
                 }
-                console.log("El servicePayload es:", servicePayload);
+                //console.log("El servicePayload es:", servicePayload);
                 const service = await createService(servicePayload);
-                console.log("Respuesta de createService es:", service);
+                //console.log("Respuesta de createService es:", service);
                 serviceIds.push(service._id);
             };
 
@@ -136,12 +138,12 @@ export default function ConfirmedQuote() {
                 quoteId: quote._id,
                 source: quote.source
             }
-            console.log("El experiencePayload es:", experiencePayload);
+            //console.log("El experiencePayload es:", experiencePayload);
             const experience = await createExperience(experiencePayload);
-            console.log("Respuesta de createExperience es:", experience);
+            //console.log("Respuesta de createExperience es:", experience);
             toast.success("Experience & Services created");
         } catch (error) {
-            console.log("Error en handleCreateExperience:", error);
+            //console.log("Error en handleCreateExperience:", error);
             toast.error("Error creating experience")
         }
     };
@@ -171,8 +173,8 @@ export default function ConfirmedQuote() {
     };
 
     const handleCreateCustomeExperience = async (quote, customServiceList) => {
-        console.log("En handle CreateCustomeExperience: ", quote);
-        console.log("En handle CreateCustomeExperience customServiceList: ", customServiceList);
+        //console.log("En handle CreateCustomeExperience: ", quote);
+        //console.log("En handle CreateCustomeExperience customServiceList: ", customServiceList);
         setLoading(true);
         try {
             const serviceIds = [];
@@ -180,7 +182,7 @@ export default function ConfirmedQuote() {
             const formDateOut = new Date(quote.dateOut).toISOString().split("T")[0]
 
             for (const auxService of customServiceList) {
-                console.log("El service es:", auxService);
+                //console.log("El service es:", auxService);
                 const servicePayload = {
                     name: auxService.name,
                     productId: auxService.productId,
@@ -193,9 +195,9 @@ export default function ConfirmedQuote() {
                     isPaid: true,
                     staffEmail: auxService.staffEmail
                 }
-                console.log("El servicePayload es:", servicePayload);
+                //console.log("El servicePayload es:", servicePayload);
                 const service = await createService(servicePayload);
-                console.log("Respuesta de createService es:", service);
+                //console.log("Respuesta de createService es:", service);
                 serviceIds.push(service._id);
             };
 
@@ -210,9 +212,9 @@ export default function ConfirmedQuote() {
                 quoteId: quote._id,
                 source: quote.source
             }
-            console.log("El experiencePayload es:", experiencePayload);
+            //console.log("El experiencePayload es:", experiencePayload);
             const experience = await createExperience(experiencePayload);
-            console.log("Respuesta de createExperience es:", experience);
+            //console.log("Respuesta de createExperience es:", experience);
             toast.success("Experience & Services created");
             setCustomServiceList(null);
             setIsModalOpen(false);
@@ -221,7 +223,7 @@ export default function ConfirmedQuote() {
             setExistingExperiences(response.experienceList || []);
             setLoading(false);
         } catch (error) {
-            console.log("Error en handleCreateExperience:", error);
+            //console.log("Error en handleCreateExperience:", error);
             toast.error("Error creating experience")
             setLoading(false)
         }
@@ -238,7 +240,7 @@ export default function ConfirmedQuote() {
             setNameAutoGenerated(true);
             setIsModalOpen(true);
         } catch (error) {
-            console.error('Error fetching staff:', error);
+            console.error('Error fetching staff');
         }
     };
 
@@ -272,6 +274,10 @@ export default function ConfirmedQuote() {
         return `${day}-${month}-${year} ${hours}:${minutes}`;
     };
 
+    const handleResetCustomService = () => {
+        setCustomService({});
+        setCustomServiceList([]);
+    };
 
     return (
         <div className="flex flex-col min-h-screen w-full bg-blue-950 text-white px-4 py-6 sm:px-8 sm:py-10">
@@ -486,30 +492,13 @@ export default function ConfirmedQuote() {
                                                         <fieldset className='border p-4 rounded-2xl mr-2'>
                                                             <legend className="font-semibold text-sm">Service Data</legend>
                                                             {/* Product Selection */}
-                                                            <div className="mt-2">
-                                                                <label className="block text-sm font-medium">Product:</label>
-                                                                <select
-                                                                    className="w-full border border-gray-300 bg-white text-blue-950 rounded px-3 py-2"
-                                                                    value={customService.productId || ''}
-                                                                    onChange={(e) => {
-                                                                        const selectedProduct = productList.find(p => p._id === e.target.value);
-                                                                        if (selectedProduct) {
-                                                                            setCustomService({
-                                                                                ...customService,
-                                                                                productId: selectedProduct._id,
-                                                                                productName: selectedProduct.name
-                                                                            });
-                                                                            setNameAutoGenerated(true); // activa autogeneración de nombre si se cambia el producto
-                                                                        }
-                                                                    }}
-                                                                >
-                                                                    <option value="">Select a Product</option>
-                                                                    {productList.map((product) => (
-                                                                        <option key={product._id} value={product._id}>
-                                                                            {product.name} - ${product.price}
-                                                                        </option>
-                                                                    ))}
-                                                                </select>
+                                                            <div>
+                                                                <ProductSelect
+                                                                    productList={productList}
+                                                                    customService={customService}
+                                                                    setCustomService={setCustomService}
+                                                                    setNameAutoGenerated={setNameAutoGenerated}
+                                                                />
                                                             </div>
                                                             <div>
                                                                 <label className="block text-sm font-medium">Base Service Name:</label>
@@ -549,6 +538,7 @@ export default function ConfirmedQuote() {
                                                                     <label>Start Date & Time</label>
                                                                     <input type="datetime-local"
                                                                         value={customService.dateIn || ''}
+                                                                        min={formatDateInput(modalQuote.dateIn)}
                                                                         onChange={(e) => setCustomService({ ...customService, dateIn: e.target.value })}
                                                                         className="w-full border px-2 py-1 rounded bg-white text-blue-950"
                                                                     />
@@ -557,6 +547,8 @@ export default function ConfirmedQuote() {
                                                                     <label>End Date & Time</label>
                                                                     <input type="datetime-local"
                                                                         value={customService.dateOut || ''}
+                                                                        min={customService.dateIn || new Date().toISOString().split('T')[0]}
+                                                                        disabled={!customService.dateIn}
                                                                         onChange={(e) => setCustomService({ ...customService, dateOut: e.target.value })}
                                                                         className="w-full border px-2 py-1 rounded bg-white text-blue-950"
                                                                     />
@@ -743,6 +735,12 @@ export default function ConfirmedQuote() {
                                                                     }}
                                                                 >
                                                                     Add Service(s)
+                                                                </button>
+                                                                <button
+                                                                    className="mt-4 px-4 py-2 ml-2 rounded bg-yellow-600 text-white hover:bg-yellow-700"
+                                                                    onClick={() => handleResetCustomService()}
+                                                                >
+                                                                    Reset Service(s)
                                                                 </button>
                                                             </div>
                                                         </fieldset>

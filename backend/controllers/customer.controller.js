@@ -2,10 +2,10 @@ import { Customer } from "../models/customer.model.js";
 
 /*Customer FUNCTIONS */
 export const createCustomer = async (req, res) => {
-    const { name, email, phone, country, birthdate, nationalId, emergencyContact, divingCertificates,storeId,languages,diet } = req.body;
+    const { name, email, phone, country, birthdate, nationalId, emergencyContact, divingCertificates, storeId, languages, diet } = req.body;
     //console.log("Entre a create customer:", name,"-", email,"-", phone,"-", country,"-", birthdate,"-", nationalId,"-",emergencyContact,"-", divingCertificates,"-", storeId,"-", languages,"-", diet);
     try {
-        if (!name || !email || !phone || !country || !birthdate || !nationalId || !storeId ||!languages) {
+        if (!name || !email || !storeId) {
             throw new Error("All fields are required");
         }
 
@@ -48,7 +48,7 @@ export const updateCustomer = async (req, res) => {
             throw new Error("Id field is required");
         }
 
-        const customer = await Customer.findOneAndUpdate({email}, updateFields, {
+        const customer = await Customer.findOneAndUpdate({ email }, updateFields, {
             new: true
         });
 
@@ -85,7 +85,7 @@ export const customerList = async (req, res) => {
 export const customerByEmail = async (req, res) => {
     try {
         //console.log("Entre a customerByEmail")
-        const {email} = req.params
+        const { email } = req.params
         //console.log("B: el storeID para customerByEmail es: ", email)
         if (!email) {
             throw new Error("Email is required");
