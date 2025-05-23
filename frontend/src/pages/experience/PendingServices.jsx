@@ -10,7 +10,7 @@ import ServiceDetails from '../../components/ServiceDetails';
 
 
 export default function PendingServices() {
-    const { createService, getServicesNoData } = useServiceServices()
+    const { createService, getServicesNoData, updateService } = useServiceServices()
     const [services, setServices] = useState([]);
     const [loading, setLoading] = useState(true);
     const storeId = Cookies.get('storeId');
@@ -28,19 +28,20 @@ export default function PendingServices() {
         //navigate(`/new-quote/${quoteId}`);
     };
 
+    const fetchServices = async () => {
+        try {
+            const response = await getServicesNoData(storeId);
+            console.log("Service Response: ", response);
+            setServices(response.service);
+        } catch (error) {
+            console.error('Error fetching quotes:', error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
     useEffect(() => {
-        //console.log("Entre a useEffect [storeId, location.key]", timezone);
-        const fetchServices = async () => {
-            try {
-                const response = await getServicesNoData(storeId);
-                console.log("Service Response: ", response);
-                setServices(response.service);
-            } catch (error) {
-                console.error('Error fetching quotes:', error);
-            } finally {
-                setLoading(false);
-            }
-        };
+        //console.log("Entre a useEffect [storeId, location.key]", timezone)
 
         if (storeId) {
             fetchServices();
@@ -62,8 +63,10 @@ export default function PendingServices() {
         try {
             //console.log("En handleEditServices: ", updatedService);
             //console.log("En handleEditServices el selectedService: ", selectedService);
-            await updatedService(selectedService._id, selectedService)
-            
+            await updateService(selectedService._id, selectedService);
+            await fetchServices();
+            toast.success("Service updated successfully");
+
         } catch (error) {
             console.log("Error en handleEditServices");
             toast.error("Error editing services");

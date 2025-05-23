@@ -32,6 +32,7 @@ import PRCalculator from './pages/payroll/PRCalculator';
 import CreateService from './pages/experience/CreateService';
 import SetPartner from './pages/settings/SetPartner';
 import BookingSchedule from './pages/booking/BookingSchedule';
+import SetCustomer from './pages/settings/SetCustomer';
 
 const ProtectedRoute = ({ children }) => {
   const { isAuthenticated, user } = useAuthStore();
@@ -58,9 +59,9 @@ const MenuAvailable = () => {
   }
   return (
     <div className="h-screen text-white">
-          <Menu className="w-9 h-9" onClick={() => setShowMenu(!showMenu)} />
-          <LeftMenu show={showMenu} />
-        </div>
+      <Menu className="w-9 h-9" onClick={() => setShowMenu(!showMenu)} />
+      <LeftMenu show={showMenu} />
+    </div>
 
   );
 }
@@ -78,7 +79,7 @@ function App() {
 
   const { isCheckingAuth, checkAuth } = useAuthStore();
   const basepage = true;
- 
+
   useEffect(() => {
     checkAuth()
   }, [checkAuth]);
@@ -94,7 +95,7 @@ function App() {
       <FloatingShape color="bg-green-500" size="w-64 h-64" top="-5%" left="10%" delay={0} />
       <FloatingShape color="bg-emerald-500" size="w-48 h-48" top="70%" left="80%" delay={5} />
       <FloatingShape color="bg-lime-500" size="w-32 h-32" top="40%" left="-10%" delay={2} />
-      <MenuAvailable/>
+      <MenuAvailable />
       <Routes>
         <Route
           path="/"
@@ -110,7 +111,7 @@ function App() {
               <Experiences />
             </ProtectedRoute>}
         />
-                <Route
+        <Route
           path="/experience-create-service"
           element={
             <ProtectedRoute>
@@ -145,7 +146,7 @@ function App() {
               <Booking />
             </ProtectedRoute>}
         />
-         <Route
+        <Route
           path="/booking-calendar"
           element={
             <ProtectedRoute>
@@ -234,6 +235,13 @@ function App() {
           element={
             <ProtectedRoute>
               <SetUsers />
+            </ProtectedRoute>}
+        />
+        <Route
+          path="/set-customer"
+          element={
+            <ProtectedRoute>
+              <SetCustomer />
             </ProtectedRoute>}
         />
         <Route
