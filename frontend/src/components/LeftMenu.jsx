@@ -1,4 +1,4 @@
-import { Banknote, BanknoteArrowDown, Bed, BedDouble, BookMarked, Boxes, Calculator, CalendarCheck, CalendarHeart, CalendarPlus2, ChevronDown, Contact, DollarSign, HandCoins, Handshake, Home, MapPinCheckInside, PiggyBank, Receipt, Settings, ShieldUser, Ship, Store, TicketCheck, User, User2, UserPlus, Wallet } from "lucide-react"
+import { Banknote, BanknoteArrowDown, Bed, BedDouble, BookMarked, Boxes, Calculator, CalendarCheck, CalendarHeart, CalendarPlus2, ChevronDown, CircleUser, Contact, DollarSign, HandCoins, Handshake, Home, MapPinCheckInside, PiggyBank, Receipt, Settings, ShieldUser, Ship, Store, TicketCheck, User, User2, UserPlus, Wallet } from "lucide-react"
 import logo from "../../public/Serachi_logo-nobg.png"
 import { Link } from "react-router-dom"
 import { useState } from "react"
@@ -70,6 +70,7 @@ const LeftMenu = ({ show }) => {
                         <li className="hover:bg-blue-500 rounded-lg"><Link to="/set-users" className="flex items-center gap-2 py-1"><ShieldUser />Users</Link></li>
                         <li className="hover:bg-blue-500 rounded-lg"><Link to="/set-staff" className="flex items-center gap-2 py-1"><Contact />Staff</Link></li>
                         <li className="hover:bg-blue-500 rounded-lg"><Link to="/set-staff-rates" className="flex items-center gap-2 py-1"><Banknote />Staff Fees</Link></li>
+                        <li className="hover:bg-blue-500 rounded-lg"><Link to="/set-customer" className="flex items-center gap-2 py-1"><CircleUser />Customers</Link></li>
                         <li className="hover:bg-blue-500 rounded-lg"><Link to="/set-rooms" className="flex items-center gap-2 py-1"><Bed />Rooms</Link></li>
                         <li className="hover:bg-blue-500 rounded-lg"><Link to="/set-products" className="flex items-center gap-2 py-1"><Boxes />Products</Link></li>
                         <li className="hover:bg-blue-500 rounded-lg"><Link to="/set-partner" className="flex items-center gap-2 py-1"><Handshake />Partners</Link></li>

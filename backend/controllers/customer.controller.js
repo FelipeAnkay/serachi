@@ -67,12 +67,13 @@ export const updateCustomer = async (req, res) => {
 
 export const customerList = async (req, res) => {
     try {
-        const storeId = req.params
+        const {storeId} = req.params
+        console.log("Entre a customerList ", storeId)
         if (!storeId) {
             throw new Error("StoreID is required");
         }
         const normalizeStoreID = storeId?.toUpperCase();
-        const customerList = await Customer.find(normalizeStoreID);
+        const customerList = await Customer.find({ storeId: normalizeStoreID});
         console.log("El listado de clientes es:", customerList);
         if (!customerList) {
             return res.status(400).json({ success: false, message: "Customer not found" });
