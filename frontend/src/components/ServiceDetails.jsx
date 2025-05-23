@@ -34,7 +34,7 @@ export default function ServiceDetails({ isOpen, onClose, service, setService, o
         if (storeId) {
             fetchStaff();
         }
-    }, [staffList])
+    }, [storeId])
 
     const formatDateInput = (dateStr) => {
         if (!dateStr) return "";
