@@ -3,7 +3,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { useState, useEffect, useRef } from 'react';
 import { useQuoteServices } from '../../store/quoteServices';
 import { useNavigate, useLocation } from "react-router-dom";
-import { Bed, CircleX, ConeIcon, Copy, MapPinCheckInside, MapPinPlus } from 'lucide-react';
+import { Bed, CircleX, ConeIcon, Copy, MapPinCheckInside, MapPinPlus, Trash2 } from 'lucide-react';
 import { useAuthStore } from '../../store/authStore';
 import { useExperienceServices } from '../../store/experienceServices';
 import toast from 'react-hot-toast';
@@ -277,6 +277,10 @@ export default function ConfirmedQuote() {
     const handleResetCustomService = () => {
         setCustomService({});
         setCustomServiceList([]);
+    };
+
+    const handleDeleteCustomService = (indexToDelete) => {
+        setCustomServiceList(prevList => prevList.filter((_, i) => i !== indexToDelete));
     };
 
     return (
@@ -625,8 +629,6 @@ export default function ConfirmedQuote() {
                                                                         auxDateOut.setDate(auxDateOut.getDate());
                                                                         const auxWeekDateIn = new Date(inDate);
                                                                         auxWeekDateIn.setDate(auxWeekDateIn.getDate());
-                                                                        let finalCounter = 0;
-                                                                        let initalCounter = 1;
                                                                         /*
                                                                         initDay = 05-05
                                                                         outDay = 07-05
@@ -637,7 +639,6 @@ export default function ConfirmedQuote() {
 
                                                                         if (perWeek) {
                                                                             if (onePerDay) {
-                                                                                finalCounter = (repetition + 1) * (diffDays + 1)
                                                                                 const auxHours = auxDateIn.getHours() + 4;
                                                                                 for (let a = 0; a <= repetition; a++) {
                                                                                     auxDateIn.setDate(auxWeekDateIn.getDate() + (a * 7));
@@ -645,87 +646,68 @@ export default function ConfirmedQuote() {
 
                                                                                         auxDateOut.setDate(auxDateIn.getDate());
                                                                                         auxDateOut.setHours(auxHours);
-                                                                                        console.log("El dateIn es", auxDateIn, " El dateOut es: ", auxDateOut, " diffDays: ", diffDays, " I: ", i, " Repetition: ", a)
+                                                                                        //console.log("El dateIn es", auxDateIn, " El dateOut es: ", auxDateOut, " diffDays: ", diffDays, " I: ", i, " Repetition: ", a)
                                                                                         newServices.push({
-                                                                                            name: name + " - " + initalCounter + " of " + finalCounter,
+                                                                                            name: name,
                                                                                             dateIn: auxDateIn.toISOString(),
                                                                                             dateOut: auxDateOut.toISOString(),
                                                                                             productId,
                                                                                             staffEmail
                                                                                         });
                                                                                         auxDateIn.setDate(auxDateIn.getDate() + 1);
-                                                                                        initalCounter = initalCounter + 1;
-                                                                                        console.log("El listado de servicios es: ", newServices);
+                                                                                        //console.log("El listado de servicios es: ", newServices);
                                                                                     }
                                                                                 }
 
                                                                             } else {
-                                                                                finalCounter = repetition + 1;
                                                                                 for (let i = 0; i <= repetition; i++) {
-                                                                                    console.log("El dateIn es", auxDateIn, " El dateOut es: ", auxDateOut, " diffDays: ", diffDays, " I: ", i, " Repetition: ", repetition)
+                                                                                    //console.log("El dateIn es", auxDateIn, " El dateOut es: ", auxDateOut, " diffDays: ", diffDays, " I: ", i, " Repetition: ", repetition)
                                                                                     newServices.push({
-                                                                                        name: name + " - " + initalCounter + " of " + finalCounter,
+                                                                                        name: name,
                                                                                         dateIn: auxDateIn.toISOString(),
                                                                                         dateOut: auxDateOut.toISOString(),
                                                                                         productId,
                                                                                         staffEmail
                                                                                     });
                                                                                     auxDateIn.setDate(auxDateIn.getDate() + 7);
-                                                                                    //auxDateIn = auxDateOut + i;
 
                                                                                     auxDateOut.setDate(auxDateOut.getDate() + 7);
-                                                                                    //auxDateOut = auxDateOut + diffDays;
-                                                                                    initalCounter = initalCounter + 1;
-                                                                                    console.log("El listado de servicios es: ", newServices);
+                                                                                    //console.log("El listado de servicios es: ", newServices);
                                                                                 }
                                                                             }
                                                                         } else {
                                                                             if (onePerDay) {
                                                                                 const auxHours = auxDateIn.getHours() + 4;
-                                                                                /*
-                                                                                    initDay = 05-05
-                                                                                    outDay = 07-05
-                                                                                    repetition = 0
-                                                                                    diffDays = 2
-                                                                                    finalCounter = 3
-                                                                                */
-                                                                                finalCounter = (repetition + 1) * (diffDays + 1)
                                                                                 for (let a = 0; a <= repetition; a++) {
                                                                                     for (let i = 0; i <= diffDays; i++) {
                                                                                         auxDateOut.setDate(auxDateIn.getDate());
                                                                                         auxDateOut.setHours(auxHours);
-                                                                                        console.log("El dateIn es", auxDateIn, " El dateOut es: ", auxDateOut, " diffDays: ", diffDays, " I: ", i, " Repetition: ", a)
+                                                                                        //console.log("El dateIn es", auxDateIn, " El dateOut es: ", auxDateOut, " diffDays: ", diffDays, " I: ", i, " Repetition: ", a)
                                                                                         newServices.push({
-                                                                                            name: name + " - " + initalCounter + " of " + finalCounter,
+                                                                                            name: name,
                                                                                             dateIn: auxDateIn.toISOString(),
                                                                                             dateOut: auxDateOut.toISOString(),
                                                                                             productId,
                                                                                             staffEmail
                                                                                         });
                                                                                         auxDateIn.setDate(auxDateIn.getDate() + 1);
-                                                                                        initalCounter = initalCounter + 1;
-                                                                                        console.log("El listado de servicios es: ", newServices);
+                                                                                        //console.log("El listado de servicios es: ", newServices);
 
                                                                                     }
                                                                                 }
                                                                             } else {
-                                                                                finalCounter = (repetition + 1)
-                                                                                console.log("El final counter es: ", finalCounter)
                                                                                 for (let i = 0; i <= repetition; i++) {
                                                                                     console.log("El dateIn es", auxDateIn, " El dateOut es: ", auxDateOut, " diffDays: ", diffDays, " I: ", i, " Repetition: ", repetition)
                                                                                     newServices.push({
-                                                                                        name: name + " - " + initalCounter + " of " + finalCounter,
+                                                                                        name: name,
                                                                                         dateIn: auxDateIn.toISOString(),
                                                                                         dateOut: auxDateOut.toISOString(),
                                                                                         productId,
                                                                                         staffEmail
                                                                                     });
                                                                                     auxDateIn.setDate(auxDateOut.getDate() + 1);
-
-
                                                                                     auxDateOut.setDate(auxDateOut.getDate() + (diffDays + 1));
-                                                                                    initalCounter = initalCounter + 1;
-                                                                                    console.log("El listado de servicios es: ", newServices);
+                                                                                    //console.log("El listado de servicios es: ", newServices);
                                                                                 }
                                                                             }
                                                                         }
@@ -748,10 +730,20 @@ export default function ConfirmedQuote() {
                                                         <fieldset className='flex-1 border p-4 rounded-2xl'>
                                                             <legend className="font-semibold text-sm">Custom Services</legend>
                                                             <div className='flex flex-col'>
-                                                                {(customServiceList || []).map((service) => (
-                                                                    <label>
-                                                                        {service.name}
-                                                                    </label>
+                                                                {(customServiceList || []).map((service,index) => (
+                                                                    <div className='flex flex-row items-center justify-center border rounded-2xl mr-2 mb-2 bg-blue-700'>
+                                                                        <div className='ml-2'>
+                                                                            <label>
+                                                                                {index + 1}.- {service.name}
+                                                                            </label>
+                                                                        </div>
+                                                                        <div className='mr-2'>
+                                                                            <Trash2
+                                                                                className='text-red-500 hover:text-red-900'
+                                                                                onClick={() => handleDeleteCustomService(index)}
+                                                                            />
+                                                                        </div>
+                                                                    </div>
                                                                 ))}
                                                             </div>
                                                         </fieldset>

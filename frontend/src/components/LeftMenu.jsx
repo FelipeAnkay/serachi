@@ -41,8 +41,7 @@ const LeftMenu = ({ show }) => {
                     <li className="rounded-lg flex gap-2" onClick={() => setOpenExperience(!openExperience)}><MapPinCheckInside className="inline-block" /><span className="inline-block">Experiences</span><ChevronDown className={openExperience ? "block rotate-180" : "block"} /></li>
                     <div className={openExperience ? "w-full py-4 px-5 p-4 transition ease-out duration-100 transform opacity-100 scale-100 hover:bg-blue-600 rounded-lg" : "transform h-0 scale-95 transition ease-in duration-75 overflow-hidden"}>
                         <li className="hover:bg-blue-500 rounded-lg flex"><Link to="/experience-calendar" className="flex items-center gap-2 py-1"><CalendarHeart />Exp Calendar</Link></li>
-                        <li className="hover:bg-blue-500 rounded-lg flex"><Link to="/set-service-dates" className="flex items-center gap-2 py-1"><CalendarPlus2 />Assign Dates</Link></li>
-                        <li className="hover:bg-blue-500 rounded-lg flex"><Link to="/set-service-staff" className="flex items-center gap-2 py-1"><UserPlus />Assign Staff</Link></li>
+                        <li className="hover:bg-blue-500 rounded-lg flex"><Link to="/set-service-dates" className="flex items-center gap-2 py-1"><CalendarPlus2 />Set Missing Data</Link></li>
                         <li className="hover:bg-blue-500 rounded-lg flex"><Link to="/experience-create-service" className="flex items-center gap-2 py-1"><BookMarked />Create Service</Link></li>
                     </div>
                 </div>
