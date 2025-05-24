@@ -105,7 +105,7 @@ const AssignStaff = () => {
         }
     };
 
-    if (loading) return <div className="text-white text-center mt-10">Cargando...</div>;
+    if (loading) return <div className="text-white text-center mt-10">Loading...</div>;
     if (error) return <div className="text-red-500 text-center mt-10">{error}</div>;
 
     return (

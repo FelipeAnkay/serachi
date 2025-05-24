@@ -15,7 +15,7 @@ const localizer = momentLocalizer(moment);
 const Experiences = () => {
     const { getExperienceList } = useExperienceServices();
     const { getServiceById, updateService, getServicesByDate } = useServiceServices();
-    const { getStaffEmail } = useStaffServices();
+    const { getStaffEmail, getStaffList } = useStaffServices();
     const storeId = Cookies.get("storeId");
     const [events, setEvents] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -26,13 +26,21 @@ const Experiences = () => {
     const [modalOpen, setModalOpen] = useState(false);
     const [editData, setEditData] = useState({});
     const [loadedRange, setLoadedRange] = useState({ start: null, end: null });
+    const [staffList, setStaffList] = useState([]);
 
     useEffect(() => {
         const now = new Date();
         const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
         const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0);
         fetchExperiences(firstDay, lastDay);
+        fetchStaff();
     }, []);
+
+    const fetchStaff = async () => {
+        const staff = await getStaffList(storeId);
+        //console.log("staff: ", staff)
+        setStaffList(staff.staffList);
+    }
 
     const fetchExperiences = async (startDate, endDate) => {
         setLoading(true);
@@ -174,7 +182,7 @@ const Experiences = () => {
         }
     };
 
-    if (loading) return <div className="text-white text-center mt-10">Cargando...</div>;
+    if (loading) return <div className="text-white text-center mt-10">Loading...</div>;
     if (error) return <div className="text-red-500 text-center mt-10">{error}</div>;
 
     return (
@@ -248,14 +256,20 @@ const Experiences = () => {
                             </h3>
                             <div className="space-y-4 text-sm">
                                 <p><strong>Customer Email:</strong> {selectedService.customerEmail || 'No asignado'}</p>
-                                <div>
-                                    <label>Assigned Staff:</label>
-                                    <input
-                                        type="email"
-                                        className="w-full p-2 mt-1 rounded bg-gray-800 text-white"
-                                        value={editData.staffEmail}
+                                <div className='mt-2 flex flex-row'>
+                                    <label className="block text-sm font-medium">Staff Email:</label>
+                                    <select
+                                        className="w-full border border-gray-300 bg-gray-800 text-white rounded px-3 py-2"
+                                        value={editData.staffEmail || ''}
                                         onChange={(e) => setEditData({ ...editData, staffEmail: e.target.value })}
-                                    />
+                                    >
+                                        <option value="">Select a staff</option>
+                                        {(staffList || []).map((staff) => (
+                                            <option key={staff.email} value={staff.email}>
+                                                {staff.name ? `${staff.name} (${staff.email})` : staff.email}
+                                            </option>
+                                        ))}
+                                    </select>
                                 </div>
                                 <div>
                                     <label>Starting Date:</label>

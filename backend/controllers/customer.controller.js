@@ -2,7 +2,7 @@ import { Customer } from "../models/customer.model.js";
 
 /*Customer FUNCTIONS */
 export const createCustomer = async (req, res) => {
-    const { name, email, phone, country, birthdate, nationalId, emergencyContact, divingCertificates, storeId, languages, diet } = req.body;
+    const { name, email, phone, country, birthdate, nationalId, emergencyContact, divingCertificates, storeId, languages, diet, allergies } = req.body;
     //console.log("Entre a create customer:", name,"-", email,"-", phone,"-", country,"-", birthdate,"-", nationalId,"-",emergencyContact,"-", divingCertificates,"-", storeId,"-", languages,"-", diet);
     try {
         if (!name || !email || !storeId) {
@@ -19,6 +19,7 @@ export const createCustomer = async (req, res) => {
             birthdate,
             nationalId,
             diet,
+            allergies,
             languages,
             emergencyContact,
             divingCertificates,

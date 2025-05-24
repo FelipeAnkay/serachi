@@ -70,7 +70,7 @@ const SetUsers = () => {
                 <h2 className='text-3xl font-bold mb-6 text-center bg-gradient-to-r from-blue-400 to-blue-600 text-transparent bg-clip-text'>
                     Listado de Usuarios
                 </h2>
-                {loading && <p className="text-center">Cargando usuarios...</p>}
+                {loading && <p className="text-center">Loading usuarios...</p>}
                 {error && <p className="text-center text-red-500">{error}</p>}
             
                 <ul className="space-y-2">
