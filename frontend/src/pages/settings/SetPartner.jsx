@@ -145,7 +145,7 @@ const SetPartner = () => {
         }
     };
 
-    if (loading) return <div className="text-white text-center mt-10">Cargando partner...</div>;
+    if (loading) return <div className="text-white text-center mt-10">Loading partner...</div>;
 
     return (
         <div className="flex flex-col min-h-screen w-full bg-blue-950 text-white px-4 py-6 sm:px-8 sm:py-10">

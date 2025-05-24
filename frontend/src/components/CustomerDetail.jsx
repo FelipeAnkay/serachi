@@ -44,7 +44,7 @@ export default function CustomerDetails({ isOpen, onClose, customer, setCustomer
                         <CircleX />
                     </button>
 
-                    <h2 className="text-xl font-bold mb-4 text-center text-white">Cliente</h2>
+                    <h2 className="text-xl font-bold mb-4 text-center text-white">Customer</h2>
                     <div className="space-y-4">
                         {/* Ejemplo de campo: */}
                         <div>
@@ -141,6 +141,15 @@ export default function CustomerDetails({ isOpen, onClose, customer, setCustomer
                                     </option>
                                 ))}
                             </select>
+                        </div>
+                                                <div>
+                            <label className="block text-sm font-medium">Allergies</label>
+                            <input
+                                type="text"
+                                className="w-full border border-gray-300 rounded px-3 py-2 mt-1"
+                                value={customer.allergies || ''}
+                                onChange={(e) => setCustomer({ ...customer, allergies: e.target.value })}
+                            />
                         </div>
                         <div>
                             <label className="block text-sm font-medium mb-2">Languages:</label>

@@ -24,6 +24,7 @@ const ProductSelect = ({ productList, customService, setCustomService, setNameAu
       <label className="block text-sm font-medium mb-1">Product:</label>
       <Select
         options={options}
+        value={options.find(opt => opt.value === customService.productId) || null} // ← aquí lo haces controlado
         onChange={handleChange}
         placeholder="Select or search a product..."
         className="text-blue-950"

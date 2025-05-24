@@ -37,6 +37,9 @@ const customerSchema = new mongoose.Schema({
     diet: {
         type:String,
     },
+    allergies: {
+        type:String,
+    },
     emergencyContact:{
         _id: false,
         emergencyContactName:{
