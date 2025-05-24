@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { CirclePlus, CircleX, Currency, Delete, Save, Trash2, UserPlus } from 'lucide-react';
+import { CirclePlus, CircleX, Copy, Currency, Delete, Save, Trash2, UserPlus } from 'lucide-react';
 import Cookies from 'js-cookie';
 import toast from 'react-hot-toast';
 import { useProductServices } from '../../store/productServices';
@@ -17,12 +17,12 @@ const SetProduct = () => {
     const [modalOpen, setModalOpen] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
     const [productData, setProductData] = useState({});
-    const [emailCheckPhase, setEmailCheckPhase] = useState(false);
     const [confirmDelete, setConfirmDelete] = useState(null);
     const [showActive, setShowActive] = useState(true);
     const { user } = useAuthStore();
     const [typeList, setTypeList] = useState([]);
     const [selectedType, setSelectedType] = useState(null);
+    const [searchTerm, setSearchTerm] = useState('');
 
     useEffect(() => {
         const fetchProducts = async () => {
@@ -112,10 +112,33 @@ const SetProduct = () => {
         }
     };
 
+    const handleDuplicate = async (originalProduct) => {
+        try {
+            const duplicatedProduct = {
+                ...originalProduct,
+                name: `${originalProduct.name} - COPY`,
+            };
+
+            // Eliminar campos que no deben duplicarse directamente
+            delete duplicatedProduct._id;
+            delete duplicatedProduct.createdAt;
+            delete duplicatedProduct.updatedAt;
+
+            await createProduct(duplicatedProduct, storeId, user._id);
+            toast.success(`Product "${duplicatedProduct.name}" duplicated successfully.`);
+            window.location.reload();
+        } catch (error) {
+            console.error('Error duplicating product:', error);
+            toast.error('Error duplicating product');
+        }
+    };
+
     const productTypes = [...new Set(productList.map(p => p.type).filter(Boolean))];
     const filteredProducts = productList
         .filter(p => p.isActive === showActive)
-        .filter(p => !selectedType || p.type === selectedType);
+        .filter(p => !selectedType || p.type === selectedType)
+        .filter(p => p.name.toLowerCase().includes(searchTerm.toLowerCase()))
+        .sort((a, b) => a.name.localeCompare(b.name));
 
 
     if (loading) return <div className="text-white text-center mt-10">Loading Products...</div>;
@@ -168,6 +191,15 @@ const SetProduct = () => {
                         ))}
                     </div>
                 )}
+                <div className="flex justify-center mb-6">
+                    <input
+                        type="text"
+                        placeholder="Search product by name..."
+                        className="w-full max-w-md p-2 rounded bg-gray-800 text-white border border-gray-600"
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                    />
+                </div>
 
                 <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 ml-3 mr-3 mb-3">
                     {filteredProducts.length === 0 ? (
@@ -178,20 +210,31 @@ const SetProduct = () => {
                                 key={product._id}
                                 className="relative bg-white text-black rounded-lg shadow p-4 hover:bg-blue-100 transition-all"
                             >
-                                <div onClick={() => openEditProductModal(product)}>
+                                <div onClick={() => openEditProductModal(product)} className='w-3/4'>
                                     <h3 className="font-semibold text-lg mb-1">{product.name}</h3>
                                     <p className="text-sm text-gray-700">Price: {product.price}</p>
                                     <p className="text-sm text-gray-700">Tax: {product.tax}</p>
                                     <p className="text-sm text-gray-700">Type: {product.type || 'N/A'}</p>
                                 </div>
                                 {product.isActive ? (
-                                    <button
-                                        onClick={() => setConfirmDelete({ id: product._id, name: product.name })}
-                                        className="absolute top-2 right-2 text-red-600 hover:text-red-800"
-                                        title="Remove from Store"
-                                    >
-                                        <Trash2 />
-                                    </button>
+                                    <div className='flex flex-col absolute top-2 right-2 text-sm w-1/4'>
+                                        <button
+                                            onClick={() => setConfirmDelete({ id: product._id, name: product.name })}
+                                            className="text-red-600 hover:text-red-800 flex flex-col justify-center items-center"
+                                            title="Remove from Store"
+                                        >
+                                            <Trash2 />
+                                            Remove
+                                        </button>
+                                        <button
+                                            onClick={() => handleDuplicate(product)}
+                                            className="text-blue-600 hover:text-blue-800 flex flex-col justify-center items-center mt-2"
+                                            title="Duplicate Product"
+                                        >
+                                            <Copy />
+                                            Duplicate
+                                        </button>
+                                    </div>
                                 ) : (
                                     <button
                                         onClick={async () => {
