@@ -4,7 +4,7 @@ import { Quote } from "../models/quote.model.js";
 
 /*Quote FUNCTIONS */
 export const createQuote = async (req, res) => {
-    const { dateIn, dateOut, customerEmail, customerName, storeId, roomList, partnerId, productList, discount,finalPrice, taxes, grossPrice,currency,isConfirmed,isReturningCustomer,userEmail, userName, tag, source, customSource} = req.body;
+    const { dateIn, dateOut, customerEmail, customerName, storeId, roomList, partnerId, productList, discount, finalPrice, taxes, grossPrice, currency, isConfirmed, isReturningCustomer, userEmail, userName, tag, source, customSource, sendEmail } = req.body;
     //console.log("B: createQuote data: ", dateIn ," - ", dateOut," - ",customerEmail," - ",customerName," - ",storeId," - ",roomId," - ",partnerId," - ",productList," - ",discount," - ",finalPrice," - ",currency," - ",isConfirmed," - ",isReturningCustomer," - ",userEmail," - ",userName," - "," - ",tag)
     try {
         if (!dateIn || !dateOut || !customerEmail || !productList || !finalPrice || !storeId || !userEmail || !customerName || !userName) {
@@ -36,11 +36,13 @@ export const createQuote = async (req, res) => {
 
         await quote.save();
 
-        const store = await Store.findOne({storeId: normalizedStoreId})
+        const store = await Store.findOne({ storeId: normalizedStoreId })
 
-        //console.log("B: Los datos para el envío de mail son: ", customerEmail," - ",customerName," - ",dateIn," - ",dateOut," - ",productList," - ",discount," - ",finalPrice," - ",userEmail," - ", userName," - ",store.name);
-       
-        //await sendQuoteEmail(customerEmail, customerName,dateIn,dateOut,productList, roomList, discount,finalPrice, userEmail,userName, store.name);
+        if (sendEmail) {
+            //console.log("B: Los datos para el envío de mail son: ", customerEmail," - ",customerName," - ",dateIn," - ",dateOut," - ",productList," - ",discount," - ",finalPrice," - ",userEmail," - ", userName," - ",store.name);
+            await sendQuoteEmail(customerEmail, customerName, dateIn, dateOut, productList, roomList, discount, finalPrice, userEmail, userName, store.name);
+        }
+
 
         res.status(201).json({
             success: true,
@@ -81,12 +83,12 @@ export const updateQuote = async (req, res) => {
 
 export const quoteList = async (req, res) => {
     try {
-        const {storeId} = req.params
+        const { storeId } = req.params
         if (!storeId) {
             throw new Error("StoreID is required");
         }
         const normalizeStoreID = storeId?.toUpperCase();
-        const quoteList = await Quote.find({storeId: normalizeStoreID});
+        const quoteList = await Quote.find({ storeId: normalizeStoreID });
         //console.log("El listado de quotes es:", quoteList);
         if (!quoteList) {
             return res.status(200).json({ success: false, message: "Quotes not found" });
@@ -99,12 +101,12 @@ export const quoteList = async (req, res) => {
 
 export const openQuoteList = async (req, res) => {
     try {
-        const {storeId} = req.params
+        const { storeId } = req.params
         if (!storeId) {
             throw new Error("StoreID is required");
         }
         const normalizeStoreID = storeId?.toUpperCase();
-        const quoteList = await Quote.find({storeId: normalizeStoreID, isConfirmed: false});
+        const quoteList = await Quote.find({ storeId: normalizeStoreID, isConfirmed: false });
         //console.log("El listado de quotes es:", quoteList);
         if (!quoteList) {
             return res.status(400).json({ success: false, message: "Quotes not found" });
@@ -117,12 +119,12 @@ export const openQuoteList = async (req, res) => {
 
 export const confirmQuoteList = async (req, res) => {
     try {
-        const {storeId} = req.params
+        const { storeId } = req.params
         if (!storeId) {
             throw new Error("StoreID is required");
         }
         const normalizeStoreID = storeId?.toUpperCase();
-        const quoteList = await Quote.find({storeId: normalizeStoreID, isConfirmed: true});
+        const quoteList = await Quote.find({ storeId: normalizeStoreID, isConfirmed: true });
         //console.log("El listado de quotes es:", quoteList);
         if (!quoteList) {
             return res.status(400).json({ success: false, message: "Quotes not found" });
@@ -135,7 +137,7 @@ export const confirmQuoteList = async (req, res) => {
 
 export const getQuoteById = async (req, res) => {
     try {
-        const {id} = req.params;
+        const { id } = req.params;
         const quote = await Quote.findById(id);
         if (!quote) {
             return res.status(400).json({ success: false, message: "quote not found" });
@@ -148,8 +150,8 @@ export const getQuoteById = async (req, res) => {
 
 export const getQuoteByEmail = async (req, res) => {
     try {
-        const {email} = req.params;
-        const quote = await Quote.find({customerEmail : email});
+        const { email } = req.params;
+        const quote = await Quote.find({ customerEmail: email });
         if (!quote) {
             return res.status(400).json({ success: false, message: "quote not found" });
         }

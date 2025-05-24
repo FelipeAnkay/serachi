@@ -63,9 +63,9 @@ export const updateRoomReservation = async (req, res) => {
 
 export const roomReservationList = async (req, res) => {
     try {
-        console.log("Entre a staffList")
+        console.log("Entre a roomReservationList")
         const { storeId } = req.params
-        console.log("B: el storeID para staffList es: ", storeId)
+        console.log("B: el storeID para roomReservationList es: ", storeId)
         if (!storeId) {
             throw new Error("StoreID is required");
         }
@@ -75,6 +75,31 @@ export const roomReservationList = async (req, res) => {
         if (!roomReservationList) {
             return res.status(200).json({ success: false, message: "Reservation not found" });
         }
+        res.status(200).json({ success: true, roomReservationList });
+    } catch (error) {
+        return res.status(400).json({ success: false, message: error.message });
+    }
+}
+
+export const roomReservationByDates = async (req, res) => {
+    try {
+        const { storeId, dateIn, dateOut } = req.params;
+        const normalizedStoreId = storeId?.toUpperCase();
+
+        //console.log("Entre a roomReservationByDates: ", normalizedStoreId, " - ", dateIn, " - ", dateOut);
+
+        const roomReservationList = await RoomReservation.find({
+            storeId: normalizedStoreId,
+            dateIn: { $gte: new Date(dateIn) },
+            dateOut: { $lte: new Date(dateOut) },
+        });
+
+        //console.log("Respuesta de roomReservationList.find: ", roomReservationList);
+
+        if (!roomReservationList || roomReservationList.length === 0) {
+            return res.status(404).json({ success: false, message: "No services found in date range" });
+        }
+
         res.status(200).json({ success: true, roomReservationList });
     } catch (error) {
         return res.status(400).json({ success: false, message: error.message });

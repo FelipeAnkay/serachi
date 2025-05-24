@@ -74,6 +74,7 @@ export default function NewQuote() {
                 storeId: storeId,
                 isConfirmed: false,
                 isReturningCustomer: false,
+                sendEmail:true,
             });
         }
         const fetchProducts = async () => {
@@ -520,6 +521,7 @@ export default function NewQuote() {
                     userName: user.name,
                     storeId: storeId,
                     isConfirmed: false,
+                    sendEmail:true,
                 });
 
                 setCustomer({
@@ -566,6 +568,7 @@ export default function NewQuote() {
             userName: user.name,
             storeId: storeId,
             isConfirmed: false,
+            sendEmail: true,
         });
 
         setCustomer({
@@ -1316,8 +1319,8 @@ export default function NewQuote() {
                         {/* Botón  y switch centrado */}
                         <div className="flex flex-col items-center pt-4 space-y-4">
                             <div className="flex">
-                                <div className="ml-4 mr-4 flex items-center gap-4 ">
-                                    <label className="text-sm font-medium text-white">Is Confirmed?</label>
+                                <div className="ml-2 mr-2 flex flex-col items-center gap-4 border rounded-2xl">
+                                    <label className="text-sm font-medium text-white mt-2 ml-2 mr-2">Is Confirmed?</label>
 
                                     {/* Switch */}
                                     <label className="relative inline-flex items-center cursor-pointer">
@@ -1339,11 +1342,10 @@ export default function NewQuote() {
                                         {/* Slider */}
                                         <div className="absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full transition-transform duration-300 peer-checked:translate-x-5 pointer-events-none"></div>
                                     </label>
-
                                     <span className="text-sm text-white">{quote.isConfirmed ? "Yes" : "No"}</span>
                                 </div>
-                                <div className="ml-4 mr-4 flex items-center gap-4 ">
-                                    <label className="text-sm font-medium text-white">Is a returning customer?</label>
+                                <div className="ml-2 mr-2 flex flex-col items-center gap-4 border rounded-2xl">
+                                    <label className="text-sm font-medium text-white mt-2 ml-2 mr-2">Is a returning customer?</label>
 
                                     {/* Switch */}
                                     <label className="relative inline-flex items-center cursor-pointer">
@@ -1367,6 +1369,31 @@ export default function NewQuote() {
                                     </label>
 
                                     <span className="text-sm text-white">{quote.isReturningCustomer ? "Yes" : "No"}</span>
+                                </div>
+                                <div className="ml-2 mr-2 flex flex-col items-center gap-4 border rounded-2xl">
+                                    <label className="text-sm font-medium text-white mt-2 ml-2 mr-2">Send quote email?</label>
+
+                                    {/* Switch */}
+                                    <label className="relative inline-flex items-center cursor-pointer">
+                                        <input
+                                            type="checkbox"
+                                            id="sendEmail"
+                                            className="sr-only peer"
+                                            checked={quote.sendEmail}
+                                            onChange={(e) =>
+                                                setQuote((prev) => ({
+                                                    ...prev,
+                                                    sendEmail: e.target.checked,
+                                                }))
+                                            }
+                                        />
+                                        {/* Track */}
+                                        <div className="w-11 h-6 bg-gray-300 rounded-full peer-checked:bg-green-600 transition-colors duration-300"></div>
+
+                                        {/* Slider */}
+                                        <div className="absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full transition-transform duration-300 peer-checked:translate-x-5 pointer-events-none"></div>
+                                    </label>
+                                    <span className="text-sm text-white mb-2">{quote.sendEmail ? "Yes" : "No"}</span>
                                 </div>
                             </div>
                             <div>
