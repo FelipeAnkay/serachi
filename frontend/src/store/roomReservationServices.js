@@ -1,6 +1,7 @@
 // roomServices.js
 import { create } from 'zustand';
 import axios from 'axios';
+import moment from 'moment';
 
 const URL_API = import.meta.env.MODE === 'development'
     ? 'http://localhost:5000/api/reservations'
@@ -82,7 +83,23 @@ export const useRoomReservationServices = create((set) => ({
             console.error("Error splitting room reservation:", error);
             throw error;
         }
-    }
+    },
+    getReservationsByDate: async (storeId, dateIn, dateOut) => {
+        set({ isLoading: true, error: null });
 
+        // Normaliza las fechas al formato 'YYYY-MM-DD HH:mm'
+        const formatDate = (date) => moment(date).format('YYYY-MM-DD HH:mm');
 
+        try {
+            const formattedDateIn = formatDate(dateIn);
+            const formattedDateOut = formatDate(dateOut);
+
+            const response = await axios.get(`${URL_API}/dates/${storeId}/${formattedDateIn}/${formattedDateOut}`);
+
+            return response.data;
+        } catch (error) {
+            set({ error: error.response?.data?.message || "Error getting Reservations", isLoading: false });
+            throw error;
+        }
+    },
 }));
