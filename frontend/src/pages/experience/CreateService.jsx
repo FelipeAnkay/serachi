@@ -481,7 +481,7 @@ export default function CreateService() {
                                     <div className='grid grid-cols-2 gap-2 ml-2'>
                                         {(customServiceList || []).map((service, index) => (
                                             <div className='flex flex-row items-center justify-center border rounded-2xl mr-2 mb-2 bg-blue-700'>
-                                                <div className='ml-2'>
+                                                <div className='ml-2 flex-1 text-left'>
                                                     <label>
                                                         {index + 1}.- {service.name} - {formatDateDisplay(service.dateIn)} to {formatDateDisplay(service.dateOut)}
                                                     </label>
