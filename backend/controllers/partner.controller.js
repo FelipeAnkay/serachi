@@ -35,13 +35,13 @@ export const createPartner = async (req, res) => {
 }
 
 export const updatePartner = async (req, res) => {
-    const { email, ...updateFields } = req.body;
+    const { email, storeId, ...updateFields } = req.body;
     try {
         if (!email) {
             throw new Error("Id field is required");
         }
-
-        const partner = await Partner.findOneAndUpdate(email, updateFields, {
+        const filter = {email: email, storeId: storeId}
+        const partner = await Partner.findOneAndUpdate(filter, updateFields, {
             new: true
         });
 
@@ -78,12 +78,13 @@ export const partnerList = async (req, res) => {
 }
 export const partnerByEmail = async (req, res) => {
     try {
-        const { email } = req.params
+        const { email, storeId } = req.params
+        const normalizeStoreID = storeId?.toUpperCase();
         console.log("B: el mail para partnerByEmail es: ", email)
         if (!email) {
             throw new Error("Email is required");
         }
-        const partnerList = await Partner.find({ email: email });
+        const partnerList = await Partner.find({ email: email, storeId: normalizeStoreID });
         console.log("El listado de partner es:", partnerList);
         if (!partnerList || partnerList.length === 0) {
             return res.status(200).json({ success: false, message: "partner not found" });
@@ -121,4 +122,14 @@ export const removePartner = async (req, res) => {
     } catch (error) {
         res.status(400).json({ success: false, message: error.message });
     }
+}
+
+export const createIndex = async (req,res) => {
+    try {
+        const indexes = await Partner.syncIndexes();
+        res.status(200).json({ success: true, indexes });
+    } catch (error) {
+        return res.status(400).json({ success: false, message: error.message });
+    }
+    
 }

@@ -2,7 +2,7 @@ import { Customer } from "../models/customer.model.js";
 
 /*Customer FUNCTIONS */
 export const createCustomer = async (req, res) => {
-    const { name, email, phone, country, birthdate, nationalId, emergencyContact, divingCertificates, storeId, languages, diet, allergies } = req.body;
+    const { name, lastName, email, phone, country, birthdate, nationalId, emergencyContact, divingCertificates, storeId, languages, diet, allergies } = req.body;
     //console.log("Entre a create customer:", name,"-", email,"-", phone,"-", country,"-", birthdate,"-", nationalId,"-",emergencyContact,"-", divingCertificates,"-", storeId,"-", languages,"-", diet);
     try {
         if (!name || !email || !storeId) {
@@ -13,6 +13,7 @@ export const createCustomer = async (req, res) => {
 
         const customer = new Customer({
             name,
+            lastName,
             email,
             phone,
             country,
@@ -37,19 +38,22 @@ export const createCustomer = async (req, res) => {
         })
 
     } catch (error) {
+        console.error("Error creando cliente: ", error)
         res.status(400).json({ success: false, message: error.message });
     }
 }
 
 export const updateCustomer = async (req, res) => {
-    const { email, ...updateFields } = req.body;
-    console.log("B: Entre a updateCustomer", email, " - ", updateFields)
+    const { email, storeId, ...updateFields } = req.body;
+    console.log("B: Entre a updateCustomer", email, " - ", storeId, " - ",updateFields)
     try {
         if (!email) {
             throw new Error("Id field is required");
         }
+        const normalizedStoreId = storeId?.toUpperCase();
+        const filter = {email: email, storeId: normalizedStoreId}
 
-        const customer = await Customer.findOneAndUpdate({ email }, updateFields, {
+        const customer = await Customer.findOneAndUpdate( filter , updateFields, {
             new: true
         });
 
@@ -62,6 +66,7 @@ export const updateCustomer = async (req, res) => {
         })
 
     } catch (error) {
+        console.error("Error actualizando cliente: ", error)
         res.status(400).json({ success: false, message: error.message });
     }
 }
@@ -87,12 +92,13 @@ export const customerList = async (req, res) => {
 export const customerByEmail = async (req, res) => {
     try {
         //console.log("Entre a customerByEmail")
-        const { email } = req.params
+        const { email,storeId } = req.params
+        const normalizeStoreID = storeId?.toUpperCase();
         //console.log("B: el storeID para customerByEmail es: ", email)
         if (!email) {
             throw new Error("Email is required");
         }
-        const customerList = await Customer.find({ email: email });
+        const customerList = await Customer.find({ email: email, storeId: normalizeStoreID });
         //console.log("El listado de customer es:", customerList);
         if (!customerList || customerList.length === 0) {
             //console.log("B: NO ENCONTRE AL CLIENTE");
@@ -102,4 +108,14 @@ export const customerByEmail = async (req, res) => {
     } catch (error) {
         return res.status(400).json({ success: false, message: error.message });
     }
+}
+
+export const createIndex = async (req,res) => {
+    try {
+        const indexes = await Customer.syncIndexes();
+        res.status(200).json({ success: true, indexes });
+    } catch (error) {
+        return res.status(400).json({ success: false, message: error.message });
+    }
+    
 }

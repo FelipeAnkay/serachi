@@ -28,10 +28,12 @@ const Experiences = () => {
     const [loadedRange, setLoadedRange] = useState({ start: null, end: null });
     const [staffList, setStaffList] = useState([]);
 
+
     useEffect(() => {
         const now = new Date();
-        const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
-        const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+        const firstDay = new Date(now.getFullYear(), now.getMonth(), -7);
+        const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, +7);
+        console.log("Fechas: ", firstDay, " TO ", lastDay)
         fetchExperiences(firstDay, lastDay);
         fetchStaff();
     }, []);
@@ -54,7 +56,7 @@ const Experiences = () => {
             if (staffColorMap[email]) return staffColorMap[email];
 
             try {
-                const res = await getStaffEmail(email);
+                const res = await getStaffEmail(email, storeId);
                 const staff = res?.staffList?.[0];
                 //console.log("El staff es: ", staff)
                 const color = staff?.color || "gray-500";
@@ -65,27 +67,34 @@ const Experiences = () => {
                 return "gray-500";
             }
         };
-
-        const serviceDetail = await getServicesByDate(storeId, startDate, endDate);
-        //console.log("La respuesta de getServiceById ", serviceDetail);
-        for (const serviceRef of serviceDetail.service) {
-            //console.log("serviceRef: ", serviceRef)
-            if (serviceRef && serviceRef.isActive) {
-                const staffEmail = serviceRef.staffEmail;
-                const color = await getColorForStaff(staffEmail);
-                allServiceEvents.push({
-                    title: `${serviceRef.name} - ${serviceRef.staffEmail}`,
-                    start: new Date(serviceRef.dateIn),
-                    end: new Date(serviceRef.dateOut),
-                    allDay: false,
-                    resource: serviceRef,
-                    staffColor: color,
-                });
+        try {
+            const serviceDetail = await getServicesByDate(storeId, startDate, endDate);
+            console.log("La respuesta de getServiceById ", serviceDetail);
+            if (serviceDetail.service.length > 0) {
+                for (const serviceRef of serviceDetail.service) {
+                    console.log("serviceRef: ", serviceRef)
+                    if (serviceRef && serviceRef.isActive) {
+                        const staffEmail = serviceRef.staffEmail;
+                        const color = await getColorForStaff(staffEmail);
+                        allServiceEvents.push({
+                            title: `${serviceRef.name} - ${serviceRef.staffEmail}`,
+                            start: new Date(serviceRef.dateIn),
+                            end: new Date(serviceRef.dateOut),
+                            allDay: false,
+                            resource: serviceRef,
+                            staffColor: color,
+                        });
+                    }
+                }
             }
+            setEvents(allServiceEvents);
+            setLoadedRange({ start: startDate, end: endDate });
+            setLoading(false);
+        } catch (error) {
+            toast.error("Theres no services for this month")
+            setEvents([]);
+            setLoading(false);
         }
-        setEvents(allServiceEvents);
-        setLoadedRange({ start: startDate, end: endDate });
-        setLoading(false);
     };
 
     const handleSelectSlot = ({ start }) => {
@@ -165,8 +174,8 @@ const Experiences = () => {
         console.log("Entre a handleNavigate: ", newDate)
         setSelectedDate(newDate);
 
-        const newMonthStart = new Date(newDate.getFullYear(), newDate.getMonth(), 1);
-        const newMonthEnd = new Date(newDate.getFullYear(), newDate.getMonth() + 1, 0);
+        const newMonthStart = new Date(newDate.getFullYear(), newDate.getMonth(), -7);
+        const newMonthEnd = new Date(newDate.getFullYear(), newDate.getMonth() + 1, +7);
 
         const isSameMonth =
             loadedRange.start &&
@@ -179,6 +188,12 @@ const Experiences = () => {
             console.log("newMonthStart: ", newMonthStart)
             console.log("newMonthEnd: ", newMonthEnd)
             fetchExperiences(newMonthStart, newMonthEnd);
+        } else {
+            const now = new Date();
+            const firstDay = new Date(now.getFullYear(), now.getMonth(), -7);
+            const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, +7);
+            console.log("Fechas: ", firstDay, " TO ", lastDay)
+            fetchExperiences(firstDay, lastDay);
         }
     };
 

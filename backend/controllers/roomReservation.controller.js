@@ -175,7 +175,7 @@ export const getAvailableRooms = async (req, res) => {
         console.error('getAvailableRooms error:', error);
         res.status(500).json({ message: "Error checking availability", error });
     }
-};
+}
 
 export const splitRoomReservation = async (req, res) => {
     try {
@@ -245,6 +245,26 @@ export const splitRoomReservation = async (req, res) => {
         });
     } catch (error) {
         res.status(500).json({ message: "Error suggesting split reservation", error });
+    }
+}
+
+export const getReservationsByEmail = async (req, res) => {
+    try {
+        console.log("Entre a roomReservationList")
+        const { email, storeId } = req.params
+        console.log("B: el storeID para roomReservationList es: ", storeId)
+        if (!storeId) {
+            throw new Error("StoreID is required");
+        }
+        const normalizeStoreID = storeId?.toUpperCase();
+        const roomReservationList = await RoomReservation.find({ storeId: normalizeStoreID, customerEmail: email });
+        //console.log("El listado de Reservation es:", roomReservationList);
+        if (!roomReservationList) {
+            return res.status(200).json({ success: false, message: "Reservation not found" });
+        }
+        res.status(200).json({ success: true, roomReservationList });
+    } catch (error) {
+        return res.status(400).json({ success: false, message: error.message });
     }
 }
     

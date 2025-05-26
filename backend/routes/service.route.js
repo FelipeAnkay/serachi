@@ -1,5 +1,5 @@
 import express from 'express';
-import { updateService, createService, getServiceById, getServiceNoStaff, getServiceByStoreId, getServiceNoData, getServiceByDates, ChangeType } from '../controllers/service.controller.js';
+import { updateService, createService, getServiceById, getServiceNoStaff, getServiceByStoreId, getServiceNoData, getServiceByDates, ChangeType, getServiceByEmail } from '../controllers/service.controller.js';
 
 const router = express.Router();
 
@@ -11,5 +11,6 @@ router.get("/nostaff/:storeId", getServiceNoStaff);
 router.get("/nodata/:storeId", getServiceNoData);
 router.get("/dates/:storeId/:dateIn/:dateOut", getServiceByDates);
 router.get("/changeType", ChangeType);
+router.get("/email/:email/:storeId", getServiceByEmail);
 
 export default router;

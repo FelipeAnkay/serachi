@@ -68,11 +68,11 @@ export const usePartnerServices = create((set) => ({
             throw error;
         }
     },
-    getPartnerEmail: async (email) => {
+    getPartnerEmail: async (email,storeId) => {
         set({ isLoading: true, error: null });
         try {
             console.log("F: Llamado a customerEmail", email);
-            const response = await axios.get(`${URL_API}/get/${email}`);
+            const response = await axios.get(`${URL_API}/get/${email}/${storeId}`);
             console.log("F: Respueste de customerEmail: ", response);
             set({ partnerList: response.data.partnerList, isLoading:false });
             return response.data;

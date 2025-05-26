@@ -35,13 +35,14 @@ export const createSupplier = async (req, res) => {
 }
 
 export const updateSupplier = async (req, res) => {
-    const { email, ...updateFields } = req.body;
+    const { email, storeId, ...updateFields } = req.body;
     try {
         if (!email) {
             throw new Error("Id field is required");
         }
-
-        const supplier = await Supplier.findOneAndUpdate(email, updateFields, {
+        const normalizedStoreId = storeId?.toUpperCase();
+        const filter = {email: email, storeId: normalizedStoreId}
+        const supplier = await Supplier.findOneAndUpdate(filter, updateFields, {
             new: true
         });
 
@@ -79,12 +80,13 @@ export const supplierList = async (req, res) => {
 export const supplierByEmail = async (req, res) => {
     try {
         console.log("Entre a supplierByEmail")
-        const {email} = req.params
+        const {email, storeId} = req.params
+        const normalizeStoreID = storeId?.toUpperCase();
         console.log("B: el storeID para supplierByEmail es: ", email)
         if (!email) {
             throw new Error("Email is required");
         }
-        const supplierList = await Supplier.find({ email: email });
+        const supplierList = await Supplier.find({ email: email, storeId: normalizeStoreID });
         console.log("El listado de supplier es:", supplierList);
         if (!supplierList || supplierList.length === 0) {
             return res.status(200).json({ success: false, message: "supplier not found" });
@@ -93,4 +95,14 @@ export const supplierByEmail = async (req, res) => {
     } catch (error) {
         return res.status(400).json({ success: false, message: error.message });
     }
+}
+
+export const createIndex = async (req,res) => {
+    try {
+        const indexes = await Supplier.syncIndexes();
+        res.status(200).json({ success: true, indexes });
+    } catch (error) {
+        return res.status(400).json({ success: false, message: error.message });
+    }
+    
 }

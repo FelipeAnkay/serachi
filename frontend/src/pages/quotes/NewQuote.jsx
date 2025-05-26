@@ -416,7 +416,7 @@ export default function NewQuote() {
     const handleCustomerEmailSearch = async (customerEmail) => {
         //console.log("El email en handleCustomerEmailSearch es: ", customerEmail);
         try {
-            const response = await getCustomerEmail(customerEmail);
+            const response = await getCustomerEmail(customerEmail,storeId);
             const found = response.customerList;
             //console.log("F: el found es:", found);
             if (found) {

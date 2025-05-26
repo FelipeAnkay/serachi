@@ -24,4 +24,6 @@ const supplierSchema = new mongoose.Schema({
 
 },{timestamps : true}); //fields created and updated AT by default with timestamp true
 
+supplierSchema.index({ email: 1, storeId: 1 }, { unique: true });
+
 export const Supplier = mongoose.model('Supplier', supplierSchema);

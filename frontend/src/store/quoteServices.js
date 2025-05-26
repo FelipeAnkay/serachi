@@ -113,11 +113,11 @@ export const useQuoteServices = create((set) => ({
             throw error;
         }
     },
-    getQuoteByCustomerEmail: async (email) => {
+    getQuoteByCustomerEmail: async (email, storeId) => {
         set({ isLoading: true, error: null });
         try {
             //console.log("F: Llamado a getStaffList");
-            const response = await axios.get(`${URL_API}/email/${email}`);
+            const response = await axios.get(`${URL_API}/email/${email}/${storeId}`);
             //console.log("F: Respueste de getStaffList: ", response);
             set({ quoteList: response.data.quoteList, isLoading:false });
             return response.data;

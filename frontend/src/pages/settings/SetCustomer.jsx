@@ -8,7 +8,7 @@ import CustomerDetails from '../../components/CustomerDetail';
 
 
 const SetCustomer = () => {
-    const { getCustomerList, createCustomer, getCustomerEmail, removeCustomer } = useCustomerServices();
+    const { getCustomerList, createCustomer, getCustomerEmail, removeCustomer, updateCustomer } = useCustomerServices();
     const storeId = Cookies.get('storeId');
     const [customerList, setCustomerList] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -83,7 +83,7 @@ const SetCustomer = () => {
         if (!customerData.email) return;
 
         try {
-            const res = await getCustomerEmail(customerData.email);
+            const res = await getCustomerEmail(customerData.email,storeId);
             const customerFound = res.customerList?.[0];
             console.log("handleEmailCheck customerFound:", customerFound);
             if (customerFound) {

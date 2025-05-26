@@ -21,6 +21,9 @@ const customerSchema = new mongoose.Schema({
         type:String,
         required: true
     },
+    lastName: {
+        type:String,
+    },
     phone: {
         type:String,
     },
@@ -56,5 +59,7 @@ const customerSchema = new mongoose.Schema({
     }
 
 },{timestamps : true}); //fields created and updated AT by default with timestamp true
+
+customerSchema.index({ email: 1, storeId: 1 }, { unique: true });
 
 export const Customer = mongoose.model('Customer', customerSchema);

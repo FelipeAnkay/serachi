@@ -9,6 +9,6 @@ router.get("/list/:storeId", quoteList);
 router.get("/open/:storeId", openQuoteList);
 router.get("/confirm/:storeId", confirmQuoteList);
 router.get("/get/:id", getQuoteById);
-router.get("/email/:email", getQuoteByEmail);
+router.get("/email/:email/:storeId", getQuoteByEmail);
 
 export default router;

@@ -90,3 +90,19 @@ export const experienceList = async (req, res) => {
         return res.status(400).json({ success: false, message: error.message });
     }
 }
+
+export const getExperienceByEmail = async (req, res) => {
+    try {
+        const { email, storeId } = req.params;
+        //console.log(" getExperienceByEmail las variables son: ", email, " - ", storeId)
+        const normalizedStoreId = storeId?.toUpperCase();
+        const experienceList = await Experience.find({ customerEmail: email, storeId: normalizedStoreId });
+        //console.log(" Respuesta de Experience.find: ", experienceList)
+        if (!experienceList) {
+            return res.status(400).json({ success: false, message: "Experience not found" });
+        }
+        res.status(200).json({ success: true, experienceList });
+    } catch (error) {
+        return res.status(400).json({ success: false, message: error.message });
+    }
+}

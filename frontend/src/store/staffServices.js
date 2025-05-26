@@ -91,11 +91,11 @@ export const useStaffServices = create((set) => ({
             throw error;
         }
     },
-    getStaffEmail: async (email) => {
+    getStaffEmail: async (email, storeId) => {
         set({ isLoading: true, error: null });
         try {
             //console.log("F: Llamado a getStaffEmail");
-            const response = await axios.get(`${URL_API}/get/${email}`);
+            const response = await axios.get(`${URL_API}/get/${email}/${storeId}`);
             //console.log("F: Respueste de getStaffEmail: ", response);
             set({ staffList: response.data.staffList, isLoading: false });
             return response.data;

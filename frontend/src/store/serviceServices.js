@@ -123,4 +123,15 @@ export const useServiceServices = create((set) => ({
             throw error;
         }
     },
+    getServicesByEmail: async (storeId, customerEmail) => {
+        set({ isLoading: true, error: null });
+        try {
+            const response = await axios.get(`${URL_API}/email/${customerEmail}/${storeId}`);
+            set({ service: response.data.service, isLoading: false });
+            return response.data;
+        } catch (error) {
+            set({ error: error.response?.data?.message || "Error getting services", isLoading: false });
+            throw error;
+        }
+    },
 }))

@@ -34,7 +34,7 @@ export const useCustomerServices = create((set) => ({
         }
     },
 
-    updateCustomer: async (email, updatedVars) => {
+    updateCustomer: async (email, storeId, updatedVars) => {
         set({ isLoading: true, error: null });
         try {
             delete updatedVars._id;;
@@ -47,6 +47,7 @@ export const useCustomerServices = create((set) => ({
 
             const response = await axios.post(`${URL_API}/update`, {
                 email: email,
+                storeId: storeId,
                 ...updatedVars
             });
             //console.log("F: Respueste de updateStaff: ", response);
@@ -70,11 +71,11 @@ export const useCustomerServices = create((set) => ({
             throw error;
         }
     },
-    getCustomerEmail: async (email) => {
+    getCustomerEmail: async (email,storeId) => {
         set({ isLoading: true, error: null });
         try {
             //console.log("F: Llamado a customerEmail");
-            const response = await axios.get(`${URL_API}/get/${email}`);
+            const response = await axios.get(`${URL_API}/get/${email}/${storeId}`);
             //console.log("F: Respueste de customerEmail: ", response);
             set({ customerList: response.data.customerList, isLoading: false });
             return response.data;

@@ -15,7 +15,6 @@ const staffSchema = new mongoose.Schema({
     email:{
         type:String,
         required: true,
-        unique: true
     },
     name: {
         type:String,
@@ -44,11 +43,13 @@ const staffSchema = new mongoose.Schema({
         type:String,
     },
     professionalCertificates: [profesionalSchema],
-    storeId: [{
+    storeId: {
         type:String,
         required: true
-    }]
+    }
 
 },{timestamps : true}); //fields created and updated AT by default with timestamp true
+
+staffSchema.index({ email: 1, storeId: 1 }, { unique: true });
 
 export const Staff = mongoose.model('Staff', staffSchema);

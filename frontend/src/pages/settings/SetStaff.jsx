@@ -88,9 +88,9 @@ const SetStaff = () => {
         if (!staffData.email) return;
 
         try {
-            const res = await getStaffEmail(staffData.email);
+            const res = await getStaffEmail(staffData.email, storeId);
             const staffFound = res.staffList?.[0];
-            //console.log("handleEmailCheck staffFound:", staffFound);
+            console.log("handleEmailCheck staffFound:", staffFound);
             if (staffFound) {
                 const alreadyAssigned = staffFound.storeId?.includes(storeId.toUpperCase());
                 const updatedStoreId = alreadyAssigned
@@ -365,11 +365,12 @@ const SetStaff = () => {
                                                         <input
                                                             type="checkbox"
                                                             value={lang.code}
-                                                            checked={staffData.languages.includes(lang.code)}
+                                                            checked={staffData.languages?.includes(lang.code) || false}
                                                             onChange={(e) => {
-                                                                const selected = staffData.languages.includes(lang.code)
-                                                                    ? staffData.languages.filter((code) => code !== lang.code)
-                                                                    : [...staffData.languages, lang.code];
+                                                                const currentLanguages = Array.isArray(staffData.languages) ? staffData.languages : [];
+                                                                const selected = currentLanguages.includes(lang.code)
+                                                                    ? currentLanguages.filter((code) => code !== lang.code)
+                                                                    : [...currentLanguages, lang.code];
                                                                 setStaffData({ ...staffData, languages: selected });
                                                             }}
                                                             className="accent-blue-500"

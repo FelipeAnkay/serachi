@@ -150,8 +150,9 @@ export const getQuoteById = async (req, res) => {
 
 export const getQuoteByEmail = async (req, res) => {
     try {
-        const { email } = req.params;
-        const quote = await Quote.find({ customerEmail: email });
+        const { email, storeId } = req.params;
+        const normalizeStoreID = storeId?.toUpperCase();
+        const quote = await Quote.find({ customerEmail: email, storeId: normalizeStoreID });
         if (!quote) {
             return res.status(400).json({ success: false, message: "quote not found" });
         }

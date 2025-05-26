@@ -173,6 +173,20 @@ export const serviceList = async (req, res) => {
     }
 }
 
+export const getServiceByEmail = async (req, res) => {
+    try {
+        const { email, storeId } = req.params;
+        const normalizedStoreId = storeId?.toUpperCase();
+        const service = await Service.find({ customerEmail: email, storeId: normalizedStoreId });
+        if (!service) {
+            return res.status(400).json({ success: false, message: "service not found" });
+        }
+        res.status(200).json({ success: true, service });
+    } catch (error) {
+        return res.status(400).json({ success: false, message: error.message });
+    }
+}
+
 export const getServiceByDates = async (req, res) => {
     try {
         const { storeId, dateIn, dateOut } = req.params;
@@ -190,7 +204,7 @@ export const getServiceByDates = async (req, res) => {
         console.log("Respuesta de Service.find: ", service);
 
         if (!service || service.length === 0) {
-            return res.status(404).json({ success: false, message: "No services found in date range" });
+            return res.status(200).json({ success: false, message: "No services found in date range" });
         }
 
         res.status(200).json({ success: true, service });
@@ -202,7 +216,6 @@ export const getServiceByDates = async (req, res) => {
 export const ChangeType = async (req, res) => {
     try {
         console.log("Entre a ChangeType: ");
-
         const service = await Service.updateMany(
             { type: "Front" },
             { $set: { type: "Customer" } }
