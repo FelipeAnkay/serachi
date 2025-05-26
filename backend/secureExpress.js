@@ -47,7 +47,7 @@ app.use(morgan(process.env.NODE_ENV === 'production' ? 'combined' : 'dev'));
 // === 2. Rate limit para rutas sensibles ===
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutos
-  max: 20, // máximo 20 requests por IP
+  max: 50, // máximo 20 requests por IP
   message: "Too many requests, please try again later.",
 });
 

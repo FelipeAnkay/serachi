@@ -57,6 +57,15 @@ export default function CustomerDetails({ isOpen, onClose, customer, setCustomer
                             />
                         </div>
                         <div>
+                            <label className="block text-sm font-medium">Last Name</label>
+                            <input
+                                type="text"
+                                className="w-full border border-gray-300 rounded px-3 py-2 mt-1"
+                                value={customer.lastName || ''}
+                                onChange={(e) => setCustomer({ ...customer, lastName: e.target.value })}
+                            />
+                        </div>
+                        <div>
                             <label className="block text-sm font-medium">Email</label>
                             <input
                                 type="text"

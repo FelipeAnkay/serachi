@@ -14,7 +14,7 @@ const experienceSchema = new mongoose.Schema({
             productID: { type: String },
             Qty: { type: Number },
             price: {type: Number},
-            payed: { type: Boolean }
+            isPaid: { type: Boolean }
         }
     ],
     bookList: [{

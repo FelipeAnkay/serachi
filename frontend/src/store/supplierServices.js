@@ -67,11 +67,11 @@ export const useSupplierServices = create((set) => ({
         }
     },
 
-    getSupplierEmail: async (email) => {
+    getSupplierEmail: async (email, storeId) => {
         set({ isLoading: true, error: null });
         try {
             //console.log("F: Llamado a supplierEmail");
-            const response = await axios.get(`${URL_API}/get/${email}`);
+            const response = await axios.get(`${URL_API}/get/${email}/${storeId}`);
             //console.log("F: Respueste de customerEmail: ", response);
             set({ supplierList: response.data.supplierList, isLoading:false });
             return response.data;

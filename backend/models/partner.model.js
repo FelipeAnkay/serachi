@@ -27,5 +27,6 @@ const partnerSchema = new mongoose.Schema({
     }
 
 },{timestamps : true}); //fields created and updated AT by default with timestamp true
+partnerSchema.index({ email: 1, storeId: 1 }, { unique: true });
 
 export const Partner = mongoose.model('Partner', partnerSchema);

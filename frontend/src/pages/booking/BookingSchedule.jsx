@@ -36,7 +36,7 @@ export default function BookingSchedule() {
                 reservationList.map(async (res) => {
                     const auxRoom = await getRoomById(res.roomId);
                     const room = auxRoom.room
-                    const auxCustomer = await getCustomerEmail(res.customerEmail)
+                    const auxCustomer = await getCustomerEmail(res.customerEmail, storeId)
                     const customer = auxCustomer.customerList[0]
                     //console.log("Respuesta de getRoomById: ", room)
                     return {
@@ -75,7 +75,7 @@ export default function BookingSchedule() {
 
     const handleSelectEvent = async (event) => {
         try {
-            const auxCustomer = await getCustomerEmail(event.customerEmail);
+            const auxCustomer = await getCustomerEmail(event.customerEmail,storeId);
             const customer = auxCustomer.customerList[0];
             setSelectedCustomer(customer);
             setSelectedReservation(event); // guardamos la reserva seleccionada

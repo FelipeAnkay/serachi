@@ -115,7 +115,7 @@ export default function CreateService() {
     const handleCustomerEmailSearch = async (customerEmail) => {
         //console.log("El email en handleCustomerEmailSearch es: ", customerEmail);
         try {
-            const response = await getCustomerEmail(customerEmail);
+            const response = await getCustomerEmail(customerEmail,storeId);
             console.log("F: getCustomerEmail es:", response);
             const found = response.customerList;
             console.log("F: el found es:", found);

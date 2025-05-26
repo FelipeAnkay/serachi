@@ -58,12 +58,12 @@ export default function NewIncome() {
 
     const handleAddQuote = async (customerEmail) => {
 
-        console.log("Entre a handleAddQuote: ", customerEmail);
+        //console.log("Entre a handleAddQuote: ", customerEmail);
         if (!customerEmail) return;
 
         try {
-            const res = await getQuoteByCustomerEmail(customerEmail);
-            console.log("Respuesta de getQuoteByCustomerEmail: ", res);
+            const res = await getQuoteByCustomerEmail(customerEmail, storeId);
+            //console.log("Respuesta de getQuoteByCustomerEmail: ", res);
             setQuotes(res.quote || []);
             setShowQuoteSelect(true);
         } catch (error) {

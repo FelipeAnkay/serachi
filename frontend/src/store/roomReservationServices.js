@@ -102,4 +102,17 @@ export const useRoomReservationServices = create((set) => ({
             throw error;
         }
     },
+
+    getReservationsByEmail: async (storeId, customerEmail) => {
+        set({ isLoading: true, error: null });
+        try {
+            //console.log("F: Llamado a getExperienceByEmail");
+            const response = await axios.get(`${URL_API}/email/${customerEmail}/${storeId}`);
+            //console.log("F: Respueste de getExperienceByEmail: ", response);
+            return response.data;
+        } catch (error) {
+            set({ error: error.response.data.message || "Error getting experiences", isLoading: false });
+            throw error;
+        }
+    },
 }));

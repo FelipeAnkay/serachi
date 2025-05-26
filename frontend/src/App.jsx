@@ -33,6 +33,7 @@ import CreateService from './pages/experience/CreateService';
 import SetPartner from './pages/settings/SetPartner';
 import BookingSchedule from './pages/booking/BookingSchedule';
 import SetCustomer from './pages/settings/SetCustomer';
+import AddItemsExperience from './pages/experience/AddItemsExperience';
 
 const ProtectedRoute = ({ children }) => {
   const { isAuthenticated, user } = useAuthStore();
@@ -116,6 +117,13 @@ function App() {
           element={
             <ProtectedRoute>
               <CreateService />
+            </ProtectedRoute>}
+        />
+        <Route
+          path="/experience-add-items"
+          element={
+            <ProtectedRoute>
+              <AddItemsExperience />
             </ProtectedRoute>}
         />
         <Route

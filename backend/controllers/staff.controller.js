@@ -21,7 +21,7 @@ export const createStaff = async (req, res) => {
             type,
             professionalCertificates,
             languages,
-            storeId: [normalizedStoreId]
+            storeId: normalizedStoreId
         });
 
         await staff.save();
@@ -35,6 +35,7 @@ export const createStaff = async (req, res) => {
         })
 
     } catch (error) {
+        console.error("Error creating staff: ", error)
         res.status(400).json({ success: false, message: error.message });
     }
 }
@@ -86,7 +87,9 @@ export const updateStaff = async (req, res) => {
         if (!email || !storeId) {
             throw new Error("Id field is required");
         }
-        const filter = { email: email }
+        const normalizeStoreID = storeId?.toUpperCase();
+        const filter = { email: email, storeId:normalizeStoreID }
+
         const staff = await Staff.findOne(filter);
 
         if (!staff) {
@@ -156,12 +159,16 @@ export const removeStaff = async (req, res) => {
 export const staffByEmail = async (req, res) => {
     try {
         console.log("Entre a staffByEmail")
-        const {email} = req.params
+        const {email,storeId} = req.params
         console.log("B: el storeID para staffByEmail es: ", email)
         if (!email) {
             throw new Error("Email is required");
         }
-        const staffList = await Staff.find({ email: email });
+        const normalizeStoreID = storeId?.toUpperCase();
+        const staffList = await Staff.findOne({
+            email: email,
+            storeId: normalizeStoreID  // busca dentro del array de storeIds
+        });
         console.log("El listado de Staff es:", staffList);
         if (!staffList || staffList.length === 0) {
             return res.status(200).json({ success: false, message: "Staff not found" });
@@ -170,4 +177,14 @@ export const staffByEmail = async (req, res) => {
     } catch (error) {
         return res.status(400).json({ success: false, message: error.message });
     }
+}
+
+export const createIndex = async (req,res) => {
+    try {
+        const indexes = await Staff.syncIndexes();
+        res.status(200).json({ success: true, indexes });
+    } catch (error) {
+        return res.status(400).json({ success: false, message: error.message });
+    }
+    
 }

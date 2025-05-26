@@ -83,7 +83,7 @@ const SetPartner = () => {
         if (!partnerData.email) return;
 
         try {
-            const res = await getPartnerEmail(partnerData.email);
+            const res = await getPartnerEmail(partnerData.email, storeId);
             const partnerFound = res.partnerList?.[0];
             console.log("handleEmailCheck partnerFound:", partnerFound);
             if (partnerFound) {
