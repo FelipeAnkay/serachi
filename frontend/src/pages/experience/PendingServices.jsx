@@ -7,6 +7,7 @@ import { useAuthStore } from '../../store/authStore';
 import toast from 'react-hot-toast';
 import { CalendarPlus } from 'lucide-react';
 import ServiceDetails from '../../components/ServiceDetails';
+import DeleteService from '../../components/DeleteService';
 
 
 export default function PendingServices() {
@@ -117,25 +118,28 @@ export default function PendingServices() {
                                                 <h3 className="text-lg font-semibold text-gray-800">
                                                     {service.name}
                                                 </h3>
-
-                                                <div className="flex flex-col items-center">
-
-                                                    <motion.button
-                                                        type='button'
-                                                        whileHover={{ scale: 1.05 }}
-                                                        whileTap={{ scale: 0.95 }}
-                                                        onClick={() => {
-                                                            setSelectedService(service);
-                                                            setIsServiceModalOpen(true);
-                                                        }}
-                                                        className='w-full py-3 px-4 bg-gradient-to-r from-blue-500 to-blue-600 text-white font-bold rounded-lg shadow-lg
+                                                <div className='flex flex-row'>
+                                                    <div className="flex flex-col items-center mr-2">
+                                                        <motion.button
+                                                            type='button'
+                                                            whileHover={{ scale: 1.05 }}
+                                                            whileTap={{ scale: 0.95 }}
+                                                            onClick={() => {
+                                                                setSelectedService(service);
+                                                                setIsServiceModalOpen(true);
+                                                            }}
+                                                            className='w-full py-3 px-4 bg-gradient-to-r from-blue-500 to-blue-600 text-white font-bold rounded-lg shadow-lg
                                                          hover:from-blue-600 hover:to-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-gray-900'
-                                                    >
-                                                        <div className='flex flex-col justify-center items-center'>
-                                                            <CalendarPlus className="" />
-                                                            <span className="">Set Data</span>
-                                                        </div>
-                                                    </motion.button>
+                                                        >
+                                                            <div className='flex flex-col justify-center items-center'>
+                                                                <CalendarPlus className="" />
+                                                                <span className="">Set Data</span>
+                                                            </div>
+                                                        </motion.button>
+                                                    </div>
+                                                    <div>
+                                                        <DeleteService serviceId={service._id} onDeleted={() => fetchServices()} />
+                                                    </div>
                                                 </div>
                                                 {isServiceModalOpen && selectedService?._id === service._id && (
                                                     <ServiceDetails

@@ -233,4 +233,28 @@ export const ChangeType = async (req, res) => {
     }
 };
 
+export const deleteService = async (req, res) => {
+    try {
+        const { id } = req.body;
+
+        if (!id) {
+            throw new Error("Id field is required");
+        }
+
+        const deletedService = await Service.findByIdAndDelete(id);
+
+        if (!deletedService) {
+            return res.status(404).json({ success: false, message: "Service not found" });
+        }
+
+        res.status(200).json({
+            success: true,
+            message: "Service deleted successfully",
+            service: deletedService
+        });
+    } catch (error) {
+        res.status(400).json({ success: false, message: error.message });
+    }
+};
+
 

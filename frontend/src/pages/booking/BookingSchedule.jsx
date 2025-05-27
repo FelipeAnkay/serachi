@@ -56,8 +56,8 @@ export default function BookingSchedule() {
 
     useEffect(() => {
         const now = new Date();
-        const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
-        const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+        const firstDay = new Date(now.getFullYear(), now.getMonth(), -20);
+        const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, +20);
         loadReservations(firstDay, lastDay);
     }, []);
 
