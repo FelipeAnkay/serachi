@@ -390,7 +390,7 @@ export default function ConfirmedQuote() {
                                                             month: "long",
                                                             day: "numeric",
                                                         })}
-                                                        {' - ' + quote.productList.length + ' Products '} -  ${quote.finalPrice}
+                                                        {' - ' + quote.productList.length + ' Products '} -  ${Number(quote.finalPrice).toFixed(2)}
                                                     </h3>
                                                     <div>
                                                         {quote.roomList?.map((room) => {
@@ -431,7 +431,7 @@ export default function ConfirmedQuote() {
                                                         >
                                                             <div className='flex flex-col justify-center items-center text-sm sm:text-base'>
                                                                 <Bed />
-                                                                <span>Confim Room Reservation</span>
+                                                                <span>Confirm Room</span>
                                                             </div>
                                                         </motion.button>
                                                     )}

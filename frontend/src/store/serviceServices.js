@@ -134,4 +134,18 @@ export const useServiceServices = create((set) => ({
             throw error;
         }
     },
+    removeServicesById: async (id) => {
+        set({ isLoading: true, error: null });
+        try {
+            const response = await axios.delete(`${URL_API}/remove`, {
+                data: { id }  // Aquí está el arreglo: se debe usar `data` dentro del config
+            });
+            console.log("F: Respuesta de removeServicesById: ", response);
+            set({ serviceList: response.data.serviceList, isLoading: false });
+            return response.data;
+        } catch (error) {
+            set({ error: error.response?.data?.message || "Error deleting service", isLoading: false });
+            throw error;
+        }
+    }
 }))
