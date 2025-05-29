@@ -60,7 +60,7 @@ export default function NewQuote() {
         setQuote({
             ...quote,
             userName: user.name,
-            customerName: customer.name,
+            customerName: customer.name + (customer.lastName? " " + customer.lastName : ""),
         })
     };
 
@@ -427,6 +427,7 @@ export default function NewQuote() {
                         _id: cust._id,
                         email: cust.email,
                         name: cust.name || '',
+                        lastName: cust.lastName || '',
                         phone: cust.phone || '',
                         country: cust.country || '',
                         languages: cust.languages || [],
@@ -441,6 +442,7 @@ export default function NewQuote() {
                 setQuote((prev) => ({
                     ...prev,
                     customerEmail: found[0].email,
+                    customerName: found[0].name + (found[0].lastName? " " + found[0].lastName : ""),
                 }));
                 setIsNew(false);
                 setIsCustomerModalOpen(false);
@@ -450,6 +452,7 @@ export default function NewQuote() {
                     _id: '',
                     email: customerEmail,
                     name: '',
+                    lastName: '',
                     phone: '',
                     country: '',
                     languages: [],
@@ -503,49 +506,7 @@ export default function NewQuote() {
                     navigate(`/past-quote/`, { state: {}, replace: true });
                 }
             }
-
-            setTimeout(() => {
-                setQuote({
-                    dateIn: '',
-                    dateOut: '',
-                    customerEmail: '',
-                    roomList: [],
-                    partnerId: '',
-                    productList: [],
-                    discount: 0,
-                    finalPrice: 0,
-                    currency: 'USD',
-                    isReturningCustomer: false,
-                    tag: [],
-                    userEmail: user.email,
-                    userName: user.name,
-                    storeId: storeId,
-                    isConfirmed: false,
-                    sendEmail:true,
-                });
-
-                setCustomer({
-                    email: '',
-                    name: '',
-                    phone: '',
-                    country: '',
-                    languages: [],
-                    birthdate: '',
-                    nationalId: '',
-                    diet: '',
-                    emergencyContactName: '',
-                    emergencyContactPhone: '',
-                    professionalCertificates: [],
-                });
-                setNumberOfPeople("1")
-                setIsPeopleLock(false)
-                setIsRoomPrivate({})
-                setFinalPrice("0");
-                setSelectedRooms({})
-                setSelectedProducts({});
-                setIsNew(true);
-            }, 0); // espera XXXms antes de reiniciar
-
+            handleReset()
         } catch (err) {
             toast.error('Error al guardar la cotización');
         }
@@ -556,6 +517,7 @@ export default function NewQuote() {
             dateIn: '',
             dateOut: '',
             customerEmail: '',
+            customerName: '',
             roomList: [],
             partnerId: '',
             productList: [],

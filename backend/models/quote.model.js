@@ -22,6 +22,9 @@ const quoteSchema = new mongoose.Schema({
         type:String,
         required: true
     },
+    customerName: {
+        type:String,
+    },
     storeId: {
         type:String,
         required: true

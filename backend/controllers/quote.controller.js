@@ -17,6 +17,7 @@ export const createQuote = async (req, res) => {
             dateIn,
             dateOut,
             customerEmail,
+            customerName,
             roomList,
             partnerId,
             productList,
