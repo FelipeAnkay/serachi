@@ -106,3 +106,18 @@ export const getExperienceByEmail = async (req, res) => {
         return res.status(400).json({ success: false, message: error.message });
     }
 }
+
+export const getExperienceById = async (req, res) => {
+    try {
+        const { id } = req.params;
+        //console.log(" getExperienceByEmail las variables son: ", email, " - ", storeId)
+        const experience = await Experience.findById(id);
+        //console.log(" Respuesta de Experience.find: ", experienceList)
+        if (!experience) {
+            return res.status(400).json({ success: false, message: "Experience not found" });
+        }
+        res.status(200).json({ success: true, experience });
+    } catch (error) {
+        return res.status(400).json({ success: false, message: error.message });
+    }
+}

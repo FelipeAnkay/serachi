@@ -8,7 +8,7 @@ import { useProductServices } from '../../store/productServices';
 import ProductSelect from '../../components/ProductSelectv2';
 import { useCustomerServices } from '../../store/customerServices';
 import CustomerDetails from '../../components/CustomerDetail'
-import { Contact2, Search, Trash2 } from 'lucide-react';
+import { CircleHelp, Contact2, Search, Trash2 } from 'lucide-react';
 import { useExperienceServices } from '../../store/experienceServices';
 import { useRoomReservationServices } from '../../store/roomReservationServices';
 import { formatDateDisplay, formatDateShort, formatDateInput } from '../../components/formatDateDisplay'
@@ -35,6 +35,7 @@ export default function AddItemsExperience() {
     const [selectedServices, setSelectedServices] = useState([]);
     const [selectedBookings, setSelectedBookings] = useState([]);
     const [loading, setLoading] = useState(false);
+    const [guideOpen, setGuideOpen] = useState(false);
 
     useEffect(() => {
         if (storeId) fetchProducts();
@@ -175,6 +176,18 @@ export default function AddItemsExperience() {
             >
                 <h1 className="text-2xl font-bold mb-6 text-center">Add Items to Experience</h1>
                 <form onSubmit={handleSubmit} className='ml-2'>
+                    <div className='flex flex-row'>
+                        <CircleHelp className='text-white mr-2 hover:text-blue-600' onClick={() => setGuideOpen(!guideOpen)} />
+                        {guideOpen && (
+                            <div className='mb-4 border rounded-2xl w-max flex flex-col text-sm'>
+                                <label className='font-semibold ml-2 mt-2'>Guide:</label>
+                                <p className='ml-10 mr-2'>1.- Enter Customer Email</p>
+                                <p className='ml-10 mr-2'>2.- Select Customer Experience, after this the services, room reservations and products will appear</p>
+                                <p className='ml-10 mr-2'>3.- Enter the services, room reservations or products that you want to add to the customer experience</p>
+                                <p className='ml-10 mr-2 mb-2'>4.- If everything is ok click Save</p>
+                            </div>
+                        )}
+                    </div>
                     <div className="mb-4">
                         <div className="flex items-center gap-2">
                             <label className='font-semibold'>Customer Email:</label>

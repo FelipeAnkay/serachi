@@ -181,6 +181,8 @@ export default function ConfirmedQuote() {
                         dateOut: room.roomDateOut,
                         bedsReserved: room.Qty,
                         userEmail: quote.userEmail,
+                        roomUnitaryPrice:room.roomUnitaryPrice,
+                        roomFinalPrice:room.roomFinalPrice,
                     };
 
                     const reservation = await createRoomReservation(reservationPayload);

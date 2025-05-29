@@ -1,40 +1,50 @@
 import mongoose from "mongoose";
 const roomReservationSchema = new mongoose.Schema({
     roomId: {
-        type:String,
+        type: String,
         required: true
     },
-    quoteId:{
-        type:String,
+    quoteId: {
+        type: String,
         required: true,
     },
-    customerEmail:{
+    customerEmail: {
         type: String,
     },
-    storeId:{
-        type:String,
+    storeId: {
+        type: String,
         required: true,
     },
-    dateIn:{
-        type:Date,
-        required: true,
-    },
-    dateOut:{
+    dateIn: {
         type: Date,
-        default:"USD"
+        required: true,
     },
-    bedsReserved: { 
-        type: Number, 
-        default: 1 
+    dateOut: {
+        type: Date,
+        default: "USD"
     },
-    userEmail:{
+    bedsReserved: {
+        type: Number,
+        default: 1
+    },
+    roomUnitaryPrice: {
+        type: Number
+    },
+    roomFinalPrice: { 
+        type: Number 
+    },
+    userEmail: {
         type: String,
         required: true
     },
-    isActive:{
-        type:Boolean,
+    isActive: {
+        type: Boolean,
         default: true
+    },
+    isPaid: {
+        type: Boolean,
+        default: false,
     }
-},{timestamps : true}); //fields created and updated AT by default with timestamp true
+}, { timestamps: true }); //fields created and updated AT by default with timestamp true
 
 export const RoomReservation = mongoose.model('RoomReservation', roomReservationSchema);

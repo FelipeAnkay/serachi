@@ -76,4 +76,17 @@ export const useExperienceServices = create((set) => ({
             throw error;
         }
     },
+        getExperienceById: async (id) => {
+        set({ isLoading: true, error: null });
+        try {
+            //console.log("F: Llamado a getExperienceByEmail:",userEmail,"-",storeId );
+            const response = await axios.get(`${URL_API}/get/${id}`);
+            //console.log("F: Respueste de getExperienceByEmail: ", response);
+            set({ experienceList: response.data.experienceList, isLoading:false });
+            return response.data;
+        } catch (error) {
+            set({ error: error.response.data.message || "Error getting experiences", isLoading: false });
+            throw error;
+        }
+    },
 }))
