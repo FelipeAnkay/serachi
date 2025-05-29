@@ -132,19 +132,10 @@ const Experiences = () => {
             await updateService(selectedService._id, updated);
             toast.success('Service Updated');
 
-            setEvents(prev =>
-                prev.map(ev =>
-                    ev.resource._id === updated._id
-                        ? {
-                            ...ev,
-                            start: new Date(updated.dateIn),
-                            end: new Date(updated.dateOut),
-                            title: `${updated.name} - ${updated.staffEmail}`,
-                            resource: updated
-                        }
-                        : ev
-                )
-            );
+            const newMonthStart = new Date(selectedDate.getFullYear(), selectedDate.getMonth(), -7);
+            const newMonthEnd = new Date(selectedDate.getFullYear(), selectedDate.getMonth() + 1, +7);
+
+            fetchExperiences(newMonthStart, newMonthEnd);
 
             closeModal();
         } catch (error) {
@@ -310,17 +301,18 @@ const Experiences = () => {
                                 </p>
                                 <div className="flex justify-between mt-6">
                                     <button
-                                        className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded flex"
-                                        onClick={handleUpdate}
-                                    >
-                                        <p className='px-4'>Save</p><Save />
-                                    </button>
-                                    <button
                                         className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded flex"
                                         onClick={handleCancelService}
                                     >
                                         <p className='px-4'>Cancel Service</p><Ban />
                                     </button>
+                                    <button
+                                        className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded flex"
+                                        onClick={handleUpdate}
+                                    >
+                                        <p className='px-4'>Update</p><Save />
+                                    </button>
+
                                 </div>
                             </div>
                         </motion.div>
