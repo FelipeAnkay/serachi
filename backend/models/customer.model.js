@@ -21,6 +21,9 @@ const customerSchema = new mongoose.Schema({
         type:String,
         required: true
     },
+    gender: {
+        type:String,
+    },
     lastName: {
         type:String,
     },

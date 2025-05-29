@@ -127,11 +127,8 @@ export default function NewIncome() {
         if (isSubmitting) return;
         setIsSubmitting(true);
 
-        if (!formData.quoteId || !formData.productList) {
-            toast.error("You must complete the mandatory fields");
-        }
         try {
-            console.log("El Payload de Income es", formData)
+            //console.log("El Payload de Income es", formData)
             await createIncome(formData);
             toast.success("Income Created");
             //Reset

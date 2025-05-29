@@ -35,6 +35,9 @@ import BookingSchedule from './pages/booking/BookingSchedule';
 import SetCustomer from './pages/settings/SetCustomer';
 import AddItemsExperience from './pages/experience/AddItemsExperience';
 import OpenTabs from './pages/experience/OpenTabs';
+import CreateReservation from './pages/booking/CreateReservation';
+import CashFlowSummary from './pages/cashflow/CashFlowSummary';
+import SetSupplier from './pages/settings/SetSupplier';
 
 const ProtectedRoute = ({ children }) => {
   const { isAuthenticated, user } = useAuthStore();
@@ -127,7 +130,7 @@ function App() {
               <AddItemsExperience />
             </ProtectedRoute>}
         />
-                <Route
+        <Route
           path="/experience-open-tabs"
           element={
             <ProtectedRoute>
@@ -170,6 +173,13 @@ function App() {
             </ProtectedRoute>}
         />
         <Route
+          path="/create-reservation"
+          element={
+            <ProtectedRoute>
+              <CreateReservation />
+            </ProtectedRoute>}
+        />
+        <Route
           path="/new-quote"
           element={
             <ProtectedRoute>
@@ -205,6 +215,13 @@ function App() {
             </ProtectedRoute>}
         />
         <Route
+          path="/cashflow-summary"
+          element={
+            <ProtectedRoute>
+              <CashFlowSummary />
+            </ProtectedRoute>}
+        />
+        <Route
           path="/new-income"
           element={
             <ProtectedRoute>
@@ -237,6 +254,13 @@ function App() {
           element={
             <ProtectedRoute>
               <SetRooms />
+            </ProtectedRoute>}
+        />
+        <Route
+          path="/set-supplier"
+          element={
+            <ProtectedRoute>
+              <SetSupplier />
             </ProtectedRoute>}
         />
         <Route

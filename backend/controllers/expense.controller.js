@@ -1,7 +1,7 @@
 import { Expense } from '../models/expense.model.js'
 /*Quote FUNCTIONS */
 export const createExpense = async (req, res) => {
-    const { date, description, supplierId, staffEmail,currency, amount, tag, type,userEmail, paymentMethod,storeId } = req.body;
+    const { date, description, supplierId, staffEmail, currency, amount, tag, type, userEmail, paymentMethod, storeId } = req.body;
     //console.log("B: createQuote data: ", dateIn ," - ", dateOut," - ",customerEmail," - ",customerName," - ",storeId," - ",roomId," - ",partnerId," - ",discount," - ",finalPrice," - ",currency," - ",isConfirmed," - ",isReturningCustomer," - ",userEmail," - ",userName," - "," - ",tag)
     try {
         if (!date || !amount || !storeId || !userEmail || !paymentMethod) {
@@ -11,15 +11,15 @@ export const createExpense = async (req, res) => {
         const normalizedStoreId = storeId?.toUpperCase();
 
         const expense = new Expense({
-            date, 
-            description, 
+            date,
+            description,
             supplierId,
-            staffEmail, 
-            currency, 
-            amount, 
-            tag, 
+            staffEmail,
+            currency,
+            amount,
+            tag,
             type,
-            userEmail, 
+            userEmail,
             paymentMethod,
             storeId: normalizedStoreId
         });
@@ -81,7 +81,6 @@ export const expenseList = async (req, res) => {
     }
 }
 
-
 export const getExpenseById = async (req, res) => {
     try {
         const { id } = req.params;
@@ -90,6 +89,24 @@ export const getExpenseById = async (req, res) => {
             return res.status(400).json({ success: false, message: "expense not found" });
         }
         res.status(200).json({ success: true, expense });
+    } catch (error) {
+        return res.status(400).json({ success: false, message: error.message });
+    }
+}
+
+export const getExpenseByDates = async (req, res) => {
+    try {
+        const { dateStart, dateEnd, storeId } = req.params;
+        const normalizedStoreId = storeId?.toUpperCase();
+        const expenseList = await Expense.find({
+            storeId: normalizedStoreId,
+            date: { $gte: new Date(dateStart) },
+            date: { $lte: new Date(dateEnd) },
+        });
+        if (!expenseList) {
+            return res.status(400).json({ success: false, message: "expense not found" });
+        }
+        res.status(200).json({ success: true, expenseList });
     } catch (error) {
         return res.status(400).json({ success: false, message: error.message });
     }

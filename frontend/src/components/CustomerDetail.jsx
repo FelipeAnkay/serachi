@@ -8,6 +8,7 @@ import { useEffect, useState } from 'react';
 export default function CustomerDetails({ isOpen, onClose, customer, setCustomer, onSave }) {
     const [customCountry, setCustomCountry] = useState('');
     const [countrySelectValue, setCountrySelectValue] = useState(customer.country || '');
+    const [genderSelectValue, setGenderSelectValue] = useState(customer.gender || '');
 
     useEffect(() => {
         const handleKeyDown = (e) => {
@@ -73,6 +74,23 @@ export default function CustomerDetails({ isOpen, onClose, customer, setCustomer
                                 value={customer.email || ''}
                                 onChange={(e) => setCustomer({ ...customer, email: e.target.value })}
                             />
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium">Gender</label>
+                            <select
+                                className="w-full border border-gray-300 rounded px-3 py-2 mt-1"
+                                value={genderSelectValue}
+                                onChange={(e) => {
+                                    const selected = e.target.value;
+                                    setCountrySelectValue(selected);
+                                    setCustomer({ ...customer, gender: selected });
+                                }}
+                            >
+                                <option value="" className="text-blue-950">Select Gender</option>
+                                <option key="FE" value="Female" className='text-blue-950'>Female</option>
+                                <option key="MA" value="Male" className='text-blue-950'>Male</option>
+                            </select>
+
                         </div>
                         <div>
                             <label className="block text-sm font-medium">Phone</label>
@@ -151,7 +169,7 @@ export default function CustomerDetails({ isOpen, onClose, customer, setCustomer
                                 ))}
                             </select>
                         </div>
-                                                <div>
+                        <div>
                             <label className="block text-sm font-medium">Allergies</label>
                             <input
                                 type="text"

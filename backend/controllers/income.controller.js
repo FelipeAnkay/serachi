@@ -1,7 +1,7 @@
 import { Income } from '../models/income.model.js'
 /*Quote FUNCTIONS */
 export const createIncome = async (req, res) => {
-    const { date, customerEmail, partnerId, quoteId, productList, currency, amount, tag, userEmail, paymentMethod,storeId } = req.body;
+    const { date, customerEmail, partnerId, quoteId, productList, currency, amount, tag, userEmail, paymentMethod, storeId } = req.body;
     //console.log("B: createQuote data: ", dateIn ," - ", dateOut," - ",customerEmail," - ",customerName," - ",storeId," - ",roomId," - ",partnerId," - ",productList," - ",discount," - ",finalPrice," - ",currency," - ",isConfirmed," - ",isReturningCustomer," - ",userEmail," - ",userName," - "," - ",tag)
     try {
         if (!date || !amount || !storeId || !userEmail || !paymentMethod) {
@@ -11,14 +11,14 @@ export const createIncome = async (req, res) => {
         const normalizedStoreId = storeId?.toUpperCase();
 
         const income = new Income({
-            date, 
-            customerEmail, 
-            partnerId, 
-            quoteId, 
-            productList, 
-            currency, 
-            amount, 
-            tag, 
+            date,
+            customerEmail,
+            partnerId,
+            quoteId,
+            productList,
+            currency,
+            amount,
+            tag,
             userEmail,
             paymentMethod,
             storeId: normalizedStoreId
@@ -90,6 +90,27 @@ export const getIncomeById = async (req, res) => {
             return res.status(400).json({ success: false, message: "income not found" });
         }
         res.status(200).json({ success: true, income });
+    } catch (error) {
+        return res.status(400).json({ success: false, message: error.message });
+    }
+}
+
+export const getIncomeByDates = async (req, res) => {
+    try {
+        const { dateStart, dateEnd, storeId } = req.params;
+        const normalizedStoreId = storeId?.toUpperCase();
+        
+        const incomeList = await Income.find({
+            storeId: normalizedStoreId,
+            date: { $gte: new Date(dateStart) },
+            date: { $lte: new Date(dateEnd) },
+        });
+
+
+        if (!incomeList) {
+            return res.status(400).json({ success: false, message: "incomeList not found" });
+        }
+        res.status(200).json({ success: true, incomeList });
     } catch (error) {
         return res.status(400).json({ success: false, message: error.message });
     }

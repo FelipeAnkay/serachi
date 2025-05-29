@@ -1,4 +1,4 @@
-import { Banknote, BanknoteArrowDown, Bed, BedDouble, BookMarked, BookOpenCheck, Boxes, Calculator, CalendarCheck, CalendarHeart, CalendarPlus2, ChevronDown, CircleUser, Contact, DollarSign, HandCoins, Handshake, Home, MapPinCheckInside, PiggyBank, Receipt, Settings, ShieldUser, Ship, ShoppingBasket, Store, TicketCheck, User, User2, UserPlus, Wallet } from "lucide-react"
+import { Banknote, BanknoteArrowDown, Bed, BedDouble, BookMarked, BookOpenCheck, Boxes, Calculator, CalendarCheck, CalendarHeart, CalendarPlus2, ChevronDown, CircleUser, Contact, DollarSign, HandCoins, Handshake, Home, MapPinCheckInside, PiggyBank, Receipt, Scale, Settings, ShieldUser, Ship, ShoppingBasket, Store, TicketCheck, Truck, User, User2, UserPlus, Wallet } from "lucide-react"
 import logo from "../../public/Serachi_logo-nobg.png"
 import { Link } from "react-router-dom"
 import { useState } from "react"
@@ -50,6 +50,7 @@ const LeftMenu = ({ show }) => {
                 <div className="px-4 py-2 block rounded-lg  hover:bg-blue-700 transition delay-200">
                     <li className="rounded-lg flex gap-2" onClick={() => setOpenCashFlow(!openCashFlow)}><DollarSign className="inline-block" /><span className="inline-block">CashFlow</span><ChevronDown className={openCashFlow ? "block rotate-180" : "block"} /></li>
                     <div className={openCashFlow ? "w-full py-4 px-5 p-4 transition ease-out duration-100 transform opacity-100 scale-100 hover:bg-blue-600 rounded-lg" : "transform h-0 scale-95 transition ease-in duration-75 overflow-hidden"}>
+                        <li className="hover:bg-blue-500 rounded-lg flex"><Link to="/cashflow-summary" className="flex items-center gap-2 py-1"><Scale />Summary</Link></li>
                         <li className="hover:bg-blue-500 rounded-lg flex"><Link to="/new-income" className="flex items-center gap-2 py-1"><HandCoins />New Income</Link></li>
                         <li className="hover:bg-blue-500 rounded-lg flex"><Link to="/new-expense" className="flex items-center gap-2 py-1"><BanknoteArrowDown />New Expense</Link></li>
                     </div>
@@ -57,6 +58,7 @@ const LeftMenu = ({ show }) => {
                 <div className="px-4 py-2 block rounded-lg  hover:bg-blue-700 transition delay-200">
                     <li className="rounded-lg flex gap-2" onClick={() => setOpenBooking(!openBooking)}><BedDouble className="inline-block" /><span className="inline-block">Room Bookings</span><ChevronDown className={openBooking ? "block rotate-180" : "block"} /></li>
                     <div className={openBooking ? "w-full py-4 px-5 p-4 transition ease-out duration-100 transform opacity-100 scale-100 hover:bg-blue-600 rounded-lg" : "transform h-0 scale-95 transition ease-in duration-75 overflow-hidden"}>
+                        <li className="hover:bg-blue-500 rounded-lg flex"><Link to="/create-reservation" className="flex items-center gap-2 py-1"><Bed />Create Reservation</Link></li>
                         <li className="hover:bg-blue-500 rounded-lg flex"><Link to="/booking-calendar" className="flex items-center gap-2 py-1"><CalendarCheck />Room Calendar</Link></li>
                     </div>
                 </div>
@@ -76,6 +78,7 @@ const LeftMenu = ({ show }) => {
                         <li className="hover:bg-blue-500 rounded-lg"><Link to="/set-rooms" className="flex items-center gap-2 py-1"><Bed />Rooms</Link></li>
                         <li className="hover:bg-blue-500 rounded-lg"><Link to="/set-products" className="flex items-center gap-2 py-1"><Boxes />Products</Link></li>
                         <li className="hover:bg-blue-500 rounded-lg"><Link to="/set-partner" className="flex items-center gap-2 py-1"><Handshake />Partners</Link></li>
+                        <li className="hover:bg-blue-500 rounded-lg"><Link to="/set-supplier" className="flex items-center gap-2 py-1"><Truck />Supplier</Link></li>
                         <li className="hover:bg-blue-500 rounded-lg"><Link to="/set-store" className="flex items-center gap-2 py-1"><Store />Store</Link></li>
                     </div>
                 </div>

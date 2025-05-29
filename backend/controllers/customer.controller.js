@@ -2,7 +2,7 @@ import { Customer } from "../models/customer.model.js";
 
 /*Customer FUNCTIONS */
 export const createCustomer = async (req, res) => {
-    const { name, lastName, email, phone, country, birthdate, nationalId, emergencyContact, divingCertificates, storeId, languages, diet, allergies } = req.body;
+    const { name, lastName, email, phone, gender, country, birthdate, nationalId, emergencyContact, divingCertificates, storeId, languages, diet, allergies } = req.body;
     //console.log("Entre a create customer:", name,"-", email,"-", phone,"-", country,"-", birthdate,"-", nationalId,"-",emergencyContact,"-", divingCertificates,"-", storeId,"-", languages,"-", diet);
     try {
         if (!name || !email || !storeId) {
@@ -14,6 +14,7 @@ export const createCustomer = async (req, res) => {
         const customer = new Customer({
             name,
             lastName,
+            gender,
             email,
             phone,
             country,
@@ -43,17 +44,81 @@ export const createCustomer = async (req, res) => {
     }
 }
 
+const excelDateToISO = (excelDate) => {
+    // Convierte desde número de días desde 1900-01-01 a fecha JS
+    const date = new Date((Number(excelDate) - 25569) * 86400 * 1000);
+    return new Date(date.toISOString().split("T")[0]); // Solo la parte YYYY-MM-DD
+};
+
+export const createCustomerMasiveBatch = async (req, res) => {
+    const customersRaw = req.body;
+
+    if (!Array.isArray(customersRaw) || customersRaw.length === 0) {
+        return res.status(400).json({ success: false, message: "Body must be a non-empty array" });
+    }
+
+    const errors = [];
+    const inserted = [];
+
+    for (const data of customersRaw) {
+        try {
+            const {
+                name, lastName, email, phone,
+                gender, country, birthdate, nationalId,
+                emergencyContact = {}, divingCertificates = [],
+                storeId, languages = [], diet, allergies
+            } = data;
+
+            if (!name || !email || !storeId) {
+                throw new Error("Missing required fields: name, email, or storeId");
+            }
+
+            const customer = new Customer({
+                name,
+                lastName,
+                gender,
+                email,
+                phone,
+                country,
+                birthdate: excelDateToISO(birthdate),
+                nationalId,
+                diet,
+                allergies,
+                languages,
+                emergencyContact,
+                divingCertificates,
+                storeId: storeId.toUpperCase()
+            });
+
+            await customer.save();
+            inserted.push(customer);
+
+        } catch (error) {
+            console.error("❌ Error inserting:", data.email, error.message);
+            errors.push({ email: data.email, message: error.message });
+        }
+    }
+
+    return res.status(201).json({
+        success: true,
+        message: "Batch customer creation completed",
+        insertedCount: inserted.length,
+        failedCount: errors.length,
+        errors
+    });
+};
+
 export const updateCustomer = async (req, res) => {
     const { email, storeId, ...updateFields } = req.body;
-    console.log("B: Entre a updateCustomer", email, " - ", storeId, " - ",updateFields)
+    console.log("B: Entre a updateCustomer", email, " - ", storeId, " - ", updateFields)
     try {
         if (!email) {
             throw new Error("Id field is required");
         }
         const normalizedStoreId = storeId?.toUpperCase();
-        const filter = {email: email, storeId: normalizedStoreId}
+        const filter = { email: email, storeId: normalizedStoreId }
 
-        const customer = await Customer.findOneAndUpdate( filter , updateFields, {
+        const customer = await Customer.findOneAndUpdate(filter, updateFields, {
             new: true
         });
 
@@ -73,13 +138,13 @@ export const updateCustomer = async (req, res) => {
 
 export const customerList = async (req, res) => {
     try {
-        const {storeId} = req.params
+        const { storeId } = req.params
         console.log("Entre a customerList ", storeId)
         if (!storeId) {
             throw new Error("StoreID is required");
         }
         const normalizeStoreID = storeId?.toUpperCase();
-        const customerList = await Customer.find({ storeId: normalizeStoreID});
+        const customerList = await Customer.find({ storeId: normalizeStoreID });
         console.log("El listado de clientes es:", customerList);
         if (!customerList) {
             return res.status(400).json({ success: false, message: "Customer not found" });
@@ -92,7 +157,7 @@ export const customerList = async (req, res) => {
 export const customerByEmail = async (req, res) => {
     try {
         //console.log("Entre a customerByEmail")
-        const { email,storeId } = req.params
+        const { email, storeId } = req.params
         const normalizeStoreID = storeId?.toUpperCase();
         //console.log("B: el storeID para customerByEmail es: ", email)
         if (!email) {
@@ -110,12 +175,12 @@ export const customerByEmail = async (req, res) => {
     }
 }
 
-export const createIndex = async (req,res) => {
+export const createIndex = async (req, res) => {
     try {
         const indexes = await Customer.syncIndexes();
         res.status(200).json({ success: true, indexes });
     } catch (error) {
         return res.status(400).json({ success: false, message: error.message });
     }
-    
+
 }
