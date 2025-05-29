@@ -95,7 +95,7 @@ export default function OpenQuote() {
 
                                             >
                                                 < h3 className="text-lg font-semibold text-gray-800">
-                                                    {quote.customerEmail} - From: {new Date(quote.dateIn).toLocaleDateString("en-US", {
+                                                    {(quote.customerName? quote.customerName : quote.customerEmail)} - From: {new Date(quote.dateIn).toLocaleDateString("en-US", {
                                                         timeZone: timezone || "America/Guatemala",
                                                         year: "numeric",
                                                         month: "long",
