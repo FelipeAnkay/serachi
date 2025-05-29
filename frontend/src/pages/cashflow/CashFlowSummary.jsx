@@ -22,8 +22,8 @@ export default function CashFlowSummary() {
     const fetchData = async () => {
         const incomes = await getIncomeByDates(formData.dateStart, formData.dateEnd, storeId);
         const expenses = await getExpenseByDates(formData.dateStart, formData.dateEnd, storeId);
-        console.log("getIncomeByDates: ", incomes)
-        console.log("getExpenseByDates: ", expenses)
+        //console.log("getIncomeByDates: ", incomes)
+        //console.log("getExpenseByDates: ", expenses)
         setFormData((prev) => ({
             ...prev,
             incomeList: incomes.incomeList || [],
@@ -135,7 +135,7 @@ export default function CashFlowSummary() {
                         <h3 className="text-lg font-semibold mb-2 border-b pb-1">Incomes</h3>
                         <div className="space-y-2 max-h-80 overflow-auto">
                             {formData.incomeList.map((item, index) => (
-                                <div key={index} className="bg-blue-800 p-3 rounded" onClick={() => handleItemClick("income", item)}>
+                                <div key={index} className="bg-green-800 p-3 rounded" onClick={() => handleItemClick("income", item)}>
                                     <div className="flex justify-between">
                                         <span>{formatDateDisplay(item.date)}</span>
                                         <span className="font-bold text-green-300">${item.amount.toFixed(2)}</span>
@@ -156,10 +156,10 @@ export default function CashFlowSummary() {
                         <h3 className="text-lg font-semibold mb-2 border-b pb-1">Expenses</h3>
                         <div className="space-y-2 max-h-80 overflow-auto">
                             {formData.expenseList.map((item, index) => (
-                                <div key={index} className="bg-blue-800 p-3 rounded" onClick={() => handleItemClick("expense", item)}>
+                                <div key={index} className="bg-red-800 p-3 rounded" onClick={() => handleItemClick("expense", item)}>
                                     <div className="flex justify-between" >
                                         <span>{formatDateDisplay(item.date)}</span>
-                                        <span className="font-bold text-red-300">${item.amount.toFixed(2)}</span>
+                                        <span className="font-bold text-red-200">${item.amount.toFixed(2)}</span>
                                     </div>
                                     <div className="text-sm text-gray-300">
                                         {item.description || "Sin descripción"}
