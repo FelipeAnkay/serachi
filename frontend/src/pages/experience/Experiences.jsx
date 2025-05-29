@@ -33,7 +33,7 @@ const Experiences = () => {
         const now = new Date();
         const firstDay = new Date(now.getFullYear(), now.getMonth(), -7);
         const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, +7);
-        console.log("Fechas: ", firstDay, " TO ", lastDay)
+        //console.log("Fechas: ", firstDay, " TO ", lastDay)
         fetchExperiences(firstDay, lastDay);
         fetchStaff();
     }, []);
@@ -69,10 +69,10 @@ const Experiences = () => {
         };
         try {
             const serviceDetail = await getServicesByDate(storeId, startDate, endDate);
-            console.log("La respuesta de getServiceById ", serviceDetail);
+            //console.log("La respuesta de getServiceById ", serviceDetail);
             if (serviceDetail.service.length > 0) {
                 for (const serviceRef of serviceDetail.service) {
-                    console.log("serviceRef: ", serviceRef)
+                    //console.log("serviceRef: ", serviceRef)
                     if (serviceRef && serviceRef.isActive) {
                         const staffEmail = serviceRef.staffEmail;
                         const color = await getColorForStaff(staffEmail);
@@ -171,7 +171,7 @@ const Experiences = () => {
 
     const handleNavigate = (newDate) => {
 
-        console.log("Entre a handleNavigate: ", newDate)
+        //console.log("Entre a handleNavigate: ", newDate)
         setSelectedDate(newDate);
 
         const newMonthStart = new Date(newDate.getFullYear(), newDate.getMonth(), -7);
@@ -183,10 +183,10 @@ const Experiences = () => {
             loadedRange.start.getFullYear() === newMonthStart.getFullYear() &&
             loadedRange.start.getMonth() === newMonthStart.getMonth();
 
-        console.log("isSameMonth: ", isSameMonth)
+        //console.log("isSameMonth: ", isSameMonth)
         if (!isSameMonth) {
-            console.log("newMonthStart: ", newMonthStart)
-            console.log("newMonthEnd: ", newMonthEnd)
+            //console.log("newMonthStart: ", newMonthStart)
+            //console.log("newMonthEnd: ", newMonthEnd)
             fetchExperiences(newMonthStart, newMonthEnd);
         } else {
             const now = new Date();

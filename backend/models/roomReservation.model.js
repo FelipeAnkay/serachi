@@ -6,7 +6,6 @@ const roomReservationSchema = new mongoose.Schema({
     },
     quoteId: {
         type: String,
-        required: true,
     },
     customerEmail: {
         type: String,
@@ -21,7 +20,7 @@ const roomReservationSchema = new mongoose.Schema({
     },
     dateOut: {
         type: Date,
-        default: "USD"
+        required: true,
     },
     bedsReserved: {
         type: Number,
@@ -32,6 +31,10 @@ const roomReservationSchema = new mongoose.Schema({
     },
     roomFinalPrice: { 
         type: Number 
+    },
+    currency: { 
+        type: String,
+        default: "USD", 
     },
     userEmail: {
         type: String,

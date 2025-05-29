@@ -1,46 +1,47 @@
 import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { CircleX, Copy, Delete, Handshake, Save, Trash2, UserPlus, UsersRound } from 'lucide-react';
+import { CircleX, Save, Trash2, Truck } from 'lucide-react';
 import Cookies from 'js-cookie';
 import toast from 'react-hot-toast';
-import { useCustomerServices } from '../../store/customerServices';
-import CustomerDetails from '../../components/CustomerDetail';
+import { useSupplierServices } from '../../store/supplierServices';
+import countries from '../../components/contries.json'
 
 
-const SetCustomer = () => {
-    const { getCustomerList, createCustomer, getCustomerEmail, removeCustomer, updateCustomer } = useCustomerServices();
+const SetSupplier = () => {
+    const { getSupplierList, createSupplier, updateSupplier, removeSupplier, getSupplierEmail } = useSupplierServices();
     const storeId = Cookies.get('storeId');
-    const [customerList, setCustomerList] = useState([]);
+    const [supplierList, setSupplierList] = useState([]);
     const [loading, setLoading] = useState(true);
     const [modalOpen, setModalOpen] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
-    const [customerData, setCustomerData] = useState({});
+    const [supplierData, setSupplierData] = useState({});
     const [emailCheckPhase, setEmailCheckPhase] = useState(false);
     const [confirmDelete, setConfirmDelete] = useState(null);
     const [searchTerm, setSearchTerm] = useState('');
 
     useEffect(() => {
-        const fetchCustomer = async () => {
+        const fetchSupplier = async () => {
             try {
-                const customer = await getCustomerList(storeId);
-                //console.log("Respuesta de getCustomerList", customer);
-                setCustomerList(customer.customerList || []);
+                const supplier = await getSupplierList(storeId);
+                console.log("getSupplierList: ", supplier)
+                const auxSuppList = supplier.supplierList
+                setSupplierList(auxSuppList || []);
             } catch (error) {
-                console.error('Error fetching customer list:', error);
+                console.error('Error fetching supplier list:', error);
             } finally {
                 setLoading(false);
             }
         };
 
         if (storeId) {
-            fetchCustomer();
-            //console.log("La lista de partner es: ", partnerList)
+            fetchSupplier();
+            //console.log("La lista de supplier es: ", supplierList)
         }
     }, []);
 
     useEffect(() => {
-        //console.log("El partnerData es: ", partnerData)
-    }, [customerData]);
+        //console.log("El supplierData es: ", supplierData)
+    }, [supplierData]);
 
 
     useEffect(() => {
@@ -58,17 +59,17 @@ const SetCustomer = () => {
         };
     }, [modalOpen]); // se ejecuta cuando cambia modalOpen
 
-    const openNewCustomerModal = () => {
-        setCustomerData({ email: '' });
+    const openNewSupplierModal = () => {
+        setSupplierData({ email: '' });
         setEmailCheckPhase(true);
         setIsEditing(false);
         setModalOpen(true);
     };
 
-    const openEditCustomerModal = (customer) => {
-        //console.log("El customer es: ", customer)
-        setCustomerData({
-            ...customer,
+    const openEditSupplierModal = (supplier) => {
+        //console.log("El supplier es: ", supplier)
+        setsupplierData({
+            ...supplier,
         });
         setIsEditing(true);
         setEmailCheckPhase(false);
@@ -80,31 +81,31 @@ const SetCustomer = () => {
         setConfirmDelete(null);
     };
     const handleEmailCheck = async () => {
-        if (!customerData.email) return;
+        if (!supplierData.email) return;
 
         try {
-            const res = await getCustomerEmail(customerData.email,storeId);
-            const customerFound = res.customerList?.[0];
-            //console.log("handleEmailCheck customerFound:", customerFound);
-            if (customerFound) {
-                const alreadyAssigned = customerFound.storeId?.includes(storeId.toUpperCase());
+            const res = await getSupplierEmail(supplierData.email, storeId);
+            const supplierFound = res.supplierList?.[0];
+            console.log("handleEmailCheck supplierFound:", supplierFound);
+            if (supplierFound) {
+                const alreadyAssigned = supplierFound.storeId?.includes(storeId.toUpperCase());
                 const updatedStoreId = alreadyAssigned
-                    ? customerFound.storeId
-                    : [...new Set([...customerFound.storeId, storeId.toUpperCase()])];
-                setCustomerData({
-                    ...customerFound,
+                    ? supplierFound.storeId
+                    : [...new Set([...supplierFound.storeId, storeId.toUpperCase()])];
+                setSupplierData({
+                    ...supplierFound,
                     storeId: updatedStoreId,
                 });
                 setIsEditing(true);
-                toast.success('Customer founded');
+                toast.success('supplier founded');
             } else {
-                toast.success("Customer not found, you can assign a new one");
+                toast.success("supplier not found, you can assign a new supplier");
                 setIsEditing(false);
             }
 
             setEmailCheckPhase(false); // Pasar al formulario completo
         } catch (err) {
-            console.error("Error checking customer by email:", err);
+            console.error("Error checking supplier by email:", err);
             toast.error("Error checking email");
         }
     };
@@ -112,40 +113,40 @@ const SetCustomer = () => {
     const handleSave = async () => {
         try {
             const payload = {
-                ...customerData,
+                ...supplierData,
                 storeId: storeId,
             };
             //console.log("Is Editing? ", isEditing);
             //console.log("El payload es: ", payload);
             if (isEditing) {
-                await updateCustomer(customerData.email, storeId, payload);
-                toast.success('customer updated successfully');
+                await updateSupplier(supplierData.email, storeId, payload);
+                toast.success('Supplier updated successfully');
             } else {
-                await createCustomer(payload);
-                toast.success('customer created successfully');
+                await createSupplier(payload);
+                toast.success('Supplier created successfully');
             }
 
             closeModal();
             window.location.reload();
         } catch (error) {
-            console.error('Error saving customer:', error);
-            toast.error('Error saving customer');
+            console.error('Error saving supplier:', error);
+            toast.error('Error saving supplier');
         }
     };
 
     const confirmRemove = async () => {
         try {
-            await removeCustomer(confirmDelete.customer, storeId);
-            toast.success(`Customer ${confirmDelete.customer} removed from store.`);
+            await removeSupplier(confirmDelete.supplier, storeId);
+            toast.success(`supplier ${confirmDelete.supplier} removed from store.`);
             closeModal();
             window.location.reload();
         } catch (error) {
-            console.error('Error removing customer:', error);
-            toast.error('Error removing customer');
+            console.error('Error removing supplier:', error);
+            toast.error('Error removing supplier');
         }
     };
 
-    if (loading) return <div className="text-white text-center mt-10">Loading customer...</div>;
+    if (loading) return <div className="text-white text-center mt-10">Loading supplier...</div>;
 
     return (
         <div className="flex flex-col min-h-screen w-full bg-blue-950 text-white px-4 py-6 sm:px-8 sm:py-10">
@@ -157,15 +158,15 @@ const SetCustomer = () => {
                 className="flex flex-col w-full max-w-8xl mx-auto bg-gray-900 bg-opacity-80 backdrop-filter backdrop-blur-lg rounded-xl shadow-2xl border border-gray-800 overflow-hidden"
             >
                 <h2 className="text-3xl font-bold mb-6 text-center bg-gradient-to-r from-blue-400 to-blue-600 text-transparent bg-clip-text">
-                    Customer List
+                    Supplier List
                 </h2>
 
                 <div className="flex flex-col items-center gap-3 mb-4">
                     <button
                         className="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded flex items-center gap-2"
-                        onClick={openNewCustomerModal}
+                        onClick={openNewSupplierModal}
                     >
-                        <p>Add Customer</p><UsersRound />
+                        <p>Add Supplier</p><Truck />
                     </button>
 
                     <input
@@ -179,40 +180,29 @@ const SetCustomer = () => {
 
 
                 <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 ml-3 mr-3 mb-3">
-                    {customerList.length === 0 ? (
-                        <div className="text-center text-gray-400 col-span-full">No customer found</div>
+                    {supplierList.length === 0 ? (
+                        <div className="text-center text-gray-400 col-span-full">No supplier found</div>
                     ) : (
-                        customerList
-                            .filter(customer => {
+                        supplierList
+                            .filter(supplier => {
                                 const term = searchTerm.toLowerCase();
                                 return (
-                                    customer.name?.toLowerCase().includes(term) ||
-                                    customer.email?.toLowerCase().includes(term)
+                                    supplier.name?.toLowerCase().includes(term) ||
+                                    supplier.email?.toLowerCase().includes(term)
                                 );
                             })
-                            .map((customer) => (
+                            .map((supplier) => (
                                 <div
-                                    key={customer._id}
+                                    key={supplier._id}
                                     className="relative text-black rounded-lg shadow p-4 bg-gray-200 hover:bg-blue-100 transition-all"
                                 >
-                                    <div className='flex flex-col' onClick={() => openEditCustomerModal(customer)}>
-                                        <p><strong>Name:</strong> {customer.name}</p>
-                                        <p className='flex flex-row'><strong>Email:</strong> {customer.email}
-                                            <Copy
-                                                onClick={(e) => {
-                                                    e.stopPropagation();
-                                                    navigator.clipboard.writeText(customer.email)
-                                                        .then(() => toast.success("Email copied!"))
-                                                        .catch(() => toast.error("Failed to copy"));
-                                                }}
-                                                className='text-blue-500 hover:text-blue-900 ml-2'
-                                            />
-                                        </p>
-                                        <p><strong>Phone:</strong> {customer.phone || '-'}</p>
-                                        <p><strong>Gender:</strong> {customer.gender || '-'}</p>
+                                    <div onClick={() => openEditPartnerModal(supplier)}>
+                                        <p><strong>Name:</strong> {supplier.name}</p>
+                                        <p><strong>Email:</strong> {supplier.email}</p>
+                                        <p><strong>Phone:</strong> {supplier.phone || 'N/A'}</p>
                                     </div>
                                     <button
-                                        onClick={() => setConfirmDelete({ customer: customer.email })}
+                                        onClick={() => setConfirmDelete({ supplier: supplier.email })}
                                         className="absolute top-2 right-2 text-red-600 hover:text-red-800"
                                         title="Remove from Store"
                                     >
@@ -276,33 +266,96 @@ const SetCustomer = () => {
                                 </button>
 
                                 <h3 className="text-2xl font-bold mb-6 text-center bg-gradient-to-r from-blue-400 to-blue-600 text-transparent bg-clip-text">
-                                    {isEditing ? 'Edit Customer' : 'New Customer'}
+                                    {isEditing ? 'Edit supplier' : 'New supplier'}
                                 </h3>
 
                                 {emailCheckPhase ? (
                                     <div className="space-y-4">
-                                        <label>Email:</label>
+                                        <label>Supplier Email:</label>
                                         <input
                                             type="email"
                                             className="w-full p-2 rounded bg-gray-800 text-white"
-                                            value={customerData.email || ''}
-                                            onChange={(e) => setCustomerData({ ...customerData, email: e.target.value })}
+                                            value={supplierData.email || ''}
+                                            onChange={(e) => setSupplierData({ ...supplierData, email: e.target.value })}
                                         />
                                         <button
                                             className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded w-full mt-4"
                                             onClick={handleEmailCheck}
                                         >
-                                            {isEditing ? 'Continue' : 'Customer Search'}
+                                            {isEditing ? 'Continue' : 'Supplier Search'}
                                         </button>
                                     </div>
                                 ) : (
-                                    <CustomerDetails
-                                        isOpen={modalOpen}
-                                        onClose={() => setModalOpen(false)}
-                                        customer={customerData}
-                                        setCustomer={setCustomerData}
-                                        onSave={handleSave}
-                                    />
+                                    <div className="space-y-4 text-sm">
+                                        <div className="space-y-4">
+                                            <label>Supplier Email:*</label>
+                                            <input
+                                                type="email"
+                                                className="w-full p-2 rounded bg-gray-800 text-white"
+                                                value={supplierData.email || ''}
+                                                onChange={(e) => setSupplierData({ ...supplierData, email: e.target.value })}
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="">Name:*</label>
+                                            <input
+                                                type="text"
+                                                className="w-full p-2 mt-1 rounded bg-gray-800 text-white"
+                                                value={supplierData.name || ''}
+                                                onChange={(e) => setSupplierData({ ...supplierData, name: e.target.value })}
+                                            />
+                                        </div>
+
+                                        <div>
+                                            <label className="">Phone (+Country Code-Phone):</label>
+                                            <input
+                                                type="text"
+                                                className="w-full p-2 mt-1 rounded bg-gray-800 text-white"
+                                                value={supplierData.phone || ''}
+                                                onChange={(e) => setSupplierData({ ...supplierData, phone: e.target.value })}
+                                            />
+                                        </div>
+
+                                        <div>
+                                            <label className="capitalize">National Id or Tax Id:</label>
+                                            <input
+                                                type="text"
+                                                className="w-full p-2 mt-1 rounded bg-gray-800 text-white"
+                                                value={supplierData.nationalId || ''}
+                                                onChange={(e) => setSupplierData({ ...supplierData, nationalId: e.target.value })}
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-medium">Country: *</label>
+                                            <select
+                                                className="w-full border border-gray-300 rounded px-3 py-2 mt-1"
+                                                value={supplierData.country}
+                                                onChange={(e) =>
+                                                    setSupplierData({
+                                                        ...supplierData,
+                                                        country: e.target.value,
+                                                    })
+                                                }
+                                            >
+                                                <option value="" className="text-blue-950">Select Country</option>
+                                                {countries.map((c) => (
+                                                    <option key={c.code} value={c.name} className='text-blue-950'>{c.name}</option>
+                                                ))}
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <p>Fields with * are mandatory</p>
+                                        </div>
+                                        <div className="flex justify-center mt-6">
+                                            <button
+                                                className="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded flex items-center gap-2"
+                                                onClick={handleSave}
+                                            >
+
+                                                <p>Save</p><Save />
+                                            </button>
+                                        </div>
+                                    </div>
                                 )}
                             </motion.div>
                         )}
@@ -313,4 +366,4 @@ const SetCustomer = () => {
     );
 };
 
-export default SetCustomer;
+export default SetSupplier;

@@ -56,9 +56,9 @@ export const useSupplierServices = create((set) => ({
     getSupplierList: async (storeId) => {
         set({ isLoading: true, error: null });
         try {
-            console.log("F: Llamado a supplierList");
+            //console.log("F: Llamado a supplierList");
             const response = await axios.get(`${URL_API}/list/${storeId}`);
-            console.log("F: Respueste de supplierList: ", response);
+            //console.log("F: Respueste de supplierList: ", response);
             set({ supplierList: response.data.supplierList, isLoading:false });
             return response.data;
         } catch (error) {

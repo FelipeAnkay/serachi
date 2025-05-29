@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import axios from 'axios';
+import moment from 'moment';
 
 const URL_API = import.meta.env.MODE === "development" ? "http://localhost:5000/api/incomes" : "/api/incomes";
 
@@ -8,17 +9,17 @@ axios.defaults.withCredentials = true;
 
 
 export const useIncomeServices = create((set) => ({
-    date:null, 
-    customerEmail:null, 
-    partnerId:null, 
-    quoteId:null, 
-    productList:null, 
-    currency:null, 
-    amount:null, 
-    tag:null, 
-    userEmail:null,
-    storeId:null,
-    incomeList:null,
+    date: null,
+    customerEmail: null,
+    partnerId: null,
+    quoteId: null,
+    productList: null,
+    currency: null,
+    amount: null,
+    tag: null,
+    userEmail: null,
+    storeId: null,
+    incomeList: null,
     createIncome: async (incomeData) => {
         set({ isLoading: true, error: null });
         try {
@@ -31,14 +32,14 @@ export const useIncomeServices = create((set) => ({
             throw error;
         }
     },
-    
-    updateIncome: async (id,updatedVars) => {
+
+    updateIncome: async (id, updatedVars) => {
         set({ isLoading: true, error: null });
         try {
             delete updatedVars._id;;
             delete updatedVars.__v;
             //delete updatedVars.storeId;
-            
+
             /*console.log("Payload enviado a updateStaff:", {
                 email: email,
                 storeId: storeId,
@@ -61,9 +62,9 @@ export const useIncomeServices = create((set) => ({
         set({ isLoading: true, error: null });
         try {
             //console.log("F: Llamado a getincomeList");
-            const response = await axios.get(`${URL_API}/list/${storeId }`);
+            const response = await axios.get(`${URL_API}/list/${storeId}`);
             //console.log("F: Respueste de getincomeList: ", response);
-            set({ incomeList: response.data.incomeList, isLoading:false });
+            set({ incomeList: response.data.incomeList, isLoading: false });
             return response.data;
         } catch (error) {
             set({ error: error.response.data.message || "Error getting income", isLoading: false });
@@ -76,12 +77,28 @@ export const useIncomeServices = create((set) => ({
             //console.log("F: Llamado a getStaffList");
             const response = await axios.get(`${URL_API}/get/${id}`);
             //console.log("F: Respueste de getStaffList: ", response);
-            set({ incomeList: response.data.incomeList, isLoading:false });
+            set({ incomeList: response.data.incomeList, isLoading: false });
             return response.data;
         } catch (error) {
             set({ error: error.response.data.message || "Error getting income", isLoading: false });
             throw error;
         }
     },
-    
+    getIncomeByDates: async (dateStart,dateEnd,storeId) => {
+        set({ isLoading: true, error: null });
+        try {
+            const formatDate = (date) => moment(date).format('YYYY-MM-DD HH:mm');
+            const formattedDateIn = formatDate(dateStart);
+            const formattedDateOut = formatDate(dateEnd);
+            //console.log("F: Llamado a getStaffList");
+            const response = await axios.get(`${URL_API}/dates/${formattedDateIn}/${formattedDateOut}/${storeId}`);
+            //console.log("F: Respueste de getStaffList: ", response);
+            set({ incomeList: response.data.incomeList, isLoading: false });
+            return response.data;
+        } catch (error) {
+            set({ error: error.response.data.message || "Error getting income", isLoading: false });
+            throw error;
+        }
+    },
+
 }))

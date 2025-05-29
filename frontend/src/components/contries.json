@@ -8,6 +8,10 @@
     "name": "Austria"
   },
   {
+    "code": "AU",
+    "name": "Australia"
+  },
+  {
     "code": "BE",
     "name": "Belgium"
   },
@@ -22,6 +26,10 @@
   {
     "code": "CL",
     "name": "Chile"
+  },
+  {
+    "code": "CA",
+    "name": "Canada"
   },
   {
     "code": "CO",
@@ -42,6 +50,14 @@
   {
     "code": "EC",
     "name": "Ecuador"
+  },
+  {
+    "code": "EN",
+    "name": "England"
+  },
+  {
+    "code": "FI",
+    "name": "Finland"
   },
   {
     "code": "FR",
@@ -98,6 +114,10 @@
   {
     "code": "PT",
     "name": "Portugal"
+  },
+  {
+    "code": "SC",
+    "name": "Scotland"
   },
   {
     "code": "ES",
