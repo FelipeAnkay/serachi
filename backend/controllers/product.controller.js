@@ -57,11 +57,26 @@ export const productList = async (req, res) => {
 export const getProductById = async (req, res) => {
     try {
         const {id} = req.params;
+        console.log("Llamando a Product.findById: ", id);
         const product = await Product.findById(id);
+        console.log("La respuesta es: ", product);
         if (!product) {
             return res.status(400).json({ success: false, message: "product not found" });
         }
         res.status(200).json({ success: true, product });
+    } catch (error) {
+        return res.status(400).json({ success: false, message: error.message });
+    }
+}
+export const getProductByIds = async (req, res) => {
+    try {
+        const { ids } = req.params;
+        const arrayIds = ids.split(",");
+        const productList = await Product.find({ _id: { $in: arrayIds } });
+        if (!productList) {
+            return res.status(400).json({ success: false, message: "productList not found" });
+        }
+        res.status(200).json({ success: true, productList });
     } catch (error) {
         return res.status(400).json({ success: false, message: error.message });
     }

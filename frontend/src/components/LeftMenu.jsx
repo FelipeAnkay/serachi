@@ -1,4 +1,4 @@
-import { Banknote, BanknoteArrowDown, Bed, BedDouble, BookMarked, Boxes, Calculator, CalendarCheck, CalendarHeart, CalendarPlus2, ChevronDown, CircleUser, Contact, DollarSign, HandCoins, Handshake, Home, MapPinCheckInside, PiggyBank, Receipt, Settings, ShieldUser, Ship, ShoppingBasket, Store, TicketCheck, User, User2, UserPlus, Wallet } from "lucide-react"
+import { Banknote, BanknoteArrowDown, Bed, BedDouble, BookMarked, BookOpenCheck, Boxes, Calculator, CalendarCheck, CalendarHeart, CalendarPlus2, ChevronDown, CircleUser, Contact, DollarSign, HandCoins, Handshake, Home, MapPinCheckInside, PiggyBank, Receipt, Settings, ShieldUser, Ship, ShoppingBasket, Store, TicketCheck, User, User2, UserPlus, Wallet } from "lucide-react"
 import logo from "../../public/Serachi_logo-nobg.png"
 import { Link } from "react-router-dom"
 import { useState } from "react"
@@ -44,6 +44,7 @@ const LeftMenu = ({ show }) => {
                         <li className="hover:bg-blue-500 rounded-lg flex"><Link to="/set-service-dates" className="flex items-center gap-2 py-1"><CalendarPlus2 />Set Missing Data</Link></li>
                         <li className="hover:bg-blue-500 rounded-lg flex"><Link to="/experience-create-service" className="flex items-center gap-2 py-1"><BookMarked />Create Service</Link></li>
                         <li className="hover:bg-blue-500 rounded-lg flex"><Link to="/experience-add-items" className="flex items-center gap-2 py-1"><ShoppingBasket />Add Items</Link></li>
+                        <li className="hover:bg-blue-500 rounded-lg flex"><Link to="/experience-open-tabs" className="flex items-center gap-2 py-1"><BookOpenCheck />Open Tabs</Link></li>
                     </div>
                 </div>
                 <div className="px-4 py-2 block rounded-lg  hover:bg-blue-700 transition delay-200">

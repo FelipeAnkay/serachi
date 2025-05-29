@@ -26,6 +26,7 @@ import typeRoutes from './routes/type.route.js';
 import prrecordRoutes from './routes/prrecord.route.js';
 import storeRoutes from './routes/store.route.js'
 import supplierRoutes from './routes/supplier.route.js'
+import closeTabRoutes from './routes/closeTab.route.js'
 
 dotenv.config();
 
@@ -70,6 +71,7 @@ app.use("/api/types", typeRoutes);
 app.use("/api/prrecords", prrecordRoutes);
 app.use("/api/stores", storeRoutes);
 app.use("/api/suppliers", supplierRoutes);
+app.use("/api/closetabs", closeTabRoutes);
 
 // === 4. Servir frontend en producción ===
 if (process.env.NODE_ENV === "production") {

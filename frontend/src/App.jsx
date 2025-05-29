@@ -34,6 +34,7 @@ import SetPartner from './pages/settings/SetPartner';
 import BookingSchedule from './pages/booking/BookingSchedule';
 import SetCustomer from './pages/settings/SetCustomer';
 import AddItemsExperience from './pages/experience/AddItemsExperience';
+import OpenTabs from './pages/experience/OpenTabs';
 
 const ProtectedRoute = ({ children }) => {
   const { isAuthenticated, user } = useAuthStore();
@@ -124,6 +125,13 @@ function App() {
           element={
             <ProtectedRoute>
               <AddItemsExperience />
+            </ProtectedRoute>}
+        />
+                <Route
+          path="/experience-open-tabs"
+          element={
+            <ProtectedRoute>
+              <OpenTabs />
             </ProtectedRoute>}
         />
         <Route

@@ -163,7 +163,23 @@ export const serviceList = async (req, res) => {
         }
         const normalizeStoreID = storeId?.toUpperCase();
         const serviceList = await Service.find(normalizeStoreID);
-        console.log("El listado de productos es:", serviceList);
+        //console.log("El listado de productos es:", serviceList);
+        if (!serviceList) {
+            return res.status(400).json({ success: false, message: "Service not found" });
+        }
+        res.status(200).json({ success: true, serviceList });
+    } catch (error) {
+        return res.status(400).json({ success: false, message: error.message });
+    }
+}
+
+export const getServicesByIds = async (req, res) => {
+    try {
+        const { ids } = req.params;
+        const arrayIds = ids.split(",");
+        //console.log("B: Llamado a getServiceByID: ", ids);
+        const serviceList = await Service.find({ _id: { $in: arrayIds } });
+        //console.log("La respuesta de Service.find: ", serviceList);
         if (!serviceList) {
             return res.status(400).json({ success: false, message: "Service not found" });
         }
@@ -256,5 +272,4 @@ export const deleteService = async (req, res) => {
         res.status(400).json({ success: false, message: error.message });
     }
 };
-
 

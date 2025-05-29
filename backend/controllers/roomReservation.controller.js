@@ -3,7 +3,7 @@ import { Room } from "../models/room.model.js";
 
 /*ROOM Reservation FUNCTIONS */
 export const createRoomReservation = async (req, res) => {
-    const { roomId, quoteId, customerEmail, storeId, dateIn, dateOut, bedsReserved, userEmail } = req.body;
+    const { roomId, quoteId, customerEmail, storeId, dateIn, dateOut, bedsReserved, roomUnitaryPrice, roomFinalPrice, userEmail } = req.body;
     try {
         if (!roomId || !customerEmail || !storeId || !dateIn || !dateOut || !bedsReserved || !userEmail) {
             throw new Error("All fields are required");
@@ -17,6 +17,8 @@ export const createRoomReservation = async (req, res) => {
             dateIn,
             dateOut,
             bedsReserved,
+            roomUnitaryPrice,
+            roomFinalPrice,
             userEmail
         })
 
@@ -267,4 +269,20 @@ export const getReservationsByEmail = async (req, res) => {
         return res.status(400).json({ success: false, message: error.message });
     }
 }
-    
+
+export const getReservationsByIds = async (req, res) => {
+    try {
+        //console.log("Entre a roomReservationList")
+        const { ids } = req.params;
+        const arrayIds = ids.split(",");
+        //console.log("B: el ids para roomReservationList es: ", ids)
+        const roomReservationList = await RoomReservation.find({ _id: { $in: arrayIds } });
+        //console.log("El listado de Reservation es:", roomReservationList);
+        if (!roomReservationList) {
+            return res.status(200).json({ success: false, message: "Reservation not found" });
+        }
+        res.status(200).json({ success: true, roomReservationList });
+    } catch (error) {
+        return res.status(400).json({ success: false, message: error.message });
+    }
+}

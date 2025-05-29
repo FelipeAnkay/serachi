@@ -36,7 +36,7 @@ export const useRoomReservationServices = create((set) => ({
                 ...updatedVars
             });
             //console.log("F: Respueste de updateStaff: ", response);
-            set({ roomReservationList: response.data.roomReservation, isLoading: false });
+            set({ roomReservationList: response.data.service, isLoading: false });
             return response.data;
         } catch (error) {
             set({ error: error || "Error updating roomReservation", isLoading: false });
@@ -108,6 +108,30 @@ export const useRoomReservationServices = create((set) => ({
         try {
             //console.log("F: Llamado a getExperienceByEmail");
             const response = await axios.get(`${URL_API}/email/${customerEmail}/${storeId}`);
+            //console.log("F: Respueste de getExperienceByEmail: ", response);
+            return response.data;
+        } catch (error) {
+            set({ error: error.response.data.message || "Error getting experiences", isLoading: false });
+            throw error;
+        }
+    },
+    getReservationsById: async (id) => {
+        set({ isLoading: true, error: null });
+        try {
+            //console.log("F: Llamado a getExperienceByEmail");
+            const response = await axios.get(`${URL_API}/id/${id}`);
+            //console.log("F: Respueste de getExperienceByEmail: ", response);
+            return response.data;
+        } catch (error) {
+            set({ error: error.response.data.message || "Error getting experiences", isLoading: false });
+            throw error;
+        }
+    },
+    getReservationsByIds: async (ids) => {
+        set({ isLoading: true, error: null });
+        try {
+            //console.log("F: Llamado a getExperienceByEmail");
+            const response = await axios.get(`${URL_API}/get-ids/${ids}`);
             //console.log("F: Respueste de getExperienceByEmail: ", response);
             return response.data;
         } catch (error) {
