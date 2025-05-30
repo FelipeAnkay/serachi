@@ -34,8 +34,8 @@ const Experiences = () => {
         const firstDay = new Date(now.getFullYear(), now.getMonth(), -7);
         const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, +7);
         //console.log("Fechas: ", firstDay, " TO ", lastDay)
-        fetchExperiences(firstDay, lastDay);
         fetchStaff();
+        fetchExperiences(firstDay, lastDay);
     }, []);
 
     const fetchStaff = async () => {
@@ -57,7 +57,8 @@ const Experiences = () => {
 
             try {
                 const res = await getStaffEmail(email, storeId);
-                const staff = res?.staffList?.[0];
+                //console.log("El res es: ", res)
+                const staff = res?.staffList;
                 //console.log("El staff es: ", staff)
                 const color = staff?.color || "gray-500";
                 //console.log("El color es: ", color)

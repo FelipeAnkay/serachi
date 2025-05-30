@@ -273,3 +273,26 @@ export const deleteService = async (req, res) => {
     }
 };
 
+export const deleteServiceByEmail = async (req, res) => {
+    try {
+        const { customerEmail } = req.body;
+
+        if (!customerEmail) {
+            throw new Error("customerEmail field is required");
+        }
+
+        const deletedResult = await Service.deleteMany({ customerEmail });
+
+        if (deletedResult.deletedCount === 0) {
+            return res.status(404).json({ success: false, message: "No services found for that email" });
+        }
+
+        res.status(200).json({
+            success: true,
+            message: `Deleted ${deletedResult.deletedCount} service(s) successfully`,
+        });
+    } catch (error) {
+        res.status(400).json({ success: false, message: error.message });
+    }
+};
+
