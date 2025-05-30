@@ -42,15 +42,15 @@ export const createStaff = async (req, res) => {
 
 export const staffList = async (req, res) => {
     try {
-        console.log("Entre a staffList")
+        //console.log("Entre a staffList")
         const {storeId} = req.params
-        console.log("B: el storeID para staffList es: ", storeId)
+        //console.log("B: el storeID para staffList es: ", storeId)
         if (!storeId) {
             throw new Error("StoreID is required");
         }
         const normalizeStoreID = storeId?.toUpperCase();
         const staffList = await Staff.find({ storeId: normalizeStoreID });
-        console.log("El listado de Staff es:", staffList);
+        //console.log("El listado de Staff es:", staffList);
         if (!staffList || staffList.length === 0) {
             return res.status(400).json({ success: false, message: "Staff not found" });
         }
@@ -83,7 +83,7 @@ export const staffListByType = async (req, res) => {
 export const updateStaff = async (req, res) => {
     const { email, storeId, ...updateFields } = req.body;
     try {
-        console.log("B: Entre a updateStaff: ", email," StoreiD: ", storeId, " Variables a actualizar: ", updateFields)
+        //console.log("B: Entre a updateStaff: ", email," StoreiD: ", storeId, " Variables a actualizar: ", updateFields)
         if (!email || !storeId) {
             throw new Error("Id field is required");
         }
@@ -158,9 +158,9 @@ export const removeStaff = async (req, res) => {
 
 export const staffByEmail = async (req, res) => {
     try {
-        console.log("Entre a staffByEmail")
+        //console.log("Entre a staffByEmail")
         const {email,storeId} = req.params
-        console.log("B: el storeID para staffByEmail es: ", email)
+        //console.log("B: el storeID para staffByEmail es: ", email)
         if (!email) {
             throw new Error("Email is required");
         }
@@ -169,7 +169,7 @@ export const staffByEmail = async (req, res) => {
             email: email,
             storeId: normalizeStoreID  // busca dentro del array de storeIds
         });
-        console.log("El listado de Staff es:", staffList);
+        //console.log("El listado de Staff es:", staffList);
         if (!staffList || staffList.length === 0) {
             return res.status(200).json({ success: false, message: "Staff not found" });
         }
