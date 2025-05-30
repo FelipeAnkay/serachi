@@ -17,7 +17,7 @@ import { createCustomServices } from '../../components/createCustomService'
 import { formatDateDisplay, formatDateShort, formatDateInput, formatDateISO } from '../../components/formatDateDisplay'
 
 export default function ConfirmedQuote() {
-    const { getConfirmedQuoteList } = useQuoteServices();
+    const { getQuoteByCheckout } = useQuoteServices();
     const { createRoomReservation, getReservations } = useRoomReservationServices();
     const { getProductByStoreId } = useProductServices();
     const { createService } = useServiceServices();
@@ -57,7 +57,7 @@ export default function ConfirmedQuote() {
         //console.log("Entre a useEffect [storeId, location.key]", timezone);
         const fetchQuotes = async () => {
             try {
-                const response = await getConfirmedQuoteList(storeId);
+                const response = await getQuoteByCheckout(storeId,true);
                 //console.log("Quote Response: ", response);
                 setQuotes(response.quoteList);
             } catch (error) {
@@ -367,7 +367,7 @@ export default function ConfirmedQuote() {
                             />
                         </div>
                         <div className="grid gap-4 grid-cols-1 sm:grid-cols-3 md:grid-cols-2 lg:grid-cols-1">
-                            {quotes.length === 0 ? (
+                            {!quotes || quotes.length === 0 ? (
                                 <p>No Quotes found for this store.</p>
                             ) : (
                                 quotes

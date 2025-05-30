@@ -7,7 +7,7 @@ import { Copy, Pencil } from 'lucide-react';
 
 
 export default function OpenQuote() {
-    const { getOpenQuoteList } = useQuoteServices();
+    const { getQuoteByCheckout } = useQuoteServices();
     const [quotes, setQuotes] = useState([]);
     const [loading, setLoading] = useState(true);
     const storeId = Cookies.get('storeId');
@@ -31,7 +31,7 @@ export default function OpenQuote() {
         //console.log("Entre a useEffect [storeId, location.key]", timezone);
         const fetchQuotes = async () => {
             try {
-                const response = await getOpenQuoteList(storeId);
+                const response = await getQuoteByCheckout(storeId,false);
                 //console.log("Quote Response: ", response);
                 setQuotes(response.quoteList);
             } catch (error) {
@@ -80,7 +80,7 @@ export default function OpenQuote() {
                             }}
                         />
                         <div className="grid gap-4 grid-cols-1 sm:grid-cols-3 md:grid-cols-2 lg:grid-cols-1">
-                            {quotes.length === 0 ? (
+                           {!quotes || quotes.length === 0 ? (
                                 <p>No Quotes found for this store.</p>
                             ) : (
                                 quotes
