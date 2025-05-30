@@ -129,7 +129,7 @@ export const useQuoteServices = create((set) => ({
     getQuoteByCheckout: async (storeId, isConfirmed) => {
         set({ isLoading: true, error: null });
         try {
-            console.log("F: Llamado a getQuoteByCheckout", storeId, " - ", isConfirmed);
+            //console.log("F: Llamado a getQuoteByCheckout", storeId, " - ", isConfirmed);
             const response = await axios.get(`${URL_API}/checkout/${storeId}/${isConfirmed}`);
             //console.log("F: Respueste de getStaffList: ", response);
             set({ quoteList: response.data.quoteList, isLoading: false });
