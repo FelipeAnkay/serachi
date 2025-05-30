@@ -69,7 +69,7 @@ const Experiences = () => {
             }
         };
         try {
-            const serviceDetail = await getServicesByDate(storeId, startDate, endDate);
+            const serviceDetail = await getServicesByDate(startDate, endDate,storeId);
             //console.log("La respuesta de getServiceById ", serviceDetail);
             if (serviceDetail.service.length > 0) {
                 for (const serviceRef of serviceDetail.service) {

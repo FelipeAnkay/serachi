@@ -1,7 +1,6 @@
 import { create } from 'zustand';
 import axios from 'axios';
-import moment from 'moment';
-
+import { formatDateISO } from '../components/formatDateDisplay'
 const URL_API = import.meta.env.MODE === "development" ? "http://localhost:5000/api/services" : "/api/services";
 
 
@@ -118,15 +117,12 @@ export const useServiceServices = create((set) => ({
             throw error;
         }
     },
-    getServicesByDate: async (storeId, dateIn, dateOut) => {
+    getServicesByDate: async (start,end,storeId) => {
         set({ isLoading: true, error: null });
 
-        // Normaliza las fechas al formato 'YYYY-MM-DD HH:mm'
-        const formatDate = (date) => moment(date).format('YYYY-MM-DD HH:mm');
-
         try {
-            const formattedDateIn = formatDate(dateIn);
-            const formattedDateOut = formatDate(dateOut);
+            const formattedDateIn = formatDateISO(start);
+            const formattedDateOut = formatDateISO(end);
 
             const response = await axios.get(`${URL_API}/dates/${storeId}/${formattedDateIn}/${formattedDateOut}`);
 

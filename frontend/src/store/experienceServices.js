@@ -7,25 +7,25 @@ const URL_API = import.meta.env.MODE === "development" ? "http://localhost:5000/
 axios.defaults.withCredentials = true;
 
 export const useExperienceServices = create((set) => ({
-    name:null,
-    serviceList:null,
-    productList:null,
-    bookList:null,
-    storeId:null,
-    userEmail:null,
-    customerEmail:null,
-    dateIn:null,
-    dateOut:null,
-    quoteId:null,
-    source:null,
-    service:null,
+    name: null,
+    serviceList: null,
+    productList: null,
+    bookList: null,
+    storeId: null,
+    userEmail: null,
+    customerEmail: null,
+    dateIn: null,
+    dateOut: null,
+    quoteId: null,
+    source: null,
+    service: null,
     createExperience: async (experienceData) => {
         set({ isLoading: true, error: null });
         try {
             console.log("Payload de createExperience: ", experienceData);
             const response = await axios.post(`${URL_API}/create`, experienceData);
             console.log("La respuesta de createExperience ", response);
-            set({ service: response.data.service, isLoading:false});
+            set({ service: response.data.service, isLoading: false });
         } catch (error) {
             set({ error: error.response.data.message || "Error Creating a Experience", isLoading: false });
             throw error;
@@ -56,33 +56,33 @@ export const useExperienceServices = create((set) => ({
             //console.log("F: Llamado a getExperiences");
             const response = await axios.get(`${URL_API}/list`, { storeId });
             //console.log("F: Respueste de getExperiences: ", response);
-            set({ experienceList: response.data.experienceList, isLoading:false });
+            set({ experienceList: response.data.experienceList, isLoading: false });
             return response.data;
         } catch (error) {
             set({ error: error.response.data.message || "Error getting experiences", isLoading: false });
             throw error;
         }
     },
-    getExperienceByEmail: async (userEmail,storeId) => {
+    getExperienceByEmail: async (userEmail, storeId) => {
         set({ isLoading: true, error: null });
         try {
             //console.log("F: Llamado a getExperienceByEmail:",userEmail,"-",storeId );
             const response = await axios.get(`${URL_API}/email/${userEmail}/${storeId}`);
             //console.log("F: Respueste de getExperienceByEmail: ", response);
-            set({ experienceList: response.data.experienceList, isLoading:false });
+            set({ experienceList: response.data.experienceList, isLoading: false });
             return response.data;
         } catch (error) {
             set({ error: error.response.data.message || "Error getting experiences", isLoading: false });
             throw error;
         }
     },
-        getExperienceById: async (id) => {
+    getExperienceById: async (id) => {
         set({ isLoading: true, error: null });
         try {
             //console.log("F: Llamado a getExperienceByEmail:",userEmail,"-",storeId );
             const response = await axios.get(`${URL_API}/get/${id}`);
             //console.log("F: Respueste de getExperienceByEmail: ", response);
-            set({ experienceList: response.data.experienceList, isLoading:false });
+            set({ experienceList: response.data.experienceList, isLoading: false });
             return response.data;
         } catch (error) {
             set({ error: error.response.data.message || "Error getting experiences", isLoading: false });

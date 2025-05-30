@@ -1,75 +1,73 @@
+import { format } from "date-fns";
+import { parseISO, isValid } from "date-fns";
+
+/**
+ * Convierte cualquier entrada a un Date válido
+ */
+function toDate(input) {
+  if (!input) return null;
+  if (input instanceof Date && isValid(input)) return input;
+
+  try {
+    const parsed = parseISO(input);
+    return isValid(parsed) ? parsed : null;
+  } catch {
+    return null;
+  }
+}
 
 /**
  * Format: "Monday, May 26 2025"
  */
-export function formatDateDisplay(dateStr) {
-    if (!dateStr) return "";
-    const date = new Date(dateStr);
-    const weekday = date.toLocaleDateString("en-US", { weekday: "long" });
-    const month = date.toLocaleDateString("en-US", { month: "long" });
-    const day = String(date.getDate()).padStart(2, "0");
-    const year = date.getFullYear();
-
-    return `${weekday}, ${month} ${day} ${year}`;
+export function formatDateDisplay(dateInput) {
+  const date = toDate(dateInput);
+  return date ? format(date, "EEEE, MMMM dd yyyy") : "";
 }
 
 /**
  * Format: "26/05/2025"
  */
-export function formatDateShort(dateStr) {
-    if (!dateStr) return "";
-    const date = new Date(dateStr);
-    const day = String(date.getDate()).padStart(2, "0");
-    const month = String(date.getMonth() + 1).padStart(2, "0");
-    const year = date.getFullYear();
-
-    return `${day}/${month}/${year}`;
+export function formatDateShort(dateInput) {
+  const date = toDate(dateInput);
+  return date ? format(date, "dd/MM/yyyy") : "";
 }
 
 /**
  * Format: "2025-05-26" (for input[type="date"])
  */
-export function formatDateInput(dateStr) {
-    if (!dateStr) return "";
-    const date = new Date(dateStr);
-    const day = String(date.getDate()).padStart(2, "0");
-    const month = String(date.getMonth() + 1).padStart(2, "0");
-    const year = date.getFullYear();
-
-    return `${year}-${month}-${day}`;
+export function formatDateInput(dateInput) {
+  const date = toDate(dateInput);
+  return date ? format(date, "yyyy-MM-dd") : "";
 }
 
 /**
  * Format: "May 26, 2025"
  */
-export function formatDatePretty(dateStr) {
-    if (!dateStr) return "";
-    const date = new Date(dateStr);
-    const month = date.toLocaleDateString("en-US", { month: "long" });
-    const day = String(date.getDate()).padStart(2, "0");
-    const year = date.getFullYear();
-
-    return `${month} ${day}, ${year}`;
+export function formatDatePretty(dateInput) {
+  const date = toDate(dateInput);
+  return date ? format(date, "MMMM dd, yyyy") : "";
 }
 
 /**
  * Format: "Monday 26 May 2025"
  */
-export function formatDateFull(dateStr) {
-    if (!dateStr) return "";
-    const date = new Date(dateStr);
-    const weekday = date.toLocaleDateString("en-US", { weekday: "long" });
-    const day = String(date.getDate()).padStart(2, "0");
-    const month = date.toLocaleDateString("en-US", { month: "long" });
-    const year = date.getFullYear();
-
-    return `${weekday} ${day} ${month} ${year}`;
+export function formatDateFull(dateInput) {
+  const date = toDate(dateInput);
+  return date ? format(date, "EEEE dd MMMM yyyy") : "";
 }
 
-export function formatDateISO(dateStr) {
-    if (!dateStr) return "";
-        const date = new Date(dateStr);
-        const tzOffset = date.getTimezoneOffset() * 60000; // en milisegundos
-        const localISOTime = new Date(date.getTime() - tzOffset).toISOString().slice(0, 16);
-        return localISOTime;
+/**
+ * Format: ISO local datetime: "2025-05-26T14:30"
+ */
+export function formatDateISO(dateInput) {
+  const date = toDate(dateInput);
+  return date ? format(date, "yyyy-MM-dd'T'HH:mm") : "";
+}
+
+/**
+ * Format: "2025-05"
+ */
+export function formatYearMonth(dateInput) {
+  const date = toDate(dateInput);
+  return date ? format(date, "yyyy-MM") : "";
 }

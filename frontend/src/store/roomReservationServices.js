@@ -1,7 +1,7 @@
 // roomServices.js
 import { create } from 'zustand';
 import axios from 'axios';
-import moment from 'moment';
+import { formatDateISO } from '../components/formatDateDisplay'
 
 const URL_API = import.meta.env.MODE === 'development'
     ? 'http://localhost:5000/api/reservations'
@@ -57,9 +57,11 @@ export const useRoomReservationServices = create((set) => ({
     getAvailableRooms: async ({ dateIn, dateOut, bedsRequired, storeId }) => {
         try {
             //console.log("B: Entre a getAvailableRooms", dateIn, " - ", dateOut, " - ", bedsRequired, " - ", storeId)
+            const formatedDateStart = formatDateISO(dateIn)
+            const formatedDateEnd = formatDateISO(dateOut)
             const response = await axios.post(`${URL_API}/available`, {
-                dateIn,
-                dateOut,
+                formatedDateStart,
+                formatedDateEnd,
                 bedsRequired,
                 storeId,
             });
@@ -86,13 +88,9 @@ export const useRoomReservationServices = create((set) => ({
     },
     getReservationsByDate: async (storeId, dateIn, dateOut) => {
         set({ isLoading: true, error: null });
-
-        // Normaliza las fechas al formato 'YYYY-MM-DD HH:mm'
-        const formatDate = (date) => moment(date).format('YYYY-MM-DD HH:mm');
-
         try {
-            const formattedDateIn = formatDate(dateIn);
-            const formattedDateOut = formatDate(dateOut);
+            const formattedDateIn = formatDateISO(dateIn);
+            const formattedDateOut = formatDateISO(dateOut);
 
             const response = await axios.get(`${URL_API}/dates/${storeId}/${formattedDateIn}/${formattedDateOut}`);
 

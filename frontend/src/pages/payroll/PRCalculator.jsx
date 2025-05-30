@@ -43,7 +43,7 @@ const PRCalculator = () => {
         if (!dateIn || !dateOut) return;
         setLoading(true);
         try {
-            const servicesResponse = await getServicesByDate(storeId, dateIn, dateOut);
+            const servicesResponse = await getServicesByDate(dateIn, dateOut,storeId);
             const services = servicesResponse.service;
             //console.log("services is: ", services);
             const alreadyInPayroll = services.filter(s => Array.isArray(s.payrollList) && s.payrollList.length > 0);

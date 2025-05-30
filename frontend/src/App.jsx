@@ -38,6 +38,7 @@ import OpenTabs from './pages/experience/OpenTabs';
 import CreateReservation from './pages/booking/CreateReservation';
 import CashFlowSummary from './pages/cashflow/CashFlowSummary';
 import SetSupplier from './pages/settings/SetSupplier';
+import Reports from './pages/reports/Reports';
 
 const ProtectedRoute = ({ children }) => {
   const { isAuthenticated, user } = useAuthStore();
@@ -240,6 +241,13 @@ function App() {
           element={
             <ProtectedRoute>
               <PRCalculator />
+            </ProtectedRoute>}
+        />
+        <Route
+          path="/report-incomes"
+          element={
+            <ProtectedRoute>
+              <Reports />
             </ProtectedRoute>}
         />
         <Route
