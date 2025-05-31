@@ -37,52 +37,68 @@ export function createCustomServices(customService) {
         if (onePerDay) {
             const auxHours = auxDateIn.getHours() + 4;
             for (let a = 0; a <= repetitions; a++) {
-                auxDateIn.setDate(auxWeekDateIn.getDate() + (a * 7));
+                const baseWeekDate = new Date(auxWeekDateIn);
+                baseWeekDate.setDate(baseWeekDate.getDate() + (a * 7));
+
                 for (let i = 0; i <= diffDays; i++) {
-                    auxDateOut.setDate(auxDateIn.getDate());
-                    auxDateOut.setHours(auxHours);
+                    const currentDateIn = new Date(baseWeekDate);
+                    currentDateIn.setDate(currentDateIn.getDate() + i);
+
+                    const currentDateOut = new Date(currentDateIn);
+                    currentDateOut.setHours(auxHours);
+
                     newServices.push({
                         name,
-                        dateIn: auxDateIn.toISOString(),
-                        dateOut: auxDateOut.toISOString(),
+                        dateIn: currentDateIn.toISOString(),
+                        dateOut: currentDateOut.toISOString(),
                         productId,
                         staffEmail,
                     });
-                    auxDateIn.setDate(auxDateIn.getDate() + 1);
                 }
             }
         } else {
             for (let i = 0; i <= repetitions; i++) {
+                const currentDateIn = new Date(auxDateIn);
+                const currentDateOut = new Date(auxDateOut);
                 newServices.push({
                     name,
-                    dateIn: auxDateIn.toISOString(),
-                    dateOut: auxDateOut.toISOString(),
+                    dateIn: currentDateIn.toISOString(),
+                    dateOut: currentDateOut.toISOString(),
                     productId,
                     staffEmail,
                 });
                 auxDateIn.setDate(auxDateIn.getDate() + 7);
                 auxDateOut.setDate(auxDateOut.getDate() + 7);
             }
+            //console.log("New Services: ", newServices)
         }
     } else {
         if (onePerDay) {
             const auxHours = auxDateIn.getHours() + 4;
+
+            //console.log("auxDateIn es:", auxDateIn);
+
             for (let a = 0; a <= repetitions; a++) {
                 for (let i = 0; i <= diffDays; i++) {
-                    auxDateOut.setDate(auxDateIn.getDate());
-                    auxDateOut.setHours(auxHours);
+                    const currentDateIn = new Date(auxDateIn);
+                    const currentDateOut = new Date(currentDateIn);
+                    currentDateOut.setHours(auxHours); // agrega las horas
+
                     newServices.push({
                         name,
-                        dateIn: auxDateIn.toISOString(),
-                        dateOut: auxDateOut.toISOString(),
+                        dateIn: currentDateIn.toISOString(),
+                        dateOut: currentDateOut.toISOString(),
                         productId,
                         staffEmail,
                     });
-                    auxDateIn.setDate(auxDateIn.getDate() + 1);
+
+                    auxDateIn.setDate(auxDateIn.getDate() + 1); // avanzar para la próxima fecha
                 }
             }
         } else {
             for (let i = 0; i <= repetitions; i++) {
+                const currentDateIn = new Date(auxDateIn);
+                const currentDateOut = new Date(auxDateOut);
                 newServices.push({
                     name,
                     dateIn: auxDateIn.toISOString(),
@@ -93,6 +109,7 @@ export function createCustomServices(customService) {
                 auxDateIn.setDate(auxDateOut.getDate() + 1);
                 auxDateOut.setDate(auxDateOut.getDate() + (diffDays + 1));
             }
+            //console.log("New Services: ", newServices)
         }
     }
 
