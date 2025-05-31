@@ -43,7 +43,7 @@ const PRCalculator = () => {
         if (!dateIn || !dateOut) return;
         setLoading(true);
         try {
-            const servicesResponse = await getServicesByDate(dateIn, dateOut,storeId);
+            const servicesResponse = await getServicesByDate(dateIn, dateOut, storeId);
             const services = servicesResponse.serviceList;
             //console.log("services is: ", services);
             const alreadyInPayroll = services.filter(s => Array.isArray(s.payrollList) && s.payrollList.length > 0);
@@ -146,7 +146,7 @@ const PRCalculator = () => {
                     paymentMethod: item.paymentMethod,
                     description: `Payroll for ${item.productName} - ${auxPRId}`,
                 };
-                console.log("El expense a registrar es: ", expense)
+                //console.log("El expense a registrar es: ", expense)
                 await createExpense(expense);
                 for (const updService of item.services) {
                     await updateService(updService._id, {
@@ -157,14 +157,15 @@ const PRCalculator = () => {
                     });
                 }
             }
-
+            window.scrollTo({ top: 0, behavior: 'smooth' });
             toast.success('Payroll registered successfully');
             setSummary([]);
             setTableVisible(false);
 
         } catch (error) {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
             toast.error('Error registering payroll');
-            console.error('❌ Error registering payroll:', error);
+            //console.error('❌ Error registering payroll:', error);
         } finally {
             setIsSubmitting(false); // ✅ liberamos el botón al final
         }

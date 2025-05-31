@@ -323,7 +323,7 @@ export default function CreateReservation() {
             for (const res of reservationPayloadList) {
                 await createRoomReservation(res);
             }
-
+            window.scrollTo({ top: 0, behavior: 'smooth' });
             toast.success('Reservation(s) created successfully');
 
             // Opcional: resetear formulario
@@ -335,6 +335,7 @@ export default function CreateReservation() {
     };
 
     const handleReset = (e) => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
         reservationFill();
         setCustomer({
             email: '',

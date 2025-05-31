@@ -120,24 +120,6 @@ export default function OpenTabs() {
 
     }, [pendingUpdates, serviceList, productList, reservationList]);
 
-    const handleCloseTab = async (closeTab) => {
-        try {
-
-        } catch (error) {
-            toast.error("Error creating or updating Tab");
-            console.error(error);
-        }
-    };
-
-    const handleEditTab = async (closeTab) => {
-        try {
-
-        } catch (error) {
-            toast.error("Error creating or updating Tab");
-            console.error(error);
-        }
-    };
-
     const handleOpenModal = async (experience) => {
         try {
             const response = await getServiceByIds(experience.serviceList);
@@ -173,7 +155,7 @@ export default function OpenTabs() {
                     productList: updatedProductList,
                 });
             }
-
+            window.scrollTo({ top: 0, behavior: 'smooth' });
             toast.success('Estado de pago actualizado');
 
             // Refrescar experiencia
