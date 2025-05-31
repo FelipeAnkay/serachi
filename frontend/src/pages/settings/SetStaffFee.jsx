@@ -33,6 +33,15 @@ const SetStaffFee = () => {
     const [staffFilter, setStaffFilter] = useState("");
     const [productFilter, setProductFilter] = useState("");
 
+    /* Variables para duplicación de reglas */
+    const [duplicateModal, setDuplicateModal] = useState(false);
+    const [originStaff, setOriginStaff] = useState("");
+    const [destinationStaff, setDestinationStaff] = useState("");
+    const [tempGroupedRules, setTempGroupedRules] = useState({});
+    const [startDate, setStartDate] = useState(() => new Date().toISOString().split("T")[0]);
+    const [finishDate, setFinishDate] = useState("");
+    const [priority, setPriority] = useState(0);
+
     const fetchData = async () => {
         const staffRes = await getStaffList(storeId);
         //console.log("Respuesta de getStaffList: ", staffRes)
@@ -123,6 +132,34 @@ const SetStaffFee = () => {
         setEditingId(payrate._id);
     };
 
+    const updateGroupedRule = (productId, index, key, value) => {
+        const updated = { ...tempGroupedRules };
+        updated[productId][index][key] = value;
+        setTempGroupedRules(updated);
+    };
+
+    const removeGroupedRule = (productId, index) => {
+        const updated = { ...tempGroupedRules };
+        updated[productId].splice(index, 1);
+        if (updated[productId].length === 0) delete updated[productId];
+        setTempGroupedRules(updated);
+    };
+
+    const handleOriginChange = (staffEmail) => {
+        setOriginStaff(staffEmail);
+        setDestinationStaff("");
+
+        const staffRates = payrates.filter(p => p.staffEmail === staffEmail);
+        const grouped = {};
+
+        staffRates.forEach(rate => {
+            if (!grouped[rate.productId]) grouped[rate.productId] = [];
+            grouped[rate.productId] = [...grouped[rate.productId], ...rate.feeRules];
+        });
+
+        setTempGroupedRules(grouped);
+    };
+
     const handleDelete = async (id) => {
         console.log("Entre a handleDelete ", id)
         if (confirm("Are you sure you want to delete this fee?")) {
@@ -141,8 +178,8 @@ const SetStaffFee = () => {
     });
 
     return (
-        <div className="mt-2 mb-2 p-4 space-y-6 max-w-4xl mx-auto bg-blue-950 justify-center border rounded-2xl">
-            <h2 className="text-3xl font-semibold text-white justify-center text-center text-bold">Staff Fee Configuration</h2>
+        <div className="mt-2 mb-2 p-4 space-y-6 max-w-6xl mx-auto bg-blue-950 border rounded-2xl">
+            <h2 className="text-3xl font-semibold text-white text-center">Staff Fee Configuration</h2>
             <AnimatePresence>
                 <motion.form
                     onSubmit={handleCreate}
@@ -151,14 +188,14 @@ const SetStaffFee = () => {
                     exit={{ opacity: 0 }}
                     className="space-y-4 border p-4 rounded-xl shadow-md bg-blue-900"
                 >
-                    <div className="grid md:grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
                             <label className="text-white">Staff Email</label>
                             <select
                                 name="staffEmail"
                                 value={form.staffEmail}
                                 onChange={handleChange}
-                                className="w-full border px-2 py-1 rounded text-white"
+                                className="w-full border px-2 py-1 rounded text-white bg-blue-800"
                             >
                                 <option value="" className="text-blue-950">Select</option>
                                 {auxStaffList.map((s) => (
@@ -173,7 +210,7 @@ const SetStaffFee = () => {
                                 name="productId"
                                 value={form.productId}
                                 onChange={handleChange}
-                                className="w-full border px-2 py-1 rounded text-white"
+                                className="w-full border px-2 py-1 rounded text-white bg-blue-800"
                             >
                                 <option value="" className="text-blue-950">Select</option>
                                 {productList.map((p) => (
@@ -181,23 +218,23 @@ const SetStaffFee = () => {
                                 ))}
                             </select>
                         </div>
-                        <div className="col-span-2 flex flex-row items-center w-full justify-center">
-                            <label className="text-white text-lg mr-2">Product Price:</label>
+
+                        <div className="col-span-1 md:col-span-2 flex flex-col md:flex-row items-center justify-center gap-2">
+                            <label className="text-white text-lg">Product Price:</label>
                             <span className="text-2xl font-bold text-white">${price}</span>
                         </div>
 
-                        {/* FEE RULES*/}
-                        <div className="col-span-2">
+                        {/* FEE RULES */}
+                        <div className="col-span-1 md:col-span-2">
                             <label className="text-white text-lg font-semibold">Fee Rules</label>
                             {form.feeRules.map((rule, index) => (
                                 <div key={index} className="flex flex-wrap gap-2 items-end mb-2">
                                     <div className="flex-1 min-w-[120px]">
                                         <label className="text-white">Timeframe</label>
                                         <select
-                                            name="timeframe"
                                             value={rule.timeframe}
                                             onChange={(e) => handleRuleChange(index, "timeframe", e.target.value)}
-                                            className="w-full border px-2 py-1 rounded text-white"
+                                            className="w-full border px-2 py-1 rounded text-white bg-blue-800"
                                         >
                                             <option value="">Select</option>
                                             {timeframes.map(tf => (
@@ -208,10 +245,9 @@ const SetStaffFee = () => {
                                     <div className="flex-1 min-w-[80px]">
                                         <label className="text-white">Operator</label>
                                         <select
-                                            name="operator"
                                             value={rule.operator}
                                             onChange={(e) => handleRuleChange(index, "operator", e.target.value)}
-                                            className="w-full border px-2 py-1 rounded text-white"
+                                            className="w-full border px-2 py-1 rounded text-white bg-blue-800"
                                         >
                                             <option value="">Select</option>
                                             {operators.map(op => (
@@ -234,12 +270,10 @@ const SetStaffFee = () => {
                                         </label>
                                         <input
                                             type="number"
-                                            inputMode="numeric"
                                             value={rule.fee === 0 ? "" : rule.fee}
                                             onChange={(e) => {
                                                 const value = e.target.value;
-                                                const numericValue = value === "" ? 0 : Number(value);
-                                                handleRuleChange(index, "fee", numericValue);
+                                                handleRuleChange(index, "fee", value === "" ? 0 : Number(value));
                                             }}
                                             className="w-full border px-2 py-1 rounded bg-gray-200"
                                         />
@@ -249,19 +283,19 @@ const SetStaffFee = () => {
                                         onClick={() => removeFeeRule(index)}
                                         className="bg-red-600 text-white px-2 py-1 rounded hover:bg-red-700"
                                     >
-                                        <Trash2/>
+                                        <Trash2 />
                                     </button>
                                 </div>
-
                             ))}
                             <button
                                 type="button"
                                 onClick={addFeeRule}
-                                className="text-white rounded ml-2"
+                                className="text-white ml-2"
                             >
-                                <Plus className="bg-green-600 rounded  hover:bg-green-700 " />
+                                <Plus className="bg-green-600 p-1 rounded hover:bg-green-700" />
                             </button>
                         </div>
+
                         <div>
                             <label className="text-white">Initial Date</label>
                             <input
@@ -269,7 +303,7 @@ const SetStaffFee = () => {
                                 name="startDate"
                                 value={form.startDate}
                                 onChange={handleChange}
-                                className="w-full border px-2 py-1 rounded text-white"
+                                className="w-full border px-2 py-1 rounded text-white bg-blue-800"
                             />
                         </div>
 
@@ -280,26 +314,25 @@ const SetStaffFee = () => {
                                 name="finishDate"
                                 value={form.finishDate}
                                 onChange={handleChange}
-                                className="w-full border px-2 py-1 rounded text-white"
+                                className="w-full border px-2 py-1 rounded text-white bg-blue-800"
                             />
                         </div>
                     </div>
-                    <div className="">
-                        <label className="text-white">
-                            Priority
-                        </label>
+
+                    <div>
+                        <label className="text-white">Priority</label>
                         <input
                             type="number"
-                            inputMode="numeric"
                             name="priority"
                             value={form.priority === 0 ? "" : form.priority}
                             onChange={handleChange}
                             className="w-full border px-2 py-1 rounded bg-gray-200"
                         />
                     </div>
+
                     <button
                         type="submit"
-                        className="mt-4 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+                        className="mt-4 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 w-full sm:w-auto"
                     >
                         {isEditing ? "Edit Fee" : "Create Fee"}
                     </button>
@@ -308,8 +341,7 @@ const SetStaffFee = () => {
 
             <div>
                 <h3 className="text-lg font-medium mb-2 text-white">Created Staff Fees</h3>
-                {/* Buscadores */}
-                <div className="flex gap-4 mb-4">
+                <div className="flex flex-col md:flex-row gap-4 mb-4">
                     <input
                         type="text"
                         placeholder="Search by Staff Email"
@@ -324,11 +356,18 @@ const SetStaffFee = () => {
                         onChange={(e) => setProductFilter(e.target.value)}
                         className="p-2 rounded bg-neutral-700 text-white w-full"
                     />
+                    <button
+                        onClick={() => setDuplicateModal(true)}
+                        className="bg-yellow-600 text-white px-2 py-2 rounded hover:bg-yellow-700 w-full sm:w-auto"
+                    >
+                        Duplicate Rules
+                    </button>
                 </div>
+
                 <div className="mt-4 space-y-4">
                     {filteredPayrates.map((rate) => (
                         <motion.div key={rate._id} layout className="p-4 bg-neutral-800 rounded-xl space-y-2 text-white">
-                            <div className="flex justify-between items-center">
+                            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
                                 <div>
                                     <p><strong>Staff:</strong> {rate.staffEmail}</p>
                                     <p><strong>Product:</strong> {productList.find(p => p._id === rate.productId)?.name}</p>
@@ -348,6 +387,182 @@ const SetStaffFee = () => {
                         </motion.div>
                     ))}
                 </div>
+                {duplicateModal && (
+
+                    <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex justify-center items-center">
+                        <div className="bg-blue-900 p-6 rounded-xl max-w-3xl w-full space-y-4 max-h-[90vh] overflow-y-auto">
+                            <h2 className="text-white text-2xl font-semibold text-center">Duplicate Staff Rules</h2>
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label className="text-white">Origin Staff</label>
+                                    <select
+                                        value={originStaff}
+                                        onChange={(e) => handleOriginChange(e.target.value)}
+                                        className="w-full px-2 py-1 rounded bg-blue-800 text-white"
+                                    >
+                                        <option value="">Select</option>
+                                        {auxStaffList.map(s => (
+                                            <option key={s.email} value={s.email}>{s.email}</option>
+                                        ))}
+                                    </select>
+                                </div>
+
+                                <div>
+                                    <label className="text-white">Destination Staff</label>
+                                    <select
+                                        value={destinationStaff}
+                                        onChange={(e) => setDestinationStaff(e.target.value)}
+                                        className="w-full px-2 py-1 rounded bg-blue-800 text-white"
+                                    >
+                                        <option value="">Select</option>
+                                        {auxStaffList
+                                            .filter(s => s.email !== originStaff)
+                                            .map(s => (
+                                                <option key={s.email} value={s.email}>{s.email}</option>
+                                            ))}
+                                    </select>
+                                </div>
+                            </div>
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                <div>
+                                    <label className="text-white">Start Date</label>
+                                    <input
+                                        type="date"
+                                        value={startDate}
+                                        onChange={(e) => setStartDate(e.target.value)}
+                                        className="w-full px-2 py-1 rounded bg-blue-800 text-white"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="text-white">Finish Date</label>
+                                    <input
+                                        type="date"
+                                        value={finishDate}
+                                        onChange={(e) => setFinishDate(e.target.value)}
+                                        className="w-full px-2 py-1 rounded bg-blue-800 text-white"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="text-white">Priority</label>
+                                    <input
+                                        type="number"
+                                        value={priority}
+                                        onChange={(e) => setPriority(parseInt(e.target.value))}
+                                        className="w-full px-2 py-1 rounded bg-blue-800 text-white"
+                                    />
+                                </div>
+                            </div>
+
+                            {Object.entries(tempGroupedRules).map(([productId, rules]) => {
+                                const product = productList.find(p => p._id === productId);
+                                return (
+                                    <div key={productId} className="bg-blue-800 p-4 rounded-xl mt-4 space-y-2">
+                                        <h3 className="text-white font-bold">{product?.name || productId}</h3>
+                                        {rules.map((rule, idx) => (
+                                            <div key={idx} className="flex flex-wrap items-end gap-2">
+                                                <select
+                                                    value={rule.timeframe}
+                                                    onChange={(e) => updateGroupedRule(productId, idx, "timeframe", e.target.value)}
+                                                    className="bg-blue-700 text-white px-2 py-1 rounded"
+                                                >
+                                                    {timeframes.map(tf => (
+                                                        <option key={tf.code} value={tf.code}>{tf.name}</option>
+                                                    ))}
+                                                </select>
+                                                <select
+                                                    value={rule.operator}
+                                                    onChange={(e) => updateGroupedRule(productId, idx, "operator", e.target.value)}
+                                                    className="bg-blue-700 text-white px-2 py-1 rounded"
+                                                >
+                                                    {operators.map(op => (
+                                                        <option key={op.name} value={op.name}>{op.name}</option>
+                                                    ))}
+                                                </select>
+                                                <input
+                                                    type="number"
+                                                    value={rule.value}
+                                                    onChange={(e) => updateGroupedRule(productId, idx, "value", Number(e.target.value))}
+                                                    className="px-2 py-1 rounded bg-gray-100"
+                                                />
+                                                <input
+                                                    type="number"
+                                                    value={rule.fee}
+                                                    onChange={(e) => updateGroupedRule(productId, idx, "fee", Number(e.target.value))}
+                                                    className="px-2 py-1 rounded bg-gray-100"
+                                                />
+                                                <button
+                                                    onClick={() => removeGroupedRule(productId, idx)}
+                                                    className="bg-red-600 text-white px-2 py-1 rounded hover:bg-red-700"
+                                                >
+                                                    <Trash2 size={16} />
+                                                </button>
+                                            </div>
+                                        ))}
+                                    </div>
+                                );
+                            })}
+
+                            <div className="flex justify-between mt-6">
+                                <button
+                                    onClick={() => {
+                                        setDuplicateModal(false);
+                                        setOriginStaff("");
+                                        setDestinationStaff("");
+                                        setTempGroupedRules({});
+                                    }}
+                                    className="bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700"
+                                >
+                                    Cancel
+                                </button>
+
+                                <button
+                                    onClick={async () => {
+                                        if (!destinationStaff) return;
+
+                                        for (const [productId, feeRules] of Object.entries(tempGroupedRules)) {
+                                            if (feeRules.length === 0) continue;
+
+                                            // 1. Eliminar las reglas anteriores de este staff y producto
+                                            const existing = payrates.find(
+                                                (p) => p.staffEmail === destinationStaff && p.productId === productId
+                                            );
+                                            if (existing) {
+                                                handleDelete(existing._id);
+                                            }
+
+                                            // 2. Crear nueva regla para este staff y producto
+                                            await createPayrate({
+                                                staffEmail: destinationStaff,
+                                                productId,
+                                                feeRules,
+                                                startDate,
+                                                finishDate,
+                                                priority,
+                                                currency: "USD",
+                                                userEmail: user.email,
+                                                storeId: storeId,
+                                            });
+                                        }
+
+                                        // Reset modal
+                                        setDuplicateModal(false);
+                                        setOriginStaff("");
+                                        setDestinationStaff("");
+                                        setTempGroupedRules({});
+                                        setStartDate(new Date().toISOString().split("T")[0]);
+                                        setFinishDate("");
+                                        setPriority(0);
+                                        fetchData(); // Refresca la lista principal
+                                    }}
+                                    className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
+                                >
+                                    Duplicate
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                )}
             </div>
         </div>
     );
