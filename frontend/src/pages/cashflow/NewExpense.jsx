@@ -79,6 +79,7 @@ export default function NewExpense() {
         }
         try {
             await createExpense(formData);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
             toast.success("Expense Created");
             //Reset
             setFormData({

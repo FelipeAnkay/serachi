@@ -226,7 +226,7 @@ export default function CreateService() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
-        console.log("En  handleSubmit: ", customServiceList);
+        //console.log("En  handleSubmit: ", customServiceList);
 
         try {
             for (const auxService of customServiceList) {
@@ -246,10 +246,11 @@ export default function CreateService() {
                 const service = await createService(servicePayload);
                 //console.log("Respuesta de createService es:", service);
             };
+            window.scrollTo({ top: 0, behavior: 'smooth' });
             toast.success("Services created");
             setLoading(false);
         } catch (error) {
-            console.log("Error en handleSubmit:", error);
+            //console.log("Error en handleSubmit:", error);
             toast.error("Error creating Services")
             setLoading(false)
         }

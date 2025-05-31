@@ -8,6 +8,7 @@ import { useRoomReservationServices } from "../../store/roomReservationServices"
 import { useCustomerServices } from "../../store/customerServices";
 import { useRoomServices } from "../../store/roomServices";
 import Cookies from 'js-cookie';
+import toast from "react-hot-toast";
 
 const localizer = momentLocalizer(moment);
 
@@ -94,6 +95,8 @@ export default function BookingSchedule() {
                 dateOut: new Date(editDateOut),
             };
             await updateRoomReservation(selectedReservation.id, updated);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            toast.success("Reservation updated")
             setShowModal(false);
             // Refrescar calendario si es necesario
             const monthStart = new Date(selectedDate.getFullYear(), selectedDate.getMonth(), 1);

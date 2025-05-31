@@ -56,10 +56,10 @@ export const useRoomReservationServices = create((set) => ({
 
     getAvailableRooms: async ({ dateIn, dateOut, bedsRequired, storeId }) => {
         try {
-            console.log("FB: Entre a getAvailableRooms: ", dateIn, " - ", dateOut, " - ", bedsRequired, " - ", storeId)
+            //console.log("FB: Entre a getAvailableRooms: ", dateIn, " - ", dateOut, " - ", bedsRequired, " - ", storeId)
             const formatedDateStart = formatDateISOShort(dateIn)
             const formatedDateEnd = formatDateISOShort(dateOut)
-            console.log("FB: Entre a getAvailableRooms formated: ", formatedDateStart, " - ", formatedDateEnd, " - ", bedsRequired, " - ", storeId)
+            //console.log("FB: Entre a getAvailableRooms formated: ", formatedDateStart, " - ", formatedDateEnd, " - ", bedsRequired, " - ", storeId)
             const response = await axios.post(`${URL_API}/available`, {
                 dateIn: formatedDateStart,
                 dateOut: formatedDateEnd,

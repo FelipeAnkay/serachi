@@ -130,6 +130,7 @@ export default function NewIncome() {
         try {
             //console.log("El Payload de Income es", formData)
             await createIncome(formData);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
             toast.success("Income Created");
             //Reset
             setFormData({

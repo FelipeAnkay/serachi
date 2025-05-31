@@ -66,10 +66,11 @@ export default function PendingServices() {
             //console.log("En handleEditServices el selectedService: ", selectedService);
             await updateService(selectedService._id, selectedService);
             await fetchServices();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
             toast.success("Service updated successfully");
 
         } catch (error) {
-            console.log("Error en handleEditServices");
+            //console.log("Error en handleEditServices");
             toast.error("Error editing services");
         }
     };

@@ -142,6 +142,7 @@ export default function AddItemsExperience() {
             console.log("updateExperience Payload: ", updatedExperience)
 
             await updateExperience(updatedExperience._id, updatedExperience);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
             toast.success('Experience updated');
             setSelectedExperience(null);
             setSelectedProducts([]);
@@ -156,6 +157,7 @@ export default function AddItemsExperience() {
     };
 
     const handleReset = (e) => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
         toast.success('Experience Reseted');
         setSelectedExperience(null);
         setSelectedProducts([]);

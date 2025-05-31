@@ -205,7 +205,7 @@ export default function NewQuote() {
 
     useEffect(() => {
         //console.log("Entre a UE 5");
-        console.log("F: Los datos de quote son: ", quote);
+        //console.log("F: Los datos de quote son: ", quote);
         //console.log("F: Los datos de customer son: ", customer);
         //console.log("F: Los datos de Selected Product son: ", selectedProducts);
         //console.log("F: FinalPrice es:", finalPrice)
@@ -497,9 +497,11 @@ export default function NewQuote() {
         try {
             if (!quote._id) {
                 await createQuote(quote);
+                window.scrollTo({ top: 0, behavior: 'smooth' });
                 toast.success('Quote Created');
             } else {
                 await updateQuote(quote._id, quote);
+                window.scrollTo({ top: 0, behavior: 'smooth' });
                 toast.success('Quote Updated');
                 if (quote.isConfirmed) {
                     navigate(`/confirmed-quote/`, { state: {}, replace: true });
