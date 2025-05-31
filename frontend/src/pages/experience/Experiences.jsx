@@ -69,10 +69,10 @@ const Experiences = () => {
             }
         };
         try {
-            const serviceDetail = await getServicesByDate(startDate, endDate,storeId);
+            const serviceDetail = await getServicesByDate(startDate, endDate, storeId);
             //console.log("La respuesta de getServiceById ", serviceDetail);
             if (serviceDetail.serviceList.length > 0) {
-                for (const serviceRef of serviceDetail.service) {
+                for (const serviceRef of serviceDetail.serviceList) {
                     //console.log("serviceRef: ", serviceRef)
                     if (serviceRef && serviceRef.isActive) {
                         const staffEmail = serviceRef.staffEmail;
@@ -93,6 +93,7 @@ const Experiences = () => {
             setLoading(false);
         } catch (error) {
             toast.error("Theres no services for this month")
+            console.log("El error es: ", error)
             setEvents([]);
             setLoading(false);
         }
@@ -187,53 +188,61 @@ const Experiences = () => {
             console.log("Fechas: ", firstDay, " TO ", lastDay)
             fetchExperiences(firstDay, lastDay);
         }
+        setTimeout(() => {
+            window.dispatchEvent(new Event('resize'));
+        }, 50);
     };
 
     if (loading) return <div className="text-white text-center mt-10">Loading...</div>;
     if (error) return <div className="text-red-500 text-center mt-10">{error}</div>;
 
     return (
-        <div className="flex flex-col flex-1 h-screen w-full items-center justify-center bg-blue-950 text-white overflow-hidden">
+        <div className="flex flex-col flex-1 min-h-screen w-full items-center justify-center bg-blue-950 text-white">
             <motion.div
                 initial={{ opacity: 0, scale: 2 }}
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.9 }}
                 transition={{ duration: 0.5 }}
-                className='flex flex-col w-[90%] h-[90%] max-h-[90vh] bg-gray-900 bg-opacity-80 backdrop-filter backdrop-blur-lg rounded-xl shadow-2xl border border-gray-800'
+                className="flex flex-col min-w-0 min-h-0 w-full h-full bg-background text-foreground p-4"
             >
-                <h2 className='text-3xl font-bold mb-6 text-center bg-gradient-to-r from-blue-400 to-blue-600 text-transparent bg-clip-text'>
-                    Experiences Calendar
-                </h2>
-                <div className="flex-grow p-4 overflow-hidden">
-                    <div className="h-full w-full bg-white text-black rounded-xl shadow-xl">
-                        <Calendar
-                            localizer={localizer}
-                            events={events}
-                            startAccessor="start"
-                            endAccessor="end"
-                            selectable
-                            onSelectSlot={handleSelectSlot}
-                            onSelectEvent={handleSelectEvent}
-                            onNavigate={handleNavigate}
-                            defaultView={Views.MONTH}
-                            view={view}
-                            onView={setView}
-                            date={selectedDate}
-                            style={{ height: '100%', width: '100%' }}
-                            eventPropGetter={(event) => {
-                                const color = event.staffColor || "#6b7280"; // valor por defecto (gray-500)
-                                return {
-                                    style: {
-                                        backgroundColor: color,
-                                        color: "white",
-                                        borderRadius: "0.375rem", // equivalente a rounded-md
-                                        paddingLeft: "0.5rem",    // equivalente a px-2
-                                        paddingRight: "0.5rem",
-                                    },
-                                };
-                            }}
-                        />
-                    </div>
+                <div className="flex justify-between items-center mb-4">
+                    <h2 className="text-2xl font-bold text-primary">Experiences Calendar</h2>
+                </div>
+
+                <div className="flex-1 w-full min-w-0 min-h-0 bg-white text-black rounded-xl shadow-xl overflow-hidden">
+                    <Calendar
+                        localizer={localizer}
+                        events={events}
+                        startAccessor="start"
+                        endAccessor="end"
+                        selectable
+                        onSelectSlot={handleSelectSlot}
+                        onSelectEvent={handleSelectEvent}
+                        onNavigate={handleNavigate}
+                        defaultView={Views.MONTH}
+                        view={view}
+                        onView={setView}
+                        date={selectedDate}
+                        style={{
+                            height: "100%",
+                            width: "100%",
+                            minWidth: 0,
+                            maxWidth: "100%",
+                            overflowX: "hidden",
+                        }}
+                        eventPropGetter={(event) => {
+                            const color = event.staffColor || "#6b7280";
+                            return {
+                                style: {
+                                    backgroundColor: color,
+                                    color: "white",
+                                    borderRadius: "0.375rem",
+                                    paddingLeft: "0.5rem",
+                                    paddingRight: "0.5rem",
+                                },
+                            };
+                        }}
+                    />
                 </div>
             </motion.div>
 

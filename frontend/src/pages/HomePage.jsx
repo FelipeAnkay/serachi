@@ -11,7 +11,7 @@ const HomePage = () => {
     logout();
   };
   return (
-    <div className="flex h-screen w-screen bg-blue-950 text-white">
+    <div className="flex w-full max-w-full overflow-x-hidden bg-blue-950 text-white">
       {/* Contenido principal */}
       <motion.div
         initial={{ opacity: 0, scale: 0.9 }}
