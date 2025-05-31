@@ -111,7 +111,9 @@ export const roomReservationByDates = async (req, res) => {
 export const getAvailableRooms = async (req, res) => {
     try {
         const { dateIn, dateOut, bedsRequired, storeId } = req.body;
-
+        console.log("Entre a getAvailableRooms: ", dateIn, " - ", dateOut, " - ", bedsRequired, " - ",storeId
+            
+        )
         const normalizedStoreId = storeId?.toUpperCase();
         const rooms = await Room.find({ storeId: normalizedStoreId });
         const reservations = await RoomReservation.find({

@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import axios from 'axios';
-import moment from 'moment';
+import { formatDateISO } from '../components/formatDateDisplay'
 
 const URL_API = import.meta.env.MODE === "development" ? "http://localhost:5000/api/incomes" : "/api/incomes";
 
@@ -84,12 +84,11 @@ export const useIncomeServices = create((set) => ({
             throw error;
         }
     },
-    getIncomeByDates: async (dateStart,dateEnd,storeId) => {
+    getIncomeByDates: async (start,end,storeId) => {
         set({ isLoading: true, error: null });
         try {
-            const formatDate = (date) => moment(date).format('YYYY-MM-DD HH:mm');
-            const formattedDateIn = formatDate(dateStart);
-            const formattedDateOut = formatDate(dateEnd);
+            const formattedDateIn = formatDateISO(start);
+            const formattedDateOut = formatDateISO(end);
             //console.log("F: Llamado a getStaffList");
             const response = await axios.get(`${URL_API}/dates/${formattedDateIn}/${formattedDateOut}/${storeId}`);
             //console.log("F: Respueste de getStaffList: ", response);
