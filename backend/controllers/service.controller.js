@@ -210,20 +210,20 @@ export const getServiceByDates = async (req, res) => {
 
         console.log("Entre a getServiceByDates: ", normalizedStoreId, " - ", dateIn, " - ", dateOut);
 
-        const service = await Service.find({
+        const serviceList = await Service.find({
             storeId: normalizedStoreId,
             type: "Customer",
             dateIn: { $gte: new Date(dateIn) },
             dateOut: { $lte: new Date(dateOut) },
         });
 
-        console.log("Respuesta de Service.find: ", service);
+        console.log("Respuesta de Service.find: ", serviceList);
 
-        if (!service || service.length === 0) {
+        if (!serviceList || serviceList.length === 0) {
             return res.status(200).json({ success: false, message: "No services found in date range" });
         }
 
-        res.status(200).json({ success: true, service });
+        res.status(200).json({ success: true, serviceList });
     } catch (error) {
         return res.status(400).json({ success: false, message: error.message });
     }

@@ -65,6 +65,14 @@ export function formatDateISO(dateInput) {
 }
 
 /**
+ * Format: ISO local datetime: "2025-05-26T14:30"
+ */
+export function formatDateISOShort(dateInput) {
+  if (!dateInput) return '';
+  return new Date(dateInput).toISOString().split('T')[0]; // devuelve solo YYYY-MM-DD
+}
+
+/**
  * Format: "2025-05"
  */
 export function formatYearMonth(dateInput) {

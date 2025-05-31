@@ -44,7 +44,7 @@ const PRCalculator = () => {
         setLoading(true);
         try {
             const servicesResponse = await getServicesByDate(dateIn, dateOut,storeId);
-            const services = servicesResponse.service;
+            const services = servicesResponse.serviceList;
             //console.log("services is: ", services);
             const alreadyInPayroll = services.filter(s => Array.isArray(s.payrollList) && s.payrollList.length > 0);
             setExistingPayrollServices(alreadyInPayroll);

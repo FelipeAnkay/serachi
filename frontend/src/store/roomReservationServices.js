@@ -1,7 +1,7 @@
 // roomServices.js
 import { create } from 'zustand';
 import axios from 'axios';
-import { formatDateISO } from '../components/formatDateDisplay'
+import { formatDateISOShort } from '../components/formatDateDisplay'
 
 const URL_API = import.meta.env.MODE === 'development'
     ? 'http://localhost:5000/api/reservations'
@@ -56,12 +56,13 @@ export const useRoomReservationServices = create((set) => ({
 
     getAvailableRooms: async ({ dateIn, dateOut, bedsRequired, storeId }) => {
         try {
-            //console.log("B: Entre a getAvailableRooms", dateIn, " - ", dateOut, " - ", bedsRequired, " - ", storeId)
-            const formatedDateStart = formatDateISO(dateIn)
-            const formatedDateEnd = formatDateISO(dateOut)
+            console.log("FB: Entre a getAvailableRooms: ", dateIn, " - ", dateOut, " - ", bedsRequired, " - ", storeId)
+            const formatedDateStart = formatDateISOShort(dateIn)
+            const formatedDateEnd = formatDateISOShort(dateOut)
+            console.log("FB: Entre a getAvailableRooms formated: ", formatedDateStart, " - ", formatedDateEnd, " - ", bedsRequired, " - ", storeId)
             const response = await axios.post(`${URL_API}/available`, {
-                formatedDateStart,
-                formatedDateEnd,
+                dateIn: formatedDateStart,
+                dateOut: formatedDateEnd,
                 bedsRequired,
                 storeId,
             });

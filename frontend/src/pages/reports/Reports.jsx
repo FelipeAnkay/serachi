@@ -33,9 +33,9 @@ const Reports = () => {
             getServicesByDate(dateRange.start, dateRange.end, storeId),
             getExpenseByDates(dateRange.start, dateRange.end, storeId)
         ])
-        //console.log("incomes: ", incomes);
-        //console.log("expenses: ", expenses);
-        //console.log("services: ", services);
+        console.log("incomes: ", incomes);
+        console.log("expenses: ", expenses);
+        console.log("services: ", services);
         const combinedData = combineIncomeExpenseByMonth(incomes.incomeList, expenses.expenseList);
         const combinedArray = Object.values(combinedData);
         //console.log("combinedArray: ", combinedArray)
@@ -135,18 +135,21 @@ const Reports = () => {
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0 }}
-                        className="bg-blue-800 p-4 rounded-2xl shadow-md"
+                        className="bg-blue-800 p-4 rounded-2xl shadow-md min-w-[400px] max-w-xl mx-auto"
                     >
                         <h2 className="text-xl font-semibold mb-2">Services by Staff</h2>
-                        <ResponsiveContainer width="100%" height={300}>
+                        <ResponsiveContainer width="100%" height={350}>
                             <PieChart>
                                 <Pie
                                     data={serviceData}
                                     cx="50%"
                                     cy="50%"
-                                    labelLine={false}
-                                    label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
-                                    outerRadius={120}
+                                    outerRadius={130}
+                                    labelRadius={150}
+                                    label={({ name, percent }) => {
+                                        const displayName = name.split('@')[0];
+                                        return `${displayName} ${(percent * 100).toFixed(0)}%`;
+                                    }}
                                     dataKey="value"
                                 >
                                     {serviceData.map((_, index) => (

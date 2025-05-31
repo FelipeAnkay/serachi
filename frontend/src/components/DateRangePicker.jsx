@@ -26,14 +26,15 @@ const DateRangePicker = ({ value, onChange }) => {
   return (
     <div className="relative inline-block">
       <button
+        type="button"
         onClick={() => setOpen(!open)}
-        className="flex items-center space-x-2 px-4 py-2 bg-zinc-800 text-white rounded-xl shadow-md hover:bg-zinc-700 transition"
+        className="flex items-center space-x-2 px-4 py-2 bg-white text-blue-950 rounded-xl shadow-md hover:bg-blue-300 transition"
       >
         <CalendarIcon className="w-5 h-5" />
         <span>
           {value.start && value.end
             ? `${formatDateShort(value.start)} - ${formatDateShort(value.end)}`
-            : "Select Range"}
+            : "Select Date Range"}
         </span>
       </button>
 
@@ -51,7 +52,7 @@ const DateRangePicker = ({ value, onChange }) => {
               onChange={handleSelect}
               moveRangeOnFirstSelection={false}
               ranges={range}
-              rangeColors={["#10B981"]}
+              rangeColors={["#322feb"]}
               months={1}
               direction="horizontal"
               className="bg-white text-black dark:bg-zinc-800 dark:text-white"

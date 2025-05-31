@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useIncomeServices } from "../../store/incomeServices";
 import { useExpenseServices } from "../../store/expenseServices";
 import { formatDateInput, formatDateDisplay } from '../../components/formatDateDisplay';
+import DateRangePicker from "../../components/DateRangePicker"
 
 export default function CashFlowSummary() {
     const { getExpenseByDates, updateExpense } = useExpenseServices();
@@ -39,13 +40,13 @@ export default function CashFlowSummary() {
         setSelectedItem({ type, data: { ...item } });
     };
 
-    const handleDateChange = (e) => {
-        const { name, value } = e.target;
-        setFormData((prev) => ({
+    const handleDateRangeChange = ({ start, end }) => {
+        setFormData(prev => ({
             ...prev,
-            [name]: new Date(value),
+            dateStart: start,
+            dateEnd: end
         }));
-    };
+    }
 
     useEffect(() => {
         fetchData();
@@ -96,26 +97,7 @@ export default function CashFlowSummary() {
 
                 {/* Date Filters */}
                 <div className="flex gap-4 mb-6 justify-center">
-                    <div className="flex flex-col">
-                        <label className="mb-1 text-sm">Start Date</label>
-                        <input
-                            type="date"
-                            name="dateStart"
-                            className="px-2 py-1 rounded text-white"
-                            value={formatDateInput(formData.dateStart)}
-                            onChange={handleDateChange}
-                        />
-                    </div>
-                    <div className="flex flex-col">
-                        <label className="mb-1 text-sm">End Date</label>
-                        <input
-                            type="date"
-                            name="dateEnd"
-                            className="px-2 py-1 rounded text-white"
-                            value={formatDateInput(formData.dateEnd)}
-                            onChange={handleDateChange}
-                        />
-                    </div>
+                    <DateRangePicker value={{ start: formData.dateStart, end: formData.dateEnd }} onChange={handleDateRangeChange} />
                 </div>
 
                 {/* Totals Summary */}

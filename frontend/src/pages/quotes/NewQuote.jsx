@@ -13,6 +13,7 @@ import { useParams } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import CustomerDetails from '../../components/CustomerDetail'
 import { useRoomReservationServices } from '../../store/roomReservationServices';
+import DateRangePicker from "../../components/DateRangePicker"
 
 
 export default function NewQuote() {
@@ -60,7 +61,7 @@ export default function NewQuote() {
         setQuote({
             ...quote,
             userName: user.name,
-            customerName: customer.name + (customer.lastName? " " + customer.lastName : ""),
+            customerName: customer.name + (customer.lastName ? " " + customer.lastName : ""),
         })
     };
 
@@ -74,7 +75,7 @@ export default function NewQuote() {
                 storeId: storeId,
                 isConfirmed: false,
                 isReturningCustomer: false,
-                sendEmail:true,
+                sendEmail: true,
             });
         }
         const fetchProducts = async () => {
@@ -416,7 +417,7 @@ export default function NewQuote() {
     const handleCustomerEmailSearch = async (customerEmail) => {
         //console.log("El email en handleCustomerEmailSearch es: ", customerEmail);
         try {
-            const response = await getCustomerEmail(customerEmail,storeId);
+            const response = await getCustomerEmail(customerEmail, storeId);
             const found = response.customerList;
             //console.log("F: el found es:", found);
             if (found) {
@@ -442,7 +443,7 @@ export default function NewQuote() {
                 setQuote((prev) => ({
                     ...prev,
                     customerEmail: found[0].email,
-                    customerName: found[0].name + (found[0].lastName? " " + found[0].lastName : ""),
+                    customerName: found[0].name + (found[0].lastName ? " " + found[0].lastName : ""),
                 }));
                 setIsNew(false);
                 setIsCustomerModalOpen(false);
@@ -630,13 +631,16 @@ export default function NewQuote() {
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.9 }}
                 transition={{ duration: 0.5 }}
-                className="flex flex-col w-full max-w-8xl mx-auto bg-blue-900 bg-opacity-80 backdrop-filter backdrop-blur-lg rounded-2xl shadow-2xl border border-gray-800 overflow-hidden min-h-screen"
+                className="flex flex-col w-full max-w-5xl mx-auto bg-blue-900 bg-opacity-80 backdrop-filter backdrop-blur-lg rounded-2xl shadow-2xl border border-gray-800 overflow-hidden min-h-screen"
             >
-                <h1 className="text-3xl font-bold mt-6 mb-6 text-center text-white bg-clip-text">New Quote</h1>
-                <form onSubmit={handleSubmit} className="space-y-4 border p-4 rounded-2xl shadow bg-blue ml-2 mr-2 mb-2 bg-blue-800">
-                    {/* DATOS DE CLIENTE*/}
-                    <div className='flex'>
-                        <fieldset className="border p-4 rounded-2xl w-1/2">
+                <h1 className="text-3xl font-bold mt-6 mb-6 text-center text-white">New Quote</h1>
+
+                <form onSubmit={handleSubmit} className="space-y-4 border p-4 rounded-2xl shadow bg-blue-800 mx-2 mb-2">
+                    {/* Customer + Dates */}
+                    <div className='flex flex-col gap-4 sm:flex-col lg:flex-row'>
+
+                        {/* CUSTOMER */}
+                        <fieldset className="border p-4 rounded-2xl w-full">
                             <legend className="font-semibold text-lg">Customer Details</legend>
                             <div className="flex items-center gap-2">
                                 <input
@@ -673,39 +677,31 @@ export default function NewQuote() {
                                 {!isNew && (
                                     <button
                                         type="button"
-                                        variant="outline"
                                         className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700"
                                         onClick={() => setIsCustomerModalOpen(true)}
                                     >
                                         <Contact2 />
                                     </button>
                                 )}
-                                {isCustomerModalOpen && (
-                                    <CustomerDetails
-                                        isOpen={isCustomerModalOpen}
-                                        onClose={() => setIsCustomerModalOpen(false)}
-                                        customer={customer}
-                                        setCustomer={setCustomer}
-                                        onSave={handleSaveClient}
-                                    />
-                                )}
                             </div>
-                            <div className='flex flex-row justify-center text-center mt-2'>
-                                Number of people:
-                                <div className="top-2 right-2 gap-2 items-center">
+
+                            {/* Number of people */}
+                            <div className='flex flex-col sm:flex-row items-center justify-center gap-2 mt-4'>
+                                <span className="text-sm">Number of people:</span>
+                                <div className="flex items-center gap-2">
                                     <button
                                         type="button"
                                         onClick={() => setNumberOfPeople(prev => Math.max(1, prev - 1))}
-                                        className={`${isPeopleLock ? 'bg-gray-500' : 'bg-red-500 hover:bg-red-600'} text-white px-2 rounded  ml-2`}
+                                        className={`${isPeopleLock ? 'bg-gray-500' : 'bg-red-500 hover:bg-red-600'} text-white px-2 rounded`}
                                         disabled={isPeopleLock || numberOfPeople <= 1}
                                     >
                                         -
                                     </button>
-                                    <span className="text-sm font-bold text-white ml-2 mr-2">{numberOfPeople}</span>
+                                    <span className="text-sm font-bold text-white">{numberOfPeople}</span>
                                     <button
                                         type="button"
                                         onClick={() => setNumberOfPeople(prev => prev + 1)}
-                                        className={`${isPeopleLock ? 'bg-gray-500' : 'bg-green-500 hover:bg-green-600'} text-white px-2 rounded `}
+                                        className={`${isPeopleLock ? 'bg-gray-500' : 'bg-green-500 hover:bg-green-600'} text-white px-2 rounded`}
                                         disabled={isPeopleLock}
                                     >
                                         +
@@ -713,53 +709,36 @@ export default function NewQuote() {
                                 </div>
                             </div>
                         </fieldset>
-                        {/* DATOS DE COTIZACION*/}
-                        <fieldset className="border rounded-2xl w-1/2 flex flex-col pl-4 ml-4 justify-center">
+
+                        {/* DATES */}
+                        <fieldset className="border rounded-2xl w-full px-6 py-4">
                             <legend className="font-semibold text-lg">Dates</legend>
-                            <div className='flex flex-row'>
-                                <div className="w-1/2">
-                                    <label>Check-in</label>
-                                    <input type="datetime-local"
-                                        name="dateIn"
-                                        value={formatDateInput(quote.dateIn)}
-                                        onChange={handleQuoteChange}
-                                        className="w-full border px-2 py-1 rounded bg-white text-blue-950"
-                                        min={new Date().toISOString().split('T')[0]}
-                                        onKeyDown={(e) => {
-                                            if (e.key === 'Enter') {
-                                                e.preventDefault();
-                                                // Add logic if we want to do something when enter is pressed
+                            <div className="flex flex-col items-center text-center">
+                                <div className="w-full max-w-md mb-4">
+                                    <label className="mb-2 block font-medium text-center">
+                                        Date Range (Check-in / Check-out)
+                                    </label>
+                                    <div className="flex justify-center">
+                                        <DateRangePicker
+                                            value={{ start: quote.dateIn, end: quote.dateOut }}
+                                            onChange={({ start, end }) =>
+                                                setQuote((prev) => ({
+                                                    ...prev,
+                                                    dateIn: start,
+                                                    dateOut: end
+                                                }))
                                             }
-                                        }}
-                                    />
+                                        />
+                                    </div>
                                 </div>
-                                <div className="w-1/2 pl-2 pr-2">
-                                    <label>Check-out</label>
-                                    <input type="datetime-local"
-                                        name="dateOut"
-                                        value={formatDateInput(quote.dateOut)}
-                                        onChange={handleQuoteChange}
-                                        className={`w-full border px-2 py-1 rounded text-blue-950 ${!quote.dateIn ? 'bg-gray-400' : 'bg-white'}`}
-                                        min={quote.dateIn || new Date().toISOString().split('T')[0]}
-                                        disabled={!quote.dateIn}
-                                        onKeyDown={(e) => {
-                                            if (e.key === 'Enter') {
-                                                e.preventDefault();
-                                                // Add logic if we want to do something when enter is pressed
-                                            }
-                                        }}
-                                    />
-                                </div>
-                            </div>
-                            <div className='flex justify-center mt-1'>
-                                <p className='text-sm'> * Rooms will not be visible until you pick dates</p>
+                                <p className="text-sm mt-2">* Rooms will not be visible until you pick dates</p>
                             </div>
                         </fieldset>
                     </div>
                     {/* DATOS DE PRODUCTOS Y PRECIOS */}
-                    <div className="flex flex-row gap-6">
+                    <div className="flex flex-col gap-4 sm:flex-col lg:flex-row">
                         {/* DATOS DE PRODUCTOS y ROOMS*/}
-                        <div className='w-3/4'>
+                        <div className='w-full lg:w-3/4'>
                             <fieldset className="flex-grow space-y-4 border rounded-2xl p-4">
                                 <legend className="text-2xl font-bold">Product List</legend>
                                 <input
@@ -963,7 +942,7 @@ export default function NewQuote() {
                                                                             !room.availableEveryNight &&
                                                                             !roomStartDates[room._id]
                                                                             ? "bg-gray-400 cursor-not-allowed"
-                                                                            : "bg-green-600 hover:bg-green-700 text-white"
+                                                                            : "bg-green-600 hover:bg-green-700 text-white mr-5"
                                                                             }`}
                                                                         disabled={
                                                                             qty >= maxQty ||
@@ -1018,13 +997,13 @@ export default function NewQuote() {
                             )}
                         </div>
                         {/* Price Column */}
-                        <div className='w-1/4'>
+                        <div className='w-full lg:w-1/4'>
                             <fieldset className="h-full space-y-4 rounded-2xl border p-4 flex flex-col">
                                 <legend className="text-2xl font-bold">Pricing</legend>
                                 {/* Detalle de productos y rooms en la cotización */}
                                 <div>
                                     <div className='flex flex-col'>
-                                        <h2 className='text-lg font-bold text-center'>Selected Products and Rooms</h2>
+                                        <h2 className='text-lg font-bold text-center'>Quote Detail</h2>
                                     </div>
                                     {(!quote.productList) ? (
                                         <p className='mt-5'></p>
@@ -1114,15 +1093,14 @@ export default function NewQuote() {
                         </div>
                     </div>
                     {/* Other Details  Fieldset */}
-                    <fieldset className="w-full rounded-2xl border p-4 space-y-4">
-
+                    <fieldset className="flex flex-col gap-4 border rounded-2xl p-4">
                         <legend className="text-2xl font-bold">Other Details</legend>
 
-                        {/* Fila principal con Source y Tags */}
-                        <div className="flex gap-4">
+                        {/* Source y Tags apilados en mobile */}
+                        <div className="flex flex-col lg:flex-row gap-4 w-full">
                             {/* Source */}
-                            <div className="w-1/2 space-y-4">
-                                <div className="ml-4 mr-4">
+                            <div className="flex flex-col gap-4 w-full">
+                                <div>
                                     <label className="block text-sm font-medium">Source</label>
                                     <select
                                         className="w-full border border-gray-300 rounded px-3 py-2 mt-1"
@@ -1148,7 +1126,7 @@ export default function NewQuote() {
                                 </div>
 
                                 {quote.source === 'Partner' && (
-                                    <div className="ml-4 mr-4">
+                                    <div>
                                         <label className="block text-sm font-medium text-white">Partner</label>
                                         <select
                                             className="w-full mt-1 p-2 border border-gray-300 rounded"
@@ -1171,7 +1149,7 @@ export default function NewQuote() {
                                 )}
 
                                 {quote.source === 'Other' && (
-                                    <div className="ml-4 mr-4">
+                                    <div>
                                         <label className="block text-sm font-medium text-white">Specify Source</label>
                                         <input
                                             type="text"
@@ -1184,63 +1162,31 @@ export default function NewQuote() {
                                                     customSource: e.target.value,
                                                 }))
                                             }
-                                            onKeyDown={(e) => {
-                                                if (e.key === 'Enter') {
-                                                    e.preventDefault();
-                                                    // Add logic if we want to do something when enter is pressed
-                                                }
-                                            }}
                                         />
                                     </div>
                                 )}
                             </div>
 
                             {/* Tags */}
-                            <fieldset className="w-1/2 space-y-4 rounded-2xl border p-4">
+                            <fieldset className="w-full rounded-2xl border p-4 space-y-4">
                                 <legend className="font-bold">Tags</legend>
-
-                                <div className="flex gap-2">
+                                <div className="flex flex-col sm:flex-row gap-2 w-full">
                                     <input
                                         type="text"
                                         placeholder="Name"
-                                        className="w-1/2 p-2 border border-gray-300 rounded"
+                                        className="w-full sm:w-1/2 p-2 border border-gray-300 rounded"
                                         value={newTag.name}
                                         onChange={(e) => setNewTag((prev) => ({ ...prev, name: e.target.value }))}
-                                        onKeyDown={(e) => {
-                                            if (e.key === 'Enter') {
-                                                e.preventDefault();
-                                                if (newTag.name || newTag.code) {
-                                                    setQuote((prev) => ({
-                                                        ...prev,
-                                                        tag: [...(prev.tag || []), newTag],
-                                                    }));
-                                                    setNewTag({ name: '', code: '' });
-                                                }
-                                            }
-                                        }}
                                     />
                                     <input
                                         type="text"
                                         placeholder="Code"
-                                        className="w-1/2 p-2 border border-gray-300 rounded"
+                                        className="w-full sm:w-1/2 p-2 border border-gray-300 rounded"
                                         value={newTag.code}
                                         onChange={(e) => setNewTag((prev) => ({ ...prev, code: e.target.value }))}
-                                        onKeyDown={(e) => {
-                                            if (e.key === 'Enter') {
-                                                e.preventDefault();
-                                                if (newTag.name || newTag.code) {
-                                                    setQuote((prev) => ({
-                                                        ...prev,
-                                                        tag: [...(prev.tag || []), newTag],
-                                                    }));
-                                                    setNewTag({ name: '', code: '' });
-                                                }
-                                            }
-                                        }}
                                     />
                                     <button
                                         type="button"
-                                        className=""
                                         onClick={() => {
                                             if (newTag.name || newTag.code) {
                                                 setQuote((prev) => ({
@@ -1251,7 +1197,7 @@ export default function NewQuote() {
                                             }
                                         }}
                                     >
-                                        <CirclePlus className='hover:bg-green-500 rounded-4xl' />
+                                        <CirclePlus className="hover:bg-green-500 rounded-4xl" />
                                     </button>
                                 </div>
 
@@ -1278,103 +1224,57 @@ export default function NewQuote() {
                             </fieldset>
                         </div>
 
-                        {/* Botón  y switch centrado */}
-                        <div className="flex flex-col items-center pt-4 space-y-4">
-                            <div className="flex">
-                                <div className="ml-2 mr-2 flex flex-col items-center gap-4 border rounded-2xl">
-                                    <label className="text-sm font-medium text-white mt-2 ml-2 mr-2">Is Confirmed?</label>
-
-                                    {/* Switch */}
-                                    <label className="relative inline-flex items-center cursor-pointer">
+                        {/* Toggles */}
+                        <div className="flex flex-col md:flex-row gap-4 w-full items-center justify-center mt-4">
+                            {[{
+                                label: "Is Confirmed?",
+                                value: quote.isConfirmed,
+                                onChange: (v) => setQuote((prev) => ({ ...prev, isConfirmed: v })),
+                                id: "isConfirmed"
+                            }, {
+                                label: "Is a returning customer?",
+                                value: quote.isReturningCustomer,
+                                onChange: (v) => setQuote((prev) => ({ ...prev, isReturningCustomer: v })),
+                                id: "isReturningCustomer"
+                            }, {
+                                label: "Send quote email?",
+                                value: quote.sendEmail,
+                                onChange: (v) => setQuote((prev) => ({ ...prev, sendEmail: v })),
+                                id: "sendEmail"
+                            }].map(({ label, value, onChange, id }) => (
+                                <div key={id} className="flex flex-col items-center border rounded-2xl px-4 py-2 w-full md:w-1/3">
+                                    <label className="text-sm font-medium text-white">{label}</label>
+                                    <label className="relative inline-flex items-center cursor-pointer mt-2 mb-1">
                                         <input
                                             type="checkbox"
-                                            id="isConfirmed"
                                             className="sr-only peer"
-                                            checked={quote.isConfirmed}
-                                            onChange={(e) =>
-                                                setQuote((prev) => ({
-                                                    ...prev,
-                                                    isConfirmed: e.target.checked,
-                                                }))
-                                            }
+                                            checked={value}
+                                            onChange={(e) => onChange(e.target.checked)}
                                         />
-                                        {/* Track */}
                                         <div className="w-11 h-6 bg-gray-300 rounded-full peer-checked:bg-green-600 transition-colors duration-300"></div>
-
-                                        {/* Slider */}
                                         <div className="absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full transition-transform duration-300 peer-checked:translate-x-5 pointer-events-none"></div>
                                     </label>
-                                    <span className="text-sm text-white">{quote.isConfirmed ? "Yes" : "No"}</span>
+                                    <span className="text-sm">{value ? "Yes" : "No"}</span>
                                 </div>
-                                <div className="ml-2 mr-2 flex flex-col items-center gap-4 border rounded-2xl">
-                                    <label className="text-sm font-medium text-white mt-2 ml-2 mr-2">Is a returning customer?</label>
+                            ))}
+                        </div>
 
-                                    {/* Switch */}
-                                    <label className="relative inline-flex items-center cursor-pointer">
-                                        <input
-                                            type="checkbox"
-                                            id="isReturningCustomer"
-                                            className="sr-only peer"
-                                            checked={quote.isReturningCustomer}
-                                            onChange={(e) =>
-                                                setQuote((prev) => ({
-                                                    ...prev,
-                                                    isReturningCustomer: e.target.checked,
-                                                }))
-                                            }
-                                        />
-                                        {/* Track */}
-                                        <div className="w-11 h-6 bg-gray-300 rounded-full peer-checked:bg-green-600 transition-colors duration-300"></div>
-
-                                        {/* Slider */}
-                                        <div className="absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full transition-transform duration-300 peer-checked:translate-x-5 pointer-events-none"></div>
-                                    </label>
-
-                                    <span className="text-sm text-white">{quote.isReturningCustomer ? "Yes" : "No"}</span>
-                                </div>
-                                <div className="ml-2 mr-2 flex flex-col items-center gap-4 border rounded-2xl">
-                                    <label className="text-sm font-medium text-white mt-2 ml-2 mr-2">Send quote email?</label>
-
-                                    {/* Switch */}
-                                    <label className="relative inline-flex items-center cursor-pointer">
-                                        <input
-                                            type="checkbox"
-                                            id="sendEmail"
-                                            className="sr-only peer"
-                                            checked={quote.sendEmail}
-                                            onChange={(e) =>
-                                                setQuote((prev) => ({
-                                                    ...prev,
-                                                    sendEmail: e.target.checked,
-                                                }))
-                                            }
-                                        />
-                                        {/* Track */}
-                                        <div className="w-11 h-6 bg-gray-300 rounded-full peer-checked:bg-green-600 transition-colors duration-300"></div>
-
-                                        {/* Slider */}
-                                        <div className="absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full transition-transform duration-300 peer-checked:translate-x-5 pointer-events-none"></div>
-                                    </label>
-                                    <span className="text-sm text-white mb-2">{quote.sendEmail ? "Yes" : "No"}</span>
-                                </div>
-                            </div>
-                            <div>
-                                <button type="submit" className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
-                                    Send Quote
-                                </button>
-                                <button
-                                    type="button"
-                                    className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-700 ml-10"
-                                    onClick={() => handleReset()}
-                                >
-                                    New Quote
-                                </button>
-                            </div>
-
+                        {/* Botones */}
+                        <div className="flex flex-col sm:flex-row gap-4 mt-6 justify-center">
+                            <button type="submit" className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
+                                Send Quote
+                            </button>
+                            <button
+                                type="button"
+                                className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-700"
+                                onClick={handleReset}
+                            >
+                                New Quote
+                            </button>
                         </div>
                     </fieldset>
-                </form>
-            </motion.div>
-        </div>
+                </form >
+            </motion.div >
+        </div >
     );
 }

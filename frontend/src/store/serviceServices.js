@@ -126,7 +126,7 @@ export const useServiceServices = create((set) => ({
 
             const response = await axios.get(`${URL_API}/dates/${storeId}/${formattedDateIn}/${formattedDateOut}`);
 
-            set({ service: response.data.service, isLoading: false });
+            set({ serviceList: response.data.serviceList, isLoading: false });
             return response.data;
         } catch (error) {
             set({ error: error.response?.data?.message || "Error getting services", isLoading: false });

@@ -9,7 +9,7 @@ import { useParams } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import CustomerDetails from '../../components/CustomerDetail'
 import { useRoomReservationServices } from '../../store/roomReservationServices';
-import { formatDateDisplay, formatDateShort, formatDateInput, formatDateISO } from '../../components/formatDateDisplay';
+import DateRangePicker from "../../components/DateRangePicker"
 
 
 export default function CreateReservation() {
@@ -67,13 +67,17 @@ export default function CreateReservation() {
                 return;
             }
             try {
-                const response = await getAvailableRooms({
+
+                const availablePayload = {
                     dateIn: reservation.dateIn,
                     dateOut: reservation.dateOut,
                     bedsRequired: numberOfPeople,
                     storeId,
-                });
+                }
+                console.log("availablePayload: ", availablePayload)
+                const response = await getAvailableRooms(availablePayload);
                 const availableRooms = response.availableRooms || [];
+                console.log("availableRooms: ", availableRooms)
                 setRooms(availableRooms);
 
                 const range = [];
@@ -151,7 +155,7 @@ export default function CreateReservation() {
 
     useEffect(() => {
         //console.log("Entre a UE 5");
-        console.log("F: Los datos de reservation son: ", reservation);
+        //console.log("F: Los datos de reservation son: ", reservation);
         //console.log("F: Los datos de customer son: ", customer);
         //console.log("F: Los datos de Selected Product son: ", selectedProducts);
         //console.log("F: FinalPrice es:", finalPrice)
@@ -222,14 +226,6 @@ export default function CreateReservation() {
             roomFinalPrice: total
         }));
         return selected;
-    };
-
-    const handleReservationChange = (e) => {
-        const { name, value, type, checked } = e.target;
-        setReservation((prev) => ({
-            ...prev,
-            [name]: value,
-        }));
     };
 
     const handleCustomerEmailSearch = async (customerEmail) => {
@@ -323,15 +319,15 @@ export default function CreateReservation() {
                 userEmail: reservation.userEmail,
                 isPaid: reservation.isPaid,
             }));
-            console.log("El payload es: ", reservationPayloadList)
+            //console.log("El payload es: ", reservationPayloadList)
             for (const res of reservationPayloadList) {
-                //await createRoomReservation(res);
+                await createRoomReservation(res);
             }
 
             toast.success('Reservation(s) created successfully');
 
             // Opcional: resetear formulario
-            //handleReset();
+            handleReset();
 
         } catch (err) {
             toast.error('Error saving the reservation');
@@ -426,13 +422,13 @@ export default function CreateReservation() {
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.9 }}
                 transition={{ duration: 0.5 }}
-                className="flex flex-col w-full max-w-8xl mx-auto bg-blue-900 bg-opacity-80 backdrop-filter backdrop-blur-lg rounded-2xl shadow-2xl border border-gray-800 overflow-hidden min-h-screen"
+                className="flex flex-col w-max max-w-8xl mx-auto bg-blue-900 bg-opacity-80 backdrop-filter backdrop-blur-lg rounded-2xl shadow-2xl border border-gray-800 overflow-hidden min-h-screen"
             >
                 <h1 className="text-3xl font-bold mt-6 mb-6 text-center text-white bg-clip-text">New Reservation</h1>
                 <form onSubmit={handleSubmit} className="space-y-4 border p-4 rounded-2xl shadow bg-blue ml-2 mr-2 mb-2 bg-blue-800">
                     {/* DATOS DE CLIENTE*/}
                     <div className="flex flex-col lg:flex-row gap-1">
-                        <fieldset className="border p-4 rounded-2xl w-full lg:w-1/2">
+                        <fieldset className="border p-4 rounded-2xl w-full">
                             <legend className="font-semibold text-lg">Customer Details</legend>
                             <div className="flex items-center gap-2">
                                 <input
@@ -510,45 +506,29 @@ export default function CreateReservation() {
                             </div>
                         </fieldset>
                         {/* DATOS DE COTIZACION*/}
-                        <fieldset className="border rounded-2xl w-full lg:w-1/2 flex flex-col pl-4  justify-center">
-                            <legend className="font-semibold text-lg">Dates</legend>
-                            <div className='flex flex-row'>
-                                <div className="w-1/2">
-                                    <label>Check-in</label>
-                                    <input type="datetime-local"
-                                        name="dateIn"
-                                        value={formatDateISO(reservation.dateIn)}
-                                        onChange={handleReservationChange}
-                                        className="w-full border px-2 py-1 rounded bg-white text-blue-950"
-                                        min={new Date().toISOString().split('T')[0]}
-                                        onKeyDown={(e) => {
-                                            if (e.key === 'Enter') {
-                                                e.preventDefault();
-                                                // Add logic if we want to do something when enter is pressed
+                        <fieldset className="border rounded-2xl w-full px-6 py-4">
+                            <legend className="font-semibold text-lg px-2">Dates</legend>
+
+                            <div className="flex flex-col items-center text-center">
+                                <div className="w-full max-w-md mb-4">
+                                    <label className="mb-2 block font-medium text-center">
+                                        Date Range (Check-in / Check-out)
+                                    </label>
+                                    <div className="flex justify-center">
+                                        <DateRangePicker
+                                            value={{ start: reservation.dateIn, end: reservation.dateOut }}
+                                            onChange={({ start, end }) =>
+                                                setReservation((prev) => ({
+                                                    ...prev,
+                                                    dateIn: start,
+                                                    dateOut: end,
+                                                }))
                                             }
-                                        }}
-                                    />
+                                        />
+                                    </div>
                                 </div>
-                                <div className="w-1/2 pl-2 pr-2">
-                                    <label>Check-out</label>
-                                    <input type="datetime-local"
-                                        name="dateOut"
-                                        value={formatDateISO(reservation.dateOut)}
-                                        onChange={handleReservationChange}
-                                        className={`w-full border px-2 py-1 rounded text-blue-950 ${!reservation.dateIn ? 'bg-gray-400' : 'bg-white'}`}
-                                        min={reservation.dateIn || new Date().toISOString().split('T')[0]}
-                                        disabled={!reservation.dateIn}
-                                        onKeyDown={(e) => {
-                                            if (e.key === 'Enter') {
-                                                e.preventDefault();
-                                                // Add logic if we want to do something when enter is pressed
-                                            }
-                                        }}
-                                    />
-                                </div>
-                            </div>
-                            <div className='flex justify-center mt-1'>
-                                <p className='text-sm'> * Rooms will not be visible until you pick dates</p>
+
+                                <p className="text-sm mt-2">* Rooms will not be visible until you pick dates</p>
                             </div>
                         </fieldset>
                     </div>
@@ -642,7 +622,7 @@ export default function CreateReservation() {
                                                                     </div>
                                                                 )}
                                                             </div>
-                                                            <div className='text-center w-full sm:w-1/4 mt-4 sm:mt-0'>
+                                                            <div className='text-center w-full sm:w-1/4 mt-4 sm:mt-0 mr-3'>
                                                                 Nights:
                                                                 <div className="flex items-center justify-center gap-2">
                                                                     <button
