@@ -29,8 +29,14 @@ const userSchema = new mongoose.Schema({
         type: Boolean,
         default: true
     },
-    roleList:[{
-        type:String,
+    role:[{
+        _id: false,
+        storeId:{
+            type: String
+        },
+        roleId:{
+            type: String
+        }
     }],
     resetPasswordToken:String,
     resetPasswordExpiresAt:Date,

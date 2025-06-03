@@ -39,10 +39,10 @@ const SetProduct = () => {
         const fetchTypes = async () => {
             try {
                 const auxTypeList = await getTypeByCategory("PRODUCT", storeId);
-                console.log("F: Respuesta de getTypeByCategory:", auxTypeList);
+                //console.log("F: Respuesta de getTypeByCategory:", auxTypeList);
                 setTypeList(auxTypeList.typeList || []);
             } catch (error) {
-                console.error('Error fetching product list:', error);
+                console.error('Error fetching product list:');
             } finally {
                 setLoading(false);
             }
@@ -55,7 +55,7 @@ const SetProduct = () => {
     }, []);
 
     useEffect(() => {
-        console.log("Cambio el TypeList: ", typeList)
+        //console.log("Cambio el TypeList: ", typeList)
     }, [typeList]);
 
     const openNewProductModal = () => {
@@ -79,7 +79,7 @@ const SetProduct = () => {
 
     const handleSave = async () => {
         try {
-            console.log("F: Voy a crear el siguiente producto: ", productData)
+            //console.log("F: Voy a crear el siguiente producto: ", productData)
             const payload = {
                 ...productData,
             };
@@ -95,7 +95,7 @@ const SetProduct = () => {
             closeModal();
             window.location.reload();
         } catch (error) {
-            console.error('Error saving product:', error);
+            console.error('Error saving product:');
             toast.error('Error saving product');
         }
     };
@@ -107,7 +107,7 @@ const SetProduct = () => {
             closeModal();
             window.location.reload();
         } catch (error) {
-            console.error('Error removing product:', error);
+            console.error('Error removing product:');
             toast.error('Error removing product');
         }
     };
@@ -128,7 +128,7 @@ const SetProduct = () => {
             toast.success(`Product "${duplicatedProduct.name}" duplicated successfully.`);
             window.location.reload();
         } catch (error) {
-            console.error('Error duplicating product:', error);
+            console.error('Error duplicating product:');
             toast.error('Error duplicating product');
         }
     };

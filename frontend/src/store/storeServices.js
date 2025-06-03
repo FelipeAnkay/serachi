@@ -8,16 +8,17 @@ axios.defaults.withCredentials = true;
 
 
 export const useStoreServices = create((set) => ({
-    name:null,
+    name: null,
     mainEmail: null,
-    storeId:null,
-    address:null,
-    phone:null,
-    userList:null,
-    timezone:null,
-    isActive:null,
-    timezone:null,
-    storeList:null,
+    storeId: null,
+    address: null,
+    phone: null,
+    userList: null,
+    timezone: null,
+    isActive: null,
+    timezone: null,
+    storeList: null,
+    userList: null,
     createStore: async (storeData) => {
         set({ isLoading: true, error: null });
         try {
@@ -30,8 +31,8 @@ export const useStoreServices = create((set) => ({
             throw error;
         }
     },
-    
-    updatStore: async (id,updatedVars) => {
+
+    updateStore: async (storeId, updatedVars) => {
         set({ isLoading: true, error: null });
         try {
             delete updatedVars._id;;
@@ -42,8 +43,9 @@ export const useStoreServices = create((set) => ({
                 ...updatedVars
             });
             */
+           console.log("updateStore: ", updatedVars);
             const response = await axios.post(`${URL_API}/update`, {
-                id: id,
+                storeId: storeId,
                 ...updatedVars
             });
             //console.log("F: Respueste de updateStaff: ", response);
@@ -60,7 +62,7 @@ export const useStoreServices = create((set) => ({
             //console.log("F: Llamado a getStoreById");
             const response = await axios.get(`${URL_API}/get/${id}`);
             //console.log("F: Respueste de getStoreById: ", response);
-            set({ storeList: response.data.storeList, isLoading:false });
+            set({ storeList: response.data.storeList, isLoading: false });
             return response.data;
         } catch (error) {
             set({ error: error.response.data.message || "Error getting quotes", isLoading: false });
@@ -73,11 +75,11 @@ export const useStoreServices = create((set) => ({
             //console.log("F: Llamado a getStoreById");
             const response = await axios.get(`${URL_API}/users/${storeId}`);
             //console.log("F: Respueste de getStoreById: ", response);
-            set({ storeList: response.data.storeList, isLoading:false });
+            set({ userList: response.data.userList, isLoading: false });
             return response.data;
         } catch (error) {
             set({ error: error.response.data.message || "Error getting quotes", isLoading: false });
             throw error;
         }
-    },
+    }
 }))

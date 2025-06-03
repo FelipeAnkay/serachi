@@ -1,8 +1,8 @@
 import {
     Banknote, BanknoteArrowDown, Bed, BedDouble, BookMarked, BookOpenCheck, Boxes, Calculator, CalendarCheck,
     CalendarHeart, CalendarPlus2, ChartColumnIncreasing, ChartNoAxesCombined, ChevronDown, CircleUser, Contact, DollarSign, HandCoins, Handshake, Home,
-    MapPinCheckInside, PiggyBank, Receipt, Scale, Settings, ShieldUser, Ship, ShoppingBasket, Store,
-    TicketCheck, Truck, Wallet
+    MapPinCheckInside, PiggyBank, Receipt, Scale, Settings, ShieldCheck, ShieldUser, Ship, ShoppingBasket, Store,
+    TicketCheck, Truck, Wallet, Menu
 } from "lucide-react";
 
 import logo from "../../public/Serachi_logo-nobg.png";
@@ -78,6 +78,7 @@ const menuItems = [
             { to: "/set-users", label: "Users", icon: <ShieldUser /> },
             { to: "/set-staff", label: "Staff", icon: <Contact /> },
             { to: "/set-staff-rates", label: "Staff Fees", icon: <Banknote /> },
+            { to: "/set-roles", label: "Roles", icon: <ShieldCheck /> },
             { to: "/set-customer", label: "Customers", icon: <CircleUser /> },
             { to: "/set-rooms", label: "Rooms", icon: <Bed /> },
             { to: "/set-products", label: "Products", icon: <Boxes /> },
@@ -88,7 +89,7 @@ const menuItems = [
     }
 ];
 
-const LeftMenu = ({ show }) => {
+const LeftMenu = ({ show, setShow }) => {
     const [openMenus, setOpenMenus] = useState({});
     const { logout } = useAuthStore();
 
@@ -103,47 +104,67 @@ const LeftMenu = ({ show }) => {
     };
 
     return (
-        <div className={show ? "h-screen w-64 bg-gray-900/30 text-white p-4 ease-in duration-300 ml-0 overflow-y-auto" : "h-screen w-0 overflow-hidden ease-out duration-300"}>
-            <div className="flex flex-col items-center justify-center mb-6">
-                <img src={logo} alt="logo" className="w-20 h-20" />
-                <h2 className="text-xl font-bold text-center">Serachi</h2>
+        <div
+            onMouseEnter={() => setShow(true)}
+            onMouseLeave={() => setShow(false)}
+            className={`h-screen ${show ? "w-64" : "w-16"} bg-gray-900/30 text-white transition-all duration-300 ease-in-out overflow-y-auto flex flex-col`}
+        >
+            <div className="flex items-center justify-between p-4">
+                {show && (
+                    <>
+                        <img src={logo} alt="logo" className="w-10 h-10" />
+                        <h2 className="text-xl font-bold">Serachi</h2>
+                    </>
+                )}
+                <Menu onClick={() => setShow(!show)} className="cursor-pointer" />
             </div>
 
-            <ul className="space-y-3">
-                <li className="px-4 py-2 rounded-lg hover:bg-blue-700">
-                    <Link to="/" className="flex items-center gap-2"><Home />Home</Link>
+            <ul className="space-y-2 px-2">
+                <li className="px-2 py-2 rounded-lg hover:bg-blue-700">
+                    <Link to="/" className="flex items-center gap-2"><Home />{show && "Home"}</Link>
                 </li>
 
                 {menuItems.map(({ label, icon, key, children }) => (
-                    <div key={key} className="px-4 py-2 block rounded-lg hover:bg-blue-700 transition delay-200">
-                        <li className="rounded-lg flex gap-2 cursor-pointer" onClick={() => toggleMenu(key)}>
+                    <div key={key} className="px-2 py-1 rounded-lg hover:bg-blue-700 transition-all">
+                        <li
+                            className="flex items-center gap-2 cursor-pointer"
+                            onClick={() => {
+                                // Expandir menú si está colapsado en pantallas pequeñas
+                                if (window.innerWidth < 768 && !show) {
+                                    setShow(true);
+                                }
+                                toggleMenu(key);
+                            }}
+                        >
                             {icon}
-                            <span>{label}</span>
-                            <ChevronDown className={openMenus[key] ? "rotate-180 transition-transform" : "transition-transform"} />
+                            {show && <span>{label}</span>}
+                            {show && <ChevronDown className={`${openMenus[key] ? "rotate-180" : ""} transition-transform ml-auto`} />}
                         </li>
-                        <div className={openMenus[key]
-                            ? "w-full py-4 px-5 transition ease-out duration-100 transform opacity-100 scale-100 hover:bg-blue-600 rounded-lg"
-                            : "transform h-0 scale-95 transition ease-in duration-75 overflow-hidden"}>
-                            {children.map(({ to, label, icon }) => (
-                                <li key={to} className="hover:bg-blue-500 rounded-lg flex">
-                                    <Link to={to} className="flex items-center gap-2 py-1">
-                                        {icon}{label}
-                                    </Link>
-                                </li>
-                            ))}
-                        </div>
+                        {show && openMenus[key] && (
+                            <div className="mt-2 ml-4 space-y-1">
+                                {children.map(({ to, label, icon }) => (
+                                    <li key={to} className="hover:bg-blue-500 rounded-lg">
+                                        <Link to={to} className="flex items-center gap-2 py-1 px-2">
+                                            {icon}{label}
+                                        </Link>
+                                    </li>
+                                ))}
+                            </div>
+                        )}
                     </div>
                 ))}
             </ul>
 
-            <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={handleLogout}
-                className='mt-5 w-full py-3 px-4 bg-gradient-to-r from-blue-500 to-blue-600 text-white font-bold rounded-lg shadow-lg hover:from-blue-600 hover:to-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-gray-900'
-            >
-                Logout
-            </motion.button>
+            {show && (
+                <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={handleLogout}
+                    className='mt-5 mx-4 py-2 px-4 bg-gradient-to-r from-blue-500 to-blue-600 text-white font-bold rounded-lg shadow-lg hover:from-blue-600 hover:to-blue-700'
+                >
+                    Logout
+                </motion.button>
+            )}
         </div>
     );
 };
