@@ -88,7 +88,7 @@ export const useSupplierServices = create((set) => ({
                 email: email,
             });
             //console.log("F: Respueste de updateStaff: ", response);
-            set({ supplierList: response.data.supplierList, isLoading: false });
+            //set({ supplierList: response.data.supplier, isLoading: false });
             return response.data;
         } catch (error) {
             set({ error: error || "Error updating supplier", isLoading: false });
