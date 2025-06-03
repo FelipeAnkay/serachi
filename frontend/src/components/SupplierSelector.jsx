@@ -52,6 +52,16 @@ export default function SupplierSelector({ value, onChange, storeId }) {
             setShowForm(false);
         }
     };
+    const handleCancel = () => {
+        setNewSupplier({
+            name: '',
+            email: '',
+            phone: '',
+            country: '',
+            nationalId: ''
+        });
+        setShowForm(false);
+    };
 
     return (
         <div className="relative">
@@ -130,13 +140,22 @@ export default function SupplierSelector({ value, onChange, storeId }) {
                         onChange={(e) => setNewSupplier(p => ({ ...p, nationalId: e.target.value }))}
                         className="w-full p-2 rounded bg-blue-900"
                     />
-                    <button
-                        type="button"
-                        onClick={handleCreate}
-                        className="bg-green-600 text-white px-4 py-1 rounded"
-                    >
-                        Save Supplier
-                    </button>
+                    <div className="flex flex-col md:flex-row gap-2">
+                        <button
+                            type="button"
+                            onClick={handleCreate}
+                            className="bg-green-600 text-white px-4 py-1 rounded"
+                        >
+                            Save Supplier
+                        </button>
+                        <button
+                            type="button"
+                            onClick={handleCancel}
+                            className="bg-red-400 text-white px-4 py-1 rounded ml-2"
+                        >
+                            Cancel
+                        </button>
+                    </div>
                 </div>
             )}
         </div>
