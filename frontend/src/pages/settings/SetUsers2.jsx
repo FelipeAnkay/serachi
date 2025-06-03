@@ -3,44 +3,57 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { CircleX, Copy, Delete, Handshake, Save, Trash2, UserPlus, UsersRound } from 'lucide-react';
 import Cookies from 'js-cookie';
 import toast from 'react-hot-toast';
-import { useCustomerServices } from '../../store/customerServices';
-import CustomerDetails from '../../components/CustomerDetail';
+import { useAuthStore } from '../../store/authStore';
+import { useRoleServices } from '../../store/rolesServices';
+import UserDetails from '../../components/UserDetail';
+import { useStoreServices } from '../../store/storeServices';
 
 
-const SetCustomer = () => {
-    const { getCustomerList, createCustomer, getCustomerEmail, removeCustomer, updateCustomer } = useCustomerServices();
+
+const SetUsers2 = () => {
     const storeId = Cookies.get('storeId');
-    const [customerList, setCustomerList] = useState([]);
+    const { getUsersByEmail, getUserEmail, updateUser } = useAuthStore();
+    const { updateStore, getUsers } = useStoreServices()
+    const [userList, setUserList] = useState([]);
     const [loading, setLoading] = useState(true);
     const [modalOpen, setModalOpen] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
-    const [customerData, setCustomerData] = useState({});
+    const [userNew, setUserNew] = useState(false);
+    const [userData, setUserData] = useState({});
     const [emailCheckPhase, setEmailCheckPhase] = useState(false);
     const [confirmDelete, setConfirmDelete] = useState(null);
     const [searchTerm, setSearchTerm] = useState('');
+    const [emailList, setEmailList] = useState([]);
+
+    const fetchUsers = async () => {
+        try {
+            //console.log("el StoreID es: ", storeId);
+            const response = await getUsers(storeId);
+            //console.log("la respuesta de getUsers es:", response);
+            const auxEmailList = response.userList.userList
+            setEmailList(auxEmailList)
+            const auxUserList = await getUsersByEmail(auxEmailList, storeId);
+            //console.log("la respuesta de getUsersByEmail es:", auxUserList);
+            setUserList(auxUserList.userList);
+        } catch (err) {
+            setError('Users not found');
+            console.error(err);
+        } finally {
+            setLoading(false);
+        }
+    };
 
     useEffect(() => {
-        const fetchCustomer = async () => {
-            try {
-                const customer = await getCustomerList(storeId);
-                //console.log("Respuesta de getCustomerList", customer);
-                setCustomerList(customer.customerList || []);
-            } catch (error) {
-                console.error('Error fetching customer list:', error);
-            } finally {
-                setLoading(false);
-            }
-        };
 
         if (storeId) {
-            fetchCustomer();
+            fetchUsers();
             //console.log("La lista de partner es: ", partnerList)
         }
     }, []);
 
     useEffect(() => {
         //console.log("El partnerData es: ", partnerData)
-    }, [customerData]);
+    }, [userData]);
 
 
     useEffect(() => {
@@ -58,17 +71,17 @@ const SetCustomer = () => {
         };
     }, [modalOpen]); // se ejecuta cuando cambia modalOpen
 
-    const openNewCustomerModal = () => {
-        setCustomerData({ email: '' });
+    const openNewUserModal = () => {
+        setUserData({ email: '' });
         setEmailCheckPhase(true);
         setIsEditing(false);
         setModalOpen(true);
     };
 
-    const openEditCustomerModal = (customer) => {
-        //console.log("El customer es: ", customer)
-        setCustomerData({
-            ...customer,
+    const openEditUserModal = (user) => {
+        //console.log("El user es: ", user)
+        setUserData({
+            ...user,
         });
         setIsEditing(true);
         setEmailCheckPhase(false);
@@ -78,74 +91,85 @@ const SetCustomer = () => {
     const closeModal = () => {
         setModalOpen(false);
         setConfirmDelete(null);
+        setUserNew(false);
     };
     const handleEmailCheck = async () => {
-        if (!customerData.email) return;
+        if (!userData.email) return;
 
         try {
-            const res = await getCustomerEmail(customerData.email, storeId);
-            const customerFound = res.customerList?.[0];
-            //console.log("handleEmailCheck customerFound:", customerFound);
-            if (customerFound) {
-                const alreadyAssigned = customerFound.storeId?.includes(storeId.toUpperCase());
-                const updatedStoreId = alreadyAssigned
-                    ? customerFound.storeId
-                    : [...new Set([...customerFound.storeId, storeId.toUpperCase()])];
-                setCustomerData({
-                    ...customerFound,
-                    storeId: updatedStoreId,
+            const res = await getUserEmail(userData.email);
+            //console.log("getUserEmail: ", res);
+            const userFound = res.user;
+            //console.log("handleEmailCheck userFound:", userFound);
+            if (userFound) {
+                setUserData({
+                    ...userFound,
+                    storeId: storeId,
                 });
                 setIsEditing(true);
-                toast.success('Customer founded');
+                setUserNew(false);
+                toast.success('User founded');
             } else {
-                toast.success("Customer not found, you can assign a new one");
+                setUserNew(true);
+                closeModal();
+                toast.error("User not found, please have them sign up first");
                 setIsEditing(false);
             }
 
             setEmailCheckPhase(false); // Pasar al formulario completo
         } catch (err) {
-            console.error("Error checking customer by email:", err);
-            toast.error("Error checking email");
+            console.error("Error checking user by email:", err);
+            toast.error("Error user email");
         }
     };
 
     const handleSave = async () => {
         try {
             const payload = {
-                ...customerData,
+                ...userData,
                 storeId: storeId,
             };
             //console.log("Is Editing? ", isEditing);
             //console.log("El payload es: ", payload);
-            if (isEditing) {
-                await updateCustomer(customerData.email, storeId, payload);
-                toast.success('customer updated successfully');
+            if (userNew) {
+                //await updateUser(userData.email, storeId, payload);
+                toast.success('User updated successfully');
             } else {
-                await createCustomer(payload);
-                toast.success('customer created successfully');
+                await updateUser(userData.email, userData);
+                //console.log("emailList: ", emailList)
+                const auxUsers = emailList.includes(userData.email)
+                    ? emailList
+                    : [...emailList, userData.email];
+                await updateStore(storeId, { userList: auxUsers });
+                //console.log("auxUsers: ", auxUsers);
+                toast.success('User Assigned to Store successfully');
             }
 
             closeModal();
-            window.location.reload();
+            fetchUsers();
+            //window.location.reload();
         } catch (error) {
-            console.error('Error saving customer:', error);
-            toast.error('Error saving customer');
+            console.error('Error saving user:', error);
+            toast.error('Error saving user');
         }
     };
 
     const confirmRemove = async () => {
         try {
-            await removeCustomer(confirmDelete.customer, storeId);
-            toast.success(`Customer ${confirmDelete.customer} removed from store.`);
+            //console.log("confirmRemove: ", confirmDelete.user)
+            const emailToRemove = confirmDelete.user;
+            const updatedUserList = emailList.filter(email => email !== emailToRemove);
+            await updateStore(storeId, { userList: updatedUserList });
+            toast.success(`User ${confirmDelete.user} removed from store.`);
             closeModal();
-            window.location.reload();
+            fetchUsers();
         } catch (error) {
-            console.error('Error removing customer:', error);
-            toast.error('Error removing customer');
+            console.error('Error removing user:', error);
+            toast.error('Error removing user');
         }
     };
 
-    if (loading) return <div className="text-white text-center mt-10">Loading customer...</div>;
+    if (loading) return <div className="text-white text-center mt-10">Loading users...</div>;
 
     return (
         <div className="flex flex-col min-h-screen w-full bg-blue-950 text-white px-2 sm:px-4 md:px-8 lg:px-12 xl:px-20 py-6 sm:py-8 md:py-10">
@@ -154,18 +178,18 @@ const SetCustomer = () => {
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.9 }}
                 transition={{ duration: 0.5 }}
-                className="flex flex-col w-full max-w-7xl mx-auto bg-gray-900 bg-opacity-80 backdrop-blur-lg rounded-xl shadow-2xl border border-gray-800 overflow-hidden px-2 sm:px-4 md:px-6 py-6"
+                className="flex flex-col w-full max-w-7xl mx-auto bg-gray-900 bg-opacity-80 backdrop-blur-lg rounded-xl shadow-2xl border border-gray-800 overflow-hidden px-4 py-6 sm:px-6 md:px-8"
             >
                 <h2 className="text-3xl font-bold mb-6 text-center bg-gradient-to-r from-blue-400 to-blue-600 text-transparent bg-clip-text">
-                    Customer List
+                    User List
                 </h2>
 
-                <div className="flex flex-col items-center gap-3 mb-4 w-full">
+                <div className="flex flex-col items-center gap-3 mb-6">
                     <button
                         className="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded flex items-center gap-2"
-                        onClick={openNewCustomerModal}
+                        onClick={openNewUserModal}
                     >
-                        <p>Add Customer</p><UsersRound />
+                        <p>Add User</p><UsersRound />
                     </button>
 
                     <input
@@ -177,47 +201,52 @@ const SetCustomer = () => {
                     />
                 </div>
 
-                <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 px-2">
-                    {customerList.length === 0 ? (
-                        <div className="text-center text-gray-400 col-span-full">No customer found</div>
+                {/* GRID RESPONSIVO */}
+                <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+                    {userList.length === 0 ? (
+                        <div className="text-center text-gray-400 col-span-full">No user found</div>
                     ) : (
-                        customerList
-                            .filter(customer => {
+                        userList
+                            .filter(user => {
                                 const term = searchTerm.toLowerCase();
                                 return (
-                                    customer.name?.toLowerCase().includes(term) ||
-                                    customer.email?.toLowerCase().includes(term)
+                                    user.name?.toLowerCase().includes(term) ||
+                                    user.email?.toLowerCase().includes(term)
                                 );
                             })
-                            .map((customer) => (
+                            .map((user) => (
                                 <div
-                                    key={customer._id}
-                                    className="relative text-black rounded-lg shadow p-4 bg-gray-200 hover:bg-blue-100 transition-all"
+                                    key={user._id}
+                                    className="relative text-black rounded-lg shadow p-4 bg-gray-200 hover:bg-blue-100 transition-all w-full"
                                 >
-                                    <div className="flex flex-col" onClick={() => openEditCustomerModal(customer)}>
-                                        <p><strong>Name:</strong> {customer.name}</p>
-                                        <p className="flex flex-row">
-                                            <strong>Email:</strong>&nbsp;{customer.email}
-                                            <Copy
-                                                onClick={(e) => {
-                                                    e.stopPropagation();
-                                                    navigator.clipboard.writeText(customer.email)
-                                                        .then(() => toast.success("Email copied!"))
-                                                        .catch(() => toast.error("Failed to copy"));
-                                                }}
-                                                className="text-blue-500 hover:text-blue-900 ml-2"
-                                            />
-                                        </p>
-                                        <p><strong>Phone:</strong> {customer.phone || '-'}</p>
-                                        <p><strong>Gender:</strong> {customer.gender || '-'}</p>
-                                    </div>
+                                    {/* Botón Trash */}
                                     <button
-                                        onClick={() => setConfirmDelete({ customer: customer.email })}
+                                        onClick={() => setConfirmDelete({ user: user.email })}
                                         className="absolute top-2 right-2 text-red-600 hover:text-red-800"
                                         title="Remove from Store"
                                     >
                                         <Trash2 />
                                     </button>
+
+                                    {/* Info */}
+                                    <div className="flex flex-col gap-2" onClick={() => openEditUserModal(user)}>
+                                        <p><strong>Name:</strong> {user.name}</p>
+                                        <div className="flex items-center justify-between flex-wrap gap-1">
+                                            <p className="flex items-center">
+                                                <strong>Email:</strong>&nbsp;{user.email}
+                                            </p>
+                                            <Copy
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    navigator.clipboard.writeText(user.email)
+                                                        .then(() => toast.success("Email copied!"))
+                                                        .catch(() => toast.error("Failed to copy"));
+                                                }}
+                                                className="text-blue-500 hover:text-blue-900 cursor-pointer"
+                                            />
+                                        </div>
+                                        <p><strong>Phone:</strong> {user.phone || '-'}</p>
+                                    </div>
                                 </div>
                             ))
                     )}
@@ -243,7 +272,7 @@ const SetCustomer = () => {
                                 transition={{ duration: 0.3 }}
                             >
                                 <h3 className="text-xl font-bold mb-6 text-center text-red-400">
-                                    Do you really want to remove {confirmDelete.email} from the Store?
+                                    Do you really want to remove {confirmDelete.user} from the Store?
                                 </h3>
                                 <div className="flex justify-around">
                                     <button
@@ -276,7 +305,7 @@ const SetCustomer = () => {
                                 </button>
 
                                 <h3 className="text-2xl font-bold mb-6 text-center bg-gradient-to-r from-blue-400 to-blue-600 text-transparent bg-clip-text">
-                                    {isEditing ? 'Edit Customer' : 'New Customer'}
+                                    {isEditing ? 'Edit user' : 'New user'}
                                 </h3>
 
                                 {emailCheckPhase ? (
@@ -285,22 +314,22 @@ const SetCustomer = () => {
                                         <input
                                             type="email"
                                             className="w-full p-2 rounded bg-gray-800 text-white"
-                                            value={customerData.email || ''}
-                                            onChange={(e) => setCustomerData({ ...customerData, email: e.target.value })}
+                                            value={userData.email || ''}
+                                            onChange={(e) => setUserData({ ...userData, email: e.target.value })}
                                         />
                                         <button
                                             className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded w-full mt-4"
                                             onClick={handleEmailCheck}
                                         >
-                                            {isEditing ? 'Continue' : 'Customer Search'}
+                                            {isEditing ? 'Continue' : 'User Search'}
                                         </button>
                                     </div>
                                 ) : (
-                                    <CustomerDetails
+                                    <UserDetails
                                         isOpen={modalOpen}
                                         onClose={() => setModalOpen(false)}
-                                        customer={customerData}
-                                        setCustomer={setCustomerData}
+                                        user={userData}
+                                        setUser={setUserData}
                                         onSave={handleSave}
                                     />
                                 )}
@@ -313,4 +342,4 @@ const SetCustomer = () => {
     );
 };
 
-export default SetCustomer;
+export default SetUsers2;

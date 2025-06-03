@@ -41,12 +41,12 @@ export const createStore = async (req, res) => {
 }
 
 export const updateStore = async (req, res) => {
-    const { id, ...updateFields } = req.body;
+    const { storeId, ...updateFields } = req.body;
     try {
-        if (!id) {
+        if (!storeId) {
             throw new Error("Id field is required");
         }
-        const normalizedStoreId = id?.toUpperCase();
+        const normalizedStoreId = storeId?.toUpperCase();
         const filter = { storeId: normalizedStoreId }
         const store = await Store.findOneAndUpdate(filter, updateFields, {
             new: true
@@ -55,7 +55,7 @@ export const updateStore = async (req, res) => {
         res.status(201).json({
             success: true,
             message: "Store updated succesfully",
-            service: {
+            store: {
                 ...store._doc
             }
         })
@@ -85,7 +85,8 @@ export const getStoreById = async (req, res) => {
 export const usersCompany = async (req, res) => {
     try {
         const { storeId } = req.params;
-        const userList = await Store.findOne(storeId).select("userList");
+        console.log("El storeId es:", storeId);
+        const userList = await Store.findOne({storeId: storeId}).select("userList");
         console.log("El listado de usuarios es:", userList);
         if (!userList) {
             return res.status(400).json({ success: false, message: "User not found" });

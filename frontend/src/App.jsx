@@ -38,6 +38,8 @@ import CreateReservation from './pages/booking/CreateReservation';
 import CashFlowSummary from './pages/cashflow/CashFlowSummary';
 import SetSupplier from './pages/settings/SetSupplier';
 import Reports from './pages/reports/Reports';
+import SetRoles from './pages/settings/SetRoles';
+import SetUsers2 from './pages/settings/SetUsers2';
 
 const ProtectedRoute = ({ children }) => {
   const { isAuthenticated, user } = useAuthStore();
@@ -51,25 +53,19 @@ const ProtectedRoute = ({ children }) => {
   return children;
 }
 const MenuAvailable = () => {
-  const { isAuthenticated, user } = useAuthStore();
-  const [showMenu, setShowMenu] = useState(false);
+    const { isAuthenticated } = useAuthStore();
+    const [showMenu, setShowMenu] = useState(false);
 
-  if (!isAuthenticated) {
+    if (!isAuthenticated) {
+        return null;
+    }
+
     return (
-      <div className="invisible">
-        <Menu className="w-9 h-9" onClick={() => setShowMenu(!showMenu)} />
-        <LeftMenu show={showMenu} />
-      </div>
+        <div className="flex">
+            <LeftMenu show={showMenu} setShow={setShowMenu} />
+        </div>
     );
-  }
-  return (
-    <div className="h-screen text-white">
-      <Menu className="w-9 h-9" onClick={() => setShowMenu(!showMenu)} />
-      <LeftMenu show={showMenu} />
-    </div>
-
-  );
-}
+};
 
 const RedirectAuthenticatedUser = ({ children }) => {
   const { isAuthenticated, user } = useAuthStore();
@@ -260,6 +256,13 @@ function App() {
             </ProtectedRoute>}
         />
         <Route
+          path="/set-roles"
+          element={
+            <ProtectedRoute>
+              <SetRoles />
+            </ProtectedRoute>}
+        />
+        <Route
           path="/set-supplier"
           element={
             <ProtectedRoute>
@@ -277,7 +280,7 @@ function App() {
           path="/set-users"
           element={
             <ProtectedRoute>
-              <SetUsers />
+              <SetUsers2 />
             </ProtectedRoute>}
         />
         <Route

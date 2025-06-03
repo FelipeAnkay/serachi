@@ -6,9 +6,10 @@ import { generateTokenAndSetCookie } from "../utils/generateTokenAndSetCookie.js
 import { sendVerificationEmail, sendWelcomeEmail, sendForgotPasswordEmail, sendResetPasswordSuccessEmail } from "../mailtrap/emails.js";
 import { Store } from "../models/store.model.js"
 
+
 /* USER FUNCTIONS*/
 export const signup = async (req, res) => {
-    const { email, password, name, phone, roleList } = req.body;
+    const { email, password, name, phone, role } = req.body;
     try {
         if (!email || !password || !name || !phone) {
             throw new Error("All fields are required");
@@ -26,7 +27,7 @@ export const signup = async (req, res) => {
             name,
             phone,
             verificationToken: verificationCode,
-            roleList,
+            role,
             verificationTokenexpiresAt: Date.now() + 24 * 60 * 60 * 1000 // 24 hrs
         })
 
@@ -227,20 +228,62 @@ export const updateUser = async (req, res) => {
             throw new Error("Id field is required");
         }
 
-        const user = await User.findOneAndUpdate({email}, updateFields, {
+        const user = await User.findOneAndUpdate({ email }, updateFields, {
             new: true
         });
 
         res.status(201).json({
             success: true,
             message: "user updated succesfully",
-            service: {
+            user: {
                 ...user._doc
             }
         })
 
     } catch (error) {
         res.status(400).json({ success: false, message: error.message });
+    }
+}
+
+export const getUsersByEmails = async (req, res) => {
+    try {
+        //console.log("Entre a staffByEmail")
+        const { emails, storeId } = req.params
+        const arrayEmails = emails.split(",");
+        //console.log("B: el storeID para staffByEmail es: ", email)
+        if (!emails) {
+            throw new Error("Email is required");
+        }
+        const normalizeStoreID = storeId?.toUpperCase();
+        const userList = await User.find({ email: { $in: arrayEmails } }).select('-password');
+        //console.log("El listado de Staff es:", staffList);
+        if (!userList || userList.length === 0) {
+            return res.status(200).json({ success: false, message: "User not found" });
+        }
+        res.status(200).json({ success: true, userList });
+    } catch (error) {
+        return res.status(400).json({ success: false, message: error.message });
+    }
+}
+
+export const getUserByEmail = async (req, res) => {
+    try {
+        //console.log("Entre a staffByEmail")
+        const { email } = req.params
+        console.log("B: el storeID para staffByEmail es: ", email)
+        if (!email) {
+            throw new Error("Email is required");
+        }
+        const userFound = await User.findOne({
+            email: email,
+        }).select('-password');
+        console.log("El listado de userList es:", userFound);
+        if (!userFound) {
+            return res.status(200).json({ success: false, message: "userList not found" });
+        }
+        res.status(200).json({ success: true, user: userFound });
+    } catch (error) {
+        return res.status(400).json({ success: false, message: error.message });
     }
 }
 
