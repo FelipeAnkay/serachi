@@ -1,5 +1,5 @@
 // src/pages/NewIncome.jsx
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import Cookies from 'js-cookie';
 import toast from 'react-hot-toast';
 import { motion, AnimatePresence } from "framer-motion";
@@ -9,6 +9,8 @@ import { useAuthStore } from '../../store/authStore';
 import paymentMethods from '../../components/paymentMethods.json'
 import { useExpenseServices } from "../../store/expenseServices";
 import countries from '../../components/contries.json';
+import SupplierSelector from '../../components/SupplierSelector';
+
 
 export default function NewExpense() {
     const { createExpense } = useExpenseServices();
@@ -18,6 +20,7 @@ export default function NewExpense() {
     const [newTag, setNewTag] = useState({ name: '', code: '' });
     const [loading, setLoading] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
+
 
     const [formData, setFormData] = useState({
         date: new Date().toISOString().split("T")[0],
@@ -78,7 +81,7 @@ export default function NewExpense() {
             return;
         }
         try {
-            await createExpense(formData);
+           // await createExpense(formData);
             window.scrollTo({ top: 0, behavior: 'smooth' });
             toast.success("Expense Created");
             //Reset
@@ -214,84 +217,12 @@ export default function NewExpense() {
 
                     {/* Supplier Section */}
                     <div>
-                        <div className="flex justify-between items-center mb-2">
-                            <label className="font-medium">Supplier</label>
-                            <button
-                                type="button"
-                                className="text-sm text-blue-300 hover:underline"
-                                onClick={() => setShowNewSupplierForm(!showNewSupplierForm)}
-                            >
-                                {showNewSupplierForm ? "Cancel" : "Create new supplier"}
-                            </button>
-                        </div>
-                        <select
+                        <label className="font-medium block mb-2">Supplier</label>
+                        <SupplierSelector
                             value={formData.supplierId}
-                            onChange={handleSupplierChange}
-                            className="w-full border px-2 py-1 rounded"
-                        >
-                            <option value="" className="bg-gray-200 text-blue-950">Select a Supplier</option>
-                            {supplier.map(p => (
-                                <option key={p._id} value={p._id} className="bg-gray-200 text-blue-950">{p.name}</option>
-                            ))}
-                        </select>
-
-                        <AnimatePresence>
-                            {showNewSupplierForm && (
-                                <motion.div
-                                    initial={{ opacity: 0, height: 0 }}
-                                    animate={{ opacity: 1, height: "auto" }}
-                                    exit={{ opacity: 0, height: 0 }}
-                                    className="overflow-hidden mt-4 space-y-4 border border-blue-700 p-4 rounded-2xl bg-blue-800"
-                                >
-                                    <h3 className="text-white text-lg font-semibold">New Supplier</h3>
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                        {["name", "email", "phone", "nationalId"].map((field) => (
-                                            <div key={field}>
-                                                <label className="block text-sm font-medium mb-1">
-                                                    {field.charAt(0).toUpperCase() + field.slice(1)}:
-                                                </label>
-                                                <input
-                                                    key={field}
-                                                    type="text"
-                                                    placeholder={field.charAt(0).toUpperCase() + field.slice(1)}
-                                                    className="p-2 rounded bg-gray-200 text-blue-950"
-                                                    value={newSupplier[field]}
-                                                    onChange={(e) => setNewSupplier(prev => ({ ...prev, [field]: e.target.value }))}
-                                                />
-                                            </div>
-                                        ))}
-                                        <div className="mb-4">
-                                            <label className="block text-sm font-medium mb-1">Country</label>
-                                            <select
-                                                value={newSupplier.country}
-                                                onChange={(e) => {
-                                                    const selected = e.target.value;
-                                                    setNewSupplier(prev => ({ ...prev, country: selected }));
-                                                }}
-                                                className="w-full border rounded px-3 py-2 bg-gray-200 text-blue-950"
-                                            >
-                                                <option value="">Select a country</option>
-                                                {countries.map((c) => (
-                                                    <option key={c.code} value={c.name}>
-                                                        {c.name}
-                                                    </option>
-                                                ))}
-                                            </select>
-                                        </div>
-                                    </div>
-                                    <div className="text-right">
-                                        <button
-                                            type="button"
-                                            className={`mt-4 px-4 py-2 rounded text-white font-semibold ${isSubmitting ? 'bg-gray-500 cursor-not-allowed' : 'bg-green-600 hover:bg-green-700'}
-  `}
-                                            onClick={handleCreateSupplier}
-                                        >
-                                            {isSubmitting ? 'Processing...' : 'Save Supplier'}
-                                        </button>
-                                    </div>
-                                </motion.div>
-                            )}
-                        </AnimatePresence>
+                            onChange={(id) => setFormData(prev => ({ ...prev, supplierId: id }))}
+                            storeId={storeId}
+                        />
                     </div>
 
                     {/* TAGS SECTION */}

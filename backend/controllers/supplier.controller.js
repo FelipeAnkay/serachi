@@ -106,3 +106,29 @@ export const createIndex = async (req,res) => {
     }
     
 }
+
+export const removeSupplier = async (req, res) => {
+    const {email} = req.body;
+    try {
+        console.log("B: Entre a removeProduct: ", email)
+        if (!email) {
+            throw new Error("ID field are required");
+        }
+        const supplier = await Supplier.findOneAndDelete({email: email});
+
+        if (!supplier) {
+            return res.status(404).json({ success: false, message: "Supplier not found" });
+        }
+
+        res.status(201).json({
+            success: true,
+            message: "Staff updated succesfully",
+            supplier: {
+                ...supplier._doc
+            }
+        })
+
+    } catch (error) {
+        res.status(400).json({ success: false, message: error.message });
+    }
+}
