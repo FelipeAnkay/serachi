@@ -81,7 +81,7 @@ export default function NewExpense() {
             return;
         }
         try {
-           // await createExpense(formData);
+            await createExpense(formData);
             window.scrollTo({ top: 0, behavior: 'smooth' });
             toast.success("Expense Created");
             //Reset
@@ -102,55 +102,6 @@ export default function NewExpense() {
         } finally {
             setIsSubmitting(false);
         }
-    };
-
-    const handleCreateSupplier = async () => {
-        if (isSubmitting) return;
-        setIsSubmitting(true);
-        try {
-            const payload = { ...newSupplier, storeId };
-            const response = await createSupplier(payload);
-
-            if (!response || !response.service || !response.service._id) {
-                throw new Error("Invalid supplier creation response");
-            }
-            console.log("La respuesta de createSupplier es: ", response)
-            const newSupplierId = response.service._id;
-
-            toast.success("Supplier created successfully");
-
-            // Seleccionar automáticamente el nuevo supplier
-            setFormData(prev => ({ ...prev, supplierId: newSupplierId }));
-            setShowNewSupplierForm(false);
-            setNewSupplier({ name: "", email: "", phone: "", country: "", nationalId: "" });
-            setSupplier(prev => [...prev, response.service]);
-
-            // Refrescar lista
-            const res = await getSupplierList(storeId);
-            setSupplier(res.supplierList || []);
-        } catch (error) {
-            toast.error("Failed to create supplier");
-        } finally {
-            setIsSubmitting(false);
-        }
-    };
-
-    const handleSupplierChange = (e) => {
-        const selectedSupplierId = e.target.value;
-        //console.log("Supplier selected:", selectedSupplierId);
-        setFormData(prev => ({
-            ...prev,
-            supplierId: String(selectedSupplierId),
-        }));
-
-        /* Verificar si el supplier ID existe en la lista
-        const selectedSupplier = supplier.find(p => p._id === selectedSupplierId);
-        if (selectedSupplier) {
-            console.log("Supplier found:", selectedSupplier);
-        } else {
-            console.log("Supplier not found in the list.");
-        }
-            */
     };
 
     const handleAmountChange = (e) => {
