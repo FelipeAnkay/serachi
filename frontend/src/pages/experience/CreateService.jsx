@@ -234,6 +234,7 @@ export default function CreateService() {
                 const servicePayload = {
                     name: auxService.name,
                     productId: auxService.productId,
+                    customerEmail: customer.email || '',
                     storeId: storeId,
                     userEmail: user.email,
                     dateIn: auxService.dateIn,

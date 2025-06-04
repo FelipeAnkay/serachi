@@ -25,6 +25,14 @@ export function formatDateDisplay(dateInput) {
 }
 
 /**
+ * Format: "Monday, May 26 2025 09:15 AM"
+ */
+export function formatDateTimeDisplayHours(dateInput) {
+  const date = toDate(dateInput);
+  return date ? format(date, "EEEE, MMMM dd yyyy hh:mm a") : "";
+}
+
+/**
  * Format: "26/05/2025"
  */
 export function formatDateShort(dateInput) {
