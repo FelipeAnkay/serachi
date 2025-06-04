@@ -296,3 +296,35 @@ export const deleteServiceByEmail = async (req, res) => {
     }
 };
 
+export const fixServiceWithoutEmail = async (req, res) => {
+    try {
+        const { name, customerEmail, storeId } = req.params;
+        const normalizedStoreId = storeId?.toUpperCase();
+
+        // Buscar todos los servicios que contienen `name` y coinciden con `storeId`
+        const services = await Service.find({
+            name: { $regex: name, $options: "i" },
+            storeId: normalizedStoreId
+        });
+
+        if (!services || services.length === 0) {
+            return res.status(404).json({ success: false, message: "No matching services found" });
+        }
+
+        // Actualizar todos los servicios encontrados agregando customerEmail
+        const updatePromises = services.map(service =>
+            Service.findByIdAndUpdate(service._id, { customerEmail: customerEmail }, { new: true })
+        );
+
+        const updatedServices = await Promise.all(updatePromises);
+
+        res.status(200).json({
+            success: true,
+            message: `${updatedServices.length} services updated`,
+            services: updatedServices
+        });
+    } catch (error) {
+        return res.status(400).json({ success: false, message: error.message });
+    }
+};
+

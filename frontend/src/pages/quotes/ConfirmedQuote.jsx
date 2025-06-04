@@ -14,7 +14,7 @@ import { useCustomerServices } from '../../store/customerServices';
 import { useRoomReservationServices } from '../../store/roomReservationServices';
 import ProductSelect from '../../components/ProductSelect';
 import { createCustomServices } from '../../components/createCustomService'
-import { formatDateDisplay, formatDateShort, formatDateInput, formatDateISO } from '../../components/formatDateDisplay'
+import { formatDateDisplay, formatDateShort, formatDateInput, formatDateISO, formatDateTimeDisplayHours } from '../../components/formatDateDisplay'
 
 export default function ConfirmedQuote() {
     const { getQuoteByCheckout } = useQuoteServices();
@@ -678,7 +678,7 @@ export default function ConfirmedQuote() {
                                                                     <div className='flex flex-row items-center justify-center border rounded-2xl mr-2 mb-2 bg-blue-700'>
                                                                         <div className='ml-2 flex-1 text-left'>
                                                                             <label>
-                                                                                {index + 1}.- {service.name} - {formatDateDisplay(service.dateIn)} to {formatDateDisplay(service.dateOut)}
+                                                                                {index + 1}.- {service.name} - {formatDateTimeDisplayHours(service.dateIn)} to {formatDateTimeDisplayHours(service.dateOut)}
                                                                             </label>
                                                                         </div>
                                                                         <div className='mr-2'>
