@@ -158,5 +158,15 @@ export const useServiceServices = create((set) => ({
             set({ error: error.response?.data?.message || "Error deleting service", isLoading: false });
             throw error;
         }
-    }
+    },
+    getServicesByNameDate: async (name, dateStart, dateEnd, storeId) => {
+        set({ isLoading: true, error: null });
+        try {
+            const response = await axios.get(`${URL_API}/name-date/${name}/${dateStart}/${dateEnd}/${storeId}`);
+            return response.data;
+        } catch (error) {
+            set({ error: error.response?.data?.message || "Error getting services", isLoading: false });
+            throw error;
+        }
+    },
 }))

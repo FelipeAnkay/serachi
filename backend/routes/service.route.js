@@ -1,5 +1,5 @@
 import express from 'express';
-import { updateService, createService, getServiceById, getServiceNoStaff, getServiceByStoreId, getServiceNoData, getServiceByDates, ChangeType, getServiceByEmail, deleteService, getServicesByIds, deleteServiceByEmail, fixServiceWithoutEmail } from '../controllers/service.controller.js';
+import { updateService, createService, getServiceById, getServiceNoStaff, getServiceByStoreId, getServiceNoData, getServiceByDates, ChangeType, getServiceByEmail, deleteService, getServicesByIds, deleteServiceByEmail, fixServiceWithoutEmail, getServiceByNameDate } from '../controllers/service.controller.js';
 
 const router = express.Router();
 
@@ -14,6 +14,7 @@ router.get("/nostaff/:storeId", getServiceNoStaff);
 router.get("/nodata/:storeId", getServiceNoData);
 router.get("/dates/:storeId/:dateIn/:dateOut", getServiceByDates);
 router.get("/changeType", ChangeType);
+router.get("/name-date/:name/:dateStart/:dateEnd/:storeId", getServiceByNameDate);
 router.get("/email/:email/:storeId", getServiceByEmail);
 router.delete("/remove", deleteService);
 

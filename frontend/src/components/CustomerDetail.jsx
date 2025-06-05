@@ -186,11 +186,12 @@ export default function CustomerDetails({ isOpen, onClose, customer, setCustomer
                                         <input
                                             type="checkbox"
                                             value={lang.code}
-                                            checked={customer.languages.includes(lang.code)}
+                                            checked={(customer.languages || []).includes(lang.code)}
                                             onChange={(e) => {
-                                                const updatedLanguages = customer.languages.includes(lang.code)
-                                                    ? customer.languages.filter((code) => code !== lang.code)
-                                                    : [...customer.languages, lang.code];
+                                                const currentLanguages = customer.languages || [];
+                                                const updatedLanguages = currentLanguages.includes(lang.code)
+                                                    ? currentLanguages.filter((code) => code !== lang.code)
+                                                    : [...currentLanguages, lang.code];
                                                 setCustomer({ ...customer, languages: updatedLanguages });
                                             }}
                                             className="accent-blue-500"

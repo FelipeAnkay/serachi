@@ -121,3 +121,43 @@ export const getExperienceById = async (req, res) => {
         return res.status(400).json({ success: false, message: error.message });
     }
 }
+
+export const removeServicesFromExperiences = async (req, res) => {
+    try {
+        const { serviceIds } = req.body;
+
+        if (!Array.isArray(serviceIds) || serviceIds.length === 0) {
+            return res.status(400).json({ success: false, message: "No serviceIds provided" });
+        }
+
+        // Encuentra todas las experiencias que contienen al menos uno de los serviceIds
+        const experiences = await Experience.find({ serviceList: { $in: serviceIds } });
+
+        if (!experiences || experiences.length === 0) {
+            return res.status(200).json({ success: true, message: "No experiences contain those serviceIds", updatedCount: 0 });
+        }
+
+        let updatedCount = 0;
+
+        for (const exp of experiences) {
+            const originalLength = exp.serviceList.length;
+
+            // Filtra para eliminar los serviceIds del array
+            exp.serviceList = exp.serviceList.filter(id => !serviceIds.includes(id));
+
+            if (exp.serviceList.length !== originalLength) {
+                await exp.save();
+                updatedCount++;
+            }
+        }
+
+        return res.status(200).json({
+            success: true,
+            message: `Services removed from ${updatedCount} experience(s)`,
+            updatedCount
+        });
+
+    } catch (error) {
+        return res.status(500).json({ success: false, message: error.message });
+    }
+};
