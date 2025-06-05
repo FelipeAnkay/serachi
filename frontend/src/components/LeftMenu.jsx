@@ -2,7 +2,8 @@ import {
     Banknote, BanknoteArrowDown, Bed, BedDouble, BookMarked, BookOpenCheck, Boxes, Calculator, CalendarCheck,
     CalendarHeart, CalendarPlus2, ChartColumnIncreasing, ChartNoAxesCombined, ChevronDown, CircleUser, Contact, DollarSign, HandCoins, Handshake, Home,
     MapPinCheckInside, PiggyBank, Receipt, Scale, Settings, ShieldCheck, ShieldUser, Ship, ShoppingBasket, Store,
-    TicketCheck, Truck, Wallet, Menu
+    TicketCheck, Truck, Wallet, Menu,
+    Trash2
 } from "lucide-react";
 
 import logo from "../../public/Serachi_logo-nobg.png";
@@ -33,6 +34,7 @@ const menuItems = [
             { to: "/experience-create-service", label: "Create Service", icon: <BookMarked /> },
             { to: "/experience-add-items", label: "Add Items", icon: <ShoppingBasket /> },
             { to: "/experience-open-tabs", label: "Open Tabs", icon: <BookOpenCheck /> },
+            { to: "/delete-services", label: "Delete Services", icon: <Trash2 /> },
         ]
     },
     {

@@ -201,7 +201,7 @@ export const getServiceByEmail = async (req, res) => {
     } catch (error) {
         return res.status(400).json({ success: false, message: error.message });
     }
-}
+};
 
 export const getServiceByDates = async (req, res) => {
     try {
@@ -327,4 +327,23 @@ export const fixServiceWithoutEmail = async (req, res) => {
         return res.status(400).json({ success: false, message: error.message });
     }
 };
+
+export const getServiceByNameDate = async (req, res) => {
+    try {
+        const { name, dateStart, dateEnd, storeId } = req.params;
+        const normalizedStoreId = storeId?.toUpperCase();
+        const serviceList = await Service.find({
+            name: { $regex: name, $options: "i" },
+            dateIn: { $gte: new Date(dateStart) },
+            dateOut: { $lte: new Date(dateEnd) },
+            storeId: normalizedStoreId
+        });
+        if (!serviceList) {
+            return res.status(400).json({ success: false, message: "service not found" });
+        }
+        res.status(200).json({ success: true, serviceList });
+    } catch (error) {
+        return res.status(400).json({ success: false, message: error.message });
+    }
+}
 

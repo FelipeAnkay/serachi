@@ -40,6 +40,7 @@ import SetSupplier from './pages/settings/SetSupplier';
 import Reports from './pages/reports/Reports';
 import SetRoles from './pages/settings/SetRoles';
 import SetUsers2 from './pages/settings/SetUsers2';
+import DeleteServices from './pages/experience/DeleteServices';
 
 const ProtectedRoute = ({ children }) => {
   const { isAuthenticated, user } = useAuthStore();
@@ -127,6 +128,13 @@ function App() {
           element={
             <ProtectedRoute>
               <OpenTabs />
+            </ProtectedRoute>}
+        />
+        <Route
+          path="/delete-services"
+          element={
+            <ProtectedRoute>
+              <DeleteServices />
             </ProtectedRoute>}
         />
         <Route

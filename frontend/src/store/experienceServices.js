@@ -22,9 +22,9 @@ export const useExperienceServices = create((set) => ({
     createExperience: async (experienceData) => {
         set({ isLoading: true, error: null });
         try {
-            console.log("Payload de createExperience: ", experienceData);
+            //console.log("Payload de createExperience: ", experienceData);
             const response = await axios.post(`${URL_API}/create`, experienceData);
-            console.log("La respuesta de createExperience ", response);
+            //console.log("La respuesta de createExperience ", response);
             set({ service: response.data.service, isLoading: false });
         } catch (error) {
             set({ error: error.response.data.message || "Error Creating a Experience", isLoading: false });
@@ -86,6 +86,20 @@ export const useExperienceServices = create((set) => ({
             return response.data;
         } catch (error) {
             set({ error: error.response.data.message || "Error getting experiences", isLoading: false });
+            throw error;
+        }
+    },
+    removeServicesFromExperience: async (serviceIds) => {
+        set({ isLoading: true, error: null });
+        try {
+            const response = await axios.post(`${URL_API}/remove-service`, { serviceIds });
+            set({ isLoading: false });
+            return response.data;
+        } catch (error) {
+            set({
+                error: error.response?.data?.message || "Error Removing Services from Experience",
+                isLoading: false
+            });
             throw error;
         }
     },

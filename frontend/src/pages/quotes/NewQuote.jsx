@@ -685,6 +685,15 @@ export default function NewQuote() {
                                         <Contact2 />
                                     </button>
                                 )}
+                                {isCustomerModalOpen && (
+                                    <CustomerDetails
+                                        isOpen={isCustomerModalOpen}
+                                        onClose={() => setIsCustomerModalOpen(false)}
+                                        customer={customer}
+                                        setCustomer={setCustomer}Add commentMore actions
+                                        onSave={handleSaveClient}
+                                    />
+                                )}
                             </div>
 
                             {/* Number of people */}

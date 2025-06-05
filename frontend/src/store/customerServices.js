@@ -74,7 +74,7 @@ export const useCustomerServices = create((set) => ({
     getCustomerEmail: async (email,storeId) => {
         set({ isLoading: true, error: null });
         try {
-            //console.log("F: Llamado a customerEmail");
+            console.log("F: Llamado a customerEmail");
             const response = await axios.get(`${URL_API}/get/${email}/${storeId}`);
             //console.log("F: Respueste de customerEmail: ", response);
             set({ customerList: response.data.customerList, isLoading: false });
