@@ -8,12 +8,14 @@ import { useSupplierServices } from '../../store/supplierServices';
 import { useAuthStore } from '../../store/authStore';
 import paymentMethods from '../../components/paymentMethods.json'
 import { useExpenseServices } from "../../store/expenseServices";
-import countries from '../../components/contries.json';
 import SupplierSelector from '../../components/SupplierSelector';
+import { useTypeServices } from '../../store/typeServices';
 
 
 export default function NewExpense() {
     const { createExpense } = useExpenseServices();
+    const { getTypeByCategory } = useTypeServices();
+    const [types, setTypes] = useState([]);
     const storeId = Cookies.get('storeId');
     const { getSupplierList, createSupplier } = useSupplierServices();
     const { user } = useAuthStore();
@@ -21,11 +23,21 @@ export default function NewExpense() {
     const [loading, setLoading] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
 
+    useEffect(() => {
+        async function fetchData() {
+            // Cargar tipos
+            const typesFromAPI = await getTypeByCategory("EXPENSE", storeId);
+            //console.log("typesFromAPI: ", typesFromAPI)
+            setTypes(typesFromAPI.typeList);
+        }
+        fetchData();
+    }, []);
 
     const [formData, setFormData] = useState({
         date: new Date().toISOString().split("T")[0],
         supplierId: "",
         description: "",
+        type: "",
         currency: "USD",
         amount: 0,
         tag: [],
@@ -267,6 +279,24 @@ export default function NewExpense() {
                             ))}
                         </ul>
                     </fieldset>
+
+                    <div className="mt-6">
+
+                        <label className="block font-medium mb-1">Expense Type:</label>
+                        <select
+                            name="type"
+                            className="w-full border rounded px-3 py-2 bg-gray-200 text-blue-950"
+                            value={formData.type}
+                            onChange={handleChange}
+                        >
+                            <option value="">Select a Type</option>
+                            {types.map((t) => (
+                                <option key={t.name} value={t.name}>
+                                    {t.name}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
                     <div className="mt-6">
                         <label className="block font-medium mb-1">Payment Method</label>
                         <select

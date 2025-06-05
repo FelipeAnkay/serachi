@@ -1,14 +1,21 @@
 import { useEffect, useState } from "react";
 import Cookies from 'js-cookie';
+import toast from 'react-hot-toast';
 import { motion, AnimatePresence } from "framer-motion";
 import { useIncomeServices } from "../../store/incomeServices";
 import { useExpenseServices } from "../../store/expenseServices";
 import { formatDateInput, formatDateDisplay } from '../../components/formatDateDisplay';
+import paymentMethods from '../../components/paymentMethods.json'
 import DateRangePicker from "../../components/DateRangePicker"
+import { useTypeServices } from '../../store/typeServices';
+
 
 export default function CashFlowSummary() {
     const { getExpenseByDates, updateExpense } = useExpenseServices();
     const { getIncomeByDates, updateIncome } = useIncomeServices();
+    const { getTypeByCategory } = useTypeServices();
+    const [types, setTypes] = useState([]);
+    const [selectedType, setSelectedType] = useState(null);
     const storeId = Cookies.get('storeId');
     const [selectedItem, setSelectedItem] = useState(null);
 
@@ -23,6 +30,10 @@ export default function CashFlowSummary() {
     const fetchData = async () => {
         const incomes = await getIncomeByDates(formData.dateStart, formData.dateEnd, storeId);
         const expenses = await getExpenseByDates(formData.dateStart, formData.dateEnd, storeId);
+        // Cargar tipos
+        const typesFromAPI = await getTypeByCategory("EXPENSE", storeId);
+        //console.log("typesFromAPI: ", typesFromAPI)
+        setTypes(typesFromAPI.typeList);
         //console.log("getIncomeByDates: ", incomes)
         //console.log("getExpenseByDates: ", expenses)
         setFormData((prev) => ({
@@ -69,14 +80,16 @@ export default function CashFlowSummary() {
             if (selectedItem.type === "income") {
                 await updateIncome(selectedItem.data._id, selectedItem.data);
                 toast.success("Income updated");
-                await fetchIncomes();
+                await fetchData();
             } else {
+                //console.log("Expense a actualizar: ", selectedItem.data)
                 await updateExpense(selectedItem.data._id, selectedItem.data);
                 toast.success("Expense updated");
-                await fetchExpenses();
+                await fetchData();
             }
             setSelectedItem(null);
         } catch (error) {
+            console.log("Error updating", error)
             toast.error("Error updating");
         }
     };
@@ -177,15 +190,41 @@ export default function CashFlowSummary() {
                                 onChange={handleEditChange}
                                 className="w-full border rounded p-2"
                             />
+                            {(selectedItem.type === "expense") && (
+                                <div className="mt-6">
+
+                                    <label className="block font-medium mb-1">Type:</label>
+                                    <select
+                                        name="type"
+                                        className="w-full border rounded px-3 py-2 bg-gray-200 text-blue-950"
+                                        value={selectedItem.data.type || ''}
+                                        onChange={handleEditChange}
+                                    >
+                                        <option value="">Select a Type</option>
+                                        {types.map((t) => (
+                                            <option key={t.name} value={t.name}>
+                                                {t.name}
+                                            </option>
+                                        ))}
+                                    </select>
+                                </div>
+                            )}
 
                             <label className="block text-sm">Payment Method:</label>
-                            <input
-                                type="text"
+
+                            <select
                                 name="paymentMethod"
+                                className="w-full border rounded px-3 py-2 bg-gray-200 text-blue-950"
                                 value={selectedItem.data.paymentMethod}
                                 onChange={handleEditChange}
-                                className="w-full border rounded p-2"
-                            />
+                            >
+                                <option value="">Select Payment Method</option>
+                                {paymentMethods.map((t) => (
+                                    <option key={t.name} value={t.name}>
+                                        {t.name}
+                                    </option>
+                                ))}
+                            </select>
 
                             <div className="flex justify-between mt-4">
                                 <button onClick={() => setSelectedItem(null)} className="bg-red-800 px-4 py-2 rounded">

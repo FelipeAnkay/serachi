@@ -11,6 +11,7 @@ import { useAuthStore } from '../../store/authStore';
 import { Calculator, CirclePlus, Save, Search, Trash2 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import paymentList from '../../components/paymentMethods.json'
+import DateRangePicker from "../../components/DateRangePicker"
 
 
 const PRCalculator = () => {
@@ -85,6 +86,33 @@ const PRCalculator = () => {
             setLoading(false);
         }
     };
+    const [dateRange, setDateRange] = useState({
+        start: dateIn || '',  // usa el estado previo si lo necesitas
+        end: dateOut || ''
+    })
+
+    useEffect(() => {
+        setDateIn(dateRange.start)
+        setDateOut(dateRange.end)
+    }, [dateRange])
+
+    useEffect(() => {
+        const handleKeyDown = (e) => {
+            if (e.key === 'Escape') {
+                setShowModal(false)
+                setShowExistingServicesModal(false)
+                setShowServicesModal(false)
+            }
+        }
+
+        if (showModal || showServicesModal || showExistingServicesModal) {
+            window.addEventListener('keydown', handleKeyDown)
+        }
+
+        return () => {
+            window.removeEventListener('keydown', handleKeyDown)
+        }
+    }, [showModal, showServicesModal, showExistingServicesModal])
 
     const handleEditCommission = (index, value) => {
         const updated = [...summary];
@@ -214,26 +242,9 @@ const PRCalculator = () => {
                 <fieldset className='mb-5 border rounded-2xl p-4 flex flex-col gap-4 bg-blue-900 text-white'>
                     <legend className='ml-2 font-bold text-lg'>Calculation Dates</legend>
 
-                    <div className='flex flex-row gap-4 w-full'>
-                        <div className='flex flex-col w-1/2'>
-                            <label>Start Date:</label>
-                            <input
-                                type="date"
-                                value={dateIn}
-                                onChange={e => setDateIn(e.target.value)}
-                                className='w-full p-2 rounded bg-gray-200 text-black'
-                            />
-                        </div>
-
-                        <div className='flex flex-col w-1/2'>
-                            <label>End Date:</label>
-                            <input
-                                type="date"
-                                value={dateOut}
-                                onChange={e => setDateOut(e.target.value)}
-                                className='w-full p-2 rounded bg-gray-200 text-black'
-                            />
-                        </div>
+                    <div className="w-full mb-4">
+                        <label className="block mb-2 font-medium text-sm text-white">Date Range:</label>
+                        <DateRangePicker value={dateRange} onChange={setDateRange} />
                     </div>
 
                     <div className='flex justify-center mt-4'>

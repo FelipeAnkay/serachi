@@ -403,8 +403,8 @@ export default function CreateService() {
                                     ))}
                                 </select>
 
-                                {/* Conditional Toggle for "Front" Type */}
-                                {customService.type === 'Front' && (
+                                {/* Conditional Toggle for "Customer" Type */}
+                                {customService.type === 'Customer' && (
                                     <div className="mt-2 ml-2 flex items-center space-x-3 w-1/3">
                                         <span className="text-sm">Is the service paid?</span>
                                         <label className="relative inline-flex items-center cursor-pointer">
