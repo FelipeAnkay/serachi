@@ -9,7 +9,7 @@ router.post("/remove-email", deleteServiceByEmail);
 router.get("/get/:id", getServiceById);
 router.get("/get-ids/:ids", getServicesByIds);
 router.get("/store/:storeId", getServiceByStoreId);
-router.get("/fix/:name/:customerEmail/:storeId", fixServiceWithoutEmail);
+router.get("/fix/:name/:dataFix/:storeId", fixServiceWithoutEmail);
 router.get("/nostaff/:storeId", getServiceNoStaff);
 router.get("/nodata/:storeId", getServiceNoData);
 router.get("/dates/:storeId/:dateIn/:dateOut", getServiceByDates);

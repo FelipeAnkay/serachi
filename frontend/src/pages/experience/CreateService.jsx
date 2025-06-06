@@ -115,7 +115,7 @@ export default function CreateService() {
     const handleCustomerEmailSearch = async (customerEmail) => {
         //console.log("El email en handleCustomerEmailSearch es: ", customerEmail);
         try {
-            const response = await getCustomerEmail(customerEmail,storeId);
+            const response = await getCustomerEmail(customerEmail, storeId);
             console.log("F: getCustomerEmail es:", response);
             const found = response.customerList;
             console.log("F: el found es:", found);
@@ -151,7 +151,7 @@ export default function CreateService() {
                     _id: '',
                     email: customerEmail,
                     name: '',
-                    lastName:'',
+                    lastName: '',
                     phone: '',
                     country: '',
                     languages: [],
@@ -172,7 +172,7 @@ export default function CreateService() {
                 _id: '',
                 email: customerEmail,
                 name: '',
-                lastName:'',
+                lastName: '',
                 phone: '',
                 country: '',
                 languages: [],
@@ -387,11 +387,12 @@ export default function CreateService() {
                                     ))}
                                 </select>
                             </div>
-                            <div className="mt-2 w-full md:w-1/2 flex flex-col md:flex-row gap-4">
-                                <label className="block text-sm font-medium">Service Type:</label>
+                            <div className="w-full md:w-1/2 flex flex-col mt-2">
+                                <label className="text-sm font-medium text-left text-white">Service Type:</label>
+
                                 <select
                                     name="type"
-                                    className="ml-2 w-2/3 border border-gray-300 bg-white text-blue-950 rounded px-3 py-2"
+                                    className="w-full border border-gray-300 bg-white text-blue-950 rounded px-3 py-2"
                                     value={customService.type || ''}
                                     onChange={(e) => setCustomService({ ...customService, type: e.target.value })}
                                 >
@@ -405,7 +406,7 @@ export default function CreateService() {
 
                                 {/* Conditional Toggle for "Customer" Type */}
                                 {customService.type === 'Customer' && (
-                                    <div className="mt-2 ml-2 flex items-center space-x-3 w-1/3">
+                                    <div className="mt-2 flex items-center space-x-3">
                                         <span className="text-sm">Is the service paid?</span>
                                         <label className="relative inline-flex items-center cursor-pointer">
                                             <input
