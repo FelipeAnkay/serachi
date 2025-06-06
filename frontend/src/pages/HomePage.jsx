@@ -1,11 +1,20 @@
 import React from 'react'
 import { motion } from 'framer-motion'
+import { useEffect } from 'react';
 import { useAuthStore } from '../store/authStore';
 import { formatDate } from "../utils/date";
-import { Navigate } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
+import toast from 'react-hot-toast';
 
 const HomePage = () => {
   const { user, logout } = useAuthStore();
+  const location = useLocation();
+
+  useEffect(() => {
+    if (location.state?.unauthorized) {
+      toast.error("User not authorized");
+    }
+  }, [location]);
 
   const handleLogout = () => {
     logout();

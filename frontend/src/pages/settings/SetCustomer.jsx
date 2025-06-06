@@ -196,6 +196,7 @@ const SetCustomer = () => {
                                 >
                                     <div className="flex flex-col" onClick={() => openEditCustomerModal(customer)}>
                                         <p><strong>Name:</strong> {customer.name}</p>
+                                        <p><strong>Last Name:</strong> {customer.lastName || ''}</p>
                                         <p className="flex flex-row">
                                             <strong>Email:</strong>&nbsp;{customer.email}
                                             <Copy
@@ -209,7 +210,6 @@ const SetCustomer = () => {
                                             />
                                         </p>
                                         <p><strong>Phone:</strong> {customer.phone || '-'}</p>
-                                        <p><strong>Gender:</strong> {customer.gender || '-'}</p>
                                     </div>
                                     <button
                                         onClick={() => setConfirmDelete({ customer: customer.email })}

@@ -19,6 +19,7 @@ export const useStoreServices = create((set) => ({
     timezone: null,
     storeList: null,
     userList: null,
+    error:null,
     createStore: async (storeData) => {
         set({ isLoading: true, error: null });
         try {
@@ -72,7 +73,7 @@ export const useStoreServices = create((set) => ({
     getUsers: async (storeId) => {
         set({ isLoading: true, error: null });
         try {
-            //console.log("F: Llamado a getStoreById");
+            //console.log("F: Llamado a getStoreById: ", storeId);
             const response = await axios.get(`${URL_API}/users/${storeId}`);
             //console.log("F: Respueste de getStoreById: ", response);
             set({ userList: response.data.userList, isLoading: false });
