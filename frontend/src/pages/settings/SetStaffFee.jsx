@@ -162,6 +162,19 @@ const SetStaffFee = () => {
         setTempGroupedRules(grouped);
     };
 
+    const handleReset = (e) => {
+        setForm({
+            staffEmail: "",
+            productId: "",
+            feeRules: [],
+            startDate: "",
+            finishDate: "",
+            priority: "",
+        });
+        setIsEditing(false);
+        setEditingId("")
+    };
+
     const handleDelete = async (id) => {
         console.log("Entre a handleDelete ", id)
         if (confirm("Are you sure you want to delete this fee?")) {
@@ -171,6 +184,8 @@ const SetStaffFee = () => {
             toast.success("Staff Fee deleted");
         }
     };
+
+
 
     const filteredPayrates = payrates.filter((rate) => {
         const staffMatch = rate.staffEmail.toLowerCase().includes(staffFilter.toLowerCase());
@@ -325,13 +340,23 @@ const SetStaffFee = () => {
                             className="w-full border px-2 py-1 rounded bg-gray-200"
                         />
                     </div>
-
-                    <button
-                        type="submit"
-                        className="mt-4 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 w-full sm:w-auto"
-                    >
-                        {isEditing ? "Edit Fee" : "Create Fee"}
-                    </button>
+                    <div>
+                        <button
+                            type="submit"
+                            className={`mt-4 ${isEditing ? 'bg-green-600 hover:bg-green-700' : 'bg-blue-600 hover:bg-blue-700'}  text-white px-4 py-2 rounded w-full sm:w-auto`}
+                        >
+                            {isEditing ? "Save Fee" : "Create Fee"}
+                        </button>
+                        {isEditing ? (
+                            <button
+                                type="button"
+                                className={`mt-4 bg-red-400 hover:bg-red-600  text-white px-4 py-2 rounded w-full sm:w-auto ml-2`}
+                                onClick={handleReset}
+                            >
+                                Cancel
+                            </button>
+                        ) : ""}
+                    </div>
                 </motion.form>
             </AnimatePresence>
 
