@@ -41,6 +41,13 @@ const storeSchema = new mongoose.Schema({
             values: [{ type: String }]
         }
     ],
+    openningBalance: [
+        {
+            _id: false,
+            year: { type: String },
+            amount: { type: Number },
+        }
+    ],
     isActive:{
         type: Boolean,
         default: true
