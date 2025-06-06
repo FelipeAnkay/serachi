@@ -96,6 +96,7 @@ const menuItems = [
 const LeftMenu = ({ show, setShow }) => {
     const [openMenus, setOpenMenus] = useState({});
     const { logout } = useAuthStore();
+    const storeId = Cookies.get('storeId');
 
     const toggleMenu = (key) => {
         setOpenMenus(prev => ({ ...prev, [key]: !prev[key] }));
@@ -117,7 +118,7 @@ const LeftMenu = ({ show, setShow }) => {
                 {show && (
                     <>
                         <img src={logo} alt="logo" className="w-10 h-10" />
-                        <h2 className="text-xl font-bold">Serachi</h2>
+                        <h2 className="text-xl font-bold">Serachi - {storeId}</h2>
                     </>
                 )}
                 <Menu onClick={() => setShow(!show)} className="cursor-pointer" />

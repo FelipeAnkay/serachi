@@ -1,4 +1,5 @@
 import { Routes, Route, Navigate, BrowserRouter as Router } from 'react-router-dom';
+import Cookies from 'js-cookie';
 import SignUpPage from './pages/signing/SignUpPage';
 import LoginPage from './pages/signing/LoginPage';
 import EmailVerificationPage from './pages/signing/EmailVerificationPage';
@@ -42,31 +43,85 @@ import SetRoles from './pages/settings/SetRoles';
 import SetUsers2 from './pages/settings/SetUsers2';
 import DeleteServices from './pages/experience/DeleteServices';
 import MonthlyCashFlow from './pages/reports/MonthlyCashFlow';
+import { useRoleServices } from './store/rolesServices';
+import { useStoreServices } from './store/storeServices';
 
 const ProtectedRoute = ({ children, requiredPermission }) => {
   const { isAuthenticated, user } = useAuthStore();
+  const { getRoleById } = useRoleServices();
+  const { getStoreById } = useStoreServices();
+  const [permissions, setPermissions] = useState([]);
+  const [loadingPermissions, setLoadingPermissions] = useState(true);
 
-  //console.log("El user es: ", user)
+  useEffect(() => {
+    const fetchPermissions = async () => {
+      if (!isAuthenticated || !user || !user.isVerified) {
+        setLoadingPermissions(false);
+        return;
+      }
+
+      const storeId = Cookies.get('storeId');
+      const perms = await getUserPermissions(user, storeId, getRoleById, getStoreById);
+      //console.log("getUserPermissions: ", perms);
+      setPermissions(perms);
+      setLoadingPermissions(false);
+    };
+
+    fetchPermissions();
+  }, [isAuthenticated, user, getRoleById, getStoreById]);
 
   if (!isAuthenticated) {
     return <Navigate to="/login" replace />;
   }
+
   if (!user.isVerified) {
     return <Navigate to="/verify-email" replace />;
   }
 
-  // Si no se requiere permiso específico, permite pasar
-  if (!requiredPermission) return children;
-
-  // Asegúrate de que user.role sea un array y tenga acceso a los permisos
-  //const userPermissions = getUserPermissions(user);
-/*
-  if (!userPermissions.includes(requiredPermission)) {
-    return <Navigate to="/unauthorized" replace />;
+  if (loadingPermissions) {
+    return <LoadingSpinner />;
   }
-    */
+
+  if (requiredPermission && !permissions.includes(requiredPermission)) {
+    return <Navigate to="/" replace state={{ unauthorized: true }} />;
+  }
+
   return children;
-}
+};
+
+const getUserPermissions = async (user, storeId, getRoleById, getStoreById) => {
+  if (!user || !Array.isArray(user.role)) return [];
+  //console.log("Entre a getUserPermissions USER: ", user)
+  //console.log("Entre a getUserPermissions storeId: ", storeId)
+
+  const store = await getStoreById(storeId); // necesitas esta función si no tienes ya el store cargado
+  //console.log("getStoreById: ", store);
+  // Si es el mainEmail, devolver permisos completos
+  if (user.email === store.store.mainEmail) {
+    return [
+      "VIEW_REPORTS",
+      "VIEW_SETTINGS",
+      "VIEW_PAYROLL",
+      "VIEW_BOOKINGS",
+      "VIEW_CASHFLOW",
+      "VIEW_EXPERIENCES",
+      "VIEW_QUOTES",
+      // puedes agregar todos los permisos existentes aquí o usar una constante global
+    ];
+  }
+
+  const roleEntry = user.role.find(r => r.storeId === storeId);
+  //console.log("roleEntry: ", roleEntry)
+  if (!roleEntry || !roleEntry.roleId) return [];
+  try {
+    const roleData = await getRoleById(roleEntry.roleId);
+    //console.log("getRoleById: ", roleData)
+    return roleData?.role?.permission || [];
+  } catch (error) {
+    console.error("Error fetching role permissions:", error);
+    return [];
+  }
+};
 const MenuAvailable = () => {
   const { isAuthenticated } = useAuthStore();
   const [showMenu, setShowMenu] = useState(false);
@@ -119,203 +174,203 @@ function App() {
         <Route
           path="/experience-calendar"
           element={
-            <ProtectedRoute>
+            <ProtectedRoute requiredPermission="VIEW_EXPERIENCES">
               <Experiences />
             </ProtectedRoute>}
         />
         <Route
           path="/experience-create-service"
           element={
-            <ProtectedRoute>
+            <ProtectedRoute requiredPermission="VIEW_EXPERIENCES">
               <CreateService />
             </ProtectedRoute>}
         />
         <Route
           path="/experience-add-items"
           element={
-            <ProtectedRoute>
+            <ProtectedRoute requiredPermission="VIEW_EXPERIENCES">
               <AddItemsExperience />
             </ProtectedRoute>}
         />
         <Route
           path="/experience-open-tabs"
           element={
-            <ProtectedRoute>
+            <ProtectedRoute requiredPermission="VIEW_EXPERIENCES">
               <OpenTabs />
             </ProtectedRoute>}
         />
         <Route
           path="/delete-services"
           element={
-            <ProtectedRoute>
+            <ProtectedRoute requiredPermission="VIEW_EXPERIENCES">
               <DeleteServices />
             </ProtectedRoute>}
         />
         <Route
           path="/set-service-staff"
           element={
-            <ProtectedRoute>
+            <ProtectedRoute requiredPermission="VIEW_EXPERIENCES">
               <AssignStaff />
             </ProtectedRoute>}
         />
         <Route
           path="/set-service-dates"
           element={
-            <ProtectedRoute>
+            <ProtectedRoute requiredPermission="VIEW_EXPERIENCES">
               <PendingServices />
-            </ProtectedRoute>}
-        />
-        <Route
-          path="/set-staff-rates"
-          element={
-            <ProtectedRoute>
-              <SetStaffFee />
             </ProtectedRoute>}
         />
         <Route
           path="/bookings"
           element={
-            <ProtectedRoute>
+            <ProtectedRoute requiredPermission="VIEW_BOOKINGS">
               <Booking />
             </ProtectedRoute>}
         />
         <Route
           path="/booking-calendar"
           element={
-            <ProtectedRoute>
+            <ProtectedRoute requiredPermission="VIEW_BOOKINGS">
               <BookingSchedule />
             </ProtectedRoute>}
         />
         <Route
           path="/create-reservation"
           element={
-            <ProtectedRoute>
+            <ProtectedRoute requiredPermission="VIEW_BOOKINGS">
               <CreateReservation />
             </ProtectedRoute>}
         />
         <Route
           path="/new-quote"
           element={
-            <ProtectedRoute>
+            <ProtectedRoute requiredPermission="VIEW_QUOTES">
               <NewQuote />
             </ProtectedRoute>}
         />
         <Route
           path="/new-quote/:quoteId"
           element={
-            <ProtectedRoute>
+            <ProtectedRoute requiredPermission="VIEW_QUOTES">
               <NewQuote />
             </ProtectedRoute>}
         />
         <Route
           path="/past-quote"
           element={
-            <ProtectedRoute>
+            <ProtectedRoute requiredPermission="VIEW_QUOTES">
               <OpenQuote />
             </ProtectedRoute>}
         />
         <Route
           path="/confirmed-quote"
           element={
-            <ProtectedRoute>
+            <ProtectedRoute requiredPermission="VIEW_QUOTES">
               <ConfirmedQuote />
             </ProtectedRoute>}
         />
         <Route
           path="/cashflow"
           element={
-            <ProtectedRoute>
+            <ProtectedRoute requiredPermission="VIEW_CASHFLOW">
               <CashFlow />
             </ProtectedRoute>}
         />
         <Route
           path="/cashflow-summary"
           element={
-            <ProtectedRoute>
+            <ProtectedRoute requiredPermission="VIEW_CASHFLOW">
               <CashFlowSummary />
             </ProtectedRoute>}
         />
         <Route
           path="/new-income"
           element={
-            <ProtectedRoute>
+            <ProtectedRoute requiredPermission="VIEW_CASHFLOW">
               <NewIncome />
             </ProtectedRoute>}
         />
         <Route
           path="/new-expense"
           element={
-            <ProtectedRoute>
+            <ProtectedRoute requiredPermission="VIEW_CASHFLOW">
               <NewExpense />
             </ProtectedRoute>}
         />
         <Route
           path="/payroll-calculator"
           element={
-            <ProtectedRoute>
+            <ProtectedRoute requiredPermission="VIEW_PAYROLL">
               <PRCalculator />
             </ProtectedRoute>}
         />
         <Route
           path="/set-products"
           element={
-            <ProtectedRoute>
+            <ProtectedRoute requiredPermission="VIEW_SETTINGS">
               <SetProducts />
             </ProtectedRoute>}
         />
         <Route
           path="/set-rooms"
           element={
-            <ProtectedRoute>
+            <ProtectedRoute requiredPermission="VIEW_SETTINGS">
               <SetRooms />
+            </ProtectedRoute>}
+        />
+        <Route
+          path="/set-staff-rates"
+          element={
+            <ProtectedRoute requiredPermission="VIEW_SETTINGS">
+              <SetStaffFee />
             </ProtectedRoute>}
         />
         <Route
           path="/set-roles"
           element={
-            <ProtectedRoute>
+            <ProtectedRoute requiredPermission="VIEW_SETTINGS">
               <SetRoles />
             </ProtectedRoute>}
         />
         <Route
           path="/set-supplier"
           element={
-            <ProtectedRoute>
+            <ProtectedRoute requiredPermission="VIEW_SETTINGS">
               <SetSupplier />
             </ProtectedRoute>}
         />
         <Route
           path="/set-store"
           element={
-            <ProtectedRoute>
+            <ProtectedRoute requiredPermission="VIEW_SETTINGS">
               <SetStore />
             </ProtectedRoute>}
         />
         <Route
           path="/set-users"
           element={
-            <ProtectedRoute>
+            <ProtectedRoute requiredPermission="VIEW_SETTINGS">
               <SetUsers2 />
             </ProtectedRoute>}
         />
         <Route
           path="/set-customer"
           element={
-            <ProtectedRoute>
+            <ProtectedRoute requiredPermission="VIEW_SETTINGS">
               <SetCustomer />
             </ProtectedRoute>}
         />
         <Route
           path="/set-partner"
           element={
-            <ProtectedRoute>
+            <ProtectedRoute requiredPermission="VIEW_SETTINGS">
               <SetPartner />
             </ProtectedRoute>}
         />
         <Route
           path="/set-staff"
           element={
-            <ProtectedRoute>
+            <ProtectedRoute requiredPermission="VIEW_SETTINGS">
               <SetStaff />
             </ProtectedRoute>}
         />
@@ -349,14 +404,14 @@ function App() {
         <Route
           path="/report-incomes"
           element={
-            <ProtectedRoute>
+            <ProtectedRoute requiredPermission="VIEW_REPORTS">
               <Reports />
             </ProtectedRoute>}
         />
         <Route
           path="/report-cashflow"
           element={
-            <ProtectedRoute>
+            <ProtectedRoute requiredPermission="VIEW_REPORTS">
               <MonthlyCashFlow />
             </ProtectedRoute>}
         />

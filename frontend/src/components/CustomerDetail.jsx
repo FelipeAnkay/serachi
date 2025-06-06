@@ -78,17 +78,14 @@ export default function CustomerDetails({ isOpen, onClose, customer, setCustomer
                         <div>
                             <label className="block text-sm font-medium">Gender</label>
                             <select
+                                type="text"
                                 className="w-full border border-gray-300 rounded px-3 py-2 mt-1"
-                                value={genderSelectValue}
-                                onChange={(e) => {
-                                    const selected = e.target.value;
-                                    setCountrySelectValue(selected);
-                                    setCustomer({ ...customer, gender: selected });
-                                }}
+                                value={customer.gender || ''}
+                                onChange={(e) => setCustomer({ ...customer, gender: e.target.value })}
                             >
                                 <option value="" className="text-blue-950">Select Gender</option>
-                                <option key="FE" value="Female" className='text-blue-950'>Female</option>
-                                <option key="MA" value="Male" className='text-blue-950'>Male</option>
+                                <option key="FEM" value="Female" className='text-blue-950'>Female</option>
+                                <option key="MAL" value="Male" className='text-blue-950'>Male</option>
                             </select>
 
                         </div>
@@ -106,7 +103,7 @@ export default function CustomerDetails({ isOpen, onClose, customer, setCustomer
                             <input
                                 type="date"
                                 className="w-full border border-gray-300 rounded px-3 py-2 mt-1"
-                                value={customer.birthdate || ''}
+                                value={customer.birthDate?.slice(0, 10) || ''}
                                 onChange={(e) => setCustomer({ ...customer, birthdate: e.target.value })}
                             />
                         </div>
