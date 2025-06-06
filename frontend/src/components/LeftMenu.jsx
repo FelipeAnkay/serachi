@@ -3,7 +3,8 @@ import {
     CalendarHeart, CalendarPlus2, ChartColumnIncreasing, ChartNoAxesCombined, ChevronDown, CircleUser, Contact, DollarSign, HandCoins, Handshake, Home,
     MapPinCheckInside, PiggyBank, Receipt, Scale, Settings, ShieldCheck, ShieldUser, Ship, ShoppingBasket, Store,
     TicketCheck, Truck, Wallet, Menu,
-    Trash2
+    Trash2,
+    TrendingUp
 } from "lucide-react";
 
 import logo from "../../public/Serachi_logo-nobg.png";
@@ -70,6 +71,7 @@ const menuItems = [
         key: "insights",
         children: [
             { to: "/report-incomes", label: "Report", icon: <ChartColumnIncreasing /> },
+            { to: "/report-cashflow", label: "Monthly Cash Flow", icon: <TrendingUp /> },
         ]
     },
     {

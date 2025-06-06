@@ -41,6 +41,7 @@ import Reports from './pages/reports/Reports';
 import SetRoles from './pages/settings/SetRoles';
 import SetUsers2 from './pages/settings/SetUsers2';
 import DeleteServices from './pages/experience/DeleteServices';
+import MonthlyCashFlow from './pages/reports/MonthlyCashFlow';
 
 const ProtectedRoute = ({ children }) => {
   const { isAuthenticated, user } = useAuthStore();
@@ -54,18 +55,18 @@ const ProtectedRoute = ({ children }) => {
   return children;
 }
 const MenuAvailable = () => {
-    const { isAuthenticated } = useAuthStore();
-    const [showMenu, setShowMenu] = useState(false);
+  const { isAuthenticated } = useAuthStore();
+  const [showMenu, setShowMenu] = useState(false);
 
-    if (!isAuthenticated) {
-        return null;
-    }
+  if (!isAuthenticated) {
+    return null;
+  }
 
-    return (
-        <div className="flex">
-            <LeftMenu show={showMenu} setShow={setShowMenu} />
-        </div>
-    );
+  return (
+    <div className="flex">
+      <LeftMenu show={showMenu} setShow={setShowMenu} />
+    </div>
+  );
 };
 
 const RedirectAuthenticatedUser = ({ children }) => {
@@ -243,13 +244,6 @@ function App() {
             </ProtectedRoute>}
         />
         <Route
-          path="/report-incomes"
-          element={
-            <ProtectedRoute>
-              <Reports />
-            </ProtectedRoute>}
-        />
-        <Route
           path="/set-products"
           element={
             <ProtectedRoute>
@@ -339,6 +333,20 @@ function App() {
             <ResetPasswordPage />
           </RedirectAuthenticatedUser>
         } />
+        <Route
+          path="/report-incomes"
+          element={
+            <ProtectedRoute>
+              <Reports />
+            </ProtectedRoute>}
+        />
+        <Route
+          path="/report-cashflow"
+          element={
+            <ProtectedRoute>
+              <MonthlyCashFlow />
+            </ProtectedRoute>}
+        />
         {/*catch all not determined above routes*/}
         <Route path="*" element={
           <Navigate to="/" replace />
