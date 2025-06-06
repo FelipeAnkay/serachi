@@ -43,8 +43,10 @@ import SetUsers2 from './pages/settings/SetUsers2';
 import DeleteServices from './pages/experience/DeleteServices';
 import MonthlyCashFlow from './pages/reports/MonthlyCashFlow';
 
-const ProtectedRoute = ({ children }) => {
+const ProtectedRoute = ({ children, requiredPermission }) => {
   const { isAuthenticated, user } = useAuthStore();
+
+  //console.log("El user es: ", user)
 
   if (!isAuthenticated) {
     return <Navigate to="/login" replace />;
@@ -52,13 +54,24 @@ const ProtectedRoute = ({ children }) => {
   if (!user.isVerified) {
     return <Navigate to="/verify-email" replace />;
   }
+
+  // Si no se requiere permiso específico, permite pasar
+  if (!requiredPermission) return children;
+
+  // Asegúrate de que user.role sea un array y tenga acceso a los permisos
+  //const userPermissions = getUserPermissions(user);
+/*
+  if (!userPermissions.includes(requiredPermission)) {
+    return <Navigate to="/unauthorized" replace />;
+  }
+    */
   return children;
 }
 const MenuAvailable = () => {
   const { isAuthenticated } = useAuthStore();
   const [showMenu, setShowMenu] = useState(false);
 
-  if (!isAuthenticated) {
+  if (!isAuthenticated || location.pathname.includes("verify-email")) {
     return null;
   }
 

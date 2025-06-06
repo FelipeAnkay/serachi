@@ -30,7 +30,7 @@ const LoginPage = () => {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
-      className='fixed inset-0 flex items-center justify-center z-50 bg-blue-950 bg-opacity-50 backdrop-filter backdrop-blur-xl rounded-2xl shadow-xl 
+      className='fixed inset-0 flex items-center justify-center z-50 bg-blue-950 bg-opacity-50 backdrop-filter backdrop-blur-xl shadow-xl 
         overflow-hidden'
     >
       <div className="p-8">

@@ -55,6 +55,9 @@ const customerSchema = new mongoose.Schema({
             type: String
         }
     },
+    lastDive: {
+        type:Date,
+    },
     divingCertificates: [divingCertificateSchema],
     storeId: {
         type:String,
