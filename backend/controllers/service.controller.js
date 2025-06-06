@@ -212,7 +212,6 @@ export const getServiceByDates = async (req, res) => {
 
         const serviceList = await Service.find({
             storeId: normalizedStoreId,
-            type: "Customer",
             dateIn: { $gte: new Date(dateIn) },
             dateOut: { $lte: new Date(dateOut) },
         });
@@ -298,7 +297,7 @@ export const deleteServiceByEmail = async (req, res) => {
 
 export const fixServiceWithoutEmail = async (req, res) => {
     try {
-        const { name, customerEmail, storeId } = req.params;
+        const { name, dataFix, storeId } = req.params;
         const normalizedStoreId = storeId?.toUpperCase();
 
         // Buscar todos los servicios que contienen `name` y coinciden con `storeId`
@@ -313,7 +312,7 @@ export const fixServiceWithoutEmail = async (req, res) => {
 
         // Actualizar todos los servicios encontrados agregando customerEmail
         const updatePromises = services.map(service =>
-            Service.findByIdAndUpdate(service._id, { customerEmail: customerEmail }, { new: true })
+            Service.findByIdAndUpdate(service._id, { type: dataFix }, { new: true })
         );
 
         const updatedServices = await Promise.all(updatePromises);

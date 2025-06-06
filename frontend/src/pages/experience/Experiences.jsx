@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { useExperienceServices } from '../../store/experienceServices';
 import Cookies from 'js-cookie';
 import { Calendar, momentLocalizer, Views } from 'react-big-calendar';
 import moment from 'moment';
@@ -13,20 +12,22 @@ import { useServiceServices } from '../../store/serviceServices';
 const localizer = momentLocalizer(moment);
 
 const Experiences = () => {
-    const { getExperienceList } = useExperienceServices();
-    const { getServiceById, updateService, getServicesByDate } = useServiceServices();
+    const { updateService, getServicesByDate } = useServiceServices();
     const { getStaffEmail, getStaffList } = useStaffServices();
     const storeId = Cookies.get("storeId");
     const [events, setEvents] = useState([]);
+    const [allEvents, setAllEvents] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const [view, setView] = useState(Views.MONTH);
+    const [view, setView] = useState(Views.AGENDA);
     const [selectedDate, setSelectedDate] = useState(new Date());
     const [selectedService, setSelectedService] = useState(null);
     const [modalOpen, setModalOpen] = useState(false);
     const [editData, setEditData] = useState({});
     const [loadedRange, setLoadedRange] = useState({ start: null, end: null });
     const [staffList, setStaffList] = useState([]);
+    const [serviceTypes, setServiceTypes] = useState([]);
+    const [selectedType, setSelectedType] = useState("All");
 
 
     useEffect(() => {
@@ -38,6 +39,15 @@ const Experiences = () => {
         fetchExperiences(firstDay, lastDay);
     }, []);
 
+    useEffect(() => {
+        if (selectedType === "All") {
+            setEvents(allEvents);
+        } else {
+            const filtered = allEvents.filter(e => e.type === selectedType);
+            setEvents(filtered);
+        }
+    }, [selectedType]);
+
     const fetchStaff = async () => {
         const staff = await getStaffList(storeId);
         //console.log("staff: ", staff)
@@ -48,6 +58,7 @@ const Experiences = () => {
         setLoading(true);
         const allServiceEvents = [];
         const staffColorMap = {};
+        const typesSet = new Set();
 
         const getColorForStaff = async (email) => {
             //console.log("Entre a getColorForStaff ", email);
@@ -69,7 +80,7 @@ const Experiences = () => {
             }
         };
         try {
-            const serviceDetail = await getServicesByDate(startDate, endDate,storeId);
+            const serviceDetail = await getServicesByDate(startDate, endDate, storeId);
             //console.log("La respuesta de getServiceById ", serviceDetail);
             if (serviceDetail.serviceList.length > 0) {
                 for (const serviceRef of serviceDetail.serviceList) {
@@ -77,6 +88,8 @@ const Experiences = () => {
                     if (serviceRef && serviceRef.isActive) {
                         const staffEmail = serviceRef.staffEmail;
                         const color = await getColorForStaff(staffEmail);
+                        const serviceType = serviceRef.type || "Unknown";
+                        typesSet.add(serviceType);
                         allServiceEvents.push({
                             title: `${serviceRef.name} - ${serviceRef.staffEmail}`,
                             start: new Date(serviceRef.dateIn),
@@ -84,11 +97,14 @@ const Experiences = () => {
                             allDay: false,
                             resource: serviceRef,
                             staffColor: color,
+                            type: serviceRef.type,
                         });
                     }
                 }
             }
+            setAllEvents(allServiceEvents);
             setEvents(allServiceEvents);
+            setServiceTypes(["All", ...Array.from(typesSet)]);
             setLoadedRange({ start: startDate, end: endDate });
             setLoading(false);
         } catch (error) {
@@ -206,6 +222,20 @@ const Experiences = () => {
                     Experiences Calendar
                 </h2>
                 <div className="flex-grow p-4 overflow-hidden">
+                    <div className="flex items-center gap-4 px-4 mb-4">
+                        <label className="text-white font-semibold">Filter Events by Type:</label>
+                        <select
+                            value={selectedType}
+                            onChange={(e) => setSelectedType(e.target.value)}
+                            className="bg-white text-blue-950 border border-gray-600 rounded-md px-2 py-1"
+                        >
+                            {serviceTypes.map((type) => (
+                                <option key={type} value={type}>
+                                    {type}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
                     <div className="h-full w-full bg-white text-black rounded-xl shadow-xl">
                         <Calendar
                             localizer={localizer}
@@ -216,7 +246,7 @@ const Experiences = () => {
                             onSelectSlot={handleSelectSlot}
                             onSelectEvent={handleSelectEvent}
                             onNavigate={handleNavigate}
-                            defaultView={Views.MONTH}
+                            defaultView={Views.AGENDA}
                             view={view}
                             onView={setView}
                             date={selectedDate}

@@ -8,8 +8,11 @@ export function createCustomServices(customService) {
         productId,
         staffEmail,
         onePerDay,
+        type,
         perWeek,
     } = customService;
+
+    //console.log("El type es: ", type)
 
     if (!dateIn || !dateOut || !productId) {
         throw new Error('Missing required fields');
@@ -52,6 +55,7 @@ export function createCustomServices(customService) {
                         dateIn: currentDateIn.toISOString(),
                         dateOut: currentDateOut.toISOString(),
                         productId,
+                        type,
                         staffEmail,
                     });
                 }
@@ -65,6 +69,7 @@ export function createCustomServices(customService) {
                     dateIn: currentDateIn.toISOString(),
                     dateOut: currentDateOut.toISOString(),
                     productId,
+                    type,
                     staffEmail,
                 });
                 auxDateIn.setDate(auxDateIn.getDate() + 7);
@@ -89,6 +94,7 @@ export function createCustomServices(customService) {
                         dateIn: currentDateIn.toISOString(),
                         dateOut: currentDateOut.toISOString(),
                         productId,
+                        type,
                         staffEmail,
                     });
 
@@ -104,6 +110,7 @@ export function createCustomServices(customService) {
                     dateIn: auxDateIn.toISOString(),
                     dateOut: auxDateOut.toISOString(),
                     productId,
+                    type,
                     staffEmail,
                 });
                 auxDateIn.setDate(auxDateOut.getDate() + 1);
