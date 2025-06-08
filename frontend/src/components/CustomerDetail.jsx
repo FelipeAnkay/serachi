@@ -103,7 +103,7 @@ export default function CustomerDetails({ isOpen, onClose, customer, setCustomer
                             <input
                                 type="date"
                                 className="w-full border border-gray-300 rounded px-3 py-2 mt-1"
-                                value={customer.birthDate?.slice(0, 10) || ''}
+                                value={customer.birthdate?.slice(0, 10) || ''}
                                 onChange={(e) => setCustomer({ ...customer, birthdate: e.target.value })}
                             />
                         </div>

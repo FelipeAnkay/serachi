@@ -33,14 +33,6 @@ const storeSchema = new mongoose.Schema({
         type:String,
         default: "",
     },
-    filterList: [
-        {
-            _id: false,
-            page: { type: String },
-            category: { type: String },
-            values: [{ type: String }]
-        }
-    ],
     openningBalance: [
         {
             _id: false,

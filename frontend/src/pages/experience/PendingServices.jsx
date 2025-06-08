@@ -103,7 +103,7 @@ export default function PendingServices() {
                         />
                         <div className="grid gap-4 grid-cols-1 sm:grid-cols-3 md:grid-cols-2 lg:grid-cols-1">
                             {services.length === 0 ? (
-                                <p>No Quotes found for this store.</p>
+                                <p>No Services with missing data.</p>
                             ) : (
                                 services
                                     .filter(service =>

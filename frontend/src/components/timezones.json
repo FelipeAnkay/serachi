@@ -4,16 +4,8 @@
       "label": "(UTC-03:00) Buenos Aires"
     },
     {
-      "value": "America/Argentina/Catamarca",
-      "label": "(UTC-03:00) Catamarca"
-    },
-    {
       "value": "America/Argentina/ComodRivadavia",
       "label": "(UTC-03:00) Comodoro Rivadavia"
-    },
-    {
-      "value": "America/Argentina/Buenos_Aires",
-      "label": "(UTC-03:00) Rosario"
     },
     {
       "value": "America/Bogota",

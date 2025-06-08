@@ -44,7 +44,7 @@ export const useStoreServices = create((set) => ({
                 ...updatedVars
             });
             */
-           console.log("updateStore: ", updatedVars);
+           //console.log("updateStore: ", updatedVars);
             const response = await axios.post(`${URL_API}/update`, {
                 storeId: storeId,
                 ...updatedVars

@@ -45,6 +45,9 @@ import DeleteServices from './pages/experience/DeleteServices';
 import MonthlyCashFlow from './pages/reports/MonthlyCashFlow';
 import { useRoleServices } from './store/rolesServices';
 import { useStoreServices } from './store/storeServices';
+import LiabilityEn from './pages/forms/liabilityEn';
+import Unauthorized from './pages/Unauthorized';
+import LiabilityEs from './pages/forms/LiabilityES';
 
 const ProtectedRoute = ({ children, requiredPermission }) => {
   const { isAuthenticated, user } = useAuthStore();
@@ -125,8 +128,18 @@ const getUserPermissions = async (user, storeId, getRoleById, getStoreById) => {
 const MenuAvailable = () => {
   const { isAuthenticated } = useAuthStore();
   const [showMenu, setShowMenu] = useState(false);
+  const hiddenRoutes = [
+    '/login',
+    '/signup',
+    '/verify-email',
+    '/unauthorized',
+    '/forgot-password',
+    '/reset-password',
+    '/forms/liabilityEn',
+    '/forms/liabilityEs',
+  ];
 
-  if (!isAuthenticated || location.pathname.includes("verify-email")) {
+  if (hiddenRoutes.some(route => location.pathname.startsWith(route))) {
     return null;
   }
 
@@ -373,6 +386,21 @@ function App() {
             <ProtectedRoute requiredPermission="VIEW_SETTINGS">
               <SetStaff />
             </ProtectedRoute>}
+        />
+        <Route
+          path="/forms/liabilityEn"
+          element={
+            <LiabilityEn />}
+        />
+        <Route
+          path="/forms/liabilityEs"
+          element={
+            <LiabilityEs />}
+        />
+        <Route
+          path="/unauthorized"
+          element={
+            <Unauthorized />}
         />
         <Route
           path="/signup"
