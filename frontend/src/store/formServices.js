@@ -1,22 +1,22 @@
 import { create } from 'zustand';
 import axios from 'axios';
 
-const URL_API = import.meta.env.MODE === "development" ? "http://localhost:5000/api/roles" : "/api/roles";
+const URL_API = import.meta.env.MODE === "development" ? "http://localhost:5000/api/forms" : "/api/forms";
 
 
 axios.defaults.withCredentials = true;
 
 
-export const useRoleServices = create((set) => ({
+export const useFormServices = create((set) => ({
     isLoading: false,
     error: null,
-    roleList: [],
-    createRole: async (roleData) => {
+    formList: [],
+    createForm: async (formData) => {
         set({ isLoading: true, error: null });
         try {
             //console.log("Los datos a enviar en createrole son: ", roleData)
-            const response = await axios.post(`${URL_API}/create`, roleData);
-            set({ roleList: response.data.roleList, isLoading: false });
+            const response = await axios.post(`${URL_API}/create`, formData);
+            set({ formList: response.data.formList, isLoading: false });
             return response.data;
         } catch (error) {
             set({ error: error.response.data.message || "Error creating store", isLoading: false });
@@ -24,7 +24,7 @@ export const useRoleServices = create((set) => ({
         }
     },
 
-    updateRole: async (id, updatedVars) => {
+    updateForm: async (id, updatedVars) => {
         set({ isLoading: true, error: null });
         try {
             delete updatedVars._id;;
@@ -40,14 +40,14 @@ export const useRoleServices = create((set) => ({
                 ...updatedVars
             });
             //console.log("F: Respueste de updateStaff: ", response);
-            set({ roleList: response.data.roleList, isLoading: false });
+            set({ formList: response.data.formList, isLoading: false });
             return response.data;
         } catch (error) {
-            set({ error: error || "Error updating role", isLoading: false });
+            set({ error: error || "Error updating form", isLoading: false });
             throw error;
         }
     },
-    getRoleById: async (id) => {
+    getFormById: async (id) => {
         set({ isLoading: true, error: null });
         try {
             //console.log("F: Llamado a getStoreById");
@@ -60,11 +60,11 @@ export const useRoleServices = create((set) => ({
             throw error;
         }
     },
-    getRolesByStoreId: async (storeId) => {
+    getFormByStoreId: async (storeId) => {
         set({ isLoading: true, error: null });
         try {
             //console.log("F: Llamado a getStoreById");
-            const response = await axios.get(`${URL_API}/roles/${storeId}`);
+            const response = await axios.get(`${URL_API}/forms/${storeId}`);
             //console.log("F: Respueste de getStoreById: ", response);
             set({ roleList: response.data.roleList, isLoading: false });
             return response.data;
@@ -73,16 +73,27 @@ export const useRoleServices = create((set) => ({
             throw error;
         }
     },
-    removeRole: async (id) => {
+    generateToken: async (email,storeId) => {
         set({ isLoading: true, error: null });
         try {
             //console.log("F: Llamado a getStoreById");
-            const response = await axios.post(`${URL_API}/remove`,{id:id});
+            const response = await axios.get(`${URL_API}/token/${email}/${storeId}`);
             //console.log("F: Respueste de getStoreById: ", response);
-            set({ roleList: response.data.roleList, isLoading: false });
             return response.data;
         } catch (error) {
-            set({ error: error.response.data.message || "Error getting roles", isLoading: false });
+            set({ error: error.response.data.message || "Error getting token", isLoading: false });
+            throw error;
+        }
+    },
+    getDataToken: async (token) => {
+        set({ isLoading: true, error: null });
+        try {
+            //console.log("F: Llamado a getStoreById");
+            const response = await axios.get(`${URL_API}/dataToken/${token}`);
+            //console.log("F: Respueste de getStoreById: ", response);
+            return response.data;
+        } catch (error) {
+            set({ error: error.response.data.message || "Error getting token", isLoading: false });
             throw error;
         }
     },

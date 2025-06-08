@@ -1,0 +1,14 @@
+{
+  "compilerOptions": {
+    "target": "esnext",               // Versión de JS a compilar
+    "module": "esnext",               // Sistema de módulos, compatible con Vite
+    "moduleResolution": "node",       // Resolver módulos como Node
+    "jsx": "react-jsx",               // Soporte JSX moderno (React 17+)
+    "strict": true,                   // Activa chequeos estrictos
+    "esModuleInterop": true,          // Facilita importaciones comunes
+    "skipLibCheck": true,             // Omite chequeo de tipos en libs node_modules
+    "forceConsistentCasingInFileNames": true // Evita problemas en sistemas case-sensitive
+  },
+  "include": ["src", "types"],        // Carpetas a incluir en la compilación
+  "exclude": ["node_modules"]         // Excluir node_modules
+}

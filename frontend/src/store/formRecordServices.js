@@ -1,22 +1,21 @@
 import { create } from 'zustand';
 import axios from 'axios';
 
-const URL_API = import.meta.env.MODE === "development" ? "http://localhost:5000/api/roles" : "/api/roles";
-
+const URL_API = import.meta.env.MODE === "development" ? "http://localhost:5000/api/formrecords" : "/api/formrecords";
 
 axios.defaults.withCredentials = true;
 
 
-export const useRoleServices = create((set) => ({
+export const useFormRecordServices = create((set) => ({
     isLoading: false,
     error: null,
-    roleList: [],
-    createRole: async (roleData) => {
+    formRecordList: [],
+    createFormRecord: async (formData) => {
         set({ isLoading: true, error: null });
         try {
             //console.log("Los datos a enviar en createrole son: ", roleData)
-            const response = await axios.post(`${URL_API}/create`, roleData);
-            set({ roleList: response.data.roleList, isLoading: false });
+            const response = await axios.post(`${URL_API}/create`, formData);
+            set({ formRecordList: response.data.formRecordList, isLoading: false });
             return response.data;
         } catch (error) {
             set({ error: error.response.data.message || "Error creating store", isLoading: false });
@@ -24,7 +23,7 @@ export const useRoleServices = create((set) => ({
         }
     },
 
-    updateRole: async (id, updatedVars) => {
+    updateFormRecord: async (id, updatedVars) => {
         set({ isLoading: true, error: null });
         try {
             delete updatedVars._id;;
@@ -40,46 +39,46 @@ export const useRoleServices = create((set) => ({
                 ...updatedVars
             });
             //console.log("F: Respueste de updateStaff: ", response);
-            set({ roleList: response.data.roleList, isLoading: false });
+            set({ formRecordList: response.data.formRecordList, isLoading: false });
             return response.data;
         } catch (error) {
-            set({ error: error || "Error updating role", isLoading: false });
+            set({ error: error || "Error updating form", isLoading: false });
             throw error;
         }
     },
-    getRoleById: async (id) => {
+    getFormRecordById: async (id) => {
         set({ isLoading: true, error: null });
         try {
             //console.log("F: Llamado a getStoreById");
             const response = await axios.get(`${URL_API}/get/${id}`);
             //console.log("F: Respueste de getStoreById: ", response);
-            set({ roleList: response.data.roleList, isLoading: false });
+            set({ formRecordList: response.data.formRecordList, isLoading: false });
             return response.data;
         } catch (error) {
             set({ error: error.response.data.message || "Error getting roles", isLoading: false });
             throw error;
         }
     },
-    getRolesByStoreId: async (storeId) => {
+    getFormRecordByStoreId: async (storeId) => {
         set({ isLoading: true, error: null });
         try {
             //console.log("F: Llamado a getStoreById");
-            const response = await axios.get(`${URL_API}/roles/${storeId}`);
+            const response = await axios.get(`${URL_API}/fr/${storeId}`);
             //console.log("F: Respueste de getStoreById: ", response);
-            set({ roleList: response.data.roleList, isLoading: false });
+            set({ formRecordList: response.data.formRecordList, isLoading: false });
             return response.data;
         } catch (error) {
             set({ error: error.response.data.message || "Error getting roles", isLoading: false });
             throw error;
         }
     },
-    removeRole: async (id) => {
+    getFormRecordByEmail: async (email,storeId) => {
         set({ isLoading: true, error: null });
         try {
             //console.log("F: Llamado a getStoreById");
-            const response = await axios.post(`${URL_API}/remove`,{id:id});
+            const response = await axios.get(`${URL_API}/fr/${email}/${storeId}`);
             //console.log("F: Respueste de getStoreById: ", response);
-            set({ roleList: response.data.roleList, isLoading: false });
+            set({ formRecordList: response.data.formRecordList, isLoading: false });
             return response.data;
         } catch (error) {
             set({ error: error.response.data.message || "Error getting roles", isLoading: false });
