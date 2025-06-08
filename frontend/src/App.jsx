@@ -47,7 +47,7 @@ import { useRoleServices } from './store/rolesServices';
 import { useStoreServices } from './store/storeServices';
 import LiabilityEn from './pages/forms/FormLiabilityEn';
 import Unauthorized from './pages/Unauthorized';
-import LiabilityEs from './pages/forms/LiabilityEs';
+import LiabilityEs from './pages/forms/FormLiabilityEs';
 
 const ProtectedRoute = ({ children, requiredPermission }) => {
   const { isAuthenticated, user } = useAuthStore();
