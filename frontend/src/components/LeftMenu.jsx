@@ -31,6 +31,7 @@ const menuItems = [
         key: "experience",
         children: [
             { to: "/experience-calendar", label: "Exp Calendar", icon: <CalendarHeart /> },
+            { to: "/experience-list", label: "Exp List", icon: <CalendarCheck /> },
             { to: "/set-service-dates", label: "Set Missing Data", icon: <CalendarPlus2 /> },
             { to: "/experience-create-service", label: "Create Service", icon: <BookMarked /> },
             { to: "/experience-add-items", label: "Add Items", icon: <ShoppingBasket /> },

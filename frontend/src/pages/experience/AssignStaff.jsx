@@ -6,6 +6,7 @@ import { CircleX, Save } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { useServiceServices } from '../../store/serviceServices';
 import { useProductServices } from '../../store/productServices';
+import LoadingSpinner from '../../components/LoadingSpinner';
 
 const AssignStaff = () => {
     const { getServiceById, updateService, getServicesNoStaff } = useServiceServices();
@@ -22,6 +23,7 @@ const AssignStaff = () => {
 
     useEffect(() => {
         const fetchServices = async () => {
+            setLoading(true)
             try {
                 const response = await getServicesNoStaff(storeId);
                 let rawServices = response.service || [];
@@ -49,12 +51,15 @@ const AssignStaff = () => {
             }
         };
         const fetchStaff = async () => {
+            setLoading(true)
             try {
                 const staffResponse = await getStaffList(storeId); // Obtener la lista de staff
                 console.log("F: La respuesta de getStaffList es: ", staffResponse)
                 setStaffList(staffResponse.staffList || []);
             } catch (err) {
                 console.error("Error fetching staff:", err);
+            } finally {
+                setLoading(false);
             }
         };
 
@@ -88,7 +93,7 @@ const AssignStaff = () => {
 
     const handleUpdate = async () => {
         if (!selectedService) return;
-
+        setLoading(true)
         try {
             await updateService(selectedService._id, {
                 ...editData,
@@ -102,135 +107,141 @@ const AssignStaff = () => {
         } catch (error) {
             console.error('Error updating service:', error);
             toast.error('Error - Service was not updated');
+        } finally {
+            setLoading(false)
         }
     };
 
-    if (loading) return <div className="text-white text-center mt-10">Loading...</div>;
-    if (error) return <div className="text-red-500 text-center mt-10">{error}</div>;
-
     return (
-        <div className="flex flex-col flex-1 h-screen w-full items-center justify-center bg-blue-950 text-white overflow-hidden">
-            <motion.div
-                initial={{ opacity: 0, scale: 2 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.9 }}
-                transition={{ duration: 0.5 }}
-                className="flex flex-col w-[90%] h-[90%] max-h-[90vh] bg-gray-900 bg-opacity-80 backdrop-filter backdrop-blur-lg rounded-xl shadow-2xl border border-gray-800"
-            >
-                <h2 className="text-3xl font-bold mb-6 text-center bg-gradient-to-r from-blue-400 to-blue-600 text-transparent bg-clip-text">
-                    Assign Staff to Services
-                </h2>
-                <div className="flex-grow overflow-auto p-4 space-y-4">
-                    {services.length === 0 ? (
-                        <div className="text-center text-gray-400">No services pending staff assignment</div>
-                    ) : (
-                        services.map((service) => (
-                            <div
-                                key={service._id}
-                                className="bg-white text-black rounded-lg shadow-md p-4 hover:bg-blue-100 cursor-pointer"
-                                onClick={() => openModal(service)}
-                            >
-                                <p><strong>Name:</strong> {service.name}</p>
-                                <p><strong>Product:</strong> {service.productName}</p>
-                                <p><strong>Customer:</strong> {service.customerEmail || 'Not assigned'}</p>
-                                <p><strong>Date In:</strong> {service.dateIn ? new Date(service.dateIn).toLocaleString() : 'No date'}</p>
-                                <p><strong>Date Out:</strong> {service.dateOut ? new Date(service.dateOut).toLocaleString() : 'No date'}</p>
-                            </div>
-                        ))
-                    )}
-                </div>
-            </motion.div>
+        <>
+            {
+                loading && (
+                    <LoadingSpinner />
+                )
+            }
+            <div className="flex flex-col flex-1 h-screen w-full items-center justify-center bg-blue-950 text-white overflow-hidden">
+                <motion.div
+                    initial={{ opacity: 0, scale: 2 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.9 }}
+                    transition={{ duration: 0.5 }}
+                    className="flex flex-col w-[90%] h-[90%] max-h-[90vh] bg-gray-900 bg-opacity-80 backdrop-filter backdrop-blur-lg rounded-xl shadow-2xl border border-gray-800"
+                >
+                    <h2 className="text-3xl font-bold mb-6 text-center bg-gradient-to-r from-blue-400 to-blue-600 text-transparent bg-clip-text">
+                        Assign Staff to Services
+                    </h2>
+                    <div className="flex-grow overflow-auto p-4 space-y-4">
+                        {services.length === 0 ? (
+                            <div className="text-center text-gray-400">No services pending staff assignment</div>
+                        ) : (
+                            services.map((service) => (
+                                <div
+                                    key={service._id}
+                                    className="bg-white text-black rounded-lg shadow-md p-4 hover:bg-blue-100 cursor-pointer"
+                                    onClick={() => openModal(service)}
+                                >
+                                    <p><strong>Name:</strong> {service.name}</p>
+                                    <p><strong>Product:</strong> {service.productName}</p>
+                                    <p><strong>Customer:</strong> {service.customerEmail || 'Not assigned'}</p>
+                                    <p><strong>Date In:</strong> {service.dateIn ? new Date(service.dateIn).toLocaleString() : 'No date'}</p>
+                                    <p><strong>Date Out:</strong> {service.dateOut ? new Date(service.dateOut).toLocaleString() : 'No date'}</p>
+                                </div>
+                            ))
+                        )}
+                    </div>
+                </motion.div>
 
-            {/* Modal para editar */}
-            <AnimatePresence>
-                {modalOpen && selectedService && (
-                    <motion.div
-                        className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                    >
+                {/* Modal para editar */}
+                <AnimatePresence>
+                    {modalOpen && selectedService && (
                         <motion.div
-                            className="bg-gray-900 text-white rounded-2xl shadow-2xl p-8 w-[90%] max-w-md relative"
-                            initial={{ scale: 0.8 }}
-                            animate={{ scale: 1 }}
-                            exit={{ scale: 0.8 }}
-                            transition={{ duration: 0.3 }}
+                            className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
                         >
-                            <button
-                                className="absolute top-4 right-4 text-gray-400 hover:text-white"
-                                onClick={closeModal}
+                            <motion.div
+                                className="bg-gray-900 text-white rounded-2xl shadow-2xl p-8 w-[90%] max-w-md relative"
+                                initial={{ scale: 0.8 }}
+                                animate={{ scale: 1 }}
+                                exit={{ scale: 0.8 }}
+                                transition={{ duration: 0.3 }}
                             >
-                                <CircleX />
-                            </button>
+                                <button
+                                    className="absolute top-4 right-4 text-gray-400 hover:text-white"
+                                    onClick={closeModal}
+                                >
+                                    <CircleX />
+                                </button>
 
-                            <h3 className="text-2xl font-bold mb-6 text-center bg-gradient-to-r from-blue-400 to-blue-600 text-transparent bg-clip-text">
-                                Edit Service
-                            </h3>
+                                <h3 className="text-2xl font-bold mb-6 text-center bg-gradient-to-r from-blue-400 to-blue-600 text-transparent bg-clip-text">
+                                    Edit Service
+                                </h3>
 
-                            <div className="space-y-4 text-sm">
+                                <div className="space-y-4 text-sm">
 
-                                {/* Staff Email como dropdown */}
-                                <div>
-                                    <label className="capitalize">Staff Email:</label>
-                                    <select
-                                        className="w-full p-2 mt-1 rounded bg-gray-800 text-white"
-                                        value={editData.staffEmail}
-                                        onChange={(e) => setEditData({ ...editData, staffEmail: e.target.value })}
-                                    >
-                                        <option value="">Select Staff</option>
-                                        {staffList.map((staff) => (
-                                            <option key={staff.email} value={staff.email}>
-                                                {staff.name} ({staff.email})
-                                            </option>
+                                    {/* Staff Email como dropdown */}
+                                    <div>
+                                        <label className="capitalize">Staff Email:</label>
+                                        <select
+                                            className="w-full p-2 mt-1 rounded bg-gray-800 text-white"
+                                            value={editData.staffEmail}
+                                            onChange={(e) => setEditData({ ...editData, staffEmail: e.target.value })}
+                                        >
+                                            <option value="">Select Staff</option>
+                                            {staffList.map((staff) => (
+                                                <option key={staff.email} value={staff.email}>
+                                                    {staff.name} ({staff.email})
+                                                </option>
+                                            ))}
+                                        </select>
+                                    </div>
+
+                                    <hr className="border-gray-700 my-4" />
+
+                                    <div>
+                                        <label className="capitalize">Product Name:</label>
+                                        <input
+                                            type="text"
+                                            className="w-full p-2 mt-1 rounded bg-gray-800 text-white opacity-50 cursor-not-allowed"
+                                            value={selectedService.productName}
+                                            disabled
+                                        />
+                                    </div>
+
+                                    {Object.keys(editData)
+                                        .filter(field => field !== 'finalPrice' && field !== 'currency' && field !== 'staffEmail' && field !== 'productId')
+                                        .map((field) => (
+                                            <div key={field}>
+                                                <label className="capitalize">
+                                                    {field === 'name' ? 'Service Name' : field}:
+                                                </label>
+                                                <input
+                                                    type={field.includes('date') ? 'datetime-local' : 'text'}
+                                                    className="w-full p-2 mt-1 rounded bg-gray-800 text-white"
+                                                    value={editData[field]}
+                                                    onChange={(e) => setEditData({ ...editData, [field]: e.target.value })}
+                                                />
+                                            </div>
                                         ))}
-                                    </select>
+
+                                    {/* Botón Save */}
+                                    <div className="flex justify-center mt-6">
+                                        <button
+                                            className="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded flex items-center gap-2"
+                                            onClick={handleUpdate}
+                                        >
+                                            <p>Save</p><Save />
+                                        </button>
+                                    </div>
+
                                 </div>
-
-                                <hr className="border-gray-700 my-4" />
-
-                                <div>
-                                    <label className="capitalize">Product Name:</label>
-                                    <input
-                                        type="text"
-                                        className="w-full p-2 mt-1 rounded bg-gray-800 text-white opacity-50 cursor-not-allowed"
-                                        value={selectedService.productName}
-                                        disabled
-                                    />
-                                </div>
-
-                                {Object.keys(editData)
-                                    .filter(field => field !== 'finalPrice' && field !== 'currency' && field !== 'staffEmail' && field !== 'productId')
-                                    .map((field) => (
-                                        <div key={field}>
-                                            <label className="capitalize">
-                                                {field === 'name' ? 'Service Name' : field}:
-                                            </label>
-                                            <input
-                                                type={field.includes('date') ? 'datetime-local' : 'text'}
-                                                className="w-full p-2 mt-1 rounded bg-gray-800 text-white"
-                                                value={editData[field]}
-                                                onChange={(e) => setEditData({ ...editData, [field]: e.target.value })}
-                                            />
-                                        </div>
-                                    ))}
-
-                                {/* Botón Save */}
-                                <div className="flex justify-center mt-6">
-                                    <button
-                                        className="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded flex items-center gap-2"
-                                        onClick={handleUpdate}
-                                    >
-                                        <p>Save</p><Save />
-                                    </button>
-                                </div>
-
-                            </div>
+                            </motion.div>
                         </motion.div>
-                    </motion.div>
-                )}
-            </AnimatePresence>
-        </div>
+                    )}
+                </AnimatePresence>
+            </div>
+        </>
     );
 };
 

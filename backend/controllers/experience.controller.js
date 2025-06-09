@@ -79,7 +79,9 @@ export const updateExperience = async (req, res) => {
 
 export const experienceList = async (req, res) => {
     try {
-        const experienceList = await Experience.find(req.storeId);
+        const { storeId } = req.params;
+        const normalizedStoreId = storeId?.toUpperCase();
+        const experienceList = await Experience.find({storeId: normalizedStoreId});
         //console.log("El listado de experiencias es:", experienceList);
         if (!experienceList) {
             //console.log("ENTRE A NoExp");
@@ -161,3 +163,24 @@ export const removeServicesFromExperiences = async (req, res) => {
         return res.status(500).json({ success: false, message: error.message });
     }
 };
+
+export const getExperiencesByCheckout = async (req, res) => {
+    try {
+        const {storeId} = req.params;
+        const normalizeStoreID = storeId?.toUpperCase();
+        //console.log("Entre a getExperiencesByCheckout: ", normalizeStoreID);
+        const startOfToday = new Date();
+        startOfToday.setHours(0, 0, 0, 0); // 00:00:00.000
+        const experienceList = await Experience.find({
+            storeId: normalizeStoreID,
+            dateOut: {$gte: startOfToday },
+        });
+        //console.log("experienceList: ", experienceList)
+        if (experienceList.length === 0) {
+            return res.status(200).json({ success: false, message: "No Experiences found" });
+        }
+        res.status(200).json({ success: true, experienceList });
+    } catch (error) {
+        return res.status(400).json({ success: false, message: error.message });
+    }
+}

@@ -7,6 +7,7 @@ import { formatDateTimeDisplayHours } from '../../components/formatDateDisplay';
 import DateRangePicker from "../../components/DateRangePicker"
 import { Search, Trash2 } from 'lucide-react';
 import { useExperienceServices } from '../../store/experienceServices';
+import LoadingSpinner from '../../components/LoadingSpinner';
 
 export default function DeleteServices() {
 
@@ -109,12 +110,7 @@ export default function DeleteServices() {
         <>
             {
                 loading && (
-                    <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
-                        <div className="text-center text-white">
-                            <div className="mb-4 text-xl font-semibold">Work In Progress...</div>
-                            <div className="w-12 h-12 border-4 border-white border-t-transparent rounded-full animate-spin mx-auto" />
-                        </div>
-                    </div>
+                    <LoadingSpinner />
                 )
             }
             <AnimatePresence>

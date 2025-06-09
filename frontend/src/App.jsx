@@ -48,6 +48,7 @@ import { useStoreServices } from './store/storeServices';
 import LiabilityEn from './pages/forms/FormLiabilityEn';
 import Unauthorized from './pages/Unauthorized';
 import LiabilityEs from './pages/forms/FormLiabilityEs';
+import ExperienceList from './pages/experience/ExperienceList';
 
 const ProtectedRoute = ({ children, requiredPermission }) => {
   const { isAuthenticated, user } = useAuthStore();
@@ -113,7 +114,7 @@ const getUserPermissions = async (user, storeId, getRoleById, getStoreById) => {
     ];
   }
 
-  const roleEntry = user.role.find(r => r.storeId === storeId);
+  const roleEntry = user.role.find(r => r.storeId.toUpperCase() === storeId.toUpperCase());
   //console.log("roleEntry: ", roleEntry)
   if (!roleEntry || !roleEntry.roleId) return [];
   try {
@@ -121,7 +122,7 @@ const getUserPermissions = async (user, storeId, getRoleById, getStoreById) => {
     //console.log("getRoleById: ", roleData)
     return roleData?.role?.permission || [];
   } catch (error) {
-    console.error("Error fetching role permissions:", error);
+    //console.error("Error fetching role permissions:", error);
     return [];
   }
 };
@@ -217,6 +218,13 @@ function App() {
           element={
             <ProtectedRoute requiredPermission="VIEW_EXPERIENCES">
               <DeleteServices />
+            </ProtectedRoute>}
+        />
+        <Route
+          path="/experience-list"
+          element={
+            <ProtectedRoute requiredPermission="VIEW_EXPERIENCES">
+              <ExperienceList />
             </ProtectedRoute>}
         />
         <Route

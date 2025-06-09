@@ -146,7 +146,7 @@ export const getServiceNoData = async (req, res) => {
                 { staffEmail: "" }
             ]
         });
-
+        //console.log("B: Respuesta de getServiceNoDates: ", service);
         if (!service) {
             return res.status(400).json({ success: false, message: "Service not found" });
         }

@@ -76,7 +76,6 @@ export const useServiceServices = create((set) => ({
             throw error;
         }
     },
-
     getServiceByIds: async (ids) => {
         set({ isLoading: true, error: null });
         try {
@@ -90,7 +89,6 @@ export const useServiceServices = create((set) => ({
             throw error;
         }
     },
-
     getServicesNoStaff: async (storeId) => {
         set({ isLoading: true, error: null });
         try {

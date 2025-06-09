@@ -10,6 +10,7 @@ import { useNavigate } from "react-router-dom";
 import CustomerDetails from '../../components/CustomerDetail'
 import { useRoomReservationServices } from '../../store/roomReservationServices';
 import DateRangePicker from "../../components/DateRangePicker"
+import LoadingSpinner from '../../components/LoadingSpinner';
 
 
 export default function CreateReservation() {
@@ -62,6 +63,7 @@ export default function CreateReservation() {
     useEffect(() => {
         //console.log("Entre a UE 4");
         const fetchAvailableRooms = async () => {
+            setLoading(true)
             if (!reservation.dateIn || !reservation.dateOut) {
                 setIsPeopleLock(false);
                 return;
@@ -136,6 +138,8 @@ export default function CreateReservation() {
                 setIsRoomVisible(true);
             } catch (error) {
                 console.error('Error fetching available rooms:', error);
+            } finally {
+                setLoading(false)
             }
         };
 
@@ -152,15 +156,15 @@ export default function CreateReservation() {
     useEffect(() => {
         reservationFill();
     }, [])
-
-    useEffect(() => {
-        //console.log("Entre a UE 5");
-        //console.log("F: Los datos de reservation son: ", reservation);
-        //console.log("F: Los datos de customer son: ", customer);
-        //console.log("F: Los datos de Selected Product son: ", selectedProducts);
-        //console.log("F: FinalPrice es:", finalPrice)
-    }, [reservation]);
-
+    /*
+        useEffect(() => {
+            //console.log("Entre a UE 5");
+            //console.log("F: Los datos de reservation son: ", reservation);
+            //console.log("F: Los datos de customer son: ", customer);
+            //console.log("F: Los datos de Selected Product son: ", selectedProducts);
+            //console.log("F: FinalPrice es:", finalPrice)
+        }, [reservation]);
+    */
     useEffect(() => {
         if (!hasInteractedWithToggle.current) return;
         //console.log("Entre a UE 6");
@@ -230,6 +234,7 @@ export default function CreateReservation() {
 
     const handleCustomerEmailSearch = async (customerEmail) => {
         //console.log("El email en handleCustomerEmailSearch es: ", customerEmail);
+        setLoading(true)
         try {
             const response = await getCustomerEmail(customerEmail, storeId);
             const found = response.customerList;
@@ -296,6 +301,8 @@ export default function CreateReservation() {
                 divingCertificates: [],
             });
             setIsCustomerModalOpen(true);
+        } finally {
+            setLoading(false)
         }
     };
 
@@ -305,6 +312,7 @@ export default function CreateReservation() {
             toast.error('Please fill all the mandatory data.');
             return;
         }
+        setLoading(true)
         try {
             const reservationPayloadList = reservation.roomList.map(room => ({
                 roomId: room.roomId,
@@ -331,6 +339,8 @@ export default function CreateReservation() {
 
         } catch (err) {
             toast.error('Error saving the reservation');
+        } finally {
+            setLoading(false)
         }
     };
 
@@ -358,6 +368,7 @@ export default function CreateReservation() {
         setIsNew(true);
     }
     const handleSaveClient = async (e) => {
+        setLoading(true)
         try {
             //console.log("F: El cliente es:", customer);
             const customerPayload = {
@@ -392,6 +403,8 @@ export default function CreateReservation() {
             setIsNew(false);
         } catch (error) {
             toast.error('Error creating a Customer');
+        } finally {
+            setLoading(false)
         }
 
     };
@@ -417,359 +430,366 @@ export default function CreateReservation() {
     };
 
     return (
-        <div className="flex flex-col min-h-screen w-full bg-blue-950 text-white px-4 py-6 sm:px-8 sm:py-10">
-            <motion.div
-                initial={{ opacity: 0, scale: 2 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.9 }}
-                transition={{ duration: 0.5 }}
-                className="flex flex-col w-max max-w-8xl mx-auto bg-blue-900 bg-opacity-80 backdrop-filter backdrop-blur-lg rounded-2xl shadow-2xl border border-gray-800 overflow-hidden min-h-screen"
-            >
-                <h1 className="text-3xl font-bold mt-6 mb-6 text-center text-white bg-clip-text">New Reservation</h1>
-                <form onSubmit={handleSubmit} className="space-y-4 border p-4 rounded-2xl shadow bg-blue ml-2 mr-2 mb-2 bg-blue-800">
-                    {/* DATOS DE CLIENTE*/}
-                    <div className="flex flex-col lg:flex-row gap-1">
-                        <fieldset className="border p-4 rounded-2xl w-full">
-                            <legend className="font-semibold text-lg">Customer Details</legend>
-                            <div className="flex items-center gap-2">
-                                <input
-                                    ref={customerEmailRef}
-                                    type="email"
-                                    name="customerEmail"
-                                    value={reservation.customerEmail}
-                                    onChange={(e) =>
-                                        setReservation((prev) => ({
-                                            ...prev,
-                                            customerEmail: e.target.value,
-                                        }))
-                                    }
-                                    onKeyDown={(e) => {
-                                        if (e.key === 'Enter') {
-                                            e.preventDefault();
-                                            handleCustomerEmailSearch(customerEmailRef.current.value);
-                                        }
-                                    }}
-                                    onBlur={() => {
-                                        handleCustomerEmailSearch(customerEmailRef.current.value);
-                                    }}
-                                    className="w-full border px-2 py-1 rounded bg-white text-blue-950"
-                                    placeholder="Enter customer email"
-                                />
-                                <button
-                                    type="button"
-                                    onClick={() => handleCustomerEmailSearch(customerEmailRef.current.value)}
-                                    className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700"
-                                >
-                                    <Search />
-                                </button>
-
-                                {!isNew && (
-                                    <button
-                                        type="button"
-                                        variant="outline"
-                                        className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700"
-                                        onClick={() => setIsCustomerModalOpen(true)}
-                                    >
-                                        <Contact2 />
-                                    </button>
-                                )}
-                                {isCustomerModalOpen && (
-                                    <CustomerDetails
-                                        isOpen={isCustomerModalOpen}
-                                        onClose={() => setIsCustomerModalOpen(false)}
-                                        customer={customer}
-                                        setCustomer={setCustomer}
-                                        onSave={handleSaveClient}
-                                    />
-                                )}
-                            </div>
-                            <div className='flex flex-row justify-center text-center mt-2'>
-                                Number of people:
-                                <div className="top-2 right-2 gap-2 items-center">
-                                    <button
-                                        type="button"
-                                        onClick={() => setNumberOfPeople(prev => Math.max(1, prev - 1))}
-                                        className={`${isPeopleLock ? 'bg-gray-500' : 'bg-red-500 hover:bg-red-600'} text-white px-2 rounded  ml-2`}
-                                        disabled={isPeopleLock || numberOfPeople <= 1}
-                                    >
-                                        -
-                                    </button>
-                                    <span className="text-sm font-bold text-white ml-2 mr-2">{numberOfPeople}</span>
-                                    <button
-                                        type="button"
-                                        onClick={() => setNumberOfPeople(prev => prev + 1)}
-                                        className={`${isPeopleLock ? 'bg-gray-500' : 'bg-green-500 hover:bg-green-600'} text-white px-2 rounded `}
-                                        disabled={isPeopleLock}
-                                    >
-                                        +
-                                    </button>
-                                </div>
-                            </div>
-                        </fieldset>
-                        {/* DATOS DE COTIZACION*/}
-                        <fieldset className="border rounded-2xl w-full px-6 py-4">
-                            <legend className="font-semibold text-lg px-2">Dates</legend>
-
-                            <div className="flex flex-col items-center text-center">
-                                <div className="w-full max-w-md mb-4">
-                                    <label className="mb-2 block font-medium text-center">
-                                        Date Range (Check-in / Check-out)
-                                    </label>
-                                    <div className="flex justify-center">
-                                        <DateRangePicker
-                                            value={{ start: reservation.dateIn, end: reservation.dateOut }}
-                                            onChange={({ start, end }) =>
-                                                setReservation((prev) => ({
-                                                    ...prev,
-                                                    dateIn: start,
-                                                    dateOut: end,
-                                                }))
-                                            }
-                                        />
-                                    </div>
-                                </div>
-
-                                <p className="text-sm mt-2">* Rooms will not be visible until you pick dates</p>
-                            </div>
-                        </fieldset>
-                    </div>
-                    {/* DATOS DE PRODUCTOS Y PRECIOS */}
-                    <div className="flex flex-col lg:flex-row gap-6">
-                        {/* DATOS DE PRODUCTOS y ROOMS*/}
-                        <div className='w-full lg:w-3/4'>
-                            {/*ROOMS*/}
-                            {isRoomVisible && (
-                                <fieldset className="flex-grow space-y-4 border rounded-2xl p-4">
-                                    <legend className="text-2xl font-bold">Room List - Nights: {reservation.numberOfNights || 0}</legend>
+        <>
+            {
+                loading && (
+                    <LoadingSpinner />
+                )
+            }
+            <div className="flex flex-col min-h-screen w-full bg-blue-950 text-white px-4 py-6 sm:px-8 sm:py-10">
+                <motion.div
+                    initial={{ opacity: 0, scale: 2 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.9 }}
+                    transition={{ duration: 0.5 }}
+                    className="flex flex-col w-max max-w-8xl mx-auto bg-blue-900 bg-opacity-80 backdrop-filter backdrop-blur-lg rounded-2xl shadow-2xl border border-gray-800 overflow-hidden min-h-screen"
+                >
+                    <h1 className="text-3xl font-bold mt-6 mb-6 text-center text-white bg-clip-text">New Reservation</h1>
+                    <form onSubmit={handleSubmit} className="space-y-4 border p-4 rounded-2xl shadow bg-blue ml-2 mr-2 mb-2 bg-blue-800">
+                        {/* DATOS DE CLIENTE*/}
+                        <div className="flex flex-col lg:flex-row gap-1">
+                            <fieldset className="border p-4 rounded-2xl w-full">
+                                <legend className="font-semibold text-lg">Customer Details</legend>
+                                <div className="flex items-center gap-2">
                                     <input
-                                        type="text"
-                                        placeholder="Search room by name..."
-                                        className="w-full p-2 border border-gray-300 rounded"
-                                        value={roomSearch}
-                                        onChange={(e) => setRoomSearch(e.target.value)}
+                                        ref={customerEmailRef}
+                                        type="email"
+                                        name="customerEmail"
+                                        value={reservation.customerEmail}
+                                        onChange={(e) =>
+                                            setReservation((prev) => ({
+                                                ...prev,
+                                                customerEmail: e.target.value,
+                                            }))
+                                        }
                                         onKeyDown={(e) => {
                                             if (e.key === 'Enter') {
                                                 e.preventDefault();
-                                                // Add logic if we want to do something when enter is pressed
+                                                handleCustomerEmailSearch(customerEmailRef.current.value);
                                             }
                                         }}
+                                        onBlur={() => {
+                                            handleCustomerEmailSearch(customerEmailRef.current.value);
+                                        }}
+                                        className="w-full border px-2 py-1 rounded bg-white text-blue-950"
+                                        placeholder="Enter customer email"
                                     />
-                                    {roomNote && (
-                                        <div>
-                                            <p className='text-yellow-500 font-bold text-sm'>*** {roomNote.toUpperCase()} ***</p>
-                                        </div>
+                                    <button
+                                        type="button"
+                                        onClick={() => handleCustomerEmailSearch(customerEmailRef.current.value)}
+                                        className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700"
+                                    >
+                                        <Search />
+                                    </button>
+
+                                    {!isNew && (
+                                        <button
+                                            type="button"
+                                            variant="outline"
+                                            className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700"
+                                            onClick={() => setIsCustomerModalOpen(true)}
+                                        >
+                                            <Contact2 />
+                                        </button>
                                     )}
-                                    <div className="grid gap-4 grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-2">
-                                        {rooms.length === 0 ? (
-                                            <p>No room found for this store.</p>
-                                        ) : (
-                                            rooms
-                                                .filter(room =>
-                                                    room.name.toLowerCase().includes(roomSearch.toLowerCase())
-                                                )
-                                                .sort((a, b) => a.type.localeCompare(b.type))
-                                                .map((room) => {
-                                                    const Qty = isRoomPrivate[room._id] ? room.availability : numberOfPeople;
-                                                    const qty = selectedRooms[room._id] || 0;
-                                                    const unitPrice = room.price;
-                                                    const dateSegments = roomDateRanges[room._id] || [];
-                                                    const maxContiguousDays = Math.max(
-                                                        0,
-                                                        ...dateSegments.map(seg => {
-                                                            const from = new Date(seg.from);
-                                                            const to = new Date(seg.to);
-                                                            const diffDays = Math.floor((to - from) / (1000 * 60 * 60 * 24)) + 1;
-                                                            return diffDays;
-                                                        })
-                                                    );
-                                                    const maxQty = maxContiguousDays;
-                                                    const totalPrice = unitPrice * qty * Qty;
+                                    {isCustomerModalOpen && (
+                                        <CustomerDetails
+                                            isOpen={isCustomerModalOpen}
+                                            onClose={() => setIsCustomerModalOpen(false)}
+                                            customer={customer}
+                                            setCustomer={setCustomer}
+                                            onSave={handleSaveClient}
+                                        />
+                                    )}
+                                </div>
+                                <div className='flex flex-row justify-center text-center mt-2'>
+                                    Number of people:
+                                    <div className="top-2 right-2 gap-2 items-center">
+                                        <button
+                                            type="button"
+                                            onClick={() => setNumberOfPeople(prev => Math.max(1, prev - 1))}
+                                            className={`${isPeopleLock ? 'bg-gray-500' : 'bg-red-500 hover:bg-red-600'} text-white px-2 rounded  ml-2`}
+                                            disabled={isPeopleLock || numberOfPeople <= 1}
+                                        >
+                                            -
+                                        </button>
+                                        <span className="text-sm font-bold text-white ml-2 mr-2">{numberOfPeople}</span>
+                                        <button
+                                            type="button"
+                                            onClick={() => setNumberOfPeople(prev => prev + 1)}
+                                            className={`${isPeopleLock ? 'bg-gray-500' : 'bg-green-500 hover:bg-green-600'} text-white px-2 rounded `}
+                                            disabled={isPeopleLock}
+                                        >
+                                            +
+                                        </button>
+                                    </div>
+                                </div>
+                            </fieldset>
+                            {/* DATOS DE COTIZACION*/}
+                            <fieldset className="border rounded-2xl w-full px-6 py-4">
+                                <legend className="font-semibold text-lg px-2">Dates</legend>
 
-                                                    return (
-                                                        <div
-                                                            key={room._id}
-                                                            className="bg-gray-100 p-2 rounded shadow text-black flex flex-col sm:flex-row"
-                                                        >
-                                                            <div className='w-full sm:w-3/4'>
-                                                                <h4 className="font-semibold text-lg">{room.name} - ${room.price.toFixed(2)}</h4>
-                                                                <p className="text-sm text-gray-700">Tipo: {room.type}</p>
-                                                                <p className="text-sm text-gray-700">Capacidad: {room.availability}</p>
-                                                                <div className='flex flex-row'>
-                                                                    {roomDateRanges[room._id]?.map((range, idx) => (
-                                                                        <p key={idx} className="text-xs text-green-500">
-                                                                            Available: {range.from} to {range.to}
-                                                                        </p>
-                                                                    ))}
-                                                                </div>
-                                                                {roomDateRanges[room._id] === null && (
-                                                                    <p className="text-xs text-red-400">No availability in this room for selected dates.</p>
-                                                                )}
-                                                                {roomDateRanges[room._id]?.length > 0 && !room.availableEveryNight && (
-                                                                    <div className="mt-2">
-                                                                        <label className="block text-sm font-bold">Select start date:</label>
-                                                                        <input
-                                                                            type="date"
-                                                                            className="border rounded px-2 py-1"
-                                                                            value={roomStartDates[room._id] || ''}
-                                                                            min={roomDateRanges[room._id][0].from}
-                                                                            max={roomDateRanges[room._id][roomDateRanges[room._id].length - 1].to}
-                                                                            onChange={(e) =>
-                                                                                setRoomStartDates((prev) => ({
-                                                                                    ...prev,
-                                                                                    [room._id]: e.target.value
-                                                                                }))
-                                                                            }
-                                                                        />
-                                                                    </div>
-                                                                )}
-                                                            </div>
-                                                            <div className='text-center w-full sm:w-1/4 mt-4 sm:mt-0 mr-3'>
-                                                                Nights:
-                                                                <div className="flex items-center justify-center gap-2">
-                                                                    <button
-                                                                        type="button"
-                                                                        className="bg-red-500 text-white px-2 rounded"
-                                                                        disabled={qty <= 0}
-                                                                        onClick={() => decrementRoom(room._id)}
-                                                                    >
-                                                                        -
-                                                                    </button>
-                                                                    <input
-                                                                        type="number"
-                                                                        min="0"
-                                                                        value={qty}
-                                                                        onChange={(e) => {
-                                                                            const newQty = parseInt(e.target.value, 10);
-                                                                            if (!isNaN(newQty)) {
-                                                                                handleSetRoomtQty(room._id, newQty);
-                                                                            }
-                                                                        }}
-                                                                        className="w-12 text-center font-bold text-black border rounded"
-                                                                    />
-                                                                    <button
-                                                                        type="button"
-                                                                        className={`px-2 rounded ${roomDateRanges[room._id]?.length > 0 &&
-                                                                            !room.availableEveryNight &&
-                                                                            !roomStartDates[room._id]
-                                                                            ? "bg-gray-400 cursor-not-allowed"
-                                                                            : "bg-green-600 hover:bg-green-700 text-white"
-                                                                            }`}
-                                                                        disabled={
-                                                                            qty >= maxQty ||
-                                                                            (roomDateRanges[room._id]?.length > 0 &&
-                                                                                !room.availableEveryNight &&
-                                                                                !roomStartDates[room._id])
-                                                                        }
-                                                                        onClick={() => {
-                                                                            if (
-                                                                                roomDateRanges[room._id]?.length > 0 &&
-                                                                                !room.availableEveryNight &&
-                                                                                !roomStartDates[room._id]
-                                                                            ) {
-                                                                                toast.error(
-                                                                                    "Please select a start date for this room before increasing quantity."
-                                                                                );
-                                                                                return;
-                                                                            }
-                                                                            incrementRoom(room._id);
-                                                                        }}
-                                                                    >
-                                                                        +
-                                                                    </button>
-                                                                </div>
+                                <div className="flex flex-col items-center text-center">
+                                    <div className="w-full max-w-md mb-4">
+                                        <label className="mb-2 block font-medium text-center">
+                                            Date Range (Check-in / Check-out)
+                                        </label>
+                                        <div className="flex justify-center">
+                                            <DateRangePicker
+                                                value={{ start: reservation.dateIn, end: reservation.dateOut }}
+                                                onChange={({ start, end }) =>
+                                                    setReservation((prev) => ({
+                                                        ...prev,
+                                                        dateIn: start,
+                                                        dateOut: end,
+                                                    }))
+                                                }
+                                            />
+                                        </div>
+                                    </div>
 
-                                                                <div className="mt-2 text-sm">
-                                                                    <div>
-                                                                        Total: ${totalPrice.toFixed(2)}
+                                    <p className="text-sm mt-2">* Rooms will not be visible until you pick dates</p>
+                                </div>
+                            </fieldset>
+                        </div>
+                        {/* DATOS DE PRODUCTOS Y PRECIOS */}
+                        <div className="flex flex-col lg:flex-row gap-6">
+                            {/* DATOS DE PRODUCTOS y ROOMS*/}
+                            <div className='w-full lg:w-3/4'>
+                                {/*ROOMS*/}
+                                {isRoomVisible && (
+                                    <fieldset className="flex-grow space-y-4 border rounded-2xl p-4">
+                                        <legend className="text-2xl font-bold">Room List - Nights: {reservation.numberOfNights || 0}</legend>
+                                        <input
+                                            type="text"
+                                            placeholder="Search room by name..."
+                                            className="w-full p-2 border border-gray-300 rounded"
+                                            value={roomSearch}
+                                            onChange={(e) => setRoomSearch(e.target.value)}
+                                            onKeyDown={(e) => {
+                                                if (e.key === 'Enter') {
+                                                    e.preventDefault();
+                                                    // Add logic if we want to do something when enter is pressed
+                                                }
+                                            }}
+                                        />
+                                        {roomNote && (
+                                            <div>
+                                                <p className='text-yellow-500 font-bold text-sm'>*** {roomNote.toUpperCase()} ***</p>
+                                            </div>
+                                        )}
+                                        <div className="grid gap-4 grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-2">
+                                            {rooms.length === 0 ? (
+                                                <p>No room found for this store.</p>
+                                            ) : (
+                                                rooms
+                                                    .filter(room =>
+                                                        room.name.toLowerCase().includes(roomSearch.toLowerCase())
+                                                    )
+                                                    .sort((a, b) => a.type.localeCompare(b.type))
+                                                    .map((room) => {
+                                                        const Qty = isRoomPrivate[room._id] ? room.availability : numberOfPeople;
+                                                        const qty = selectedRooms[room._id] || 0;
+                                                        const unitPrice = room.price;
+                                                        const dateSegments = roomDateRanges[room._id] || [];
+                                                        const maxContiguousDays = Math.max(
+                                                            0,
+                                                            ...dateSegments.map(seg => {
+                                                                const from = new Date(seg.from);
+                                                                const to = new Date(seg.to);
+                                                                const diffDays = Math.floor((to - from) / (1000 * 60 * 60 * 24)) + 1;
+                                                                return diffDays;
+                                                            })
+                                                        );
+                                                        const maxQty = maxContiguousDays;
+                                                        const totalPrice = unitPrice * qty * Qty;
+
+                                                        return (
+                                                            <div
+                                                                key={room._id}
+                                                                className="bg-gray-100 p-2 rounded shadow text-black flex flex-col sm:flex-row"
+                                                            >
+                                                                <div className='w-full sm:w-3/4'>
+                                                                    <h4 className="font-semibold text-lg">{room.name} - ${room.price.toFixed(2)}</h4>
+                                                                    <p className="text-sm text-gray-700">Tipo: {room.type}</p>
+                                                                    <p className="text-sm text-gray-700">Capacidad: {room.availability}</p>
+                                                                    <div className='flex flex-row'>
+                                                                        {roomDateRanges[room._id]?.map((range, idx) => (
+                                                                            <p key={idx} className="text-xs text-green-500">
+                                                                                Available: {range.from} to {range.to}
+                                                                            </p>
+                                                                        ))}
                                                                     </div>
-                                                                    {room.type === "SHARED" && roomDateRanges[room._id]?.length > 0 && (
-                                                                        <div className="flex mt-2 text-center justify-center">
-                                                                            <label className="text-sm flex items-center gap-2">
-                                                                                <input
-                                                                                    type="checkbox"
-                                                                                    checked={!!isRoomPrivate[room._id]}
-                                                                                    onChange={() => handleToggleRoomPrivate(room._id)}
-                                                                                />
-                                                                                Is Private?
-                                                                            </label>
+                                                                    {roomDateRanges[room._id] === null && (
+                                                                        <p className="text-xs text-red-400">No availability in this room for selected dates.</p>
+                                                                    )}
+                                                                    {roomDateRanges[room._id]?.length > 0 && !room.availableEveryNight && (
+                                                                        <div className="mt-2">
+                                                                            <label className="block text-sm font-bold">Select start date:</label>
+                                                                            <input
+                                                                                type="date"
+                                                                                className="border rounded px-2 py-1"
+                                                                                value={roomStartDates[room._id] || ''}
+                                                                                min={roomDateRanges[room._id][0].from}
+                                                                                max={roomDateRanges[room._id][roomDateRanges[room._id].length - 1].to}
+                                                                                onChange={(e) =>
+                                                                                    setRoomStartDates((prev) => ({
+                                                                                        ...prev,
+                                                                                        [room._id]: e.target.value
+                                                                                    }))
+                                                                                }
+                                                                            />
                                                                         </div>
                                                                     )}
                                                                 </div>
+                                                                <div className='text-center w-full sm:w-1/4 mt-4 sm:mt-0 mr-3'>
+                                                                    Nights:
+                                                                    <div className="flex items-center justify-center gap-2">
+                                                                        <button
+                                                                            type="button"
+                                                                            className="bg-red-500 text-white px-2 rounded"
+                                                                            disabled={qty <= 0}
+                                                                            onClick={() => decrementRoom(room._id)}
+                                                                        >
+                                                                            -
+                                                                        </button>
+                                                                        <input
+                                                                            type="number"
+                                                                            min="0"
+                                                                            value={qty}
+                                                                            onChange={(e) => {
+                                                                                const newQty = parseInt(e.target.value, 10);
+                                                                                if (!isNaN(newQty)) {
+                                                                                    handleSetRoomtQty(room._id, newQty);
+                                                                                }
+                                                                            }}
+                                                                            className="w-12 text-center font-bold text-black border rounded"
+                                                                        />
+                                                                        <button
+                                                                            type="button"
+                                                                            className={`px-2 rounded ${roomDateRanges[room._id]?.length > 0 &&
+                                                                                !room.availableEveryNight &&
+                                                                                !roomStartDates[room._id]
+                                                                                ? "bg-gray-400 cursor-not-allowed"
+                                                                                : "bg-green-600 hover:bg-green-700 text-white"
+                                                                                }`}
+                                                                            disabled={
+                                                                                qty >= maxQty ||
+                                                                                (roomDateRanges[room._id]?.length > 0 &&
+                                                                                    !room.availableEveryNight &&
+                                                                                    !roomStartDates[room._id])
+                                                                            }
+                                                                            onClick={() => {
+                                                                                if (
+                                                                                    roomDateRanges[room._id]?.length > 0 &&
+                                                                                    !room.availableEveryNight &&
+                                                                                    !roomStartDates[room._id]
+                                                                                ) {
+                                                                                    toast.error(
+                                                                                        "Please select a start date for this room before increasing quantity."
+                                                                                    );
+                                                                                    return;
+                                                                                }
+                                                                                incrementRoom(room._id);
+                                                                            }}
+                                                                        >
+                                                                            +
+                                                                        </button>
+                                                                    </div>
+
+                                                                    <div className="mt-2 text-sm">
+                                                                        <div>
+                                                                            Total: ${totalPrice.toFixed(2)}
+                                                                        </div>
+                                                                        {room.type === "SHARED" && roomDateRanges[room._id]?.length > 0 && (
+                                                                            <div className="flex mt-2 text-center justify-center">
+                                                                                <label className="text-sm flex items-center gap-2">
+                                                                                    <input
+                                                                                        type="checkbox"
+                                                                                        checked={!!isRoomPrivate[room._id]}
+                                                                                        onChange={() => handleToggleRoomPrivate(room._id)}
+                                                                                    />
+                                                                                    Is Private?
+                                                                                </label>
+                                                                            </div>
+                                                                        )}
+                                                                    </div>
+                                                                </div>
                                                             </div>
-                                                        </div>
 
-                                                    );
-                                                })
-                                        )}
-                                    </div>
+                                                        );
+                                                    })
+                                            )}
+                                        </div>
 
-                                </fieldset>
+                                    </fieldset>
+                                )}
+                            </div>
+                            {/* Price Column */}
+                            {isRoomVisible && (
+                                <div className='w-full lg:w-1/4'>
+                                    <fieldset className="h-full space-y-4 rounded-2xl border p-4 flex flex-col">
+                                        <legend className="text-2xl font-bold">Pricing</legend>
+                                        {/* Detalle de productos y rooms en la cotización */}
+                                        <div>
+                                            <div className='flex flex-col'>
+                                                <h2 className='text-lg font-bold text-center'>Selected Rooms</h2>
+                                            </div>
+                                            {(reservation.roomList?.length < 1) ? (
+                                                <p>No rooms selected</p>
+                                            ) : (
+                                                (reservation.roomList ?? [])
+                                                    .map((room) => {
+                                                        return (
+                                                            <div
+                                                                key={room.roomId}
+                                                                className='ml-5 flex flex-row text-sm text-white'
+                                                            >
+                                                                <div className="w-3/4">
+                                                                    {room.roomName} ({room.roomNights} Nights)
+                                                                </div>
+                                                                <div className="w-1/4 text-right mr-5">
+                                                                    ${room.roomFinalPrice}
+                                                                </div>
+
+                                                            </div>
+                                                        )
+                                                    }))}
+
+                                        </div>
+
+                                        <div className="ml-4 mr-4 flex items-center justify-center">
+                                            <label className=" text-white font-bold text-lg mt-6">Final Price: </label>
+                                            <label className=" text-white font-bold text-2xl mt-6 ml-2">${Number(reservation.roomFinalPrice).toFixed(2)}</label>
+                                        </div>
+                                    </fieldset>
+                                </div>
                             )}
                         </div>
-                        {/* Price Column */}
-                        {isRoomVisible && (
-                            <div className='w-full lg:w-1/4'>
-                                <fieldset className="h-full space-y-4 rounded-2xl border p-4 flex flex-col">
-                                    <legend className="text-2xl font-bold">Pricing</legend>
-                                    {/* Detalle de productos y rooms en la cotización */}
-                                    <div>
-                                        <div className='flex flex-col'>
-                                            <h2 className='text-lg font-bold text-center'>Selected Rooms</h2>
-                                        </div>
-                                        {(reservation.roomList?.length < 1) ? (
-                                            <p>No rooms selected</p>
-                                        ) : (
-                                            (reservation.roomList ?? [])
-                                                .map((room) => {
-                                                    return (
-                                                        <div
-                                                            key={room.roomId}
-                                                            className='ml-5 flex flex-row text-sm text-white'
-                                                        >
-                                                            <div className="w-3/4">
-                                                                {room.roomName} ({room.roomNights} Nights)
-                                                            </div>
-                                                            <div className="w-1/4 text-right mr-5">
-                                                                ${room.roomFinalPrice}
-                                                            </div>
+                        {/* Other Details  Fieldset */}
+                        <fieldset className="w-full rounded-2xl border p-4 space-y-4">
 
-                                                        </div>
-                                                    )
-                                                }))}
+                            {/* Botón  y switch centrado */}
+                            <div className="flex flex-col items-center pt-4 space-y-4">
+                                <div>
+                                    <button type="submit" className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
+                                        Create Reservation
+                                    </button>
+                                    <button
+                                        type="button"
+                                        className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-700 ml-10"
+                                        onClick={() => handleReset()}
+                                    >
+                                        Reset Reservation
+                                    </button>
+                                </div>
 
-                                    </div>
-
-                                    <div className="ml-4 mr-4 flex items-center justify-center">
-                                        <label className=" text-white font-bold text-lg mt-6">Final Price: </label>
-                                        <label className=" text-white font-bold text-2xl mt-6 ml-2">${Number(reservation.roomFinalPrice).toFixed(2)}</label>
-                                    </div>
-                                </fieldset>
                             </div>
-                        )}
-                    </div>
-                    {/* Other Details  Fieldset */}
-                    <fieldset className="w-full rounded-2xl border p-4 space-y-4">
-
-                        {/* Botón  y switch centrado */}
-                        <div className="flex flex-col items-center pt-4 space-y-4">
-                            <div>
-                                <button type="submit" className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
-                                    Create Reservation
-                                </button>
-                                <button
-                                    type="button"
-                                    className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-700 ml-10"
-                                    onClick={() => handleReset()}
-                                >
-                                    Reset Reservation
-                                </button>
-                            </div>
-
-                        </div>
-                    </fieldset>
-                </form>
-            </motion.div>
-        </div>
+                        </fieldset>
+                    </form>
+                </motion.div>
+            </div>
+        </>
     );
 }
 

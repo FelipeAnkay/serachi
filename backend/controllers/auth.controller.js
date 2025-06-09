@@ -10,6 +10,7 @@ import { Store } from "../models/store.model.js"
 /* USER FUNCTIONS*/
 export const signup = async (req, res) => {
     const { email, password, name, phone, role } = req.body;
+    const lowEmail = email.toLowerCase();
     try {
         if (!email || !password || !name || !phone) {
             throw new Error("All fields are required");
@@ -22,7 +23,7 @@ export const signup = async (req, res) => {
         const verificationCode = generateVerificationCode();
 
         const user = new User({
-            email,
+            email: lowEmail,
             password: hashedPassword,
             name,
             phone,
@@ -84,26 +85,37 @@ export const verifyEmail = async (req, res) => {
 }
 
 export const login = async (req, res) => {
-    const { storeId, email, password } = req.body;
+    let { storeId, email, password } = req.body;
+
     try {
+        // Convertimos a minúsculas para evitar problemas de mayúsculas/minúsculas
+        email = email.toLowerCase();
+
         const user = await User.findOne({ email });
         const store = await Store.findOne({ storeId });
+
         console.log("Usuario:", user);
         console.log("Store:", store);
 
         if (!user || !store) {
             return res.status(400).json({ success: false, message: "Invalid credentials" });
         }
-        if (!store.userList.find((element) => element === email)) {
+
+        // También convertimos los correos en userList a minúsculas para comparar correctamente
+        const storeUserEmails = store.userList.map(e => e.toLowerCase());
+        if (!storeUserEmails.includes(email)) {
             return res.status(400).json({ success: false, message: "User not registrated in that company" });
         }
+
         const isPasswordValid = await bcrypt.compare(password, user.password);
         if (!isPasswordValid) {
             return res.status(400).json({ success: false, message: "Wrong Password" });
         }
+
         generateTokenAndSetCookie(res, user._id);
         user.lastLogin = new Date();
         await user.save();
+
         res.status(200).json({
             success: true,
             message: "user logged in",
@@ -111,13 +123,13 @@ export const login = async (req, res) => {
                 ...user._doc,
                 password: undefined
             }
-        })
+        });
 
     } catch (error) {
-        console.log("Error in loggin; ", error.message);
+        console.log("Error in login: ", error.message);
         res.status(400).json({ success: false, message: error.message });
     }
-}
+};
 
 export const logout = async (req, res) => {
     res.clearCookie("token");

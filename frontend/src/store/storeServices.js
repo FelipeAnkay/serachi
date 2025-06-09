@@ -19,6 +19,7 @@ export const useStoreServices = create((set) => ({
     timezone: null,
     storeList: null,
     userList: null,
+    store:null,
     error:null,
     createStore: async (storeData) => {
         set({ isLoading: true, error: null });
@@ -63,7 +64,7 @@ export const useStoreServices = create((set) => ({
             //console.log("F: Llamado a getStoreById");
             const response = await axios.get(`${URL_API}/get/${id}`);
             //console.log("F: Respueste de getStoreById: ", response);
-            set({ storeList: response.data.storeList, isLoading: false });
+            set({ store: response.data.store, isLoading: false });
             return response.data;
         } catch (error) {
             set({ error: error.response.data.message || "Error getting quotes", isLoading: false });

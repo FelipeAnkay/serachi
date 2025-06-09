@@ -219,3 +219,83 @@ export const SEND_QUOTE = `
 </body>
 </html>
 `;
+
+export const SEND_FORMS = `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Forms Required</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f6f9;
+      margin: 0;
+      padding: 20px;
+    }
+    .container {
+      max-width: 600px;
+      background-color: #ffffff;
+      padding: 30px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      margin: auto;
+    }
+    h1 {
+      color: #1d4ed8;
+      font-size: 22px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 15px;
+    }
+    th, td {
+      padding: 10px;
+      border-bottom: 1px solid #e2e8f0;
+      text-align: left;
+    }
+    th {
+      background-color: #f0f4f8;
+    }
+    a {
+      color: #1d4ed8;
+      text-decoration: none;
+    }
+    a:hover {
+      text-decoration: underline;
+    }
+    .footer {
+      margin-top: 20px;
+      font-size: 14px;
+      color: #6b7280;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Hi {{customerName}},</h1>
+    <p>Thank you for your time! We kindly ask you to complete the following forms before your experience begins:</p>
+
+    <h2>Forms to Sign</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Form Name</th>
+          <th>Link</th>
+        </tr>
+      </thead>
+      <tbody>
+        {{formList}}
+      </tbody>
+    </table>
+
+    <p class="footer">
+      If you have any questions or need assistance, feel free to reply to this email.<br/>
+      Thank you for your cooperation!
+    </p>
+  </div>
+</body>
+</html>
+`;

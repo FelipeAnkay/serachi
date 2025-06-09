@@ -1,5 +1,5 @@
 import { Form } from "../models/form.model.js";
-import bcrypt, { compare } from "bcryptjs";
+import { sendFormEmail } from "../mailtrap/emails.js";
 import crypto from 'node:crypto';
 
 /*BOOK FUNCTIONS */
@@ -144,4 +144,22 @@ export const getTokenData = async (req, res) => {
     } catch (error) {
         res.status(400).json({ success: false, message: error.message });
     }
-};
+}
+
+export const postFormEmail = async (req, res) => {
+    try {
+        const { customer, user, store, formList, urlToken } = req.body;
+        console.log("postFormEmail variables:", {
+            customer,
+            user,
+            store,
+            formList,
+            urlToken
+        });
+        const mailSent = await sendFormEmail(customer.email, customer.name, formList, user.email, user.name, store.name, urlToken);
+        console.log("Respuesta de sendFormEmail: ", mailSent)
+        res.status(200).json({ success: true, mailSent});
+    } catch (error) {
+        res.status(400).json({ success: false, message: error.message });
+    }
+}

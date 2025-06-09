@@ -7,6 +7,7 @@ import { useStoreServices } from '../../store/storeServices';
 import { trimCanvas } from '../../components/trimCanvas'
 import { useFormRecordServices } from '../../store/formRecordServices';
 import toast from 'react-hot-toast';
+import LoadingSpinner from '../../components/LoadingSpinner';
 
 
 const LiabilityEs = () => {
@@ -19,6 +20,7 @@ const LiabilityEs = () => {
     const [searchParams] = useSearchParams();
     const [store, setStore] = useState({});
     const [customer, setCustomer] = useState({})
+    const [loading, setLoading] = useState(true);
 
     const [formData, setFormData] = useState({
         participantName: '',
@@ -56,6 +58,7 @@ const LiabilityEs = () => {
         }
 
         const fetchTokenData = async () => {
+            setLoading(true);
             try {
                 const today = new Date().toISOString().split('T')[0];
                 const res = await getDataToken(token);
@@ -82,6 +85,8 @@ const LiabilityEs = () => {
             } catch (error) {
                 console.error('Error getting token data:', error);
                 window.location.href = '/unauthorized';
+            } finally {
+                setLoading(false);
             }
         };
 
@@ -99,7 +104,7 @@ const LiabilityEs = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-
+        setLoading(true);
         const canvas = sigPadRef.current.getCanvas();
         const trimmedCanvas = trimCanvas(canvas);
         const signature = trimmedCanvas.toDataURL('image/png');
@@ -140,9 +145,10 @@ const LiabilityEs = () => {
         } catch (error) {
             console.log("Error guardando el form: ", error)
             toast.error("Error saving the Form")
+        } finally {
+            setLoading(false)
         }
 
-        // Aquí haces el POST al backend
     };
 
     const agreementText = `ACUERDO DE DIVULGACIÓN Y RECONOCIMIENTO DE NO AGENCIA
@@ -176,72 +182,79 @@ Yo, ${customer.name} ${customer.lastName}, POR ESTE INSTRUMENTO, EXIMO Y LIBERO 
 HE LEÍDO COMPLETAMENTE ESTE ACUERDO DE DIVULGACIÓN Y RENUNCIA DE RESPONSABILIDAD, Y LO FIRMO EN REPRESENTACIÓN PROPIA Y DE MIS HEREDEROS.`;
 
     return (
-        <div className="max-w-3xl mx-auto p-6 bg-white rounded shadow">
-            <h1 className="text-2xl font-bold mb-4">Descargo de Responsabilidad - Actividad de Buceo</h1>
-            <div className="whitespace-pre-wrap bg-gray-100 p-4 border rounded text-sm max-h-[400px] overflow-auto mb-6">
-                {agreementText}
-            </div>
-
-            <form onSubmit={handleSubmit} className="space-y-4">
-                <div>
-                    <label className="block font-medium">Nombre Participante*</label>
-                    <input type="text" name="participantName" value={formData.participantName} required onChange={handleChange} className="w-full border p-2 rounded" />
-                </div>
-                <div>
-                    <label className="block font-medium">Edad *</label>
-                    <input type="text" name="age" value={formData.age} required onChange={handleChange} className="w-full border p-2 rounded" />
+        <>
+            {
+                loading && (
+                    <LoadingSpinner />
+                )
+            }
+            <div className="max-w-3xl mx-auto p-6 bg-white rounded shadow">
+                <h1 className="text-2xl font-bold mb-4">Descargo de Responsabilidad - Actividad de Buceo</h1>
+                <div className="whitespace-pre-wrap bg-gray-100 p-4 border rounded text-sm max-h-[400px] overflow-auto mb-6">
+                    {agreementText}
                 </div>
 
-                <div>
-                    <label className="block font-medium">Fecha (Dia/Mes/Año) *</label>
-                    <input type="date" name="date" value={formData.date} required onChange={handleChange} className="w-full border p-2 rounded" />
-                </div>
-
-                <div>
-                    <label className="block font-medium">Firma *</label>
-                    <SignatureCanvas
-                        penColor="black"
-                        canvasProps={{ width: 500, height: 150, className: 'border rounded' }}
-                        ref={sigPadRef}
-                    />
-                    <button type="button" onClick={() => handleClear(sigPadRef)} className="text-sm text-red-600 mt-1">Limpiar Firma</button>
-                </div>
-                {formData.age < 18 && (
-                    <>
-                        <div>
-                            <label className="block font-medium">Firma del tutor (en caso que corresponda)</label>
-                            <SignatureCanvas
-                                penColor="black"
-                                canvasProps={{ width: 500, height: 150, className: 'border rounded' }}
-                                ref={guardianSigPadRef}
-                            />
-                            <button type="button" onClick={() => handleClear(guardianSigPadRef)} className="text-sm text-red-600 mt-1">Limpiar Firma Tutor</button>
-                        </div>
-
-                        <div>
-                            <label className="block font-medium">Fecha cumpleaños del Tutor</label>
-                            <input type="date" name="guardianDate" onChange={handleChange} className="w-full border p-2 rounded" />
-                        </div>
-                    </>
-                )}
-
-
-                <div>
-                    <label className="block font-medium">Seguro de accidentes de buceo *</label>
-                    <div className="flex items-center gap-4 mt-1">
-                        <label><input type="radio" name="insurance" value="Yes" required onChange={handleChange} /> Si</label>
-                        <label><input type="radio" name="insurance" value="No" required onChange={handleChange} /> No</label>
-                    </div>
-                </div>
-                {formData.insurance === "Si" && (
+                <form onSubmit={handleSubmit} className="space-y-4">
                     <div>
-                        <label className="block font-medium">Compañia de seguro - Numero de Poliza</label>
-                        <input type="text" name="policyNumber" onChange={handleChange} className="w-full border p-2 rounded" />
+                        <label className="block font-medium">Nombre Participante*</label>
+                        <input type="text" name="participantName" value={formData.participantName} required onChange={handleChange} className="w-full border p-2 rounded" />
                     </div>
-                )}
-                <button type="submit" className="mt-4 bg-blue-600 text-white px-4 py-2 rounded">Enviar</button>
-            </form>
-        </div>
+                    <div>
+                        <label className="block font-medium">Edad *</label>
+                        <input type="text" name="age" value={formData.age} required onChange={handleChange} className="w-full border p-2 rounded" />
+                    </div>
+
+                    <div>
+                        <label className="block font-medium">Fecha (Dia/Mes/Año) *</label>
+                        <input type="date" name="date" value={formData.date} required onChange={handleChange} className="w-full border p-2 rounded" />
+                    </div>
+
+                    <div>
+                        <label className="block font-medium">Firma *</label>
+                        <SignatureCanvas
+                            penColor="black"
+                            canvasProps={{ width: 500, height: 150, className: 'border rounded' }}
+                            ref={sigPadRef}
+                        />
+                        <button type="button" onClick={() => handleClear(sigPadRef)} className="text-sm text-red-600 mt-1">Limpiar Firma</button>
+                    </div>
+                    {formData.age < 18 && (
+                        <>
+                            <div>
+                                <label className="block font-medium">Firma del tutor (en caso que corresponda)</label>
+                                <SignatureCanvas
+                                    penColor="black"
+                                    canvasProps={{ width: 500, height: 150, className: 'border rounded' }}
+                                    ref={guardianSigPadRef}
+                                />
+                                <button type="button" onClick={() => handleClear(guardianSigPadRef)} className="text-sm text-red-600 mt-1">Limpiar Firma Tutor</button>
+                            </div>
+
+                            <div>
+                                <label className="block font-medium">Fecha cumpleaños del Tutor</label>
+                                <input type="date" name="guardianDate" onChange={handleChange} className="w-full border p-2 rounded" />
+                            </div>
+                        </>
+                    )}
+
+
+                    <div>
+                        <label className="block font-medium">Seguro de accidentes de buceo *</label>
+                        <div className="flex items-center gap-4 mt-1">
+                            <label><input type="radio" name="insurance" value="Yes" required onChange={handleChange} /> Si</label>
+                            <label><input type="radio" name="insurance" value="No" required onChange={handleChange} /> No</label>
+                        </div>
+                    </div>
+                    {formData.insurance === "Si" && (
+                        <div>
+                            <label className="block font-medium">Compañia de seguro - Numero de Poliza</label>
+                            <input type="text" name="policyNumber" onChange={handleChange} className="w-full border p-2 rounded" />
+                        </div>
+                    )}
+                    <button type="submit" className="mt-4 bg-blue-600 text-white px-4 py-2 rounded">Enviar</button>
+                </form>
+            </div>
+        </>
     );
 };
 

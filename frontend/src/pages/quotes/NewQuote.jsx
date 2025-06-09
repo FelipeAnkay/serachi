@@ -79,25 +79,30 @@ export default function NewQuote() {
             });
         }
         const fetchProducts = async () => {
+            setLoading(true)
             try {
                 const response = await getProductByStoreId(storeId);
                 const roomProducts = response.productList.filter(product => product.type != "ROOM");
                 setProducts(roomProducts);
-                setLoading(false);
+
             } catch (error) {
+                toast.error('Error fetching products');
+            } finally {
                 setLoading(false);
-                // console.error('Error fetching products:', error);
             }
         };
         const fetchPartners = async () => {
             try {
+                setLoading(true);
                 const response = await getPartnerList(storeId);
                 //console.log("ProductList Response: ", response);
                 setPartners(response.partnerList);
-                setLoading(false);
+              
                 //console.log("ProductList: ", products);
             } catch (error) {
-                //console.error('Error fetching products:', error);
+                toast.error('Error fetching Partner');
+          
+            }finally{
                 setLoading(false);
             }
         }
@@ -122,6 +127,7 @@ export default function NewQuote() {
     useEffect(() => {
         //console.log("Entre a UE 4");
         const fetchAvailableRooms = async () => {
+            setLoading(true)
             if (!quote.dateIn || !quote.dateOut) {
                 setIsPeopleLock(false);
                 return;
@@ -191,7 +197,9 @@ export default function NewQuote() {
                 setIsPeopleLock(true);
                 setIsRoomVisible(true);
             } catch (error) {
-                console.error('Error fetching available rooms:', error);
+                toast.error('Error fetching available rooms');
+            }finally{
+                setLoading(false)
             }
         };
 
@@ -204,14 +212,6 @@ export default function NewQuote() {
     }, [quote.dateIn, quote.dateOut, storeId]);
 
     useEffect(() => {
-        //console.log("Entre a UE 5");
-        //console.log("F: Los datos de quote son: ", quote);
-        //console.log("F: Los datos de customer son: ", customer);
-        //console.log("F: Los datos de Selected Product son: ", selectedProducts);
-        //console.log("F: FinalPrice es:", finalPrice)
-    }, [quote]);
-
-    useEffect(() => {
         if (quoteId && !hasInteractedWithToggle.current) return;
         //console.log("Entre a UE 6");
         updateQuoteFromSelectedRoom(selectedRooms);
@@ -220,6 +220,7 @@ export default function NewQuote() {
     useEffect(() => {
         //console.log("Entre a UE 1");
         const fetchQuote = async () => {
+            setLoading(true)
             try {
                 const resp = await getQuoteById(quoteId);
                 const response = resp.quote;
@@ -241,9 +242,6 @@ export default function NewQuote() {
                 } else {
                     quoteFill(response);
                 }
-
-                setLoading(false);
-
                 //console.log("F: Estoy en useEffect-productList:", response.productList)
                 if (response.productList && response.productList.length > 0) {
                     const initialSelectedProducts = {};
@@ -267,8 +265,9 @@ export default function NewQuote() {
                 }
                 setFinalPrice(response.finalPrice + response.discount)
             } catch (error) {
-                //console.error('Error fetching products:', error);
-                setLoading(false);
+                toast.error('Error fetching Quote');
+            }finally{
+                setLoading(true)
             }
         }
 
@@ -277,14 +276,6 @@ export default function NewQuote() {
             fetchQuote();
         }
     }, [quoteId]);
-
-    const formatDateInput = (dateStr) => {
-        if (!dateStr) return "";
-        const date = new Date(dateStr);
-        const tzOffset = date.getTimezoneOffset() * 60000; // en milisegundos
-        const localISOTime = new Date(date.getTime() - tzOffset).toISOString().slice(0, 16);
-        return localISOTime;
-    };
 
     const incrementProduct = (productId) => {
         setSelectedProducts((prev) => {
@@ -417,6 +408,7 @@ export default function NewQuote() {
     const handleCustomerEmailSearch = async (customerEmail) => {
         //console.log("El email en handleCustomerEmailSearch es: ", customerEmail);
         try {
+            setLoading(true)
             const response = await getCustomerEmail(customerEmail, storeId);
             const found = response.customerList;
             //console.log("F: el found es:", found);
@@ -485,6 +477,8 @@ export default function NewQuote() {
                 divingCertificates: [],
             });
             setIsCustomerModalOpen(true);
+        }finally{
+            setLoading(false)
         }
     };
 
@@ -690,7 +684,7 @@ export default function NewQuote() {
                                         isOpen={isCustomerModalOpen}
                                         onClose={() => setIsCustomerModalOpen(false)}
                                         customer={customer}
-                                        setCustomer={setCustomer}Add commentMore actions
+                                        setCustomer={setCustomer} Add commentMore actions
                                         onSave={handleSaveClient}
                                     />
                                 )}
