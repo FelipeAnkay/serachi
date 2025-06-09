@@ -97,4 +97,15 @@ export const useFormServices = create((set) => ({
             throw error;
         }
     },
+    sendFormEmail: async (formData) => {
+        set({ isLoading: true, error: null });
+        try {
+            //console.log("Los datos a enviar en createrole son: ", roleData)
+            const response = await axios.post(`${URL_API}/send-forms`, formData);
+            return response.data;
+        } catch (error) {
+            set({ error: error.response.data.message || "Error creating store", isLoading: false });
+            throw error;
+        }
+    },
 }))

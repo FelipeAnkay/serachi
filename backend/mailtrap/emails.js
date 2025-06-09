@@ -1,5 +1,5 @@
 import { mailtrapClient, sender } from "./mailtrap.js"
-import { VERIFICATION_EMAIL_TEMPLATE, VERIFY_USER, PASSWORD_RESET_REQUEST_TEMPLATE, PASSWORD_RESET_SUCCESS_TEMPLATE, SEND_QUOTE } from "./emailTemplates.js"
+import { VERIFICATION_EMAIL_TEMPLATE, VERIFY_USER, PASSWORD_RESET_REQUEST_TEMPLATE, PASSWORD_RESET_SUCCESS_TEMPLATE, SEND_QUOTE, SEND_FORMS } from "./emailTemplates.js"
 
 export const sendVerificationEmail = async (email, verificationToken) => {
     const recipient = [{ email }];
@@ -141,6 +141,64 @@ export const sendQuoteEmail = async (email, customerName, dateIn, dateOut, produ
             category: "Quote",
         });
         console.log("Quote Sent", response);
+    } catch (error) {
+        console.error(error.message);
+        throw new Error("Error sending the quote email", error.message);
+    }
+}
+
+export const sendFormEmail = async (email, customerName, formList, userEmail, userName, storeName, urlToken) => {
+    console.log("Entre a sendFormEmail", {
+            email,
+            customerName,
+            formList,
+            userEmail,
+            userName,
+            storeName,
+            urlToken
+        })
+    const recipient = [{ email }];
+
+    const customSender = {
+        email: userEmail,
+        name: userName
+    };
+
+    const formRows = formList.map((form) => {
+        const fullUrl = `${form.url}?token=${urlToken}`;
+        return `
+      <tr>
+        <td>${form.name}</td>
+        <td><a href="${fullUrl}" target="_blank">Sign Form</a></td>
+      </tr>
+    `;
+    }).join("");
+
+
+    const html = SEND_FORMS
+        .replace('{{customerName}}', customerName)
+        .replace('{{formList}}', formRows // reemplaza el bloque con las filas generadas
+        );
+
+    const customSubject = storeName + " Sign Form Required"
+
+    console.log("Variables a enviar: ", {
+            customSender,
+            recipient,
+            customSubject,
+            html,
+        })
+
+    try {
+        //console.log("Entré al TRY de sendQuoteEmail:", customSender, " - ", recipient, " - ", customSubject, " - ", html);
+        const response = await mailtrapClient.send({
+            from: customSender,
+            to: recipient,
+            subject: customSubject,
+            html,
+            category: "Forms",
+        });
+        console.log("Form Sent", response);
     } catch (error) {
         console.error(error.message);
         throw new Error("Error sending the quote email", error.message);

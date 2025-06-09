@@ -12,6 +12,7 @@ import { CircleHelp, Contact2, Search, Trash2 } from 'lucide-react';
 import { useExperienceServices } from '../../store/experienceServices';
 import { useRoomReservationServices } from '../../store/roomReservationServices';
 import { formatDateDisplay, formatDateShort, formatDateInput } from '../../components/formatDateDisplay'
+import LoadingSpinner from '../../components/LoadingSpinner';
 
 export default function AddItemsExperience() {
     const { getProductByStoreId } = useProductServices();
@@ -50,36 +51,59 @@ export default function AddItemsExperience() {
     }, [selectedExperience]);
 
     const fetchProducts = async () => {
-        console.log("Entre a fetchProducts")
-        const products = await getProductByStoreId(storeId);
-        console.log("Resp de getProductByStoreId: ", products)
-        const filtered = products.productList.filter(p => ['FOOD', 'HOSPITALITY'].includes(p.type));
-        console.log("filtered:", filtered)
-        setProductList(filtered);
+        setLoading(true)
+        try {
+            //console.log("Entre a fetchProducts")
+            const products = await getProductByStoreId(storeId);
+            //console.log("Resp de getProductByStoreId: ", products)
+            const filtered = products.productList.filter(p => ['FOOD', 'HOSPITALITY'].includes(p.type));
+            //console.log("filtered:", filtered)
+            setProductList(filtered);
+        } catch (error) {
+            toast.error("Error Fetching Products")
+        } finally {
+            setLoading(false);
+        }
     };
 
     const fetchExperiences = async () => {
-        //console.log("Entre a fetchExperiences: ", customer.email)
-        const res = await getExperienceByEmail(customer.email, storeId);
-        //console.log("Resp de getExperienceByEmail: ", res)
-        setExperienceList(res.experienceList);
+        try {
+            setLoading(true)
+            //console.log("Entre a fetchExperiences: ", customer.email)
+            const res = await getExperienceByEmail(customer.email, storeId);
+            //console.log("Resp de getExperienceByEmail: ", res)
+            setExperienceList(res.experienceList);
+        } catch (error) {
+            toast.error("Error Fetching Experiences")
+        } finally {
+            setLoading(false);
+        }
+
     };
 
     const fetchAvailableItems = async () => {
-        const services = await getServicesByEmail(storeId, customer.email);
-        console.log("Resp de getServicesByEmail: ", services)
-        const bookings = await getReservationsByEmail(storeId, customer.email);
-        console.log("Resp de getReservationsByEmail: ", bookings)
+        try {
+            setLoading(true)
+            const services = await getServicesByEmail(storeId, customer.email);
+            //console.log("Resp de getServicesByEmail: ", services)
+            const bookings = await getReservationsByEmail(storeId, customer.email);
+            // console.log("Resp de getReservationsByEmail: ", bookings)
 
-        const current = selectedExperience;
-        console.log("Resp de current: ", current)
-        const filteredServices = services.service.filter(s => !current.serviceList.includes(s._id));
-        const filteredBookings = bookings.roomReservationList.filter(b => !current.bookList.includes(b._id));
-        console.log("Resp de filteredServices: ", filteredServices)
-        console.log("Resp de filteredBookings: ", filteredBookings)
+            const current = selectedExperience;
+            //console.log("Resp de current: ", current)
+            const filteredServices = services.service.filter(s => !current.serviceList.includes(s._id));
+            const filteredBookings = bookings.roomReservationList.filter(b => !current.bookList.includes(b._id));
+            // console.log("Resp de filteredServices: ", filteredServices)
+            // console.log("Resp de filteredBookings: ", filteredBookings)
 
-        setServiceList(filteredServices);
-        setReservationList(filteredBookings);
+            setServiceList(filteredServices);
+            setReservationList(filteredBookings);
+        } catch (error) {
+            toast.error("Error Fetching Items")
+        } finally {
+            setLoading(false);
+        }
+
     };
 
     const handleCustomerEmailSearch = async (email) => {
@@ -112,7 +136,7 @@ export default function AddItemsExperience() {
             },
             storeId
         };
-
+        setLoading(true)
         try {
             if (customer._id) {
                 await updateCustomer(customer.email, payload);
@@ -124,6 +148,8 @@ export default function AddItemsExperience() {
             setIsCustomerModalOpen(false);
         } catch {
             toast.error('Error saving customer');
+        } finally {
+            setLoading(false)
         }
     };
 
@@ -137,7 +163,7 @@ export default function AddItemsExperience() {
             serviceList: [...selectedExperience.serviceList, ...selectedServices.map(s => s._id)],
             bookList: [...selectedExperience.bookList, ...selectedBookings.map(b => b._id)]
         };
-
+        setLoading(true)
         try {
             console.log("updateExperience Payload: ", updatedExperience)
 
@@ -153,6 +179,8 @@ export default function AddItemsExperience() {
 
         } catch (err) {
             toast.error('Error updating experience');
+        } finally {
+            setLoading(false)
         }
     };
 
@@ -168,61 +196,77 @@ export default function AddItemsExperience() {
     }
 
     return (
-        <div className="flex flex-col min-h-screen w-full bg-blue-950 text-white px-4 py-6 sm:px-8 sm:py-10">
-            <motion.div
-                initial={{ opacity: 0, scale: 2 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.9 }}
-                transition={{ duration: 0.5 }}
-                className="flex flex-col w-full max-w-8xl mx-auto bg-blue-900 bg-opacity-80 backdrop-filter backdrop-blur-lg rounded-2xl shadow-2xl border border-white overflow-hidden min-h-screen"
-            >
-                <h1 className="text-2xl font-bold mb-6 text-center">Add Items to Experience</h1>
-                <form onSubmit={handleSubmit} className='ml-2'>
-                    <div className='flex flex-row'>
-                        <CircleHelp className='text-white mr-2 hover:text-blue-600' onClick={() => setGuideOpen(!guideOpen)} />
-                        {guideOpen && (
-                            <div className='mb-4 border rounded-2xl w-max flex flex-col text-sm'>
-                                <label className='font-semibold ml-2 mt-2'>Guide:</label>
-                                <p className='ml-10 mr-2'>1.- Enter Customer Email</p>
-                                <p className='ml-10 mr-2'>2.- Select Customer Experience, after this the services, room reservations and products will appear</p>
-                                <p className='ml-10 mr-2'>3.- Enter the services, room reservations or products that you want to add to the customer experience</p>
-                                <p className='ml-10 mr-2 mb-2'>4.- If everything is ok click Save</p>
-                            </div>
-                        )}
-                    </div>
-                    <div className="mb-4">
-                        <div className="flex items-center gap-2">
-                            <label className='font-semibold'>Customer Email:</label>
-                            <input
-                                type="email"
-                                ref={customerEmailRef}
-                                className="px-2 py-1 rounded ml-2 mr-2 bg-blue-700 text-white"
-                                placeholder="Customer email"
-                                onKeyDown={(e) => {
-                                    if (e.key === 'Enter') {
-                                        e.preventDefault();
-                                        handleCustomerEmailSearch(customerEmailRef.current.value);
-                                    }
-                                }}
-                            />
-                            <button
-                                type="button"
-                                onClick={() => handleCustomerEmailSearch(customerEmailRef.current.value)}
-                                className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700"
-                            >
-                                <Search />
-                            </button>
-
-                            {!isNew && (
+        <>
+            {
+                loading && (
+                    <LoadingSpinner />
+                )
+            }
+            <div className="flex flex-col min-h-screen w-full bg-blue-950 text-white px-4 py-6 sm:px-8 sm:py-10">
+                <motion.div
+                    initial={{ opacity: 0, scale: 2 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.9 }}
+                    transition={{ duration: 0.5 }}
+                    className="flex flex-col w-full max-w-8xl mx-auto bg-blue-900 bg-opacity-80 backdrop-filter backdrop-blur-lg rounded-2xl shadow-2xl border border-white overflow-hidden min-h-screen"
+                >
+                    <h1 className="text-2xl font-bold mb-6 text-center">Add Items to Experience</h1>
+                    <form onSubmit={handleSubmit} className='ml-2'>
+                        <div className='flex flex-row'>
+                            <CircleHelp className='text-white mr-2 hover:text-blue-600' onClick={() => setGuideOpen(!guideOpen)} />
+                            {guideOpen && (
+                                <div className='mb-4 border rounded-2xl w-max flex flex-col text-sm'>
+                                    <label className='font-semibold ml-2 mt-2'>Guide:</label>
+                                    <p className='ml-10 mr-2'>1.- Enter Customer Email</p>
+                                    <p className='ml-10 mr-2'>2.- Select Customer Experience, after this the services, room reservations and products will appear</p>
+                                    <p className='ml-10 mr-2'>3.- Enter the services, room reservations or products that you want to add to the customer experience</p>
+                                    <p className='ml-10 mr-2 mb-2'>4.- If everything is ok click Save</p>
+                                </div>
+                            )}
+                        </div>
+                        <div className="mb-4">
+                            <div className="flex items-center gap-2">
+                                <label className='font-semibold'>Customer Email:</label>
+                                <input
+                                    type="email"
+                                    ref={customerEmailRef}
+                                    className="px-2 py-1 rounded ml-2 mr-2 bg-blue-700 text-white"
+                                    placeholder="Customer email"
+                                    onKeyDown={(e) => {
+                                        if (e.key === 'Enter') {
+                                            e.preventDefault();
+                                            handleCustomerEmailSearch(customerEmailRef.current.value);
+                                        }
+                                    }}
+                                />
                                 <button
                                     type="button"
-                                    variant="outline"
+                                    onClick={() => handleCustomerEmailSearch(customerEmailRef.current.value)}
                                     className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700"
-                                    onClick={() => setIsCustomerModalOpen(true)}
                                 >
-                                    <Contact2 />
+                                    <Search />
                                 </button>
-                            )}
+
+                                {!isNew && (
+                                    <button
+                                        type="button"
+                                        variant="outline"
+                                        className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700"
+                                        onClick={() => setIsCustomerModalOpen(true)}
+                                    >
+                                        <Contact2 />
+                                    </button>
+                                )}
+                                {isCustomerModalOpen && (
+                                    <CustomerDetails
+                                        isOpen={isCustomerModalOpen}
+                                        onClose={() => setIsCustomerModalOpen(false)}
+                                        customer={customer}
+                                        setCustomer={setCustomer}
+                                        onSave={handleSaveClient}
+                                    />
+                                )}
+                            </div>
                             {isCustomerModalOpen && (
                                 <CustomerDetails
                                     isOpen={isCustomerModalOpen}
@@ -233,80 +277,71 @@ export default function AddItemsExperience() {
                                 />
                             )}
                         </div>
-                        {isCustomerModalOpen && (
-                            <CustomerDetails
-                                isOpen={isCustomerModalOpen}
-                                onClose={() => setIsCustomerModalOpen(false)}
-                                customer={customer}
-                                setCustomer={setCustomer}
-                                onSave={handleSaveClient}
-                            />
-                        )}
-                    </div>
 
-                    <div>
-                        {experienceList.length > 0 && (
-                            <div className="mb-4 flex flex-row items-center">
-                                <label className="mb-1 font-semibold">Select Experience: </label>
-                                <select className="text-white bg-blue-700 p-2 rounded ml-2" onChange={(e) => {
-                                    const exp = experienceList.find(ex => ex._id === e.target.value);
-                                    setSelectedExperience(exp);
-                                }}>
-                                    <option value="">-- Select --</option>
-                                    {experienceList.map(exp => (
-                                        <option key={exp._id} value={exp._id}>{exp.name}</option>
-                                    ))}
-                                </select>
-                            </div>
-                        )}
-                        <fieldset className='border rounded-2xl '>
-                            <legend className='ml-4 font-semibold'>New Items:</legend>
-                            {selectedExperience && (
-                                <div className='flex flex-row'>
-                                    <fieldset className="mb-4 border rounded-2xl w-1/3 ml-2">
-                                        <legend className="block font-semibold mb-1 ml-2">Add Services</legend>
-                                        <select multiple className="w-full h-32 text-white p-2 rounded" onChange={(e) => {
-                                            const selected = Array.from(e.target.selectedOptions).map(opt => serviceList.find(s => s._id === opt.value));
-                                            setSelectedServices(selected);
-                                        }}>
-                                            {serviceList.map(s => (
-                                                <option key={s._id} value={s._id} className='text-white'>{s.name}</option>
-                                            ))}
-                                        </select>
-                                    </fieldset>
-                                    <fieldset className="mb-4 border rounded-2xl w-1/3 ml-2">
-                                        <legend className="block font-semibold mb-1 ml-2">Add Reservations</legend>
-                                        <select multiple className="w-full h-32 text-white p-2 rounded" onChange={(e) => {
-                                            const selected = Array.from(e.target.selectedOptions).map(opt => reservationList.find(r => r._id === opt.value));
-                                            setSelectedBookings(selected);
-                                        }}>
-                                            {reservationList.map((r, index) => (
-                                                <option key={r._id} value={r._id}>R{index + 1}.- Beds: {r.bedsReserved} - {formatDateDisplay(r.dateIn)} to {formatDateDisplay(r.dateOut)} </option>
-                                            ))}
-                                        </select>
-                                    </fieldset>
-                                    <fieldset className="mb-4 border rounded-2xl w-1/3 ml-2 mr-2">
-                                        <legend className="block font-semibold mb-1 ml-2">Add Products</legend>
-                                        <ProductSelect
-                                            products={productList}
-                                            value={selectedProducts}
-                                            onChange={setSelectedProducts}
-                                        />
-                                    </fieldset>
+                        <div>
+                            {experienceList.length > 0 && (
+                                <div className="mb-4 flex flex-row items-center">
+                                    <label className="mb-1 font-semibold">Select Experience: </label>
+                                    <select className="text-white bg-blue-700 p-2 rounded ml-2" onChange={(e) => {
+                                        const exp = experienceList.find(ex => ex._id === e.target.value);
+                                        setSelectedExperience(exp);
+                                    }}>
+                                        <option value="">-- Select --</option>
+                                        {experienceList.map(exp => (
+                                            <option key={exp._id} value={exp._id}>{exp.name}</option>
+                                        ))}
+                                    </select>
                                 </div>
                             )}
-                        </fieldset>
-                    </div>
-                    <div className="text-center">
-                        <button type="submit" className="bg-green-600 px-4 py-2 rounded text-white mt-2">
-                            {loading ? 'Saving...' : 'Save'}
-                        </button>
-                        <button type="button" onClick={handleReset} className="bg-yellow-600 px-4 py-2 rounded text-white mt-2 ml-2">
-                            Reset
-                        </button>
-                    </div>
-                </form>
-            </motion.div>
-        </div>
+                            <fieldset className='border rounded-2xl '>
+                                <legend className='ml-4 font-semibold'>New Items:</legend>
+                                {selectedExperience && (
+                                    <div className='flex flex-row'>
+                                        <fieldset className="mb-4 border rounded-2xl w-1/3 ml-2">
+                                            <legend className="block font-semibold mb-1 ml-2">Add Services</legend>
+                                            <select multiple className="w-full h-32 text-white p-2 rounded" onChange={(e) => {
+                                                const selected = Array.from(e.target.selectedOptions).map(opt => serviceList.find(s => s._id === opt.value));
+                                                setSelectedServices(selected);
+                                            }}>
+                                                {serviceList.map(s => (
+                                                    <option key={s._id} value={s._id} className='text-white'>{s.name}</option>
+                                                ))}
+                                            </select>
+                                        </fieldset>
+                                        <fieldset className="mb-4 border rounded-2xl w-1/3 ml-2">
+                                            <legend className="block font-semibold mb-1 ml-2">Add Reservations</legend>
+                                            <select multiple className="w-full h-32 text-white p-2 rounded" onChange={(e) => {
+                                                const selected = Array.from(e.target.selectedOptions).map(opt => reservationList.find(r => r._id === opt.value));
+                                                setSelectedBookings(selected);
+                                            }}>
+                                                {reservationList.map((r, index) => (
+                                                    <option key={r._id} value={r._id}>R{index + 1}.- Beds: {r.bedsReserved} - {formatDateDisplay(r.dateIn)} to {formatDateDisplay(r.dateOut)} </option>
+                                                ))}
+                                            </select>
+                                        </fieldset>
+                                        <fieldset className="mb-4 border rounded-2xl w-1/3 ml-2 mr-2">
+                                            <legend className="block font-semibold mb-1 ml-2">Add Products</legend>
+                                            <ProductSelect
+                                                products={productList}
+                                                value={selectedProducts}
+                                                onChange={setSelectedProducts}
+                                            />
+                                        </fieldset>
+                                    </div>
+                                )}
+                            </fieldset>
+                        </div>
+                        <div className="text-center">
+                            <button type="submit" className="bg-green-600 px-4 py-2 rounded text-white mt-2">
+                                {loading ? 'Saving...' : 'Save'}
+                            </button>
+                            <button type="button" onClick={handleReset} className="bg-yellow-600 px-4 py-2 rounded text-white mt-2 ml-2">
+                                Reset
+                            </button>
+                        </div>
+                    </form>
+                </motion.div>
+            </div>
+        </>
     );
 }

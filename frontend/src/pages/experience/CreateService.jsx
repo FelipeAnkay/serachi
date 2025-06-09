@@ -12,6 +12,7 @@ import { useCustomerServices } from '../../store/customerServices';
 import CustomerDetails from '../../components/CustomerDetail'
 import { Contact2, Search, Trash2 } from 'lucide-react';
 import { createCustomServices } from '../../components/createCustomService'
+import LoadingSpinner from '../../components/LoadingSpinner';
 
 export default function CreateService() {
     const { getProductByStoreId } = useProductServices();
@@ -87,26 +88,41 @@ export default function CreateService() {
     });
 
     const fetchProducts = async () => {
-        // Cargar productos
-        const products = await getProductByStoreId(storeId);
-        //console.log("products: ", products)
-        setProductList(products.productList);
+        setLoading(true)
+        try {
+            // Cargar productos
+            const products = await getProductByStoreId(storeId);
+            //console.log("products: ", products)
+            setProductList(products.productList);
+        } catch (error) {
+            toast.error("Error Fetching Products")
+        } finally {
+            setLoading(false);
+        }
+
     }
 
     useEffect(() => {
         async function fetchData() {
-            const storeId = Cookies.get("storeId");
-            setForm((f) => ({ ...f, storeId }));
+            try {
+                const storeId = Cookies.get("storeId");
+                setForm((f) => ({ ...f, storeId }));
 
-            // Cargar staff
-            const staff = await getStaffList(storeId);
-            //console.log("staff: ", staff)
-            setStaffList(staff.staffList);
+                // Cargar staff
+                const staff = await getStaffList(storeId);
+                //console.log("staff: ", staff)
+                setStaffList(staff.staffList);
 
-            // Cargar tipos
-            const typesFromAPI = await getTypeByCategory("SERVICE", storeId);
-            //console.log("typesFromAPI: ", typesFromAPI)
-            setTypes(typesFromAPI.typeList);
+                // Cargar tipos
+                const typesFromAPI = await getTypeByCategory("SERVICE", storeId);
+                //console.log("typesFromAPI: ", typesFromAPI)
+                setTypes(typesFromAPI.typeList);
+            } catch (error) {
+                toast.error("Error Fetching Staff/Types")
+            } finally {
+                setLoading(false);
+            }
+
         }
         fetchData();
         fetchProducts();
@@ -189,7 +205,8 @@ export default function CreateService() {
 
     const handleSaveClient = async (e) => {
         try {
-            console.log("F: El cliente es:", customer);
+            setLoading(true)
+            //console.log("F: El cliente es:", customer);
             const customerPayload = {
                 _id: customer._id,
                 email: customer.email,
@@ -222,6 +239,8 @@ export default function CreateService() {
             setIsNew(false);
         } catch (error) {
             toast.error('Error creating a Customer');
+        } finally {
+            setLoading(false)
         }
 
     };
@@ -253,11 +272,11 @@ export default function CreateService() {
             window.scrollTo({ top: 0, behavior: 'smooth' });
             handleResetCustomService();
             toast.success("Services created");
-            setLoading(false);
         } catch (error) {
             //console.log("Error en handleSubmit:", error);
             toast.error("Error creating Services")
-            setLoading(false)
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -285,260 +304,267 @@ export default function CreateService() {
 
 
     return (
-        <div className="flex flex-col min-h-screen w-full bg-blue-950 text-white px-4 py-6 sm:px-6 md:px-8 lg:px-10 xl:px-16">
-            <motion.div
-                initial={{ opacity: 0, scale: 2 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.9 }}
-                transition={{ duration: 0.5 }}
-                className="flex flex-col w-full max-w-screen-xl mx-auto bg-blue-900 bg-opacity-80 backdrop-filter backdrop-blur-lg rounded-2xl shadow-2xl border border-gray-800 overflow-hidden flex-grow"
-            >
-                <h1 className="text-3xl font-bold mt-6 mb-6 text-center text-white bg-clip-text">Create Service</h1>
-                <form onSubmit={handleSubmit}>
-                    <fieldset className="border p-4 rounded-2xl mx-2">
-                        <legend className="font-semibold text-2xl">Service Data</legend>
-                        <div>
-                            <div className="flex flex-col sm:flex-row items-center gap-2">
-                                <input
-                                    ref={customerEmailRef}
-                                    type="email"
-                                    name="customerEmail"
-                                    value={customService.customerEmail}
-                                    onChange={(e) =>
-                                        setCustomService((prev) => ({
-                                            ...prev,
-                                            customerEmail: e.target.value,
-                                        }))
-                                    }
-                                    onKeyDown={(e) => {
-                                        if (e.key === 'Enter') {
-                                            e.preventDefault();
-                                            handleCustomerEmailSearch(customerEmailRef.current.value);
+        <>
+            {
+                loading && (
+                    <LoadingSpinner />
+                )
+            }
+            <div className="flex flex-col min-h-screen w-full bg-blue-950 text-white px-4 py-6 sm:px-6 md:px-8 lg:px-10 xl:px-16">
+                <motion.div
+                    initial={{ opacity: 0, scale: 2 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.9 }}
+                    transition={{ duration: 0.5 }}
+                    className="flex flex-col w-full max-w-screen-xl mx-auto bg-blue-900 bg-opacity-80 backdrop-filter backdrop-blur-lg rounded-2xl shadow-2xl border border-gray-800 overflow-hidden flex-grow"
+                >
+                    <h1 className="text-3xl font-bold mt-6 mb-6 text-center text-white bg-clip-text">Create Service</h1>
+                    <form onSubmit={handleSubmit}>
+                        <fieldset className="border p-4 rounded-2xl mx-2">
+                            <legend className="font-semibold text-2xl">Service Data</legend>
+                            <div>
+                                <div className="flex flex-col sm:flex-row items-center gap-2">
+                                    <input
+                                        ref={customerEmailRef}
+                                        type="email"
+                                        name="customerEmail"
+                                        value={customService.customerEmail}
+                                        onChange={(e) =>
+                                            setCustomService((prev) => ({
+                                                ...prev,
+                                                customerEmail: e.target.value,
+                                            }))
                                         }
-                                    }}
-                                    className="w-full border px-2 py-1 rounded bg-white text-blue-950"
-                                    placeholder="Enter customer email"
-                                />
-                                <button
-                                    type="button"
-                                    onClick={() => handleCustomerEmailSearch(customerEmailRef.current.value)}
-                                    className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700"
-                                >
-                                    <Search />
-                                </button>
-
-                                {!isNew && (
+                                        onKeyDown={(e) => {
+                                            if (e.key === 'Enter') {
+                                                e.preventDefault();
+                                                handleCustomerEmailSearch(customerEmailRef.current.value);
+                                            }
+                                        }}
+                                        className="w-full border px-2 py-1 rounded bg-white text-blue-950"
+                                        placeholder="Enter customer email"
+                                    />
                                     <button
                                         type="button"
-                                        variant="outline"
+                                        onClick={() => handleCustomerEmailSearch(customerEmailRef.current.value)}
                                         className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700"
-                                        onClick={() => setIsCustomerModalOpen(true)}
                                     >
-                                        <Contact2 />
+                                        <Search />
                                     </button>
-                                )}
-                                {isCustomerModalOpen && (
-                                    <CustomerDetails
-                                        isOpen={isCustomerModalOpen}
-                                        onClose={() => setIsCustomerModalOpen(false)}
-                                        customer={customer}
-                                        setCustomer={setCustomer}
-                                        onSave={handleSaveClient}
-                                    />
-                                )}
-                            </div>
-                        </div>
-                        {/* Product Selection */}
-                        <div className="mt-4">
-                            <ProductSelect
-                                productList={productList}
-                                customService={customService}
-                                setCustomService={setCustomService}
-                                setNameAutoGenerated={setNameAutoGenerated}
-                            />
-                        </div>
-                        <div className="mt-4">
-                            <label className="block text-sm font-medium mt-5">Base Service Name:</label>
-                            <input
-                                type="text"
-                                className={`w-full border border-gray-300  ${!customService.productId ? 'bg-gray-600' : 'bg-white'} text-blue-950 rounded px-3 py-2 mt-1`}
-                                value={customService.name || ''}
-                                disabled={!customService.productId}
-                                onChange={(e) => {
-                                    setNameAutoGenerated(false); // Usuario está editando manualmente
-                                    setCustomService({ ...customService, name: e.target.value });
-                                }}
-                            />
-                        </div>
-                        {/* Staff && Type Selection */}
-                        <div className="flex flex-col md:flex-row w-full mt-5 gap-4">
-                            <div className="mt-2 w-full md:w-1/2">
-                                <label className="block text-sm font-medium">Staff Email:</label>
-                                <select
-                                    className="w-full border border-gray-300 bg-white text-blue-950 rounded px-3 py-2"
-                                    value={customService.staffEmail || ''}
-                                    onChange={(e) => setCustomService({ ...customService, staffEmail: e.target.value })}
-                                >
-                                    <option value="">Select a staff</option>
-                                    {(staffList || []).map((staff) => (
-                                        <option key={staff.email} value={staff.email}>
-                                            {staff.name ? `${staff.name} (${staff.email})` : staff.email}
-                                        </option>
-                                    ))}
-                                </select>
-                            </div>
-                            <div className="w-full md:w-1/2 flex flex-col mt-2">
-                                <label className="text-sm font-medium text-left text-white">Service Type:</label>
 
-                                <select
-                                    name="type"
-                                    className="w-full border border-gray-300 bg-white text-blue-950 rounded px-3 py-2"
-                                    value={customService.type || ''}
-                                    onChange={(e) => setCustomService({ ...customService, type: e.target.value })}
-                                >
-                                    <option value="">Select a Type</option>
-                                    {types.map((t) => (
-                                        <option key={t.name} value={t.name}>
-                                            {t.name}
-                                        </option>
-                                    ))}
-                                </select>
-
-                                {/* Conditional Toggle for "Customer" Type */}
-                                {customService.type === 'Customer' && (
-                                    <div className="mt-2 flex items-center space-x-3">
-                                        <span className="text-sm">Is the service paid?</span>
-                                        <label className="relative inline-flex items-center cursor-pointer">
-                                            <input
-                                                type="checkbox"
-                                                className="sr-only peer"
-                                                checked={customService.isPaid || false}
-                                                onChange={(e) => setCustomService({ ...customService, isPaid: e.target.checked })}
-                                            />
-                                            <div className="w-11 h-6 bg-gray-300 rounded-full peer peer-checked:bg-blue-600 transition-colors duration-200 peer-focus:ring-2 peer-focus:ring-blue-500" />
-                                            <div className="absolute left-1 top-1 w-4 h-4 bg-white rounded-full transition-transform duration-200 transform peer-checked:translate-x-5" />
-                                        </label>
-                                    </div>
-                                )}
-                            </div>
-                        </div>
-                        <div className="border rounded-2xl mt-5 bg-blue-800 p-4">
-                            <div className="flex flex-col lg:flex-row gap-4">
-                                {/* DateTime Pickers */}
-                                <fieldset className="border rounded-2xl w-full lg:w-1/4 p-4">
-                                    <legend className='ml-2 text-lg font-bold'>Dates & Cycle</legend>
-                                    <div className='flex flex-row justify-between mt-2 ml-2 mr-2'>
-                                        <div className="w-1/2 pr-2">
-                                            <label>Start Date & Time</label>
-                                            <input type="datetime-local"
-                                                value={customService.dateIn || ''}
-                                                onChange={(e) => setCustomService({ ...customService, dateIn: e.target.value })}
-                                                className="w-full border px-2 py-1 rounded bg-white text-blue-950"
-                                            />
-                                        </div>
-                                        <div className="w-1/2 pl-2">
-                                            <label>End Date & Time</label>
-                                            <input type="datetime-local"
-                                                value={customService.dateOut || ''}
-                                                onChange={(e) => setCustomService({ ...customService, dateOut: e.target.value })}
-                                                className="w-full border px-2 py-1 rounded bg-white text-blue-950"
-                                            />
-                                        </div>
-                                    </div>
-
-                                    {/* Toggle */}
-                                    <div className='flex flex-row ml-2 mr-2'>
-                                        <div className="mt-2 flex items-center w-1/2">
-                                            <input
-                                                id="onePerDay"
-                                                type="checkbox"
-                                                checked={customService.onePerDay || false}
-                                                onChange={(e) => setCustomService({ ...customService, onePerDay: e.target.checked })}
-                                                className="mr-2"
-                                            />
-                                            <label htmlFor="onePerDay" className="text-sm">Create one service per day?</label>
-                                        </div>
-                                        <div className="ml-2 mt-2 flex items-center w-1/2">
-                                            <input
-                                                id="perWeek"
-                                                type="checkbox"
-                                                checked={customService.perWeek || false}
-                                                onChange={(e) => setCustomService({ ...customService, perWeek: e.target.checked, repetitions: 1 })}
-                                                className="mr-2"
-                                            />
-                                            <label htmlFor="perWeek" className="text-sm">Same days next weeks?</label>
-                                        </div>
-                                    </div>
-
-                                    {/* Repeat Cycle */}
-                                    <div className="mt-2 ml-2 mr-2 mb-2">
-                                        <label className="block text-sm font-medium">Cycle Repetitions:</label>
-                                        <input
-                                            type="number"
-                                            min={0}
-                                            value={customService.repetitions || 0}
-                                            onChange={(e) => setCustomService({ ...customService, repetitions: parseInt(e.target.value, 10) })}
-                                            className="w-full border px-2 py-1 rounded bg-white text-blue-950"
+                                    {!isNew && (
+                                        <button
+                                            type="button"
+                                            variant="outline"
+                                            className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700"
+                                            onClick={() => setIsCustomerModalOpen(true)}
+                                        >
+                                            <Contact2 />
+                                        </button>
+                                    )}
+                                    {isCustomerModalOpen && (
+                                        <CustomerDetails
+                                            isOpen={isCustomerModalOpen}
+                                            onClose={() => setIsCustomerModalOpen(false)}
+                                            customer={customer}
+                                            setCustomer={setCustomer}
+                                            onSave={handleSaveClient}
                                         />
-                                    </div>
-                                </fieldset>
-
-                                <fieldset className="border rounded-2xl w-full lg:w-3/4 p-4">
-                                    <legend className='ml-2 text-lg font-bold'>Services to create: {customServiceList.length}</legend>
-                                    <div className='grid grid-cols-2 gap-2 ml-2'>
-                                        {(customServiceList || []).map((service, index) => (
-                                            <div className='flex flex-row items-center justify-center border rounded-2xl mr-2 mb-2 bg-blue-700'>
-                                                <div className='ml-2 flex-1 text-left'>
-                                                    <label>
-                                                        {index + 1}.- {service.name} - {formatDateDisplay(service.dateIn)} to {formatDateDisplay(service.dateOut)}
-                                                    </label>
-                                                </div>
-                                                <div className='mr-2'>
-                                                    <Trash2
-                                                        className='text-red-500 hover:text-red-900'
-                                                        onClick={() => handleDeleteCustomService(index)}
-                                                    />
-                                                </div>
-                                            </div>
-                                        ))}
-                                    </div>
-                                </fieldset>
+                                    )}
+                                </div>
                             </div>
-                            {/* Add Button */}
-                            <div className="flex justify-center mt-6">
-                                <button
-                                    className="mt-4 px-4 py-2 rounded bg-blue-600 text-white hover:bg-blue-700"
-                                    onClick={(e) => {
-                                        e.preventDefault();
-                                        try {
-                                            const newServices = createCustomServices(customService);
-                                            setCustomServiceList((prev) => [...prev, ...newServices]);
-                                            setCustomService({});
-                                        } catch (err) {
-                                            alert(err.message);
-                                        }
+                            {/* Product Selection */}
+                            <div className="mt-4">
+                                <ProductSelect
+                                    productList={productList}
+                                    customService={customService}
+                                    setCustomService={setCustomService}
+                                    setNameAutoGenerated={setNameAutoGenerated}
+                                />
+                            </div>
+                            <div className="mt-4">
+                                <label className="block text-sm font-medium mt-5">Base Service Name:</label>
+                                <input
+                                    type="text"
+                                    className={`w-full border border-gray-300  ${!customService.productId ? 'bg-gray-600' : 'bg-white'} text-blue-950 rounded px-3 py-2 mt-1`}
+                                    value={customService.name || ''}
+                                    disabled={!customService.productId}
+                                    onChange={(e) => {
+                                        setNameAutoGenerated(false); // Usuario está editando manualmente
+                                        setCustomService({ ...customService, name: e.target.value });
                                     }}
-                                >
-                                    Add Service(s)
-                                </button>
-                                <button
-                                    className="mt-4 px-4 py-2 ml-2 rounded bg-yellow-600 text-white hover:bg-yellow-700"
-                                    type='button'
-                                    onClick={() => handleResetCustomService()}
-                                >
-                                    Reset Service(s)
-                                </button>
+                                />
                             </div>
-                        </div>
+                            {/* Staff && Type Selection */}
+                            <div className="flex flex-col md:flex-row w-full mt-5 gap-4">
+                                <div className="mt-2 w-full md:w-1/2">
+                                    <label className="block text-sm font-medium">Staff Email:</label>
+                                    <select
+                                        className="w-full border border-gray-300 bg-white text-blue-950 rounded px-3 py-2"
+                                        value={customService.staffEmail || ''}
+                                        onChange={(e) => setCustomService({ ...customService, staffEmail: e.target.value })}
+                                    >
+                                        <option value="">Select a staff</option>
+                                        {(staffList || []).map((staff) => (
+                                            <option key={staff.email} value={staff.email}>
+                                                {staff.name ? `${staff.name} (${staff.email})` : staff.email}
+                                            </option>
+                                        ))}
+                                    </select>
+                                </div>
+                                <div className="w-full md:w-1/2 flex flex-col mt-2">
+                                    <label className="text-sm font-medium text-left text-white">Service Type:</label>
 
-                    </fieldset>
-                    <div className="flex flex-row justify-center">
-                        <button type="submit" className="mt-4 mb-4 px-4 py-2 rounded bg-blue-600 text-white hover:bg-blue-700" disabled={loading}>
-                            {loading ? "Creating Services..." : "Create Services"}
-                        </button>
-                    </div>
-                </form>
-            </motion.div>
-        </div>
+                                    <select
+                                        name="type"
+                                        className="w-full border border-gray-300 bg-white text-blue-950 rounded px-3 py-2"
+                                        value={customService.type || ''}
+                                        onChange={(e) => setCustomService({ ...customService, type: e.target.value })}
+                                    >
+                                        <option value="">Select a Type</option>
+                                        {types.map((t) => (
+                                            <option key={t.name} value={t.name}>
+                                                {t.name}
+                                            </option>
+                                        ))}
+                                    </select>
+
+                                    {/* Conditional Toggle for "Customer" Type */}
+                                    {customService.type === 'Customer' && (
+                                        <div className="mt-2 flex items-center space-x-3">
+                                            <span className="text-sm">Is the service paid?</span>
+                                            <label className="relative inline-flex items-center cursor-pointer">
+                                                <input
+                                                    type="checkbox"
+                                                    className="sr-only peer"
+                                                    checked={customService.isPaid || false}
+                                                    onChange={(e) => setCustomService({ ...customService, isPaid: e.target.checked })}
+                                                />
+                                                <div className="w-11 h-6 bg-gray-300 rounded-full peer peer-checked:bg-blue-600 transition-colors duration-200 peer-focus:ring-2 peer-focus:ring-blue-500" />
+                                                <div className="absolute left-1 top-1 w-4 h-4 bg-white rounded-full transition-transform duration-200 transform peer-checked:translate-x-5" />
+                                            </label>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                            <div className="border rounded-2xl mt-5 bg-blue-800 p-4">
+                                <div className="flex flex-col lg:flex-row gap-4">
+                                    {/* DateTime Pickers */}
+                                    <fieldset className="border rounded-2xl w-full lg:w-1/4 p-4">
+                                        <legend className='ml-2 text-lg font-bold'>Dates & Cycle</legend>
+                                        <div className='flex flex-row justify-between mt-2 ml-2 mr-2'>
+                                            <div className="w-1/2 pr-2">
+                                                <label>Start Date & Time</label>
+                                                <input type="datetime-local"
+                                                    value={customService.dateIn || ''}
+                                                    onChange={(e) => setCustomService({ ...customService, dateIn: e.target.value })}
+                                                    className="w-full border px-2 py-1 rounded bg-white text-blue-950"
+                                                />
+                                            </div>
+                                            <div className="w-1/2 pl-2">
+                                                <label>End Date & Time</label>
+                                                <input type="datetime-local"
+                                                    value={customService.dateOut || ''}
+                                                    onChange={(e) => setCustomService({ ...customService, dateOut: e.target.value })}
+                                                    className="w-full border px-2 py-1 rounded bg-white text-blue-950"
+                                                />
+                                            </div>
+                                        </div>
+
+                                        {/* Toggle */}
+                                        <div className='flex flex-row ml-2 mr-2'>
+                                            <div className="mt-2 flex items-center w-1/2">
+                                                <input
+                                                    id="onePerDay"
+                                                    type="checkbox"
+                                                    checked={customService.onePerDay || false}
+                                                    onChange={(e) => setCustomService({ ...customService, onePerDay: e.target.checked })}
+                                                    className="mr-2"
+                                                />
+                                                <label htmlFor="onePerDay" className="text-sm">Create one service per day?</label>
+                                            </div>
+                                            <div className="ml-2 mt-2 flex items-center w-1/2">
+                                                <input
+                                                    id="perWeek"
+                                                    type="checkbox"
+                                                    checked={customService.perWeek || false}
+                                                    onChange={(e) => setCustomService({ ...customService, perWeek: e.target.checked, repetitions: 1 })}
+                                                    className="mr-2"
+                                                />
+                                                <label htmlFor="perWeek" className="text-sm">Same days next weeks?</label>
+                                            </div>
+                                        </div>
+
+                                        {/* Repeat Cycle */}
+                                        <div className="mt-2 ml-2 mr-2 mb-2">
+                                            <label className="block text-sm font-medium">Cycle Repetitions:</label>
+                                            <input
+                                                type="number"
+                                                min={0}
+                                                value={customService.repetitions || 0}
+                                                onChange={(e) => setCustomService({ ...customService, repetitions: parseInt(e.target.value, 10) })}
+                                                className="w-full border px-2 py-1 rounded bg-white text-blue-950"
+                                            />
+                                        </div>
+                                    </fieldset>
+
+                                    <fieldset className="border rounded-2xl w-full lg:w-3/4 p-4">
+                                        <legend className='ml-2 text-lg font-bold'>Services to create: {customServiceList.length}</legend>
+                                        <div className='grid grid-cols-2 gap-2 ml-2'>
+                                            {(customServiceList || []).map((service, index) => (
+                                                <div className='flex flex-row items-center justify-center border rounded-2xl mr-2 mb-2 bg-blue-700'>
+                                                    <div className='ml-2 flex-1 text-left'>
+                                                        <label>
+                                                            {index + 1}.- {service.name} - {formatDateDisplay(service.dateIn)} to {formatDateDisplay(service.dateOut)}
+                                                        </label>
+                                                    </div>
+                                                    <div className='mr-2'>
+                                                        <Trash2
+                                                            className='text-red-500 hover:text-red-900'
+                                                            onClick={() => handleDeleteCustomService(index)}
+                                                        />
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </fieldset>
+                                </div>
+                                {/* Add Button */}
+                                <div className="flex justify-center mt-6">
+                                    <button
+                                        className="mt-4 px-4 py-2 rounded bg-blue-600 text-white hover:bg-blue-700"
+                                        onClick={(e) => {
+                                            e.preventDefault();
+                                            try {
+                                                const newServices = createCustomServices(customService);
+                                                setCustomServiceList((prev) => [...prev, ...newServices]);
+                                                setCustomService({});
+                                            } catch (err) {
+                                                alert(err.message);
+                                            }
+                                        }}
+                                    >
+                                        Add Service(s)
+                                    </button>
+                                    <button
+                                        className="mt-4 px-4 py-2 ml-2 rounded bg-yellow-600 text-white hover:bg-yellow-700"
+                                        type='button'
+                                        onClick={() => handleResetCustomService()}
+                                    >
+                                        Reset Service(s)
+                                    </button>
+                                </div>
+                            </div>
+
+                        </fieldset>
+                        <div className="flex flex-row justify-center">
+                            <button type="submit" className="mt-4 mb-4 px-4 py-2 rounded bg-blue-600 text-white hover:bg-blue-700" disabled={loading}>
+                                {loading ? "Creating Services..." : "Create Services"}
+                            </button>
+                        </div>
+                    </form>
+                </motion.div>
+            </div>
+        </>
     );
 }

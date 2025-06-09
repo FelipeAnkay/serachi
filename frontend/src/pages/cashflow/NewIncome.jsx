@@ -10,6 +10,7 @@ import { useProductServices } from '../../store/productServices';
 import { useQuoteServices } from '../../store/quoteServices';
 import { useAuthStore } from '../../store/authStore';
 import paymentMethods from '../../components/paymentMethods.json'
+import LoadingSpinner from "../../components/LoadingSpinner";
 
 export default function NewIncome() {
     const { createIncome, isLoading } = useIncomeServices();
@@ -42,6 +43,7 @@ export default function NewIncome() {
     const [showProductSelect, setShowProductSelect] = useState(false);
     const [showQuoteSelect, setShowQuoteSelect] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [loading, setLoading] = useState(true);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -50,8 +52,16 @@ export default function NewIncome() {
 
     const handleAddPartner = async () => {
         if (!partners.length) {
-            const res = await getPartnerList(storeId);
-            setPartners(res.partnerList || []);
+            setLoading(true)
+            try {
+                const res = await getPartnerList(storeId);
+                setPartners(res.partnerList || []);
+            } catch (error) {
+                toast.error("Error Getting Partners")
+            } finally {
+                setLoading(false)
+            }
+
         }
         setShowPartnerSelect(true);
     };
@@ -60,21 +70,31 @@ export default function NewIncome() {
 
         //console.log("Entre a handleAddQuote: ", customerEmail);
         if (!customerEmail) return;
-
+        setLoading(true)
         try {
             const res = await getQuoteByCustomerEmail(customerEmail, storeId);
             //console.log("Respuesta de getQuoteByCustomerEmail: ", res);
             setQuotes(res.quote || []);
             setShowQuoteSelect(true);
         } catch (error) {
-            alert("Error al buscar cotizaciones para este cliente.");
+            toast.error("Error serching quotes");
+        } finally {
+            setLoading(false)
         }
     };
 
     const handleAddProduct = async () => {
         if (!products.length) {
-            const res = await getProductByStoreId(storeId);
-            setProducts(res.productList || []);
+            setLoading(true)
+            try {
+                const res = await getProductByStoreId(storeId);
+                setProducts(res.productList || []);
+            } catch (error) {
+                toast.error("Error getting products")
+            } finally {
+                setLoading(false)
+            }
+
         }
         setShowProductSelect(true);
     };
@@ -126,7 +146,7 @@ export default function NewIncome() {
         e.preventDefault();
         if (isSubmitting) return;
         setIsSubmitting(true);
-
+        setLoading(true)
         try {
             //console.log("El Payload de Income es", formData)
             await createIncome(formData);
@@ -156,6 +176,7 @@ export default function NewIncome() {
             toast.error("Error creating income");
         } finally {
             setIsSubmitting(false);
+            setLoading(false);
         }
     };
 
@@ -191,42 +212,28 @@ export default function NewIncome() {
     };
 
     return (
-        <AnimatePresence>
-            <motion.div
-                className="p-6 max-w-4xl mx-auto bg-blue-950"
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -20 }}
-            >
-                <h1 className="text-3xl font-bold mb-6 text-center text-white">New Income</h1>
-                <form onSubmit={handleSubmit} className="space-y-6 border rounded-lg p-6 shadow-sm bg-blue-900 text-white">
-                    <div>
-                        <label className="block font-medium mb-1">Customer Email</label>
-                        <input
-                            type="email"
-                            name="customerEmail"
-                            value={formData.customerEmail}
-                            onChange={handleChange}
-                            onKeyDown={(e) => {
-                                if (e.key === 'Enter') {
-                                    e.preventDefault();
-                                }
-                            }}
-                            className="w-full border rounded px-3 py-2 bg-gray-200 text-blue-950"
-                        />
-                    </div>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <>
+            {
+                loading && (
+                    <LoadingSpinner />
+                )
+            }
+            <AnimatePresence>
+                <motion.div
+                    className="p-6 max-w-4xl mx-auto bg-blue-950"
+                    initial={{ opacity: 0, y: 30 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -20 }}
+                >
+                    <h1 className="text-3xl font-bold mb-6 text-center text-white">New Income</h1>
+                    <form onSubmit={handleSubmit} className="space-y-6 border rounded-lg p-6 shadow-sm bg-blue-900 text-white">
                         <div>
-                            <label className="block font-medium mb-1">Date</label>
-                            <input type="date" name="date" value={formData.date} onChange={handleChange} className="w-full border rounded px-3 py-2 bg-gray-200 text-blue-950" />
-                        </div>
-                        <div>
-                            <label className="block font-medium mb-1">Amount</label>
+                            <label className="block font-medium mb-1">Customer Email</label>
                             <input
-                                type="text"
-                                name="amount"
-                                value={formData.amount}
-                                onChange={handleAmountChange}
+                                type="email"
+                                name="customerEmail"
+                                value={formData.customerEmail}
+                                onChange={handleChange}
                                 onKeyDown={(e) => {
                                     if (e.key === 'Enter') {
                                         e.preventDefault();
@@ -235,258 +242,279 @@ export default function NewIncome() {
                                 className="w-full border rounded px-3 py-2 bg-gray-200 text-blue-950"
                             />
                         </div>
-                    </div>
-
-                    {/* Quote */}
-                    <div>
-                        <div className="flex justify-between items-center mb-2">
-                            <label className="font-medium">Quote</label>
-                            <button
-                                type="button"
-                                onClick={() => handleAddQuote(formData.customerEmail)}
-                                disabled={!formData.customerEmail}
-                                className={`flex items-center text-sm ${formData.customerEmail ? "text-blue-300" : "text-gray-400 cursor-not-allowed"}`}
-                            >
-                                <PlusCircle className="w-4 h-4 mr-1" /> Add Quote
-                            </button>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label className="block font-medium mb-1">Date</label>
+                                <input type="date" name="date" value={formData.date} onChange={handleChange} className="w-full border rounded px-3 py-2 bg-gray-200 text-blue-950" />
+                            </div>
+                            <div>
+                                <label className="block font-medium mb-1">Amount</label>
+                                <input
+                                    type="text"
+                                    name="amount"
+                                    value={formData.amount}
+                                    onChange={handleAmountChange}
+                                    onKeyDown={(e) => {
+                                        if (e.key === 'Enter') {
+                                            e.preventDefault();
+                                        }
+                                    }}
+                                    className="w-full border rounded px-3 py-2 bg-gray-200 text-blue-950"
+                                />
+                            </div>
                         </div>
-                        {showQuoteSelect && (
-                            <select
-                                value={formData.quoteId}
-                                onChange={(e) => setFormData(prev => ({ ...prev, quoteId: e.target.value }))}
-                                className="w-full border px-2 py-1 rounded"
-                            >
-                                <option value="" className="bg-gray-200 text-blue-950">Select a Quote</option>
-                                {quotes.map(q => (
-                                    <option key={q._id} value={q._id} className="bg-gray-200 text-blue-950">{q.customerEmail || q._id} - IN: {formatDateDisplay(q.dateIn)} - OUT:{formatDateDisplay(q.dateOut)}</option>
-                                ))}
-                            </select>
-                        )}
-                    </div>
 
-                    {/* Partner */}
-                    <div>
-                        <div className="flex justify-between items-center mb-2">
-                            <label className="font-medium">Partner</label>
-                            <button type="button" onClick={handleAddPartner} className="flex items-center text-sm text-blue-300">
-                                <PlusCircle className="w-4 h-4 mr-1" /> Add Partner
-                            </button>
+                        {/* Quote */}
+                        <div>
+                            <div className="flex justify-between items-center mb-2">
+                                <label className="font-medium">Quote</label>
+                                <button
+                                    type="button"
+                                    onClick={() => handleAddQuote(formData.customerEmail)}
+                                    disabled={!formData.customerEmail}
+                                    className={`flex items-center text-sm ${formData.customerEmail ? "text-blue-300" : "text-gray-400 cursor-not-allowed"}`}
+                                >
+                                    <PlusCircle className="w-4 h-4 mr-1" /> Add Quote
+                                </button>
+                            </div>
+                            {showQuoteSelect && (
+                                <select
+                                    value={formData.quoteId}
+                                    onChange={(e) => setFormData(prev => ({ ...prev, quoteId: e.target.value }))}
+                                    className="w-full border px-2 py-1 rounded"
+                                >
+                                    <option value="" className="bg-gray-200 text-blue-950">Select a Quote</option>
+                                    {quotes.map(q => (
+                                        <option key={q._id} value={q._id} className="bg-gray-200 text-blue-950">{q.customerEmail || q._id} - IN: {formatDateDisplay(q.dateIn)} - OUT:{formatDateDisplay(q.dateOut)}</option>
+                                    ))}
+                                </select>
+                            )}
                         </div>
-                        {showPartnerSelect && (
-                            <select
-                                value={formData.partnerId}
-                                onChange={(e) => setFormData(prev => ({ ...prev, partnerId: e.target.value }))}
-                                className="w-full border px-2 py-1 rounded"
-                            >
-                                <option value="" className="bg-gray-200 text-blue-950">Select a Partner</option>
-                                {partners.map(p => (
-                                    <option key={p._id} value={p._id} className="bg-gray-200 text-blue-950">{p.name}</option>
-                                ))}
-                            </select>
-                        )}
-                    </div>
 
-                    {/* Products */}
-                    <div>
-                        <div className="flex justify-between items-center mb-2">
-                            <label className="font-medium">Products</label>
-                            <button type="button" onClick={handleAddProduct} className="flex items-center text-sm text-blue-300">
-                                <PlusCircle className="w-4 h-4 mr-1" /> Add Product
-                            </button>
+                        {/* Partner */}
+                        <div>
+                            <div className="flex justify-between items-center mb-2">
+                                <label className="font-medium">Partner</label>
+                                <button type="button" onClick={handleAddPartner} className="flex items-center text-sm text-blue-300">
+                                    <PlusCircle className="w-4 h-4 mr-1" /> Add Partner
+                                </button>
+                            </div>
+                            {showPartnerSelect && (
+                                <select
+                                    value={formData.partnerId}
+                                    onChange={(e) => setFormData(prev => ({ ...prev, partnerId: e.target.value }))}
+                                    className="w-full border px-2 py-1 rounded"
+                                >
+                                    <option value="" className="bg-gray-200 text-blue-950">Select a Partner</option>
+                                    {partners.map(p => (
+                                        <option key={p._id} value={p._id} className="bg-gray-200 text-blue-950">{p.name}</option>
+                                    ))}
+                                </select>
+                            )}
                         </div>
-                        {showProductSelect && (
-                            <select onChange={handleSelectProduct} className="w-full border px-2 py-1 rounded mb-4">
-                                <option value="" className="bg-gray-200 text-blue-950">Select a Product</option>
-                                {products.map(p => (
-                                    <option key={p._id} value={p._id} className="bg-gray-200 text-blue-950">{p.name}</option>
+
+                        {/* Products */}
+                        <div>
+                            <div className="flex justify-between items-center mb-2">
+                                <label className="font-medium">Products</label>
+                                <button type="button" onClick={handleAddProduct} className="flex items-center text-sm text-blue-300">
+                                    <PlusCircle className="w-4 h-4 mr-1" /> Add Product
+                                </button>
+                            </div>
+                            {showProductSelect && (
+                                <select onChange={handleSelectProduct} className="w-full border px-2 py-1 rounded mb-4">
+                                    <option value="" className="bg-gray-200 text-blue-950">Select a Product</option>
+                                    {products.map(p => (
+                                        <option key={p._id} value={p._id} className="bg-gray-200 text-blue-950">{p.name}</option>
+                                    ))}
+                                </select>
+                            )}
+                            <div className="space-y-4">
+                                {formData.productList.map((product, index) => (
+                                    <div key={index} className="flex flex-col md:flex-row md:items-end md:space-x-2 space-y-2 md:space-y-0 mb-4">
+                                        <div className="flex-1">
+                                            <p>Name: {product.productName}</p>
+                                        </div>
+                                        <div className="flex-1">
+                                            <p>Quantity:</p>
+                                            <input
+                                                type="number"
+                                                step="1"
+                                                min="0"
+                                                placeholder="Quantity"
+                                                value={product.Qty}
+                                                onKeyDown={(e) => {
+                                                    if (e.key === 'Enter') {
+                                                        e.preventDefault();
+                                                    }
+                                                }}
+                                                onChange={(e) => {
+                                                    const value = e.target.value;
+                                                    if (value === '' || /^\d+$/.test(value)) {
+                                                        handleProductChange(index, "Qty", value);
+                                                    }
+                                                }}
+                                                className="border px-2 py-1 rounded w-full"
+                                            />
+                                        </div>
+                                        <div className="flex-1">
+                                            <p>Unitary Price:</p>
+                                            <input
+                                                type="number"
+                                                placeholder="Unitary Price"
+                                                value={product.productUnitaryPrice}
+                                                onChange={(e) => handleProductChange(index, "productUnitaryPrice", e.target.value)}
+                                                onKeyDown={(e) => {
+                                                    if (e.key === 'Enter') {
+                                                        e.preventDefault();
+                                                    }
+                                                }}
+                                                className="border px-2 py-1 rounded w-full"
+                                            />
+                                        </div>
+                                        <div className="flex-1">
+                                            <p>Final Price:</p>
+                                            <input
+                                                type="number"
+                                                placeholder="Final Price"
+                                                value={product.productFinalPrice}
+                                                disabled
+                                                className="bg-blue-950 border px-2 py-1 rounded w-full"
+                                            />
+                                        </div>
+                                        <div className="flex md:items-end">
+                                            <button
+                                                type="button"
+                                                onClick={() => handleRemoveProduct(index)}
+                                                className="text-red-500 hover:text-red-700"
+                                                title="Remove Product"
+                                            >
+                                                <Trash2 className="w-5 h-5" />
+                                            </button>
+                                        </div>
+                                    </div>
                                 ))}
-                            </select>
-                        )}
-                        <div className="space-y-4">
-                            {formData.productList.map((product, index) => (
-                                <div key={index} className="flex flex-col md:flex-row md:items-end md:space-x-2 space-y-2 md:space-y-0 mb-4">
-                                    <div className="flex-1">
-                                        <p>Name: {product.productName}</p>
-                                    </div>
-                                    <div className="flex-1">
-                                        <p>Quantity:</p>
-                                        <input
-                                            type="number"
-                                            step="1"
-                                            min="0"
-                                            placeholder="Quantity"
-                                            value={product.Qty}
-                                            onKeyDown={(e) => {
-                                                if (e.key === 'Enter') {
-                                                    e.preventDefault();
-                                                }
-                                            }}
-                                            onChange={(e) => {
-                                                const value = e.target.value;
-                                                if (value === '' || /^\d+$/.test(value)) {
-                                                    handleProductChange(index, "Qty", value);
-                                                }
-                                            }}
-                                            className="border px-2 py-1 rounded w-full"
-                                        />
-                                    </div>
-                                    <div className="flex-1">
-                                        <p>Unitary Price:</p>
-                                        <input
-                                            type="number"
-                                            placeholder="Unitary Price"
-                                            value={product.productUnitaryPrice}
-                                            onChange={(e) => handleProductChange(index, "productUnitaryPrice", e.target.value)}
-                                            onKeyDown={(e) => {
-                                                if (e.key === 'Enter') {
-                                                    e.preventDefault();
-                                                }
-                                            }}
-                                            className="border px-2 py-1 rounded w-full"
-                                        />
-                                    </div>
-                                    <div className="flex-1">
-                                        <p>Final Price:</p>
-                                        <input
-                                            type="number"
-                                            placeholder="Final Price"
-                                            value={product.productFinalPrice}
-                                            disabled
-                                            className="bg-blue-950 border px-2 py-1 rounded w-full"
-                                        />
-                                    </div>
-                                    <div className="flex md:items-end">
+                            </div>
+                        </div>
+                        {/* TAGS SECTION */}
+                        <fieldset className="w-full space-y-4 rounded-2xl border p-4">
+                            <legend className="font-bold">Tags</legend>
+
+                            <div className="flex gap-2">
+                                <input
+                                    type="text"
+                                    placeholder="Name"
+                                    className="w-1/2 p-2 border border-gray-300 rounded bg-gray-200 text-blue-950"
+                                    value={newTag.name}
+                                    onChange={(e) => setNewTag((prev) => ({ ...prev, name: e.target.value }))}
+                                    onKeyDown={(e) => {
+                                        if (e.key === 'Enter') {
+                                            e.preventDefault();
+                                            if (newTag.name || newTag.code) {
+                                                setFormData((prev) => ({
+                                                    ...prev,
+                                                    tag: [...(prev.tag || []), newTag],
+                                                }));
+                                                setNewTag({ name: '', code: '' });
+                                            }
+                                        }
+                                    }}
+                                />
+                                <input
+                                    type="text"
+                                    placeholder="Code"
+                                    className="w-1/2 p-2 border border-gray-300 rounded bg-gray-200 text-blue-950"
+                                    value={newTag.code}
+                                    onChange={(e) => setNewTag((prev) => ({ ...prev, code: e.target.value }))}
+                                    onKeyDown={(e) => {
+                                        if (e.key === 'Enter') {
+                                            e.preventDefault();
+                                            if (newTag.name || newTag.code) {
+                                                setFormData((prev) => ({
+                                                    ...prev,
+                                                    tag: [...(prev.tag || []), newTag],
+                                                }));
+                                                setNewTag({ name: '', code: '' });
+                                            }
+                                        }
+                                    }}
+                                    onBlur={() => {
+                                        if (newTag.name || newTag.code) {
+                                            setFormData((prev) => ({
+                                                ...prev,
+                                                tag: [...(prev.tag || []), newTag],
+                                            }));
+                                            setNewTag({ name: '', code: '' });
+                                        }
+                                    }}
+                                />
+                                <button
+                                    type="button"
+                                    className=""
+                                    onClick={() => {
+                                        if (newTag.name || newTag.code) {
+                                            setFormData((prev) => ({
+                                                ...prev,
+                                                tag: [...(prev.tag || []), newTag],
+                                            }));
+                                            setNewTag({ name: '', code: '' });
+                                        }
+                                    }}
+                                >
+                                    <CirclePlus className='hover:bg-green-500 rounded-4xl' />
+                                </button>
+                            </div>
+
+                            <ul className="space-y-1">
+                                {(formData.tag || []).map((tag, index) => (
+                                    <li
+                                        key={index}
+                                        className="flex justify-between items-center bg-blue-700 rounded px-3 py-2"
+                                    >
+                                        <span>{tag.name} - {tag.code}</span>
                                         <button
                                             type="button"
-                                            onClick={() => handleRemoveProduct(index)}
                                             className="text-red-500 hover:text-red-700"
-                                            title="Remove Product"
+                                            onClick={() => {
+                                                const updatedTags = formData.tag.filter((_, i) => i !== index);
+                                                setFormData((prev) => ({ ...prev, tag: updatedTags }));
+                                            }}
                                         >
-                                            <Trash2 className="w-5 h-5" />
+                                            <Trash2 />
                                         </button>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-                    {/* TAGS SECTION */}
-                    <fieldset className="w-full space-y-4 rounded-2xl border p-4">
-                        <legend className="font-bold">Tags</legend>
-
-                        <div className="flex gap-2">
-                            <input
-                                type="text"
-                                placeholder="Name"
-                                className="w-1/2 p-2 border border-gray-300 rounded bg-gray-200 text-blue-950"
-                                value={newTag.name}
-                                onChange={(e) => setNewTag((prev) => ({ ...prev, name: e.target.value }))}
-                                onKeyDown={(e) => {
-                                    if (e.key === 'Enter') {
-                                        e.preventDefault();
-                                        if (newTag.name || newTag.code) {
-                                            setFormData((prev) => ({
-                                                ...prev,
-                                                tag: [...(prev.tag || []), newTag],
-                                            }));
-                                            setNewTag({ name: '', code: '' });
-                                        }
-                                    }
-                                }}
-                            />
-                            <input
-                                type="text"
-                                placeholder="Code"
-                                className="w-1/2 p-2 border border-gray-300 rounded bg-gray-200 text-blue-950"
-                                value={newTag.code}
-                                onChange={(e) => setNewTag((prev) => ({ ...prev, code: e.target.value }))}
-                                onKeyDown={(e) => {
-                                    if (e.key === 'Enter') {
-                                        e.preventDefault();
-                                        if (newTag.name || newTag.code) {
-                                            setFormData((prev) => ({
-                                                ...prev,
-                                                tag: [...(prev.tag || []), newTag],
-                                            }));
-                                            setNewTag({ name: '', code: '' });
-                                        }
-                                    }
-                                }}
-                                onBlur={() => {
-                                    if (newTag.name || newTag.code) {
-                                        setFormData((prev) => ({
-                                            ...prev,
-                                            tag: [...(prev.tag || []), newTag],
-                                        }));
-                                        setNewTag({ name: '', code: '' });
-                                    }
-                                }}
-                            />
-                            <button
-                                type="button"
-                                className=""
-                                onClick={() => {
-                                    if (newTag.name || newTag.code) {
-                                        setFormData((prev) => ({
-                                            ...prev,
-                                            tag: [...(prev.tag || []), newTag],
-                                        }));
-                                        setNewTag({ name: '', code: '' });
-                                    }
-                                }}
+                                    </li>
+                                ))}
+                            </ul>
+                        </fieldset>
+                        <div className="mt-6">
+                            <label className="block font-medium mb-1">Payment Method</label>
+                            <select
+                                name="paymentMethod"
+                                value={formData.paymentMethod}
+                                onChange={handleChange}
+                                className="w-full border rounded px-3 py-2 bg-gray-200 text-blue-950"
                             >
-                                <CirclePlus className='hover:bg-green-500 rounded-4xl' />
+                                <option value="">Select Payment Method</option>
+                                {paymentMethods.map((method, index) => (
+                                    <option key={index} value={method.name}>{method.name}</option>
+                                ))}
+                            </select>
+                        </div>
+                        <div className="flex justify-center">
+                            <button type="submit" disabled={isLoading} className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition">
+                                {isLoading ? (
+                                    <span className="flex items-center gap-2">
+                                        <Loader2 className="animate-spin w-4 h-4" />
+                                        Creating...
+                                    </span>
+                                ) : (
+                                    "Create Income"
+                                )}
                             </button>
                         </div>
-
-                        <ul className="space-y-1">
-                            {(formData.tag || []).map((tag, index) => (
-                                <li
-                                    key={index}
-                                    className="flex justify-between items-center bg-blue-700 rounded px-3 py-2"
-                                >
-                                    <span>{tag.name} - {tag.code}</span>
-                                    <button
-                                        type="button"
-                                        className="text-red-500 hover:text-red-700"
-                                        onClick={() => {
-                                            const updatedTags = formData.tag.filter((_, i) => i !== index);
-                                            setFormData((prev) => ({ ...prev, tag: updatedTags }));
-                                        }}
-                                    >
-                                        <Trash2 />
-                                    </button>
-                                </li>
-                            ))}
-                        </ul>
-                    </fieldset>
-                    <div className="mt-6">
-                        <label className="block font-medium mb-1">Payment Method</label>
-                        <select
-                            name="paymentMethod"
-                            value={formData.paymentMethod}
-                            onChange={handleChange}
-                            className="w-full border rounded px-3 py-2 bg-gray-200 text-blue-950"
-                        >
-                            <option value="">Select Payment Method</option>
-                            {paymentMethods.map((method, index) => (
-                                <option key={index} value={method.name}>{method.name}</option>
-                            ))}
-                        </select>
-                    </div>
-                    <div className="flex justify-center">
-                        <button type="submit" disabled={isLoading} className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition">
-                            {isLoading ? (
-                                <span className="flex items-center gap-2">
-                                    <Loader2 className="animate-spin w-4 h-4" />
-                                    Creating...
-                                </span>
-                            ) : (
-                                "Create Income"
-                            )}
-                        </button>
-                    </div>
-                </form>
-            </motion.div>
-        </AnimatePresence>
+                    </form>
+                </motion.div>
+            </AnimatePresence>
+        </>
     );
 }

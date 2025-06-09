@@ -53,8 +53,21 @@ export const useExperienceServices = create((set) => ({
     getExperienceList: async (storeId) => {
         set({ isLoading: true, error: null });
         try {
+            //console.log("F: Llamado a getExperiences: ", storeId);
+            const response = await axios.get(`${URL_API}/list/${storeId}`);
+            //console.log("F: Respueste de getExperiences: ", response);
+            set({ experienceList: response.data.experienceList, isLoading: false });
+            return response.data;
+        } catch (error) {
+            set({ error: error.response.data.message || "Error getting experiences", isLoading: false });
+            throw error;
+        }
+    },
+    getExperienceByCheckout: async (storeId) => {
+        set({ isLoading: true, error: null });
+        try {
             //console.log("F: Llamado a getExperiences");
-            const response = await axios.get(`${URL_API}/list`, { storeId });
+            const response = await axios.get(`${URL_API}/list-checkout/${storeId}`);
             //console.log("F: Respueste de getExperiences: ", response);
             set({ experienceList: response.data.experienceList, isLoading: false });
             return response.data;
