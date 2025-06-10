@@ -20,6 +20,7 @@ export default function NewIncome() {
     const { getQuoteByCustomerEmail } = useQuoteServices();
     const { user } = useAuthStore();
     const [newTag, setNewTag] = useState({ name: '', code: '' });
+    const [loading, setLoading] = useState(false);
 
     const [formData, setFormData] = useState({
         date: new Date().toISOString().split("T")[0],
@@ -43,7 +44,6 @@ export default function NewIncome() {
     const [showProductSelect, setShowProductSelect] = useState(false);
     const [showQuoteSelect, setShowQuoteSelect] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
-    const [loading, setLoading] = useState(true);
 
     const handleChange = (e) => {
         const { name, value } = e.target;

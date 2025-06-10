@@ -18,20 +18,12 @@ export default function NewExpense() {
     const { getTypeByCategory } = useTypeServices();
     const [types, setTypes] = useState([]);
     const storeId = Cookies.get('storeId');
-    const { getSupplierList, createSupplier } = useSupplierServices();
     const { user } = useAuthStore();
     const [newTag, setNewTag] = useState({ name: '', code: '' });
     const [loading, setLoading] = useState(true);
     const [isSubmitting, setIsSubmitting] = useState(false);
-    const [supplier, setSupplier] = useState([]);
     const [showNewSupplierForm, setShowNewSupplierForm] = useState(false);
-    const [newSupplier, setNewSupplier] = useState({
-        name: "",
-        email: "",
-        phone: "",
-        country: "",
-        nationalId: "",
-    });
+    const [supplierKey, setSupplierKey] = useState(Date.now());
 
     useEffect(() => {
 
@@ -48,23 +40,8 @@ export default function NewExpense() {
                 setLoading(false)
             }
         }
-        const fetchSupplier = async () => {
-            try {
-                setLoading(true);
-                const res = await getSupplierList(storeId);
-                setSupplier(res.supplierList || []);
-                setLoading(false);
-            } catch (error) {
-                //console.error('Error fetching products:', error);
-                setLoading(false);
-            } finally {
-                setLoading(false)
-            }
-        }
-
         if (storeId) {
             fetchData();
-            fetchSupplier();
         }
 
     }, []);
@@ -111,8 +88,10 @@ export default function NewExpense() {
                 tag: [],
                 userEmail: user.email || "",
                 paymentMethod: "",
+                type: "",
                 storeId: storeId
             });
+            setSupplierKey(Date.now());
             setShowNewSupplierForm(false);
         } catch (error) {
             toast.error("Error creating expense", error);
@@ -194,7 +173,8 @@ export default function NewExpense() {
                         <div>
                             <label className="font-medium block mb-2">Supplier</label>
                             <SupplierSelector
-                                value={formData.supplierId}
+                                key={supplierKey}
+                                value={formData.supplierId || ''}
                                 onChange={(id) => setFormData(prev => ({ ...prev, supplierId: id }))}
                                 storeId={storeId}
                             />
