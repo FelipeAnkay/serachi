@@ -28,7 +28,9 @@ export default function SupplierSelector({ value, onChange, storeId }) {
             }
         };
 
-        if (storeId) fetchSupplier();
+        if (storeId){
+            fetchSupplier();
+        } 
     }, [storeId]);
 
     const filteredSuppliers = supplierList.filter(s =>

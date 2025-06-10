@@ -23,7 +23,7 @@ export const useExpenseServices = create((set) => ({
     createExpense: async (expenseData) => {
         set({ isLoading: true, error: null });
         try {
-            console.log("Los datos a enviar en createexpense son: ", expenseData)
+            //console.log("Los datos a enviar en createexpense son: ", expenseData)
             const response = await axios.post(`${URL_API}/create`, expenseData);
             set({ expenseList: response.data.expenseList, isLoading: false });
             return response.data;
