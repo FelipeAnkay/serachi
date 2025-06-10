@@ -6,6 +6,9 @@ import { Copy, FolderCheck, Pencil } from 'lucide-react';
 import { useExperienceServices } from '../../store/experienceServices';
 import SendFormModal from '../../components/SendFormsModal';
 import LoadingSpinner from '../../components/LoadingSpinner';
+import { useFormRecordServices } from '../../store/formRecordServices';
+import toast from 'react-hot-toast';
+import ViewSignedForms from '../../components/ViewSignedForm';
 
 
 export default function ExperienceList() {
@@ -17,6 +20,11 @@ export default function ExperienceList() {
     const [experienceSearch, setExperienceSearch] = useState("");
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedExperience, setSelectedExperience] = useState([]);
+    const { getFormRecordByEmail } = useFormRecordServices();
+    const [records, setRecords] = useState([]);
+    const [loadRecords, setLoadRecords] = useState(false);
+    const [selectedForms, setSelectedForms] = useState([]);
+    const [isModalFormOpen, setIsModalFormOpen] = useState(false);
 
     const location = useLocation();
     const navigate = useNavigate();
@@ -29,6 +37,7 @@ export default function ExperienceList() {
                 const response = await getExperienceByCheckout(storeId);
                 //console.log("getExperienceByCheckout: ", response);
                 setExperiences(response.experienceList);
+                setLoadRecords(true);
             } catch (error) {
                 console.error('Error fetching experiences:', error);
             } finally {
@@ -42,6 +51,37 @@ export default function ExperienceList() {
     }, [storeId, location.key]);
 
     useEffect(() => {
+        //console.log("Entre a UseEffect de Experience")
+        const fetchRecords = async () => {
+            setLoading(true)
+            let formList = [];
+            //console.log("Entré a fetchRecords: ", experiences)
+            try {
+                const uniqueCustomerEmails = [...new Set(experiences.map(exp => exp.customerEmail))];
+                //console.log("Listado de emails: ", uniqueCustomerEmails)
+                for (let i = 0; i <= uniqueCustomerEmails.length; i++) {
+                    const auxForm = await getFormRecordByEmail(uniqueCustomerEmails[i], storeId);
+                    //console.log("Resultado de getFormRecordByEmail: ", auxForm)
+                    if (auxForm.formRecordList.length > 0) {
+                        auxForm.formRecordList.forEach(record => {
+                            formList.push(record);
+                        });
+                    }
+
+                }
+                setRecords(formList);
+            } catch (error) {
+                toast.error("Error getting forms")
+            } finally {
+                setLoading(false)
+            }
+        }
+        if (experiences.length > 0) {
+            fetchRecords();
+        }
+    }, [loadRecords]);
+
+    useEffect(() => {
         if (location.state?.updated) {
             // Limpiar el estado para que no recargue de nuevo en otros montajes
             navigate(location.pathname, { replace: true, state: {} });
@@ -52,11 +92,17 @@ export default function ExperienceList() {
         setIsModalOpen(true)
     }
 
+    const handleSelectedForms = (email) => {
+        const filteredForms = records.filter(form => form.customerEmail === email);
+        setSelectedForms(filteredForms);
+        setIsModalFormOpen(true);
+    };
+
     return (
         <>
             {
                 loading && (
-                    <LoadingSpinner/>
+                    <LoadingSpinner />
                 )
             }
             <div className="flex flex-col min-h-screen w-full bg-blue-950 text-white px-4 py-6 sm:px-8 sm:py-10">
@@ -114,23 +160,43 @@ export default function ExperienceList() {
                                                         })}
                                                         {' - ' + experience.serviceList.length + ' Services '}
                                                     </h3>
-                                                    <div className='flex flex-row justify-between items-center w-1/4'>
+                                                    <div className='flex flex-row justify-end gap-2 items-center w-1/4'>
+                                                        {/* Botón SEND FORMS */}
                                                         <motion.button
                                                             type='button'
                                                             whileHover={{ scale: 1.05 }}
                                                             whileTap={{ scale: 0.95 }}
                                                             onClick={() => {
-                                                                setSelectedExperience(experience),
-                                                                    handleSendFormClick(experience)
+                                                                setSelectedExperience(experience);
+                                                                handleSendFormClick(experience);
                                                             }}
-                                                            className='w-full py-3 px-4 mr-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white font-bold rounded-lg shadow-lg
-                                                         hover:from-blue-600 hover:to-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-gray-900'
+                                                            className='py-3 px-4 bg-gradient-to-r from-blue-500 to-blue-600 text-white font-bold rounded-lg shadow-lg
+                hover:from-blue-600 hover:to-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-gray-900'
                                                         >
                                                             <div className='flex flex-col justify-center items-center'>
-                                                                <FolderCheck className="" />
-                                                                <span className="">Send Forms</span>
+                                                                <FolderCheck />
+                                                                <span>Send Forms</span>
                                                             </div>
                                                         </motion.button>
+
+                                                        {/* Botón VIEW FORMS (solo si hay registros) */}
+                                                        {
+                                                            records.some(r => r.customerEmail === experience.customerEmail) && (
+                                                                <motion.button
+                                                                    type='button'
+                                                                    whileHover={{ scale: 1.05 }}
+                                                                    whileTap={{ scale: 0.95 }}
+                                                                    onClick={() => handleSelectedForms(experience.customerEmail)}
+                                                                    className='py-3 px-4 bg-gradient-to-r from-green-500 to-green-600 text-white font-bold rounded-lg shadow-lg
+                                                        hover:from-green-600 hover:to-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 focus:ring-offset-gray-900'
+                                                                >
+                                                                    <div className='flex flex-col justify-center items-center'>
+                                                                        <Copy />
+                                                                        <span>View Forms</span>
+                                                                    </div>
+                                                                </motion.button>
+                                                            )
+                                                        }
                                                     </div>
                                                 </div>
                                             );
@@ -143,6 +209,13 @@ export default function ExperienceList() {
                                 isOpen={isModalOpen}
                                 onClose={() => setIsModalOpen(false)}
                                 experience={selectedExperience}
+                            />
+                        )}
+                        {isModalFormOpen && (
+                            <ViewSignedForms
+                                forms={selectedForms}
+                                isOpen={isModalFormOpen}
+                                onClose={() => setIsModalFormOpen(false)}
                             />
                         )}
                     </div>
