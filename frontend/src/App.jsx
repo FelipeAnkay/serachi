@@ -51,20 +51,24 @@ import LiabilityEs from './pages/forms/FormLiabilityEs';
 import ExperienceList from './pages/experience/ExperienceList';
 
 const ProtectedRoute = ({ children, requiredPermission }) => {
-  const { isAuthenticated, user } = useAuthStore();
+  const { isAuthenticated, user, logout } = useAuthStore();
   const { getRoleById } = useRoleServices();
   const { getStoreById } = useStoreServices();
   const [permissions, setPermissions] = useState([]);
   const [loadingPermissions, setLoadingPermissions] = useState(true);
-
+  const storeId = Cookies.get('storeId');
   useEffect(() => {
     const fetchPermissions = async () => {
+      //console.log("Entré a fetchPermissions")
       if (!isAuthenticated || !user || !user.isVerified) {
         setLoadingPermissions(false);
         return;
       }
-
-      const storeId = Cookies.get('storeId');
+      if (!storeId) {
+        Cookies.remove('storeId');
+        Cookies.remove('timezone');
+        logout();
+      }
       const perms = await getUserPermissions(user, storeId, getRoleById, getStoreById);
       //console.log("getUserPermissions: ", perms);
       setPermissions(perms);
