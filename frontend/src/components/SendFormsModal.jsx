@@ -1,6 +1,5 @@
 import { AnimatePresence, motion } from 'framer-motion'
 import { CircleX } from 'lucide-react'
-import countries from './contries.json'
 import { useEffect, useState } from 'react';
 import { useFormServices } from '../store/formServices';
 import toast from 'react-hot-toast';
@@ -16,12 +15,15 @@ export default function SendFormModal({ isOpen, onClose, experience }) {
     const [formList, setFormList] = useState([]);
     const [customer, setCustomer] = useState([]);
     const [selectedForms, setSelectedForms] = useState([]);
+    const [selectedDate, setSelectedDate] = useState(new Date());
+    const [genToken, setGenToken] = useState(false);
 
     const [formData, setFormData] = useState({
         customer: '',
         user: user,
         store: store,
         formList: '',
+        endDate: '',
         urlToken: ''
     })
 
@@ -43,6 +45,34 @@ export default function SendFormModal({ isOpen, onClose, experience }) {
 
     }, [selectedForms])
 
+    const handleSelectDate = async (endDate) => {
+        try {
+            //console.log("Entre a handleSelectDate")
+            //console.log("fetchToken: ", experience.customerEmail)
+            if (genToken) {
+                const auxToken = await generateToken(experience.customerEmail, endDate, experience.storeId);
+                console.log("generateToken: ", auxToken);
+                setFormData(prev => ({
+                    ...prev,
+                    urlToken: auxToken.token,
+                }));
+                setGenToken(false);
+            }
+
+        } catch (error) {
+            //console.log("Error fetching the token: ", error)
+            toast.error("Error fetching the token")
+        }
+    }
+
+    useEffect(() => {
+        const auxDay = selectedDate.toISOString().split('T')[0]
+        setFormData(prev => ({
+            ...prev,
+            endDate: auxDay,
+        }));
+        handleSelectDate(auxDay)
+    }, [selectedDate]);
 
     useEffect(() => {
         const fetchForms = async () => {
@@ -73,26 +103,11 @@ export default function SendFormModal({ isOpen, onClose, experience }) {
             }
         }
 
-        const fetchToken = async () => {
-            try {
-                //console.log("fetchToken: ", experience.customerEmail)
-                const auxToken = await generateToken(experience.customerEmail, experience.storeId);
-                //console.log("generateToken: ", auxToken);
-                setFormData(prev => ({
-                    ...prev,
-                    urlToken: auxToken.token,
-                }));
-            } catch (error) {
-                //console.log("Error fetching the token: ", error)
-                toast.error("Error fetching the token")
-            }
-        }
-
         if (experience) {
             fetchForms();
             fetchCustomer();
-            fetchToken();
         }
+
     }, [experience])
 
     const handleSendForms = async () => {
@@ -153,6 +168,23 @@ export default function SendFormModal({ isOpen, onClose, experience }) {
                             <div>
                                 <label className="block font-medium text-sm ml-2">{customer.email || ''}</label>
                             </div>
+                        </div>
+                        <div className="mt-4">
+                            <label className="block text-sm font-medium mb-1">Last Day to Sign:</label>
+                            <input
+                                type="date"
+                                value={selectedDate.toISOString().split('T')[0]}
+                                onChange={(e) => {
+                                    const selected = new Date(e.target.value);
+                                    setSelectedDate(selected);
+                                    setGenToken(true);
+                                    setFormData(prev => ({
+                                        ...prev,
+                                        endDate: selected.toISOString().split('T')[0], // formato YYYY-MM-DD
+                                    }));
+                                }}
+                                className="w-full border border-gray-300 rounded px-3 py-2 bg-white text-black"
+                            />
                         </div>
                         <div>
                             <div>

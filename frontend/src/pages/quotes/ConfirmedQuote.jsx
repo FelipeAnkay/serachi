@@ -261,6 +261,8 @@ export default function ConfirmedQuote() {
         } catch (error) {
             toast.error("Error creating reservation or updating experience");
             console.error(error);
+        }finally{
+            setLoading(false);
         }
     };
 
@@ -422,18 +424,8 @@ export default function ConfirmedQuote() {
                                                 >
                                                     <div>
                                                         <h3 className="text-md sm:text-lg font-semibold text-gray-800">
-                                                            {(quote.customerName ? quote.customerName : quote.customerEmail)} - From: {new Date(quote.dateIn).toLocaleDateString("en-US", {
-                                                                timeZone: timezone || "America/Guatemala",
-                                                                year: "numeric",
-                                                                month: "long",
-                                                                day: "numeric",
-                                                            })}
-                                                            {' to ' + new Date(quote.dateOut).toLocaleDateString("en-US", {
-                                                                timeZone: timezone || "America/Guatemala",
-                                                                year: "numeric",
-                                                                month: "long",
-                                                                day: "numeric",
-                                                            })}
+                                                            {(quote.customerName ? quote.customerName : quote.customerEmail)} - From: {formatDateDisplay(quote.dateIn)}
+                                                            {' to ' + formatDateDisplay(quote.dateOut)}
                                                             {' - ' + quote.productList.length + ' Products '} -  ${Number(quote.finalPrice).toFixed(2)}
                                                         </h3>
                                                         <div>

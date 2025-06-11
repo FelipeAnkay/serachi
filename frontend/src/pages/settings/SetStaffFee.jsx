@@ -8,7 +8,7 @@ import { useProductServices } from "../../store/productServices";
 import { useAuthStore } from "../../store/authStore"; // para userEmail y storeId
 import timeframes from "../../components/timeframes.json"
 import operators from "../../components/operators.json"
-import { Plus, Trash2 } from "lucide-react";
+import { Plus, SearchCheck, Trash2 } from "lucide-react";
 import ProductSelect from '../../components/ProductSelect';
 
 const SetStaffFee = () => {
@@ -356,33 +356,44 @@ const SetStaffFee = () => {
                                 Cancel
                             </button>
                         ) : ""}
+                        <button
+                            type="button"
+                            onClick={() => setDuplicateModal(true)}
+                            title="Create rules based on existing ones"
+                            className="bg-yellow-600 text-white px-2 py-2 rounded hover:bg-yellow-700 w-full sm:w-auto ml-2"
+                        >
+                            Duplicate Rules
+                        </button>
                     </div>
                 </motion.form>
             </AnimatePresence>
 
             <div>
-                <h3 className="text-lg font-medium mb-2 text-white">Created Staff Fees</h3>
-                <div className="flex flex-col md:flex-row gap-4 mb-4">
-                    <input
-                        type="text"
-                        placeholder="Search by Staff Email"
-                        value={staffFilter}
-                        onChange={(e) => setStaffFilter(e.target.value)}
-                        className="p-2 rounded bg-neutral-700 text-white w-full"
-                    />
-                    <input
-                        type="text"
-                        placeholder="Search by Product Name"
-                        value={productFilter}
-                        onChange={(e) => setProductFilter(e.target.value)}
-                        className="p-2 rounded bg-neutral-700 text-white w-full"
-                    />
-                    <button
-                        onClick={() => setDuplicateModal(true)}
-                        className="bg-yellow-600 text-white px-2 py-2 rounded hover:bg-yellow-700 w-full sm:w-auto"
-                    >
-                        Duplicate Rules
-                    </button>
+                <h3 className="text-2xl font-medium mb-2 text-white text-center">Created Staff Fees</h3>
+                <div className="flex flex-col gap-2 mb-4 border rounded-2xl px-4 py-4">
+                    <span className="text-white font-semibold text-lg">Search Terms:</span>
+
+                    <div className="flex flex-col md:flex-row items-center gap-4">
+                        <div className="flex flex-col md:flex-row flex-grow gap-2 w-full">
+                            <input
+                                type="text"
+                                placeholder="Search by Staff Email"
+                                value={staffFilter}
+                                onChange={(e) => setStaffFilter(e.target.value)}
+                                className="p-2 rounded bg-neutral-700 text-white flex-1"
+                            />
+                            <input
+                                type="text"
+                                placeholder="Search by Product Name"
+                                value={productFilter}
+                                onChange={(e) => setProductFilter(e.target.value)}
+                                className="p-2 rounded bg-neutral-700 text-white flex-1"
+                            />
+                        </div>
+                        <div className="flex justify-center items-center text-white">
+                            <SearchCheck className="text-3xl cursor-pointer" />
+                        </div>
+                    </div>
                 </div>
 
                 <div className="mt-4 space-y-4">

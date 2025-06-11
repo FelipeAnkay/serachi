@@ -62,14 +62,16 @@ const LiabilityEn = () => {
             try {
                 const today = new Date().toISOString().split('T')[0];
                 const res = await getDataToken(token);
-                const { customerEmail, storeId } = res.urlData;
-                if (!customerEmail || !storeId) {
+                const { customerEmail, endDate, storeId } = res.urlData;
+                //console.log("endDate es: ", endDate)
+                //console.log("today es: ", today)
+                if (!customerEmail || !storeId || !(endDate>=today)) {
                     window.location.href = '/unauthorized';
                 }
                 const auxCustomer = await getCustomerEmail(customerEmail, storeId)
                 const auxStore = await getStoreById(storeId)
-                console.log("auxCustomer: ", auxCustomer)
-                console.log("auxStore: ", auxStore)
+                //console.log("auxCustomer: ", auxCustomer)
+                //console.log("auxStore: ", auxStore)
                 setCustomer(auxCustomer.customerList[0])
                 setStore(auxStore.store)
                 const auxAge = calculateAge(auxCustomer.customerList[0].birthdate)

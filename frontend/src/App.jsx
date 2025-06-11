@@ -49,6 +49,7 @@ import LiabilityEn from './pages/forms/FormLiabilityEn';
 import Unauthorized from './pages/Unauthorized';
 import LiabilityEs from './pages/forms/FormLiabilityEs';
 import ExperienceList from './pages/experience/ExperienceList';
+import ViewExperiences from './pages/experience/ViewExperiences';
 
 const ProtectedRoute = ({ children, requiredPermission }) => {
   const { isAuthenticated, user, logout } = useAuthStore();
@@ -142,6 +143,7 @@ const MenuAvailable = () => {
     '/reset-password',
     '/forms/liabilityEn',
     '/forms/liabilityEs',
+    '/view-experience',
   ];
 
   if (hiddenRoutes.some(route => location.pathname.startsWith(route))) {
@@ -244,6 +246,11 @@ function App() {
             <ProtectedRoute requiredPermission="VIEW_EXPERIENCES">
               <PendingServices />
             </ProtectedRoute>}
+        />
+        <Route
+          path="/view-experience"
+          element={
+            <ViewExperiences />}
         />
         <Route
           path="/bookings"

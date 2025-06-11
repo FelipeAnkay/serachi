@@ -90,8 +90,8 @@ export const useRoomReservationServices = create((set) => ({
     getReservationsByDate: async (storeId, dateIn, dateOut) => {
         set({ isLoading: true, error: null });
         try {
-            const formattedDateIn = formatDateISO(dateIn);
-            const formattedDateOut = formatDateISO(dateOut);
+            const formattedDateIn = formatDateISOShort(dateIn);
+            const formattedDateOut = formatDateISOShort(dateOut);
 
             const response = await axios.get(`${URL_API}/dates/${storeId}/${formattedDateIn}/${formattedDateOut}`);
 
