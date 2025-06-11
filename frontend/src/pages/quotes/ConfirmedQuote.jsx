@@ -31,7 +31,7 @@ export default function ConfirmedQuote() {
     const [quoteSearch, setQuoteSearch] = useState("");
     const { user } = useAuthStore();
     const [existingExperiences, setExistingExperiences] = useState([]);
-    const [showOnlyUnprocessed, setShowOnlyUnprocessed] = useState(false);
+    const [showOnlyUnprocessed, setShowOnlyUnprocessed] = useState(true);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [customService, setCustomService] = useState([]);
     const [customServiceList, setCustomServiceList] = useState([]);
@@ -409,7 +409,7 @@ export default function ConfirmedQuote() {
                                     quotes
                                         .filter(quote =>
                                             quote.customerEmail.toLowerCase().includes(quoteSearch.toLowerCase()) &&
-                                            (!showOnlyUnprocessed || !existingExperiences.some(exp => exp.quoteId === quote._id))
+                                            (!showOnlyUnprocessed || !existingExperiences.some(exp => exp.quoteId === quote._id) || !existingReservations.some(res => res.quoteId === quote._id))
                                         )
                                         .map((quote) => {
                                             const alreadyExists = existingExperiences.some(
