@@ -19,7 +19,6 @@ const Experiences = () => {
     const [events, setEvents] = useState([]);
     const [allEvents, setAllEvents] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
     const [view, setView] = useState(Views.AGENDA);
     const [selectedDate, setSelectedDate] = useState(new Date());
     const [selectedService, setSelectedService] = useState(null);
@@ -30,14 +29,15 @@ const Experiences = () => {
     const [serviceTypes, setServiceTypes] = useState([]);
     const [selectedType, setSelectedType] = useState("All");
 
-
     useEffect(() => {
+        setLoading(true)
         const now = new Date();
         const firstDay = new Date(now.getFullYear(), now.getMonth(), -7);
         const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, +7);
         //console.log("Fechas: ", firstDay, " TO ", lastDay)
         fetchStaff();
         fetchExperiences(firstDay, lastDay);
+        setLoading(false)
     }, []);
 
     useEffect(() => {
@@ -68,7 +68,7 @@ const Experiences = () => {
         const allServiceEvents = [];
         const staffColorMap = {};
         const typesSet = new Set();
-
+        //console.log("Entre a fetchExperiences")
         const getColorForStaff = async (email) => {
             //console.log("Entre a getColorForStaff ", email);
             //console.log("El staffColorMap es: ", staffColorMap);
@@ -89,8 +89,13 @@ const Experiences = () => {
             }
         };
         try {
+            setLoading(true);
             const serviceDetail = await getServicesByDate(startDate, endDate, storeId);
             //console.log("La respuesta de getServiceById ", serviceDetail);
+            const parseDate = (d) =>
+                typeof d === "object" && d.$date?.$numberLong
+                    ? new Date(Number(d.$date.$numberLong))
+                    : new Date(d);
             if (serviceDetail.serviceList.length > 0) {
                 for (const serviceRef of serviceDetail.serviceList) {
                     //console.log("serviceRef: ", serviceRef)
@@ -101,8 +106,8 @@ const Experiences = () => {
                         typesSet.add(serviceType);
                         allServiceEvents.push({
                             title: `${serviceRef.name} - ${serviceRef.staffEmail}`,
-                            start: new Date(serviceRef.dateIn),
-                            end: new Date(serviceRef.dateOut),
+                            start: parseDate(serviceRef.dateIn),
+                            end: parseDate(serviceRef.dateOut),
                             allDay: false,
                             resource: serviceRef,
                             staffColor: color,
@@ -267,6 +272,8 @@ const Experiences = () => {
                                 onView={setView}
                                 date={selectedDate}
                                 style={{ height: '100%', width: '100%' }}
+                                min={new Date(0, 0, 0, 5, 0)}   // ⏰ Mostrar desde las 5:00 am
+                                max={new Date(0, 0, 0, 22, 0)}  // ⏰ Hasta las 10:00 pm
                                 eventPropGetter={(event) => {
                                     const color = event.staffColor || "#6b7280"; // valor por defecto (gray-500)
                                     return {

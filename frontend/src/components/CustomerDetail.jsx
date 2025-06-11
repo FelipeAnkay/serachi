@@ -248,21 +248,45 @@ export default function CustomerDetails({ isOpen, onClose, customer, setCustomer
                                     >
                                         Delete
                                     </button>
-                                    {["organization", "certificateName", "certificateId"].map((key) => (
-                                        <div key={key}>
-                                            <label className="capitalize">{key.replace(/([A-Z])/g, ' $1')}:</label>
+                                    <div key="organization">
+                                        <label className="">Certifying Organization:</label>
+                                        <input
+                                            type="text"
+                                            className="w-full p-2 mt-1 rounded bg-gray-700 text-white"
+                                            value={cert["organization"] || ''}
+                                            onChange={(e) => {
+                                                const updated = [...customer.divingCertificates];
+                                                updated[certIndex]["organization"] = e.target.value;
+                                                setCustomer({ ...customer, divingCertificates: updated });
+                                            }}
+                                        />
+                                    </div>
+                                    <div key="certificateName">
+                                        <label>Certification Level:</label>
+                                        <input
+                                            type="text"
+                                            className="w-full p-2 mt-1 rounded bg-gray-700 text-white"
+                                            value={cert["certificateName"] || ''}
+                                            onChange={(e) => {
+                                                const updated = [...customer.divingCertificates];
+                                                updated[certIndex]["certificateName"] = e.target.value;
+                                                setCustomer({ ...customer, divingCertificates: updated });
+                                            }}
+                                        />
+                                    </div>
+                                    <div key="certificateId">
+                                            <label>ID Number:</label>
                                             <input
                                                 type="text"
                                                 className="w-full p-2 mt-1 rounded bg-gray-700 text-white"
-                                                value={cert[key] || ''}
+                                                value={cert["certificateId"] || ''}
                                                 onChange={(e) => {
                                                     const updated = [...customer.divingCertificates];
-                                                    updated[certIndex][key] = e.target.value;
+                                                    updated[certIndex]["certificateId"] = e.target.value;
                                                     setCustomer({ ...customer, divingCertificates: updated });
                                                 }}
                                             />
                                         </div>
-                                    ))}
                                 </div>
                             ))}
                             <button

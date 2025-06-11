@@ -90,10 +90,10 @@ export const getUrlToken = async (req, res) => {
     const ENCRYPTION_KEY = crypto.createHash('sha256').update('GENERADOR_URL_2025').digest(); // 32 bytes para AES-256
     const IV_LENGTH = 16;
     try {
-        const { email, storeId } = req.params;
-        if (!email || !storeId) throw new Error("Missing email or storeId");
+        const { email, storeId, endDate } = req.params;
+        if (!email || !storeId || !endDate) throw new Error("Missing email or storeId");
 
-        const payload = JSON.stringify({ email, storeId });
+        const payload = JSON.stringify({ email, endDate, storeId });
 
         // Crear IV aleatorio
         const iv = crypto.randomBytes(IV_LENGTH);
@@ -133,10 +133,11 @@ export const getTokenData = async (req, res) => {
         let decrypted = decipher.update(encrypted, 'base64', 'utf8');
         decrypted += decipher.final('utf8');
 
-        const { email: customerEmail, storeId } = JSON.parse(decrypted);
+        const { email: customerEmail, endDate, storeId } = JSON.parse(decrypted);
 
         const urlData = {
             customerEmail,
+            endDate,
             storeId,
         };
 

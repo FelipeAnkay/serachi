@@ -21,7 +21,7 @@ export default function CreateReservation() {
     const [isCustomerModalOpen, setIsCustomerModalOpen] = useState(false);
     const [isNew, setIsNew] = useState(true);
     const [customer, setCustomer] = useState({});
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(false);
     const [finalPrice, setFinalPrice] = useState();
     const customerEmailRef = useRef(null);
     const [rooms, setRooms] = useState([]);
@@ -63,13 +63,12 @@ export default function CreateReservation() {
     useEffect(() => {
         //console.log("Entre a UE 4");
         const fetchAvailableRooms = async () => {
-            setLoading(true)
             if (!reservation.dateIn || !reservation.dateOut) {
                 setIsPeopleLock(false);
                 return;
             }
             try {
-
+                setLoading(true);
                 const availablePayload = {
                     dateIn: reservation.dateIn,
                     dateOut: reservation.dateOut,
@@ -154,6 +153,7 @@ export default function CreateReservation() {
     }, [reservation.dateIn, reservation.dateOut, storeId]);
 
     useEffect(() => {
+        //console.log("Entre a UE Create")
         reservationFill();
     }, [])
     /*

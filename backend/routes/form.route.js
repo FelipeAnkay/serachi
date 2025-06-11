@@ -8,7 +8,7 @@ router.post("/create", createForm);
 router.post("/update", updateForm);
 router.get("/get/:id",getFormById);
 router.get("/forms/:storeId", getFormsByStoreId);
-router.get("/token/:email/:storeId", getUrlToken);
+router.get("/token/:email/:endDate/:storeId", getUrlToken);
 router.get("/dataToken/:urlToken", getTokenData);
 router.post("/send-forms", postFormEmail);
 

@@ -20,8 +20,16 @@ function toDate(input) {
  * Format: "Monday, May 26 2025"
  */
 export function formatDateDisplay(dateInput) {
-  const date = toDate(dateInput);
-  return date ? format(date, "EEEE, MMMM dd yyyy") : "";
+  const date = new Date(dateInput);
+  return date
+    ? date.toLocaleDateString('en-US', {
+        weekday: 'long',
+        year: 'numeric',
+        month: 'long',
+        day: '2-digit',
+        timeZone: 'UTC', 
+      })
+    : '';
 }
 
 /**

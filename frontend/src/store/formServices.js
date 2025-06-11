@@ -73,11 +73,11 @@ export const useFormServices = create((set) => ({
             throw error;
         }
     },
-    generateToken: async (email,storeId) => {
+    generateToken: async (email,endDate,storeId) => {
         set({ isLoading: true, error: null });
         try {
             //console.log("F: Llamado a getStoreById");
-            const response = await axios.get(`${URL_API}/token/${email}/${storeId}`);
+            const response = await axios.get(`${URL_API}/token/${email}/${endDate}/${storeId}`);
             //console.log("F: Respueste de getStoreById: ", response);
             return response.data;
         } catch (error) {

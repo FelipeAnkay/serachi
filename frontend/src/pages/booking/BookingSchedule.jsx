@@ -10,6 +10,7 @@ import { useRoomServices } from "../../store/roomServices";
 import Cookies from 'js-cookie';
 import toast from "react-hot-toast";
 import LoadingSpinner from "../../components/LoadingSpinner";
+import { formatDateInput, formatDateDisplay } from '../../components/formatDateDisplay';
 
 const localizer = momentLocalizer(moment);
 
@@ -66,18 +67,6 @@ export default function BookingSchedule() {
         const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, +20);
         loadReservations(firstDay, lastDay);
     }, []);
-
-    const formatDateDisplay = (dateStr) => {
-        if (!dateStr) return "";
-        const date = new Date(dateStr);
-
-        const weekday = date.toLocaleDateString("en-US", { weekday: "long" }); // Monday
-        const month = date.toLocaleDateString("en-US", { month: "long" }); // May
-        const day = String(date.getDate()).padStart(2, "0"); // 26
-        const year = date.getFullYear(); // 2025
-
-        return `${weekday}, ${month} ${day} ${year}`;
-    };
 
     const handleSelectEvent = async (event) => {
         setLoading(true)
