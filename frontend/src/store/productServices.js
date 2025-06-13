@@ -83,9 +83,9 @@ export const useProductServices = create((set) => ({
     getProductById: async (id) => {
         set({ isLoading: true, error: null });
         try {
-            console.log("F: Llamado a getServiceById: ", id);
+            //console.log("F: Llamado a getProductById: ", id);
             const response = await axios.get(`${URL_API}/get/${id}`);
-            console.log("F: Respueste de getServiceById: ", response);
+            //console.log("F: Respueste de getProductById: ", response);
             set({ productList: response.data.product, isLoading: false });
             return response.data;
         } catch (error) {

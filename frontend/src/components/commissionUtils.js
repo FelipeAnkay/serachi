@@ -66,13 +66,14 @@ export const calculateCommission = (services, payrates) => {
     let i = 0;
     let x = 0;
     let y = 0;
+    //console.log("matchingRates is: ", matchingRates);
     for (const pr of matchingRates) {
       for (const rule of pr.feeRules) {
         const tfGroups = groupServices(groupServicesByKey, rule.timeframe);
-        //console.log("Iteration F1: ", i, " F2: ", x, " tfGroups is: ", tfGroups);
+        //console.log("tfGroups is: ", tfGroups);
         for (const tfKey in tfGroups) {
           const count = tfGroups[tfKey].length;
-          //console.log("Iteration F1: ", i, " F2: ", x, " F3: ", y ," tfGroups is: ", count);
+          //console.log("Iteration F1: ", i, "pr: ", pr, " F2: ", x ,"Rule: ", rule, " F3: ", tfKey ," tfGroups is: ", count);
           if (compare(count, rule.operator, rule.value)) {
             totalCommission += count * rule.fee;
             matchedFeeRules.push(rule);

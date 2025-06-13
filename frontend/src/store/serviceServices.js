@@ -79,9 +79,9 @@ export const useServiceServices = create((set) => ({
     getServiceByIds: async (ids) => {
         set({ isLoading: true, error: null });
         try {
-            console.log("F: Llamado a getServiceByIds: ", ids);
+            //console.log("F: Llamado a getServiceByIds: ", ids);
             const response = await axios.get(`${URL_API}/get-ids/${ids}`);
-            console.log("F: Respueste de getServiceByIds: ", response);
+            //console.log("F: Respueste de getServiceByIds: ", response);
             set({ serviceList: response.data.serviceList, isLoading: false });
             return response.data;
         } catch (error) {

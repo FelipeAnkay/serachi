@@ -1,5 +1,5 @@
 import express from 'express';
-import { updateService, createService, getServiceById, getServiceNoStaff, getServiceByStoreId, getServiceNoData, getServiceByDates, ChangeType, getServiceByEmail, deleteService, getServicesByIds, deleteServiceByEmail, fixServiceWithoutEmail, getServiceByNameDate } from '../controllers/service.controller.js';
+import { updateService, createService, getServiceById, getServiceNoStaff, getServiceByStoreId, getServiceNoData, getServiceByDates, ChangeType, getServiceByEmail, deleteService, getServicesByIds, deleteServiceByEmail, fixServiceWithoutEmail, getServiceByNameDate, fixRemoveDuplicated } from '../controllers/service.controller.js';
 
 const router = express.Router();
 
@@ -17,5 +17,6 @@ router.get("/changeType", ChangeType);
 router.get("/name-date/:name/:dateStart/:dateEnd/:storeId", getServiceByNameDate);
 router.get("/email/:email/:storeId", getServiceByEmail);
 router.delete("/remove", deleteService);
+router.delete("/fix-remove-duplicated/:dateIn/:dateOut/:storeId", fixRemoveDuplicated);
 
 export default router;
