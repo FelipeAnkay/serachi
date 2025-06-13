@@ -89,6 +89,7 @@ const menuItems = [
             { to: "/set-products", label: "Products", icon: <Boxes /> },
             { to: "/set-partner", label: "Partners", icon: <Handshake /> },
             { to: "/set-supplier", label: "Supplier", icon: <Truck /> },
+            { to: "/set-types", label: "Types", icon: <Boxes /> },
             { to: "/set-store", label: "Store", icon: <Store /> },
         ]
     }
@@ -113,7 +114,9 @@ const LeftMenu = ({ show, setShow }) => {
         <div
             onMouseEnter={() => setShow(true)}
             onMouseLeave={() => setShow(false)}
-            className={`h-screen ${show ? "w-64" : "w-16"} bg-gray-900/30 text-white transition-all duration-300 ease-in-out overflow-y-auto flex flex-col`}
+              className={`fixed top-0 left-0 z-50 h-screen ${show ? "w-64" : "w-16"} 
+              bg-gray-900/30 text-white transition-all duration-300 ease-in-out 
+              overflow-y-auto flex flex-col`}
         >
             <div className="flex items-center justify-between p-4">
                 {show && (

@@ -344,5 +344,52 @@ export const getServiceByNameDate = async (req, res) => {
     } catch (error) {
         return res.status(400).json({ success: false, message: error.message });
     }
-}
+};
+
+export const fixRemoveDuplicated = async (req, res) => {
+    try {
+        const { dateIn, dateOut, storeId } = req.params;
+        const normalizedStoreId = storeId?.toUpperCase();
+
+        const start = new Date(dateIn);
+        const end = new Date(dateOut);
+
+        // Obtener todos los servicios en el rango con ese storeId
+        const services = await Service.find({
+            storeId: normalizedStoreId,
+            dateIn: { $gte: start },
+            dateOut: { $lte: end }
+        });
+
+        if (!services || services.length === 0) {
+            return res.status(404).json({ success: false, message: "No matching services found" });
+        }
+
+        // Identificar duplicados usando una clave compuesta
+        const seen = new Map();
+        const duplicatesToRemove = [];
+
+        for (const service of services) {
+            const key = `${service.name}-${service.staffEmail}-${service.dateIn.toISOString()}-${service.dateOut.toISOString()}-${service.productId}`;
+            
+            if (seen.has(key)) {
+                duplicatesToRemove.push(service._id);
+            } else {
+                seen.set(key, service._id); // conservar el primero
+            }
+        }
+
+        // Eliminar los duplicados
+        const deleteResult = await Service.deleteMany({ _id: { $in: duplicatesToRemove } });
+
+        res.status(200).json({
+            success: true,
+            message: `${deleteResult.deletedCount} duplicated services removed`,
+            deletedIds: duplicatesToRemove
+        });
+    } catch (error) {
+        console.error("Error in fixRemoveDuplicated:", error);
+        return res.status(400).json({ success: false, message: error.message });
+    }
+};
 

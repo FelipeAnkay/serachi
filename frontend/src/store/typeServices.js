@@ -26,7 +26,7 @@ export const useTypeServices = create((set) => ({
         }
     },
 
-    updatetype: async (id, updatedVars) => {
+    updateType: async (id, updatedVars) => {
         set({ isLoading: true, error: null });
         try {
             delete updatedVars._id;;

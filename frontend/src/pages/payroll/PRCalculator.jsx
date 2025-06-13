@@ -60,12 +60,12 @@ const PRCalculator = () => {
             }
             //console.log("allPayrates is: ", allPayrates);
             const commissions = calculateCommission(services, allPayrates);
-            console.log("commissions is: ", commissions);
+            //console.log("commissions is: ", commissions);
 
             const summaryData = await Promise.all(commissions.map(async (item) => {
                 const product = await getProductById(item.productId);
                 const pname = product.product.name
-                console.log("Product is: ", product);
+                //console.log("Product is: ", product);
                 return {
                     staffEmail: item.staffEmail,
                     productName: pname || 'Unknown',
@@ -78,11 +78,12 @@ const PRCalculator = () => {
                     services: services.filter(s => s.staffEmail === item.staffEmail && s.productId === item.productId),
                 };
             }));
-            console.log("summaryData is: ", summaryData);
+            //console.log("summaryData is: ", summaryData);
             setSummary(summaryData);
             setTableVisible(true);
         } catch (error) {
-            console.error("Error fetching data:", error);
+            //console.error("Error fetching data:", error);
+            toast.error("Error Calculating Commission")
         } finally {
             setLoading(false);
         }
@@ -162,22 +163,26 @@ const PRCalculator = () => {
             };
 
             //console.log("Payload final a guardar:", prrecord);
+            //const auxPRId = 'DEBUG'
             const auxPR = await createPRrecord(prrecord);
             const auxPRId = auxPR.service._id;
-            //const auxPRId = 'DEBUG'
+
             for (const item of summary) {
-                const expense = {
-                    date: new Date().toISOString(),
-                    staffEmail: item.staffEmail,
-                    amount: item.commission,
-                    type: 'Staff',
-                    storeId: storeId,
-                    userEmail: user.email,
-                    paymentMethod: item.paymentMethod,
-                    description: `Payroll for ${item.productName} - ${auxPRId}`,
-                };
-                //console.log("El expense a registrar es: ", expense)
-                await createExpense(expense);
+                if (item.commission > 0) {
+                    const expense = {
+                        date: new Date().toISOString(),
+                        staffEmail: item.staffEmail,
+                        amount: item.commission,
+                        type: 'Staff',
+                        storeId: storeId,
+                        userEmail: user.email,
+                        paymentMethod: item.paymentMethod,
+                        description: `Payroll for ${item.productName} - ${auxPRId}`,
+                    };
+                    //console.log("El expense a registrar es: ", expense)
+                    await createExpense(expense);
+                }
+                
                 for (const updService of item.services) {
                     await updateService(updService._id, {
                         payrollList: [
@@ -186,6 +191,7 @@ const PRCalculator = () => {
                         ],
                     });
                 }
+                    
             }
             window.scrollTo({ top: 0, behavior: 'smooth' });
             toast.success('Payroll registered successfully');
@@ -247,7 +253,7 @@ const PRCalculator = () => {
             }
             <AnimatePresence>
                 <motion.div
-                    className="p-6 max-w-8xl mx-auto bg-blue-950 border rounded-2xl mt-2 mb-2"
+                    className="p-6 max-w-8xl h-max mx-auto bg-blue-950 border rounded-2xl mt-2 mb-2"
                     initial={{ opacity: 0, y: 30 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -20 }}
@@ -309,7 +315,7 @@ const PRCalculator = () => {
                                     </thead>
                                     <tbody>
                                         {summary.map((item, index) => (
-                                            <tr key={`${item.staffEmail}-${item.productId}`} className='border-t border-white/20'>
+                                            <tr key={index} className='border-t border-white/20'>
                                                 <td className='px-2 py-1 text-left'>{item.staffEmail}</td>
                                                 <td className='px-2 py-1 text-left'>{item.productName}</td>
                                                 <td className='px-2 py-1 text-center font-bold'>${item.originalCommission}</td>

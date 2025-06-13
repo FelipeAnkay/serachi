@@ -50,6 +50,7 @@ import Unauthorized from './pages/Unauthorized';
 import LiabilityEs from './pages/forms/FormLiabilityEs';
 import ExperienceList from './pages/experience/ExperienceList';
 import ViewExperiences from './pages/experience/ViewExperiences';
+import SetTypes from './pages/settings/SetTypes';
 
 const ProtectedRoute = ({ children, requiredPermission }) => {
   const { isAuthenticated, user, logout } = useAuthStore();
@@ -404,6 +405,13 @@ function App() {
           element={
             <ProtectedRoute requiredPermission="VIEW_SETTINGS">
               <SetStaff />
+            </ProtectedRoute>}
+        />
+        <Route
+          path="/set-types"
+          element={
+            <ProtectedRoute requiredPermission="VIEW_SETTINGS">
+              <SetTypes />
             </ProtectedRoute>}
         />
         <Route
