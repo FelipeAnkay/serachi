@@ -30,14 +30,12 @@ const Experiences = () => {
     const [selectedType, setSelectedType] = useState("All");
 
     useEffect(() => {
-        setLoading(true)
         const now = new Date();
         const firstDay = new Date(now.getFullYear(), now.getMonth(), -7);
         const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, +7);
         //console.log("Fechas: ", firstDay, " TO ", lastDay)
         fetchStaff();
         fetchExperiences(firstDay, lastDay);
-        setLoading(false)
     }, []);
 
     useEffect(() => {
@@ -50,8 +48,9 @@ const Experiences = () => {
     }, [selectedType]);
 
     const fetchStaff = async () => {
-        setLoading(true);
+
         try {
+            setLoading(true);
             const staff = await getStaffList(storeId);
             //console.log("staff: ", staff)
             setStaffList(staff.staffList);
@@ -64,7 +63,6 @@ const Experiences = () => {
     }
 
     const fetchExperiences = async (startDate, endDate) => {
-        setLoading(true);
         const allServiceEvents = [];
         const staffColorMap = {};
         const typesSet = new Set();
@@ -76,6 +74,7 @@ const Experiences = () => {
             if (staffColorMap[email]) return staffColorMap[email];
 
             try {
+                setLoading(true)
                 const res = await getStaffEmail(email, storeId);
                 //console.log("El res es: ", res)
                 const staff = res?.staffList;
@@ -86,10 +85,12 @@ const Experiences = () => {
                 return color;
             } catch {
                 return "gray-500";
+            }finally{
+                setLoading(false)
             }
         };
         try {
-            setLoading(true);
+            //setLoading(true);
             const serviceDetail = await getServicesByDate(startDate, endDate, storeId);
             //console.log("La respuesta de getServiceById ", serviceDetail);
             const parseDate = (d) =>
@@ -125,7 +126,7 @@ const Experiences = () => {
             console.log("El error es: ", error)
             setEvents([]);
         } finally {
-            setLoading(false);
+            //setLoading(false);
         }
     };
 
@@ -181,8 +182,8 @@ const Experiences = () => {
     const handleCancelService = async () => {
         if (!selectedService) return;
         if (!confirm('Are you sure that you want to cancel this service?')) return;
-        setLoading(true);
         try {
+            setLoading(true);
             await updateService(selectedService._id, { isActive: false });
             toast.success('Service Canceled');
 
@@ -231,18 +232,18 @@ const Experiences = () => {
                     <LoadingSpinner />
                 )
             }
-            <div className="flex flex-col flex-1 h-screen w-full items-center justify-center bg-blue-950 text-white overflow-hidden">
+            <div className="flex flex-col min-h-screen w-full bg-blue-950 text-white px-4 py-6 sm:px-8 sm:py-10">
                 <motion.div
                     initial={{ opacity: 0, scale: 2 }}
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0, scale: 0.9 }}
                     transition={{ duration: 0.5 }}
-                    className='flex flex-col w-[90%] h-[90%] max-h-[90vh] bg-gray-900 bg-opacity-80 backdrop-filter backdrop-blur-lg rounded-xl shadow-2xl border border-gray-800'
+                    className="flex flex-col w-full max-w-9/12 mx-auto bg-blue-900 bg-opacity-80 backdrop-filter backdrop-blur-lg rounded-2xl shadow-2xl border border-gray-800 overflow-hidden min-h-screen items-center"
                 >
-                    <h2 className='text-3xl font-bold mb-6 text-center bg-gradient-to-r from-blue-400 to-blue-600 text-transparent bg-clip-text'>
+                    <h2 className='text-3xl font-bold mb-6 text-center text-white bg-clip-text'>
                         Experiences Calendar
                     </h2>
-                    <div className="flex-grow p-4 overflow-hidden">
+                    <div className="flex-grow p-4 overflow-hidden w-full">
                         <div className="flex items-center gap-4 px-4 mb-4">
                             <label className="text-white font-semibold">Filter Events by Type:</label>
                             <select

@@ -208,10 +208,10 @@ export default function AddItemsExperience() {
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0, scale: 0.9 }}
                     transition={{ duration: 0.5 }}
-                    className="flex flex-col w-full max-w-8xl mx-auto bg-blue-900 bg-opacity-80 backdrop-filter backdrop-blur-lg rounded-2xl shadow-2xl border border-white overflow-hidden min-h-screen"
+                    className="flex flex-col w-full max-w-9/12 mx-auto bg-blue-900 bg-opacity-80 backdrop-filter backdrop-blur-lg rounded-2xl shadow-2xl border border-gray-800 overflow-hidden min-h-screen items-center"
                 >
                     <h1 className="text-2xl font-bold mb-6 text-center">Add Items to Experience</h1>
-                    <form onSubmit={handleSubmit} className='ml-2'>
+                    <form onSubmit={handleSubmit} className='pl-5 pr-5 w-full'>
                         <div className='flex flex-row'>
                             <CircleHelp className='text-white mr-2 hover:text-blue-600' onClick={() => setGuideOpen(!guideOpen)} />
                             {guideOpen && (

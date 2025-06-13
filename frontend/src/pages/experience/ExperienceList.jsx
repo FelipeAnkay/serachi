@@ -2,13 +2,15 @@ import Cookies from 'js-cookie';
 import { motion } from 'framer-motion';
 import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from "react-router-dom";
-import { Copy, FolderCheck, Pencil } from 'lucide-react';
+import { Copy, FolderCheck, Pencil, UserCog } from 'lucide-react';
 import { useExperienceServices } from '../../store/experienceServices';
 import SendFormModal from '../../components/SendFormsModal';
 import LoadingSpinner from '../../components/LoadingSpinner';
 import { useFormRecordServices } from '../../store/formRecordServices';
 import toast from 'react-hot-toast';
 import ViewSignedForms from '../../components/ViewSignedForm';
+import SendProfileModal from '../../components/SendProfileModal';
+
 
 
 export default function ExperienceList() {
@@ -25,6 +27,8 @@ export default function ExperienceList() {
     const [loadRecords, setLoadRecords] = useState(false);
     const [selectedForms, setSelectedForms] = useState([]);
     const [isModalFormOpen, setIsModalFormOpen] = useState(false);
+    const [modalProfileOpen, setModalProfileOpen] = useState(false);
+    const [selectedCustomer, setSelectedCustomer] = useState("");
 
     const location = useLocation();
     const navigate = useNavigate();
@@ -92,6 +96,10 @@ export default function ExperienceList() {
         setIsModalOpen(true)
     }
 
+    const openSendProfileModal = () => {
+        setModalProfileOpen(true)
+    }
+
     const handleSelectedForms = (email) => {
         const filteredForms = records.filter(form => form.customerEmail === email);
         setSelectedForms(filteredForms);
@@ -111,10 +119,10 @@ export default function ExperienceList() {
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0, scale: 0.9 }}
                     transition={{ duration: 0.5 }}
-                    className="flex flex-col w-full max-w-8xl mx-auto bg-blue-900 bg-opacity-80 backdrop-filter backdrop-blur-lg rounded-2xl shadow-2xl border border-gray-800 overflow-hidden min-h-screen"
+                    className="flex flex-col w-full max-w-9/12 mx-auto bg-blue-900 bg-opacity-80 backdrop-filter backdrop-blur-lg rounded-2xl shadow-2xl border border-gray-800 overflow-hidden min-h-screen items-center"
                 >
                     <h1 className="text-3xl font-bold mt-6 mb-6 text-center text-white bg-clip-text">Active Experiences</h1>
-                    <div>
+                    <div className='w-full'>
                         <fieldset className="flex-grow space-y-4 border rounded-2xl p-4 ml-4 mr-4">
                             <legend className="text-2xl font-bold">Experience List</legend>
                             <input
@@ -161,6 +169,23 @@ export default function ExperienceList() {
                                                         {' - ' + experience.serviceList.length + ' Services '}
                                                     </h3>
                                                     <div className='flex flex-row justify-end gap-2 items-center w-1/4'>
+                                                        <motion.button
+                                                            type='button'
+                                                            whileHover={{ scale: 1.05 }}
+                                                            whileTap={{ scale: 0.95 }}
+                                                            title='Send profile to complete'
+                                                            onClick={() => {
+                                                                setSelectedCustomer(experience.customerEmail);
+                                                                openSendProfileModal(experience.customerEmail);
+                                                            }}
+                                                            className='py-3 px-4 bg-gradient-to-r from-blue-400 to-blue-500 text-white font-bold rounded-lg shadow-lg
+                hover:from-blue-500 hover:to-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-gray-900'
+                                                        >
+                                                            <div className='flex flex-col justify-center items-center'>
+                                                                <UserCog />
+                                                                <span>Send Profile</span>
+                                                            </div>
+                                                        </motion.button>
                                                         {/* Botón SEND FORMS */}
                                                         <motion.button
                                                             type='button'
@@ -216,6 +241,13 @@ export default function ExperienceList() {
                                 forms={selectedForms}
                                 isOpen={isModalFormOpen}
                                 onClose={() => setIsModalFormOpen(false)}
+                            />
+                        )}
+                        {modalProfileOpen && (
+                            <SendProfileModal
+                                isOpen={modalProfileOpen}
+                                onClose={() => setModalProfileOpen(false)}
+                                customerEmail={selectedCustomer}
                             />
                         )}
                     </div>

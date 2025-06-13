@@ -51,6 +51,7 @@ import LiabilityEs from './pages/forms/FormLiabilityEs';
 import ExperienceList from './pages/experience/ExperienceList';
 import ViewExperiences from './pages/experience/ViewExperiences';
 import SetTypes from './pages/settings/SetTypes';
+import SetCustomerView from './pages/settings/SetCustomerView';
 
 const ProtectedRoute = ({ children, requiredPermission }) => {
   const { isAuthenticated, user, logout } = useAuthStore();
@@ -145,6 +146,7 @@ const MenuAvailable = () => {
     '/forms/liabilityEn',
     '/forms/liabilityEs',
     '/view-experience',
+    '/update-customer-view',
   ];
 
   if (hiddenRoutes.some(route => location.pathname.startsWith(route))) {
@@ -406,6 +408,11 @@ function App() {
             <ProtectedRoute requiredPermission="VIEW_SETTINGS">
               <SetStaff />
             </ProtectedRoute>}
+        />
+        <Route
+          path="/update-customer-view"
+          element={
+            <SetCustomerView />}
         />
         <Route
           path="/set-types"

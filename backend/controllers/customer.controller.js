@@ -1,3 +1,4 @@
+import { sendProfileEmail } from "../mailtrap/emails.js";
 import { Customer } from "../models/customer.model.js";
 
 /*Customer FUNCTIONS */
@@ -183,4 +184,24 @@ export const createIndex = async (req, res) => {
         return res.status(400).json({ success: false, message: error.message });
     }
 
+}
+
+export const postProfileEmail = async (req, res) => {
+    try {
+        const { customer, user, store, formList, urlToken } = req.body;
+        /*
+        console.log("postProfileEmail variables:", {
+            customer,
+            user,
+            store,
+            urlToken
+        });
+        */
+        const webUrl = 'https://serachi.net/update-customer-view'
+        const mailSent = await sendProfileEmail(customer.email, customer.name, user.email, user.name, store.name, webUrl,urlToken);
+        //console.log("Respuesta de sendProfileEmail: ", mailSent)
+        res.status(200).json({ success: true, mailSent});
+    } catch (error) {
+        res.status(400).json({ success: false, message: error.message });
+    }
 }

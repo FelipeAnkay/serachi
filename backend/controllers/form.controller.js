@@ -150,6 +150,7 @@ export const getTokenData = async (req, res) => {
 export const postFormEmail = async (req, res) => {
     try {
         const { customer, user, store, formList, urlToken } = req.body;
+        /*
         console.log("postFormEmail variables:", {
             customer,
             user,
@@ -157,8 +158,9 @@ export const postFormEmail = async (req, res) => {
             formList,
             urlToken
         });
+        */
         const mailSent = await sendFormEmail(customer.email, customer.name, formList, user.email, user.name, store.name, urlToken);
-        console.log("Respuesta de sendFormEmail: ", mailSent)
+        //console.log("Respuesta de sendFormEmail: ", mailSent)
         res.status(200).json({ success: true, mailSent});
     } catch (error) {
         res.status(400).json({ success: false, message: error.message });

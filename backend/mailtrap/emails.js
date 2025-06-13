@@ -1,5 +1,5 @@
 import { mailtrapClient, sender } from "./mailtrap.js"
-import { VERIFICATION_EMAIL_TEMPLATE, VERIFY_USER, PASSWORD_RESET_REQUEST_TEMPLATE, PASSWORD_RESET_SUCCESS_TEMPLATE, SEND_QUOTE, SEND_FORMS } from "./emailTemplates.js"
+import { VERIFICATION_EMAIL_TEMPLATE, VERIFY_USER, PASSWORD_RESET_REQUEST_TEMPLATE, PASSWORD_RESET_SUCCESS_TEMPLATE, SEND_QUOTE, SEND_FORMS, SEND_PROFILE } from "./emailTemplates.js"
 
 export const sendVerificationEmail = async (email, verificationToken) => {
     const recipient = [{ email }];
@@ -147,7 +147,68 @@ export const sendQuoteEmail = async (email, customerName, dateIn, dateOut, produ
     }
 }
 
+export const sendProfileEmail = async (email, customerName, userEmail, userName, storeName, webUrl, urlToken) => {
+    /*
+    console.log("Entre a sendFormEmail", {
+            email,
+            customerName,
+            userEmail,
+            userName,
+            storeName,
+            webUrl,
+            urlToken
+        })
+    */
+    const recipient = [{ email }];
+
+    const customSender = {
+        email: userEmail,
+        name: userName
+    };
+
+    const formRows = () => {
+        const fullUrl = `${webUrl}?token=${urlToken}`;
+        return `
+      <tr>
+        <td>${customerName}</td>
+        <td><a href="${fullUrl}" target="_blank">Link</a></td>
+      </tr>
+    `;
+    };
+
+
+    const html = SEND_PROFILE
+        .replace('{{customerName}}', customerName)
+        .replace('{{formList}}', formRows // reemplaza el bloque con las filas generadas
+        );
+
+    const customSubject = storeName + " Profile completion is required"
+/*
+    console.log("Variables a enviar: ", {
+            customSender,
+            recipient,
+            customSubject,
+            html,
+        })
+*/
+    try {
+        //console.log("Entré al TRY de sendQuoteEmail:", customSender, " - ", recipient, " - ", customSubject, " - ", html);
+        const response = await mailtrapClient.send({
+            from: customSender,
+            to: recipient,
+            subject: customSubject,
+            html,
+            category: "Profile",
+        });
+        //console.log("Form Sent", response);
+    } catch (error) {
+        console.error(error.message);
+        throw new Error("Error sending the quote email", error.message);
+    }
+}
+
 export const sendFormEmail = async (email, customerName, formList, userEmail, userName, storeName, urlToken) => {
+    /*
     console.log("Entre a sendFormEmail", {
             email,
             customerName,
@@ -157,6 +218,7 @@ export const sendFormEmail = async (email, customerName, formList, userEmail, us
             storeName,
             urlToken
         })
+    */
     const recipient = [{ email }];
 
     const customSender = {
@@ -181,14 +243,14 @@ export const sendFormEmail = async (email, customerName, formList, userEmail, us
         );
 
     const customSubject = storeName + " Sign Form Required"
-
+/*
     console.log("Variables a enviar: ", {
             customSender,
             recipient,
             customSubject,
             html,
         })
-
+*/
     try {
         //console.log("Entré al TRY de sendQuoteEmail:", customSender, " - ", recipient, " - ", customSubject, " - ", html);
         const response = await mailtrapClient.send({
@@ -198,7 +260,7 @@ export const sendFormEmail = async (email, customerName, formList, userEmail, us
             html,
             category: "Forms",
         });
-        console.log("Form Sent", response);
+        //console.log("Form Sent", response);
     } catch (error) {
         console.error(error.message);
         throw new Error("Error sending the quote email", error.message);

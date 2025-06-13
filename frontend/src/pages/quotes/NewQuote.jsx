@@ -621,17 +621,17 @@ export default function NewQuote() {
     };
 
     return (
-        <div className="flex flex-col min-h-screen w-full bg-blue-950 text-white px-4 py-6 sm:px-8 sm:py-10">
-            <motion.div
-                initial={{ opacity: 0, scale: 2 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.9 }}
-                transition={{ duration: 0.5 }}
-                className="flex flex-col w-full max-w-5xl mx-auto bg-blue-900 bg-opacity-80 backdrop-filter backdrop-blur-lg rounded-2xl shadow-2xl border border-gray-800 overflow-hidden min-h-screen"
-            >
+            <div className="flex flex-col min-h-screen w-full bg-blue-950 text-white px-4 py-6 sm:px-8 sm:py-10">
+                <motion.div
+                    initial={{ opacity: 0, scale: 2 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.9 }}
+                    transition={{ duration: 0.5 }}
+                    className="flex flex-col w-full max-w-9/12 mx-auto bg-blue-900 bg-opacity-80 backdrop-filter backdrop-blur-lg rounded-2xl shadow-2xl border border-gray-800 overflow-hidden min-h-screen items-center p-4"
+                >
                 <h1 className="text-3xl font-bold mt-6 mb-6 text-center text-white">New Quote</h1>
 
-                <form onSubmit={handleSubmit} className="space-y-4 border p-4 rounded-2xl shadow bg-blue-800 mx-2 mb-2">
+                <form onSubmit={handleSubmit} className="space-y-4 border p-4 rounded-2xl shadow bg-blue-800 mx-2 mb-2 w-full">
                     {/* Customer + Dates */}
                     <div className='flex flex-col gap-4 sm:flex-col lg:flex-row'>
 

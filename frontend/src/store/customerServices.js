@@ -71,7 +71,7 @@ export const useCustomerServices = create((set) => ({
             throw error;
         }
     },
-    getCustomerEmail: async (email,storeId) => {
+    getCustomerEmail: async (email, storeId) => {
         set({ isLoading: true, error: null });
         try {
             console.log("F: Llamado a customerEmail");
@@ -96,6 +96,17 @@ export const useCustomerServices = create((set) => ({
             set({ error: error.response.data.message || "Error getting customer", isLoading: false });
             throw error;
         }
-    }
+    },
+    sendProfileEmail: async (formData) => {
+        set({ isLoading: true, error: null });
+        try {
+            //console.log("Los datos a enviar en createrole son: ", roleData)
+            const response = await axios.post(`${URL_API}/send-profile`, formData);
+            return response.data;
+        } catch (error) {
+            set({ error: error.response.data.message || "Error sending profile", isLoading: false });
+            throw error;
+        }
+    },
 
 }))

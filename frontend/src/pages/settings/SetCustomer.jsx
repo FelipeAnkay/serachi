@@ -1,15 +1,20 @@
 import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { CircleX, Copy, Delete, Handshake, Save, Trash2, UserPlus, UsersRound } from 'lucide-react';
+import { CircleX, Copy, Send, Trash2, UsersRound } from 'lucide-react';
 import Cookies from 'js-cookie';
 import toast from 'react-hot-toast';
 import { useCustomerServices } from '../../store/customerServices';
 import CustomerDetails from '../../components/CustomerDetail';
-
+import { useStoreServices } from '../../store/storeServices';
+import { useAuthStore } from '../../store/authStore';
+import SendProfileModal from '../../components/SendProfileModal';
 
 const SetCustomer = () => {
     const { getCustomerList, createCustomer, getCustomerEmail, removeCustomer, updateCustomer } = useCustomerServices();
+
     const storeId = Cookies.get('storeId');
+    const { user } = useAuthStore();
+    const { store } = useStoreServices();
     const [customerList, setCustomerList] = useState([]);
     const [loading, setLoading] = useState(true);
     const [modalOpen, setModalOpen] = useState(false);
@@ -18,6 +23,7 @@ const SetCustomer = () => {
     const [emailCheckPhase, setEmailCheckPhase] = useState(false);
     const [confirmDelete, setConfirmDelete] = useState(null);
     const [searchTerm, setSearchTerm] = useState('');
+    const [modalProfileOpen, setModalProfileOpen] = useState(false);
 
     useEffect(() => {
         const fetchCustomer = async () => {
@@ -39,11 +45,6 @@ const SetCustomer = () => {
     }, []);
 
     useEffect(() => {
-        //console.log("El partnerData es: ", partnerData)
-    }, [customerData]);
-
-
-    useEffect(() => {
         if (!modalOpen) return; // solo activa listener si el modal está abierto
 
         const handleEsc = (event) => {
@@ -57,6 +58,21 @@ const SetCustomer = () => {
             window.removeEventListener('keydown', handleEsc);
         };
     }, [modalOpen]); // se ejecuta cuando cambia modalOpen
+
+    useEffect(() => {
+        if (!modalProfileOpen) return; // solo activa listener si el modal está abierto
+
+        const handleEsc = (event) => {
+            if (event.key === 'Escape') {
+                closeProFileModal(); // tu función para cerrar el modal
+            }
+        };
+        window.addEventListener('keydown', handleEsc);
+        // Cleanup: remover listener cuando modal se cierra o componente desmonta
+        return () => {
+            window.removeEventListener('keydown', handleEsc);
+        };
+    }, [modalProfileOpen]); // se ejecuta cuando cambia modalOpen
 
     const openNewCustomerModal = () => {
         setCustomerData({ email: '' });
@@ -78,6 +94,18 @@ const SetCustomer = () => {
     const closeModal = () => {
         setModalOpen(false);
         setConfirmDelete(null);
+    };
+
+    const closeProFileModal = () => {
+        setModalProfileOpen(false);
+        setConfirmDelete(null);
+        setFormData({
+            customer: '',
+            user: user,
+            store: store,
+            endDate: '',
+            urlToken: ''
+        })
     };
     const handleEmailCheck = async () => {
         if (!customerData.email) return;
@@ -133,6 +161,13 @@ const SetCustomer = () => {
         }
     };
 
+    const openSendProfileModal = (auxCustomer) => {
+        setCustomerData({
+            ...auxCustomer,
+        });
+        setModalProfileOpen(true)
+    }
+
     const confirmRemove = async () => {
         try {
             await removeCustomer(confirmDelete.customer, storeId);
@@ -148,15 +183,15 @@ const SetCustomer = () => {
     if (loading) return <div className="text-white text-center mt-10">Loading customer...</div>;
 
     return (
-        <div className="flex flex-col min-h-screen w-full bg-blue-950 text-white px-2 sm:px-4 md:px-8 lg:px-12 xl:px-20 py-6 sm:py-8 md:py-10">
+        <div className="flex flex-col min-h-screen w-full bg-blue-950 text-white px-4 py-6 sm:px-8 sm:py-10">
             <motion.div
                 initial={{ opacity: 0, scale: 2 }}
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.9 }}
                 transition={{ duration: 0.5 }}
-                className="flex flex-col w-full max-w-7xl mx-auto bg-gray-900 bg-opacity-80 backdrop-blur-lg rounded-xl shadow-2xl border border-gray-800 overflow-hidden px-2 sm:px-4 md:px-6 py-6"
+                className="flex flex-col w-full max-w-9/12 mx-auto bg-blue-900 bg-opacity-80 backdrop-filter backdrop-blur-lg rounded-2xl shadow-2xl border border-gray-800 overflow-hidden min-h-screen items-center p-4"
             >
-                <h2 className="text-3xl font-bold mb-6 text-center bg-gradient-to-r from-blue-400 to-blue-600 text-transparent bg-clip-text">
+                <h2 className="text-3xl font-bold mb-6 text-center text-white bg-clip-text">
                     Customer List
                 </h2>
 
@@ -194,37 +229,51 @@ const SetCustomer = () => {
                                     key={customer._id}
                                     className="relative text-black rounded-lg shadow p-4 bg-gray-200 hover:bg-blue-100 transition-all"
                                 >
-                                    <div className="flex flex-col" onClick={() => openEditCustomerModal(customer)}>
-                                        <p><strong>Name:</strong> {customer.name}</p>
-                                        <p><strong>Last Name:</strong> {customer.lastName || ''}</p>
-                                        <p className="flex flex-row">
-                                            <strong>Email:</strong>&nbsp;{customer.email}
-                                            <Copy
-                                                onClick={(e) => {
-                                                    e.stopPropagation();
-                                                    navigator.clipboard.writeText(customer.email)
-                                                        .then(() => toast.success("Email copied!"))
-                                                        .catch(() => toast.error("Failed to copy"));
-                                                }}
-                                                className="text-blue-500 hover:text-blue-900 ml-2"
-                                            />
-                                        </p>
-                                        <p><strong>Phone:</strong> {customer.phone || '-'}</p>
+                                    <div className='flex flex-row'>
+                                        <div className="flex flex-col w-7/8" onClick={() => openEditCustomerModal(customer)}>
+                                            <p><strong>Name:</strong> {customer.name}</p>
+                                            <p><strong>Last Name:</strong> {customer.lastName || ''}</p>
+                                            <p className="flex flex-row">
+                                                <strong>Email:</strong>&nbsp;{customer.email}
+                                            </p>
+                                            <p><strong>Phone:</strong> {customer.phone || '-'}</p>
+                                        </div>
+                                        <div className='w-1/8 flex flex-col items-center ml-2'>
+                                            <button
+                                                onClick={() => openSendProfileModal(customer)}
+                                                className=" text-green-600 hover:text-green-800"
+                                                title="Send Profile"
+                                            >
+                                                <Send />
+                                            </button>
+                                            <button className='mt-2' title="Copy Email">
+                                                <Copy
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        navigator.clipboard.writeText(customer.email)
+                                                            .then(() => toast.success("Email copied!"))
+                                                            .catch(() => toast.error("Failed to copy"));
+                                                    }}
+                                                    className="text-blue-500 hover:text-blue-900"
+                                                />
+                                            </button>
+                                            <button
+                                                onClick={() => setConfirmDelete({ customer: customer.email })}
+                                                className="text-red-600 hover:text-red-800 mt-2"
+                                                title="Remove from Store"
+                                            >
+                                                <Trash2 />
+                                            </button>
+
+                                        </div>
                                     </div>
-                                    <button
-                                        onClick={() => setConfirmDelete({ customer: customer.email })}
-                                        className="absolute top-2 right-2 text-red-600 hover:text-red-800"
-                                        title="Remove from Store"
-                                    >
-                                        <Trash2 />
-                                    </button>
                                 </div>
                             ))
                     )}
                 </div>
             </motion.div>
 
-            {/* Modal */}
+            {/* Modal Customer*/}
             <AnimatePresence>
 
                 {(modalOpen || confirmDelete) && (
@@ -307,6 +356,18 @@ const SetCustomer = () => {
                             </motion.div>
                         )}
                     </motion.div>
+                )}
+            </AnimatePresence>
+
+            {/* Modal Profile*/}
+            <AnimatePresence>
+
+                {(modalProfileOpen) && (
+                    <SendProfileModal
+                        isOpen={modalProfileOpen}
+                        onClose={() => setModalProfileOpen(false)}
+                        customerEmail={customerData.email}
+                    />
                 )}
             </AnimatePresence>
         </div>
