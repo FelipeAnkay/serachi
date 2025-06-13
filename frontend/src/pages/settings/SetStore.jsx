@@ -86,15 +86,16 @@ export default function SetStore() {
     if (error) return <div className="p-4 text-red-400">Error: {error}</div>
 
     return (
-        <div className="min-h-screen w-full bg-blue-950 flex items-center justify-center px-4 py-12">
-            <AnimatePresence>
-                <motion.div
-                    initial={{ opacity: 0, y: 30 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: 30 }}
-                    className="bg-blue-900 p-6 md:p-8 rounded-2xl shadow-xl w-full max-w-xl space-y-6"
-                >
-                    <h2 className="text-2xl font-bold text-white text-center">Store Settings</h2>
+        <div className="flex flex-col min-h-screen w-full bg-blue-950 text-white px-4 py-6 sm:px-8 sm:py-10">
+            <motion.div
+                initial={{ opacity: 0, scale: 2 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.9 }}
+                transition={{ duration: 0.5 }}
+                className="flex flex-col w-full max-w-9/12 mx-auto bg-blue-900 bg-opacity-80 backdrop-filter backdrop-blur-lg rounded-2xl shadow-2xl border border-gray-800 overflow-hidden min-h-screen items-center p-4"
+            >
+                <h2 className="text-2xl font-bold text-white text-center">Store Settings</h2>
+                <div className='w-full border rounded-2xl px-5 py-2'>
                     <div className="space-y-4">
                         <div key="name">
                             <label className="block text-sm font-medium text-white">Name</label>
@@ -118,9 +119,10 @@ export default function SetStore() {
                             <label className="block text-sm font-medium text-white">Store Identifier</label>
                             <input
                                 type="text"
-                                className="w-full bg-white text-blue-950 border border-gray-300 rounded px-3 py-2 mt-1"
+                                className="w-full bg-gray-500 text-white border border-gray-300 rounded px-3 py-2 mt-1"
                                 value={store.storeId || ''}
                                 onChange={(e) => setStore({ ...store, storeId: e.target.value })}
+                                disabled
                             />
                         </div>
                         <div key="mainEmail">
@@ -146,7 +148,7 @@ export default function SetStore() {
                                         onClick={() => handleRemoveEmail(index)}
                                         className="text-red-400"
                                     >
-                                        <Trash2/>
+                                        <Trash2 />
                                     </button>
                                 </div>
                             ))}
@@ -226,30 +228,30 @@ export default function SetStore() {
                                                     onClick={() => removeBalanceEntry(index)}
                                                     className="text-red-400 hover:text-red-600 text-lg"
                                                 >
-                                                    <Trash2/>
+                                                    <Trash2 />
                                                 </button>
                                             </td>
                                         </tr>
                                     ))}
                                 </tbody>
                             </table>
-
-                            <button
-                                onClick={addBalanceEntry}
-                                className="mt-2 text-sm text-green-400 hover:text-green-600"
-                            >
-                                + Add Year
-                            </button>
                         </div>
+                        <button
+                            onClick={addBalanceEntry}
+                            className="mt-2 text-sm text-green-400 hover:text-green-600"
+                        >
+                            + Add Year
+                        </button>
                     </div>
-                    <button
-                        className="w-full bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded-lg mt-4 transition duration-200"
-                        onClick={handleSave}
-                    >
-                        Save Store
-                    </button>
-                </motion.div>
-            </AnimatePresence>
+                </div>
+                <button
+                    className="w-full bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded-lg mt-4 transition duration-200"
+                    onClick={handleSave}
+                >
+                    Save Store
+                </button>
+            </motion.div>
+
         </div >
     )
 }

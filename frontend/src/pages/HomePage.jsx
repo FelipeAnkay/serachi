@@ -20,19 +20,18 @@ const HomePage = () => {
     logout();
   };
   return (
-    <div className="flex w-full max-w-full overflow-x-hidden bg-blue-950 text-white">
-      {/* Contenido principal */}
-      <motion.div
-        initial={{ opacity: 0, scale: 0.9 }}
-        animate={{ opacity: 1, scale: 1 }}
-        exit={{ opacity: 0, scale: 0.9 }}
-        transition={{ duration: 0.5 }}
-        className='max-w-md w-full mx-auto mt-10 p-8 bg-gray-900 bg-opacity-80 backdrop-filter backdrop-blur-lg rounded-xl shadow-2xl border border-gray-800'
-      >
-        <h2 className='text-3xl font-bold mb-6 text-center bg-gradient-to-r from-blue-400 to-blue-600 text-transparent bg-clip-text'>
-          Dashboard
+        <div className="flex flex-col min-h-screen w-full bg-blue-950 text-white px-4 py-6 sm:px-8 sm:py-10">
+            <motion.div
+                initial={{ opacity: 0, scale: 2 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.9 }}
+                transition={{ duration: 0.5 }}
+                className="flex flex-col w-full max-w-9/12 mx-auto bg-blue-950 bg-opacity-80 backdrop-filter backdrop-blur-lg  overflow-hidden min-h-screen items-center p-4"
+            >
+        <h2 className='text-3xl font-bold mb-6 text-center text-white bg-clip-text'>
+          Welcome to Serachi
         </h2>
-        <div className='space-y-6'>
+        <div className='space-y-6  rounded-2xl px-5 py-2 '>
           <motion.div
             className='p-4 bg-gray-800 bg-opacity-50 rounded-lg border border-gray-700'
             initial={{ opacity: 0, y: 20 }}

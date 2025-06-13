@@ -172,15 +172,15 @@ const SetUsers2 = () => {
     if (loading) return <div className="text-white text-center mt-10">Loading users...</div>;
 
     return (
-        <div className="flex flex-col min-h-screen w-full bg-blue-950 text-white px-2 sm:px-4 md:px-8 lg:px-12 xl:px-20 py-6 sm:py-8 md:py-10">
+        <div className="flex flex-col min-h-screen w-full bg-blue-950 text-white px-4 py-6 sm:px-8 sm:py-10">
             <motion.div
                 initial={{ opacity: 0, scale: 2 }}
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.9 }}
                 transition={{ duration: 0.5 }}
-                className="flex flex-col w-full max-w-7xl mx-auto bg-gray-900 bg-opacity-80 backdrop-blur-lg rounded-xl shadow-2xl border border-gray-800 overflow-hidden px-4 py-6 sm:px-6 md:px-8"
+                className="flex flex-col w-full max-w-9/12 mx-auto bg-blue-900 bg-opacity-80 backdrop-filter backdrop-blur-lg rounded-2xl shadow-2xl border border-gray-800 overflow-hidden min-h-screen items-center p-4"
             >
-                <h2 className="text-3xl font-bold mb-6 text-center bg-gradient-to-r from-blue-400 to-blue-600 text-transparent bg-clip-text">
+                <h2 className="text-3xl font-bold mb-6 text-center text-white bg-clip-text">
                     User List
                 </h2>
 
@@ -202,7 +202,7 @@ const SetUsers2 = () => {
                 </div>
 
                 {/* GRID RESPONSIVO */}
-                <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+                <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 w-full">
                     {userList.length === 0 ? (
                         <div className="text-center text-gray-400 col-span-full">No user found</div>
                     ) : (

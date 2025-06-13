@@ -113,15 +113,16 @@ export default function DeleteServices() {
                     <LoadingSpinner />
                 )
             }
-            <AnimatePresence>
+            <div className="flex flex-col min-h-screen w-full bg-blue-950 text-white px-4 py-6 sm:px-8 sm:py-10">
                 <motion.div
-                    className="p-6 max-w-4xl mx-auto bg-blue-950"
-                    initial={{ opacity: 0, y: 30 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -20 }}
+                    initial={{ opacity: 0, scale: 2 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.9 }}
+                    transition={{ duration: 0.5 }}
+                    className="flex flex-col w-full max-w-9/12 mx-auto bg-blue-900 bg-opacity-80 backdrop-filter backdrop-blur-lg rounded-2xl shadow-2xl border border-gray-800 overflow-hidden min-h-screen items-center"
                 >
                     <h1 className="text-3xl font-bold mb-6 text-center text-white">Service Deletion</h1>
-                    <form onSubmit={handleSubmit} className="space-y-6 border rounded-lg p-6 shadow-sm bg-blue-900 text-white">
+                    <form onSubmit={handleSubmit} className="space-y-6 border rounded-lg p-6 shadow-sm bg-blue-900 text-white w-full">
                         <div>
                             <label className="block font-medium mb-1">Name the staff or customer assigned to the service:</label>
                             <input
@@ -218,7 +219,7 @@ export default function DeleteServices() {
                         ) : ""}
                     </form>
                 </motion.div>
-            </AnimatePresence>
+            </div>
         </>
     )
 }

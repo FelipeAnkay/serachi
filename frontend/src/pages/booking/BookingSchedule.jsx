@@ -153,95 +153,104 @@ export default function BookingSchedule() {
                     <LoadingSpinner />
                 )
             }
-            <div className="min-h-screen text-foreground w-full px-4 py-6 bg-blue-950 flex flex-col justify-center items-center">
-                <motion.h1
-                    initial={{ opacity: 0, y: -10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.4 }}
-                    className="text-3xl font-semibold mb-6 text-white text-center"
+            <div className="flex flex-col min-h-screen w-full bg-blue-950 text-white px-4 py-6 sm:px-8 sm:py-10">
+                <motion.div
+                    initial={{ opacity: 0, scale: 2 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.9 }}
+                    transition={{ duration: 0.5 }}
+                    className="flex flex-col w-full max-w-9/12 mx-auto bg-blue-900 bg-opacity-80 backdrop-filter backdrop-blur-lg rounded-2xl shadow-2xl border border-gray-800 overflow-hidden min-h-screen items-center"
                 >
-                    Room Schedule
-                </motion.h1>
+                    <motion.h1
+                        initial={{ opacity: 0, y: -10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.4 }}
+                        className="text-3xl font-semibold mb-6 text-white text-center"
+                    >
+                        Room Schedule
+                    </motion.h1>
 
-                <div className="w-full max-w-6xl bg-card p-4 rounded-2xl shadow-md border">
-                    <Calendar
-                        localizer={localizer}
-                        events={events}
-                        startAccessor="start"
-                        endAccessor="end"
-                        style={{ height: 600 }}
-                        onSelectEvent={handleSelectEvent}
-                        onSelectSlot={handleSelectSlot}
-                        onNavigate={handleNavigate}
-                        defaultView={Views.MONTH}
-                        view={view}
-                        onView={setView}
-                        date={selectedDate}
-                        className="rounded-md"
-                    />
-                </div>
+                    <div className="w-full max-w-6xl bg-card p-4 rounded-2xl shadow-md border">
+                        <Calendar
+                            localizer={localizer}
+                            events={events}
+                            startAccessor="start"
+                            endAccessor="end"
+                            style={{ height: 600 }}
+                            onSelectEvent={handleSelectEvent}
+                            onSelectSlot={handleSelectSlot}
+                            onNavigate={handleNavigate}
+                            defaultView={Views.MONTH}
+                            view={view}
+                            views={['month', 'week', 'day']}
+                            onView={setView}
+                            date={selectedDate}
+                            className="rounded-md"
+                        />
+                    </div>
 
-                <AnimatePresence>
-                    {showModal && selectedCustomer && selectedReservation && (
-                        <motion.div
-                            className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50"
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            exit={{ opacity: 0 }}
-                            onClick={() => setShowModal(false)}
-                        >
+                    <AnimatePresence>
+                        {showModal && selectedCustomer && selectedReservation && (
                             <motion.div
-                                className="bg-card rounded-2xl shadow-lg p-6 w-full max-w-md relative text-foreground"
-                                initial={{ scale: 0.95, opacity: 0 }}
-                                animate={{ scale: 1, opacity: 1 }}
-                                exit={{ scale: 0.95, opacity: 0 }}
-                                onClick={(e) => e.stopPropagation()}
+                                className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50"
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                exit={{ opacity: 0 }}
+                                onClick={() => setShowModal(false)}
                             >
-                                <button
-                                    className="absolute top-3 right-3 text-muted-foreground hover:text-foreground transition"
-                                    onClick={() => setShowModal(false)}
+                                <motion.div
+                                    className="bg-card rounded-2xl shadow-lg p-6 w-full max-w-md relative text-foreground"
+                                    initial={{ scale: 0.95, opacity: 0 }}
+                                    animate={{ scale: 1, opacity: 1 }}
+                                    exit={{ scale: 0.95, opacity: 0 }}
+                                    onClick={(e) => e.stopPropagation()}
                                 >
-                                    <X className="w-5 h-5" />
-                                </button>
-                                <h2 className="text-xl font-semibold mb-4">Customer Info</h2>
-                                <div className="space-y-2">
-                                    <p><strong>Name:</strong> {selectedCustomer.name}</p>
-                                    <p><strong>Birthdate:</strong> {formatDateDisplay(selectedCustomer.birthdate)}</p>
-                                    <p><strong>Age:</strong> {calculateAge(selectedCustomer.birthdate)} years</p>
-                                    <p><strong>Country:</strong> {selectedCustomer.country}</p>
-                                </div>
-
-                                <div className="mt-6 space-y-2">
-                                    <h3 className="font-semibold text-lg">Reservation Info</h3>
-                                    <label className="block text-sm font-medium">Date In:</label>
-                                    <input
-                                        type="date"
-                                        defaultValue={new Date(selectedReservation.start).toISOString().split('T')[0]}
-                                        className="w-full p-2 rounded-md border bg-background"
-                                        onChange={(e) =>
-                                            setSelectedReservation({ ...selectedReservation, start: new Date(e.target.value) })
-                                        }
-                                    />
-                                    <label className="block text-sm font-medium">Date Out:</label>
-                                    <input
-                                        type="date"
-                                        defaultValue={new Date(selectedReservation.end).toISOString().split('T')[0]}
-                                        className="w-full p-2 rounded-md border bg-background"
-                                        onChange={(e) =>
-                                            setSelectedReservation({ ...selectedReservation, end: new Date(e.target.value) })
-                                        }
-                                    />
                                     <button
-                                        onClick={handleUpdateReservation}
-                                        className="mt-4 w-full py-2 px-4 bg-primary text-white rounded-md hover:bg-primary/80 transition"
+                                        className="absolute top-3 right-3 text-muted-foreground hover:text-foreground transition"
+                                        onClick={() => setShowModal(false)}
                                     >
-                                        Save Changes
+                                        <X className="w-5 h-5" />
                                     </button>
-                                </div>
+                                    <h2 className="text-xl font-semibold mb-4">Customer Info</h2>
+                                    <div className="space-y-2">
+                                        <p><strong>Name:</strong> {selectedCustomer.name}</p>
+                                        <p><strong>Birthdate:</strong> {formatDateDisplay(selectedCustomer.birthdate)}</p>
+                                        <p><strong>Age:</strong> {calculateAge(selectedCustomer.birthdate)} years</p>
+                                        <p><strong>Country:</strong> {selectedCustomer.country}</p>
+                                    </div>
+
+                                    <div className="mt-6 space-y-2">
+                                        <h3 className="font-semibold text-lg">Reservation Info</h3>
+                                        <label className="block text-sm font-medium">Date In:</label>
+                                        <input
+                                            type="date"
+                                            defaultValue={new Date(selectedReservation.start).toISOString().split('T')[0]}
+                                            className="w-full p-2 rounded-md border bg-background"
+                                            onChange={(e) =>
+                                                setSelectedReservation({ ...selectedReservation, start: new Date(e.target.value) })
+                                            }
+                                        />
+                                        <label className="block text-sm font-medium">Date Out:</label>
+                                        <input
+                                            type="date"
+                                            defaultValue={new Date(selectedReservation.end).toISOString().split('T')[0]}
+                                            className="w-full p-2 rounded-md border bg-background"
+                                            onChange={(e) =>
+                                                setSelectedReservation({ ...selectedReservation, end: new Date(e.target.value) })
+                                            }
+                                        />
+                                        <button
+                                            onClick={handleUpdateReservation}
+                                            className="mt-4 w-full py-2 px-4 bg-primary text-white rounded-md hover:bg-primary/80 transition"
+                                        >
+                                            Save Changes
+                                        </button>
+                                    </div>
+                                </motion.div>
                             </motion.div>
-                        </motion.div>
-                    )}
-                </AnimatePresence>
+                        )}
+                    </AnimatePresence>
+                </motion.div>
             </div>
         </>
     );

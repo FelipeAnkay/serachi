@@ -1,57 +1,108 @@
-import { AnimatePresence, motion } from 'framer-motion'
-import { CircleX } from 'lucide-react'
-import dietaryList from './dietaryList.json';
-import languagesList from './languages.json';
-import countries from './contries.json'
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { useSearchParams } from 'react-router-dom';
+import dietaryList from '../../components/dietaryList.json';
+import languagesList from '../../components/languages.json';
+import countries from '../../components/contries.json'
+import toast from 'react-hot-toast';
+import { useCustomerServices } from '../../store/customerServices';
+import { useFormServices } from '../../store/formServices';
 
-export default function CustomerDetails({ isOpen, onClose, customer, setCustomer, onSave }) {
-    const [customCountry, setCustomCountry] = useState('');
+
+const SetCustomerView = () => {
+    const { getDataToken } = useFormServices();
+    const { getCustomerEmail, updateCustomer } = useCustomerServices();
+    const [loading, setLoading] = useState(true);
+    const [customer, setCustomer] = useState({});
+    const [store, setStore] = useState('');
+    const [searchParams] = useSearchParams();
+        const [customCountry, setCustomCountry] = useState('');
     const [countrySelectValue, setCountrySelectValue] = useState(customer.country || '');
-    const [genderSelectValue, setGenderSelectValue] = useState(customer.gender || '');
+
 
     useEffect(() => {
-        const handleKeyDown = (e) => {
-            if (e.key === 'Escape') onClose()
+        const token = searchParams.get('token');
+        if (!token) {
+            //window.location.href = '/unauthorized';
+            return;
         }
 
-        document.addEventListener('keydown', handleKeyDown)
-        return () => document.removeEventListener('keydown', handleKeyDown)
-    }, [onClose])
+        const fetchTokenData = async () => {
+            try {
+                setLoading(true)
+                const today = new Date().toISOString().split('T')[0];
+                const res = await getDataToken(token);
+                const { customerEmail, endDate, storeId } = res.urlData;
+                //console.log("endDate es: ", endDate)
+                //console.log("today es: ", today)
+                if (!customerEmail || !storeId || !(endDate >= today)) {
+                    //window.location.href = '/unauthorized';
+                }
+                setStore(storeId);
+                const auxCustomer = await getCustomerEmail(customerEmail, storeId)
+                //console.log("auxCustomer: ", auxCustomer)
+                setCustomer(auxCustomer.customerList[0])
+            } catch (error) {
+                console.error('Error getting token data:', error);
+                //window.location.href = '/unauthorized';
+            } finally {
+                setLoading(false)
+            }
+        };
+
+        fetchTokenData();
+    }, [searchParams]);
+
+    useEffect(() => {
+        //console.log("El partnerData es: ", partnerData)
+    }, [customer]);
+
+    const handleSave = async () => {
+        //console.log('Saving store:', store)
+        try {
+            /*
+                console.log("Los datos del cliente son: ",{
+                    customer,
+                    store
+                })
+            */
+            await updateCustomer(customer.email,store, customer)
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            toast.success("Customer updated successfully")
+        } catch (error) {
+            //console.log("Error updating store: ", error)
+            toast.error("Error updating the Customer")
+        }
+    }
 
 
-    if (!isOpen) return null
+    if (loading) return <div className="text-white text-center mt-10">Loading customer...</div>;
 
     return (
-        <AnimatePresence>
+        <div className="flex flex-col min-h-screen w-full bg-blue-950 text-white px-4 py-6 sm:px-8 sm:py-10">
             <motion.div
-                className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
+                initial={{ opacity: 0, scale: 2 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.9 }}
+                transition={{ duration: 0.5 }}
+                className="flex flex-col w-full max-w-9/12 mx-auto bg-blue-900 bg-opacity-80 backdrop-filter backdrop-blur-lg rounded-2xl shadow-2xl border border-gray-800 overflow-hidden min-h-screen items-center p-4"
             >
+                <h2 className="text-3xl font-bold mb-6 text-center text-white bg-clip-text">
+                    Customer Detail
+                </h2>
                 <motion.div
-                    className="bg-blue-900 rounded-2xl p-6 max-w-lg w-[90%] h-[90%] overflow-y-auto relative"
+                    className="bg-gray-900 text-white rounded-2xl shadow-2xl p-8 w-[90%] relative max-h-[90vh] overflow-y-auto scrollbar-thin scrollbar-thumb-blue-600 scrollbar-track-gray-800 scrollbar-thumb-rounded-full"
                     initial={{ scale: 0.8 }}
                     animate={{ scale: 1 }}
                     exit={{ scale: 0.8 }}
                     transition={{ duration: 0.3 }}
                 >
-                    <button
-                        type="button"
-                        className="absolute top-3 right-3 text-gray-300 hover:text-white"
-                        onClick={onClose}
-                    >
-                        <CircleX />
-                    </button>
-
-                    <h2 className="text-xl font-bold mb-4 text-center text-white">Customer</h2>
                     <div className="space-y-4">
                         <div>
                             <label className="block text-sm font-medium">Name</label>
                             <input
                                 type="text"
-                                className="w-full border border-gray-300 rounded px-3 py-2 mt-1"
+                                className="w-full border border-gray-300 rounded px-3 py-2 mt-1 bg-white text-blue-950"
                                 value={customer.name || ''}
                                 onChange={(e) => setCustomer({ ...customer, name: e.target.value })}
                             />
@@ -60,7 +111,7 @@ export default function CustomerDetails({ isOpen, onClose, customer, setCustomer
                             <label className="block text-sm font-medium">Last Name</label>
                             <input
                                 type="text"
-                                className="w-full border border-gray-300 rounded px-3 py-2 mt-1"
+                                className="w-full border border-gray-300 rounded px-3 py-2 mt-1 bg-white text-blue-950"
                                 value={customer.lastName || ''}
                                 onChange={(e) => setCustomer({ ...customer, lastName: e.target.value })}
                             />
@@ -69,7 +120,7 @@ export default function CustomerDetails({ isOpen, onClose, customer, setCustomer
                             <label className="block text-sm font-medium">Email</label>
                             <input
                                 type="text"
-                                className="w-full border border-gray-300 rounded px-3 py-2 mt-1"
+                                className="w-full border border-gray-300 rounded px-3 py-2 mt-1 bg-white text-blue-950"
                                 value={customer.email || ''}
                                 onChange={(e) => setCustomer({ ...customer, email: e.target.value })}
                             />
@@ -78,7 +129,7 @@ export default function CustomerDetails({ isOpen, onClose, customer, setCustomer
                             <label className="block text-sm font-medium">Gender</label>
                             <select
                                 type="text"
-                                className="w-full border border-gray-300 rounded px-3 py-2 mt-1"
+                                className="w-full border border-gray-300 rounded px-3 py-2 mt-1 bg-white text-blue-950"
                                 value={customer.gender || ''}
                                 onChange={(e) => setCustomer({ ...customer, gender: e.target.value })}
                             >
@@ -92,7 +143,7 @@ export default function CustomerDetails({ isOpen, onClose, customer, setCustomer
                             <label className="block text-sm font-medium">Phone</label>
                             <input
                                 type="text"
-                                className="w-full border border-gray-300 rounded px-3 py-2 mt-1"
+                                className="w-full border border-gray-300 rounded px-3 py-2 mt-1 bg-white text-blue-950"
                                 value={customer.phone || ''}
                                 onChange={(e) => setCustomer({ ...customer, phone: e.target.value })}
                             />
@@ -101,7 +152,7 @@ export default function CustomerDetails({ isOpen, onClose, customer, setCustomer
                             <label className="block text-sm font-medium">Birthdate</label>
                             <input
                                 type="date"
-                                className="w-full border border-gray-300 rounded px-3 py-2 mt-1"
+                                className="w-full border border-gray-300 rounded px-3 py-2 mt-1 bg-white text-blue-950"
                                 value={customer.birthdate?.slice(0, 10) || ''}
                                 onChange={(e) => setCustomer({ ...customer, birthdate: e.target.value })}
                             />
@@ -110,7 +161,7 @@ export default function CustomerDetails({ isOpen, onClose, customer, setCustomer
                             <label className="block text-sm font-medium">National Id or Passport</label>
                             <input
                                 type="text"
-                                className="w-full border border-gray-300 rounded px-3 py-2 mt-1"
+                                className="w-full border border-gray-300 rounded px-3 py-2 mt-1 bg-white text-blue-950"
                                 value={customer.nationalId || ''}
                                 onChange={(e) => setCustomer({ ...customer, nationalId: e.target.value })}
                             />
@@ -118,7 +169,7 @@ export default function CustomerDetails({ isOpen, onClose, customer, setCustomer
                         <div>
                             <label className="block text-sm font-medium">Country</label>
                             <select
-                                className="w-full border border-gray-300 rounded px-3 py-2 mt-1"
+                                className="w-full border border-gray-300 rounded px-3 py-2 mt-1 bg-white text-blue-950"
                                 value={countrySelectValue}
                                 onChange={(e) => {
                                     const selected = e.target.value;
@@ -131,9 +182,9 @@ export default function CustomerDetails({ isOpen, onClose, customer, setCustomer
                                     }
                                 }}
                             >
-                                <option value="" className="text-blue-950">Select Country</option>
+                                <option value="" className="bg-white text-blue-950">Select Country</option>
                                 {countries.map((c) => (
-                                    <option key={c.code} value={c.name} className='text-blue-950'>{c.name}</option>
+                                    <option key={c.code} value={c.name} className='bg-white text-blue-950'>{c.name}</option>
                                 ))}
                             </select>
 
@@ -141,7 +192,7 @@ export default function CustomerDetails({ isOpen, onClose, customer, setCustomer
                                 <input
                                     type="text"
                                     placeholder="Enter your country"
-                                    className="w-full mt-2 border border-gray-300 rounded px-3 py-2"
+                                    className="w-full mt-2 border border-gray-300 rounded px-3 py-2 bg-white text-blue-950"
                                     value={customCountry}
                                     onChange={(e) => {
                                         setCustomCountry(e.target.value);
@@ -153,13 +204,13 @@ export default function CustomerDetails({ isOpen, onClose, customer, setCustomer
                         <div>
                             <label className="block text-sm font-medium">Dietary Restriction</label>
                             <select
-                                className="w-full border border-gray-300 rounded px-3 py-2 mt-1"
+                                className="w-full border border-gray-300 rounded px-3 py-2 mt-1 bg-white text-blue-950"
                                 value={customer.diet || ''}
                                 onChange={(e) => setCustomer({ ...customer, diet: e.target.value })}
                             >
-                                <option value="" className='text-blue-950'>Select Diet</option>
+                                <option value="" className='bg-white text-blue-950'>Select Diet</option>
                                 {dietaryList.map((item, index) => (
-                                    <option key={index} value={item.name} className='text-blue-950'>
+                                    <option key={index} value={item.name} className='bg-white text-blue-950'>
                                         {item.name}
                                     </option>
                                 ))}
@@ -169,7 +220,7 @@ export default function CustomerDetails({ isOpen, onClose, customer, setCustomer
                             <label className="block text-sm font-medium">Allergies</label>
                             <input
                                 type="text"
-                                className="w-full border border-gray-300 rounded px-3 py-2 mt-1"
+                                className="w-full border border-gray-300 rounded px-3 py-2 mt-1 bg-white text-blue-950"
                                 value={customer.allergies || ''}
                                 onChange={(e) => setCustomer({ ...customer, allergies: e.target.value })}
                             />
@@ -206,7 +257,7 @@ export default function CustomerDetails({ isOpen, onClose, customer, setCustomer
                                 <label className="block text-sm font-medium  text-white">Name:</label>
                                 <input
                                     type="text"
-                                    className="w-full border border-gray-300 rounded px-3 py-2 mt-1"
+                                    className="w-full border border-gray-300 rounded px-3 py-2 mt-1 bg-white text-blue-950"
                                     value={customer.emergencyContactName || ''}
                                     onChange={(e) =>
                                         setCustomer({
@@ -222,7 +273,7 @@ export default function CustomerDetails({ isOpen, onClose, customer, setCustomer
                                 <label className="block text-sm font-medium  text-white">Phone</label>
                                 <input
                                     type="text"
-                                    className="w-full border border-gray-300 rounded px-3 py-2 mt-1"
+                                    className="w-full border border-gray-300 rounded px-3 py-2 mt-1 bg-white text-blue-950"
                                     value={customer.emergencyContactPhone || ''}
                                     onChange={(e) =>
                                         setCustomer({
@@ -251,7 +302,7 @@ export default function CustomerDetails({ isOpen, onClose, customer, setCustomer
                                         <label className="">Certifying Organization:</label>
                                         <input
                                             type="text"
-                                            className="w-full p-2 mt-1 rounded bg-gray-700 text-white"
+                                            className="w-full p-2 mt-1 rounded bg-white text-blue-950"
                                             value={cert["organization"] || ''}
                                             onChange={(e) => {
                                                 const updated = [...customer.divingCertificates];
@@ -264,7 +315,7 @@ export default function CustomerDetails({ isOpen, onClose, customer, setCustomer
                                         <label>Certification Level:</label>
                                         <input
                                             type="text"
-                                            className="w-full p-2 mt-1 rounded bg-gray-700 text-white"
+                                            className="w-full p-2 mt-1 rounded bg-white text-blue-950"
                                             value={cert["certificateName"] || ''}
                                             onChange={(e) => {
                                                 const updated = [...customer.divingCertificates];
@@ -274,18 +325,18 @@ export default function CustomerDetails({ isOpen, onClose, customer, setCustomer
                                         />
                                     </div>
                                     <div key="certificateId">
-                                            <label>ID Number:</label>
-                                            <input
-                                                type="text"
-                                                className="w-full p-2 mt-1 rounded bg-gray-700 text-white"
-                                                value={cert["certificateId"] || ''}
-                                                onChange={(e) => {
-                                                    const updated = [...customer.divingCertificates];
-                                                    updated[certIndex]["certificateId"] = e.target.value;
-                                                    setCustomer({ ...customer, divingCertificates: updated });
-                                                }}
-                                            />
-                                        </div>
+                                        <label>ID Number:</label>
+                                        <input
+                                            type="text"
+                                            className="w-full p-2 mt-1 rounded bg-white text-blue-950"
+                                            value={cert["certificateId"] || ''}
+                                            onChange={(e) => {
+                                                const updated = [...customer.divingCertificates];
+                                                updated[certIndex]["certificateId"] = e.target.value;
+                                                setCustomer({ ...customer, divingCertificates: updated });
+                                            }}
+                                        />
+                                    </div>
                                 </div>
                             ))}
                             <button
@@ -304,13 +355,16 @@ export default function CustomerDetails({ isOpen, onClose, customer, setCustomer
                         <button
                             className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded w-full mt-4"
                             type="button"
-                            onClick={onSave}
+                            onClick={handleSave}
                         >
                             Save Customer
                         </button>
                     </div>
                 </motion.div>
+
             </motion.div>
-        </AnimatePresence>
-    )
-}
+        </div>
+    );
+};
+
+export default SetCustomerView;
