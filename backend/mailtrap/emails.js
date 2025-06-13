@@ -148,7 +148,7 @@ export const sendQuoteEmail = async (email, customerName, dateIn, dateOut, produ
 }
 
 export const sendProfileEmail = async (email, customerName, userEmail, userName, storeName, webUrl, urlToken) => {
-    
+    /*
     console.log("Entre a sendFormEmail", {
             email,
             customerName,
@@ -158,7 +158,7 @@ export const sendProfileEmail = async (email, customerName, userEmail, userName,
             webUrl,
             urlToken
         })
-    
+    */
     const recipient = [{ email }];
 
     const customSender = {
@@ -183,14 +183,14 @@ export const sendProfileEmail = async (email, customerName, userEmail, userName,
         );
 
     const customSubject = storeName + " Profile completion is required"
-
+/*
     console.log("Variables a enviar: ", {
             customSender,
             recipient,
             customSubject,
             html,
         })
-
+*/
     try {
         //console.log("Entré al TRY de sendQuoteEmail:", customSender, " - ", recipient, " - ", customSubject, " - ", html);
         const response = await mailtrapClient.send({
@@ -200,7 +200,7 @@ export const sendProfileEmail = async (email, customerName, userEmail, userName,
             html,
             category: "Profile",
         });
-        console.log("Form Sent", response);
+        //console.log("Form Sent", response);
     } catch (error) {
         console.error(error.message);
         throw new Error("Error sending the quote email", error.message);
