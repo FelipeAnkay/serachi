@@ -100,9 +100,12 @@ export const getExpenseByDates = async (req, res) => {
         const normalizedStoreId = storeId?.toUpperCase();
         const expenseList = await Expense.find({
             storeId: normalizedStoreId,
-            date: { $gte: new Date(dateStart) },
-            date: { $lte: new Date(dateEnd) },
+            date: {
+                $gte: new Date(dateStart),
+                $lte: new Date(dateEnd)
+            },
         });
+
         if (!expenseList) {
             return res.status(400).json({ success: false, message: "expense not found" });
         }
