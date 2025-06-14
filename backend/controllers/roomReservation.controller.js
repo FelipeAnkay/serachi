@@ -92,8 +92,8 @@ export const roomReservationByDates = async (req, res) => {
 
         const roomReservationList = await RoomReservation.find({
             storeId: normalizedStoreId,
-            dateIn: { $gte: new Date(dateIn) },
-            dateOut: { $lte: new Date(dateOut) },
+            dateIn: { $lte: new Date(dateOut) },  // empieza antes o el mismo día que el final del rango
+            dateOut: { $gte: new Date(dateIn) },  // termina después o el mismo día que el inicio del rango
         });
 
         //console.log("Respuesta de roomReservationList.find: ", roomReservationList);
@@ -111,8 +111,8 @@ export const roomReservationByDates = async (req, res) => {
 export const getAvailableRooms = async (req, res) => {
     try {
         const { dateIn, dateOut, bedsRequired, storeId } = req.body;
-        console.log("Entre a getAvailableRooms: ", dateIn, " - ", dateOut, " - ", bedsRequired, " - ",storeId
-            
+        console.log("Entre a getAvailableRooms: ", dateIn, " - ", dateOut, " - ", bedsRequired, " - ", storeId
+
         )
         const normalizedStoreId = storeId?.toUpperCase();
         const rooms = await Room.find({ storeId: normalizedStoreId });

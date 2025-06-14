@@ -99,14 +99,16 @@ export const getIncomeByDates = async (req, res) => {
     try {
         const { dateStart, dateEnd, storeId } = req.params;
         const normalizedStoreId = storeId?.toUpperCase();
-        
+        //console.log("getIncomeByDates data: ", { dateStart, dateEnd, normalizedStoreId })
         const incomeList = await Income.find({
             storeId: normalizedStoreId,
-            date: { $gte: new Date(dateStart) },
-            date: { $lte: new Date(dateEnd) },
+            date: {
+                $gte: new Date(dateStart),
+                $lte: new Date(dateEnd)
+            },
         });
 
-
+        //console.log("IncomeList: ", incomeList)
         if (!incomeList) {
             return res.status(400).json({ success: false, message: "incomeList not found" });
         }

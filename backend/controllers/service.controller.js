@@ -212,8 +212,8 @@ export const getServiceByDates = async (req, res) => {
 
         const serviceList = await Service.find({
             storeId: normalizedStoreId,
-            dateIn: { $gte: new Date(dateIn) },
-            dateOut: { $lte: new Date(dateOut) },
+            dateIn: { $lte: new Date(dateOut) },  // empieza antes o el mismo día que el final del rango
+            dateOut: { $gte: new Date(dateIn) },
         });
 
         console.log("Respuesta de Service.find: ", serviceList);
@@ -333,8 +333,8 @@ export const getServiceByNameDate = async (req, res) => {
         const normalizedStoreId = storeId?.toUpperCase();
         const serviceList = await Service.find({
             name: { $regex: name, $options: "i" },
-            dateIn: { $gte: new Date(dateStart) },
-            dateOut: { $lte: new Date(dateEnd) },
+            dateIn: { $lte: new Date(dateEnd) },
+            dateOut: { $gte: new Date(dateStart) },
             storeId: normalizedStoreId
         });
         if (!serviceList) {
@@ -357,8 +357,8 @@ export const fixRemoveDuplicated = async (req, res) => {
         // Obtener todos los servicios en el rango con ese storeId
         const services = await Service.find({
             storeId: normalizedStoreId,
-            dateIn: { $gte: start },
-            dateOut: { $lte: end }
+            dateIn: { $lte: end },
+            dateOut: { $gte: start }
         });
 
         if (!services || services.length === 0) {
@@ -371,7 +371,7 @@ export const fixRemoveDuplicated = async (req, res) => {
 
         for (const service of services) {
             const key = `${service.name}-${service.staffEmail}-${service.dateIn.toISOString()}-${service.dateOut.toISOString()}-${service.productId}`;
-            
+
             if (seen.has(key)) {
                 duplicatesToRemove.push(service._id);
             } else {

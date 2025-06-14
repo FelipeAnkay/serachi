@@ -61,12 +61,19 @@ export default function BookingSchedule() {
         }
     }
 
-    useEffect(() => {
-        const now = new Date();
-        const firstDay = new Date(now.getFullYear(), now.getMonth(), -20);
-        const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, +20);
-        loadReservations(firstDay, lastDay);
-    }, []);
+useEffect(() => {
+    const now = new Date();
+
+    // 20 días antes
+    const firstDay = new Date();
+    firstDay.setDate(now.getDate() - 20);
+
+    // 20 días después
+    const lastDay = new Date();
+    lastDay.setDate(now.getDate() + 20);
+
+    loadReservations(firstDay, lastDay);
+}, []);
 
     const handleSelectEvent = async (event) => {
         setLoading(true)
@@ -129,8 +136,8 @@ export default function BookingSchedule() {
         console.log("Entre a handleNavigate: ", newDate)
         setSelectedDate(newDate);
 
-        const newMonthStart = new Date(newDate.getFullYear(), newDate.getMonth(), 1);
-        const newMonthEnd = new Date(newDate.getFullYear(), newDate.getMonth() + 1, 0);
+        const newMonthStart = new Date(newDate.getFullYear(), newDate.getMonth(), -20);
+        const newMonthEnd = new Date(newDate.getFullYear(), newDate.getMonth() + 1, +20);
 
         const isSameMonth =
             loadedRange.start &&
@@ -170,7 +177,7 @@ export default function BookingSchedule() {
                         Room Schedule
                     </motion.h1>
 
-                    <div className="w-full max-w-6xl bg-card p-4 rounded-2xl shadow-md border">
+                    <div className="w-full max-w-6xl bg-card p-4 rounded-2xl shadow-md border text-blue-950">
                         <Calendar
                             localizer={localizer}
                             events={events}
@@ -180,10 +187,10 @@ export default function BookingSchedule() {
                             onSelectEvent={handleSelectEvent}
                             onSelectSlot={handleSelectSlot}
                             onNavigate={handleNavigate}
+                            onView={setView}
                             defaultView={Views.MONTH}
                             view={view}
                             views={['month', 'week', 'day']}
-                            onView={setView}
                             date={selectedDate}
                             className="rounded-md"
                         />

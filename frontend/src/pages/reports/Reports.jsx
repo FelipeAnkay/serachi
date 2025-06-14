@@ -14,6 +14,11 @@ const Reports = () => {
     const [dateRange, setDateRange] = useState({ start: null, end: null })
     const [incomeData, setIncomeData] = useState([])
     const [serviceData, setServiceData] = useState([])
+    const [rawServices, setRawServices] = useState([])
+    const [auxCustomerServices, setAuxCustomerServices] = useState([])
+    const [auxBackServices, setAuxBackServices] = useState([])
+    const [customerServiceData, setCustomerServiceData] = useState([])
+    const [backServiceData, setBackServiceData] = useState([])
     const [expenseData, setExpenseData] = useState([])
     const { getExpenseByDates } = useExpenseServices()
     const { getServicesByDate } = useServiceServices();
@@ -22,9 +27,31 @@ const Reports = () => {
 
     useEffect(() => {
         if (dateRange.start && dateRange.end) {
-            fetchData()
+            setAuxCustomerServices([]);
+            setAuxBackServices([]);
+            setCustomerServiceData([]);
+            setBackServiceData([]);
+            fetchData();
         }
     }, [dateRange])
+
+    useEffect(() => {
+        if (rawServices.length > 0) {
+            //console.log("rawServices: ", rawServices)
+            setAuxCustomerServices(rawServices.filter(service => service.type === "Customer"));
+            setAuxBackServices(rawServices.filter(service => service.type === "Back"));
+        }
+    }, [rawServices])
+    useEffect(() => {
+        if (auxCustomerServices.length > 0) {
+            setCustomerServiceData(groupByStaff(auxCustomerServices))
+        }
+    }, [auxCustomerServices])
+    useEffect(() => {
+        if (auxBackServices.length > 0) {
+            setBackServiceData(groupByStaff(auxBackServices))
+        }
+    }, [auxBackServices])
 
     const fetchData = async () => {
         //console.log("El dateRange es: ", dateRange)
@@ -33,12 +60,13 @@ const Reports = () => {
             getServicesByDate(dateRange.start, dateRange.end, storeId),
             getExpenseByDates(dateRange.start, dateRange.end, storeId)
         ])
-        console.log("incomes: ", incomes);
-        console.log("expenses: ", expenses);
-        console.log("services: ", services);
+        //console.log("incomes: ", incomes);
+        //console.log("expenses: ", expenses);
+        //console.log("services: ", services);
         const combinedData = combineIncomeExpenseByMonth(incomes.incomeList, expenses.expenseList);
         const combinedArray = Object.values(combinedData);
         //console.log("combinedArray: ", combinedArray)
+        setRawServices(services.serviceList);
         setIncomeData(combinedArray);
         setServiceData(groupByStaff(services.serviceList));
     }
@@ -94,74 +122,158 @@ const Reports = () => {
     }
 
     return (
-        <div className="p-6 space-y-6 text-white">
-            <h1 className="text-3xl font-bold">Reports</h1>
-            <DateRangePicker value={dateRange} onChange={setDateRange} />
+        <div className="flex flex-col min-h-screen w-full bg-blue-950 text-white px-4 py-6 sm:px-8 sm:py-10">
+            <motion.div
+                initial={{ opacity: 0, scale: 2 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.9 }}
+                transition={{ duration: 0.5 }}
+                className="flex flex-col w-full max-w-9/12 mx-auto bg-blue-900 bg-opacity-80 backdrop-filter backdrop-blur-lg rounded-2xl shadow-2xl border border-gray-800 overflow-hidden min-h-screen items-center p-4"
+            >
+                <h1 className="text-3xl font-bold mb-6 text-center">Ops Reports</h1>
+                <DateRangePicker value={dateRange} onChange={setDateRange} />
 
-            <AnimatePresence>
-                {incomeData.length > 0 && (
-                    <motion.div
-                        key="income"
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0 }}
-                        className="bg-blue-800 p-4 rounded-2xl shadow-md text-white"
-                    >
-                        <h2 className="text-xl font-semibold mb-2">Monthly Incomes vs Expenses</h2>
-                        <ResponsiveContainer width="100%" height={300}>
-                            <BarChart data={incomeData}>
-                                <XAxis
-                                    dataKey="month"
-                                    stroke="#FFFFFF"               // axis line color
-                                    tick={{ fill: "#FFFFFF" }}    // tick label color
-                                />
-                                <YAxis
-                                    stroke="#FFFFFF"
-                                    tick={{ fill: "#FFFFFF" }}
-                                />
-                                <Tooltip
-                                    content={<CustomTooltip />}
-                                />
-                                <Bar dataKey="income" fill="#10B981" radius={[4, 4, 0, 0]} name="Income" />
-                                <Bar dataKey="expense" fill="#EF4444" radius={[4, 4, 0, 0]} name="Expense" />
-                            </BarChart>
-                        </ResponsiveContainer>
-                    </motion.div>
-                )}
-
-                {serviceData.length > 0 && (
-                    <motion.div
-                        key="services"
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0 }}
-                        className="bg-blue-800 p-4 rounded-2xl shadow-md min-w-[400px] max-w-xl mx-auto"
-                    >
-                        <h2 className="text-xl font-semibold mb-2">Services by Staff</h2>
-                        <ResponsiveContainer width="100%" height={350}>
-                            <PieChart>
-                                <Pie
-                                    data={serviceData}
-                                    cx="50%"
-                                    cy="50%"
-                                    outerRadius={130}
-                                    labelRadius={150}
-                                    label={({ name, percent }) => {
-                                        const displayName = name.split('@')[0];
-                                        return `${displayName} ${(percent * 100).toFixed(0)}%`;
-                                    }}
-                                    dataKey="value"
+                <div className="flex flex-col mt-5 w-full">
+                    <div className="w-full">
+                        {incomeData.length > 0 && (
+                            <motion.div
+                                key="income"
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                exit={{ opacity: 0 }}
+                                className="bg-blue-800 p-4 rounded-2xl shadow-md text-white"
+                            >
+                                <h2 className="text-xl font-semibold mb-2">Incomes vs Expenses</h2>
+                                <ResponsiveContainer width="100%" height={300}>
+                                    <BarChart data={incomeData}>
+                                        <XAxis
+                                            dataKey="month"
+                                            stroke="#FFFFFF"               // axis line color
+                                            tick={{ fill: "#FFFFFF" }}    // tick label color
+                                        />
+                                        <YAxis
+                                            stroke="#FFFFFF"
+                                            tick={{ fill: "#FFFFFF" }}
+                                        />
+                                        <Tooltip
+                                            content={<CustomTooltip />}
+                                        />
+                                        <Bar dataKey="income" fill="#10B981" radius={[4, 4, 0, 0]} name="Income" />
+                                        <Bar dataKey="expense" fill="#EF4444" radius={[4, 4, 0, 0]} name="Expense" />
+                                    </BarChart>
+                                </ResponsiveContainer>
+                            </motion.div>
+                        )}
+                    </div>
+                    <div className="ml-5 w-full mt-5">
+                        <div >
+                            {serviceData.length > 0 && (
+                                <motion.div
+                                    key="services"
+                                    initial={{ opacity: 0, y: 20 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    exit={{ opacity: 0 }}
+                                    className="bg-blue-800 p-4 rounded-2xl shadow-md min-w-[400px] max-w-xl mx-auto"
                                 >
-                                    {serviceData.map((_, index) => (
-                                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                                    ))}
-                                </Pie>
-                                <Tooltip />
-                            </PieChart>
-                        </ResponsiveContainer>
-                    </motion.div>
-                )}
-            </AnimatePresence>
+                                    <h2 className="text-xl font-semibold mb-2">Services by Staff [ {auxBackServices.length + auxCustomerServices.length} ]</h2>
+                                    <ResponsiveContainer width="100%" height={350}>
+                                        <PieChart>
+                                            <Pie
+                                                data={serviceData}
+                                                cx="50%"
+                                                cy="50%"
+                                                outerRadius={130}
+                                                labelRadius={150}
+                                                label={({ name, percent }) => {
+                                                    const displayName = name.split('@')[0];
+                                                    return `${displayName} ${(percent * 100).toFixed(0)}%`;
+                                                }}
+                                                dataKey="value"
+                                            >
+                                                {serviceData.map((_, index) => (
+                                                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                                                ))}
+                                            </Pie>
+                                            <Tooltip />
+                                        </PieChart>
+                                    </ResponsiveContainer>
+                                </motion.div>
+                            )}
+                        </div>
+                    </div>
+                    <div className="mt-5 flex flex-row justify-center w-full">
+                        <div>
+                            {customerServiceData?.length > 0 && (
+                                <motion.div
+                                    key="services"
+                                    initial={{ opacity: 0, y: 20 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    exit={{ opacity: 0 }}
+                                    className="bg-blue-800 p-4 rounded-2xl shadow-md min-w-[400px] max-w-xl mx-auto"
+                                >
+                                    <h2 className="text-xl font-semibold mb-2">Services to Customer [ {auxCustomerServices.length || 0} ]</h2>
+                                    <ResponsiveContainer width="100%" height={350}>
+                                        <PieChart>
+                                            <Pie
+                                                data={customerServiceData}
+                                                cx="50%"
+                                                cy="50%"
+                                                outerRadius={130}
+                                                labelRadius={150}
+                                                label={({ name, percent }) => {
+                                                    const displayName = name.split('@')[0];
+                                                    return `${displayName} ${(percent * 100).toFixed(0)}%`;
+                                                }}
+                                                dataKey="value"
+                                            >
+                                                {customerServiceData.map((_, index) => (
+                                                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                                                ))}
+                                            </Pie>
+                                            <Tooltip />
+                                        </PieChart>
+                                    </ResponsiveContainer>
+                                </motion.div>
+                            )}
+                        </div>
+                        <div className="ml-5">
+                            {backServiceData?.length > 0 && (
+                                <motion.div
+                                    key="services"
+                                    initial={{ opacity: 0, y: 20 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    exit={{ opacity: 0 }}
+                                    className="bg-blue-800 p-4 rounded-2xl shadow-md min-w-[400px] max-w-xl mx-auto"
+                                >
+                                    <h2 className="text-xl font-semibold mb-2">Backoffice Services [ {auxBackServices.length || 0} ]</h2>
+                                    <ResponsiveContainer width="100%" height={350}>
+                                        <PieChart>
+                                            <Pie
+                                                data={backServiceData}
+                                                cx="50%"
+                                                cy="50%"
+                                                outerRadius={130}
+                                                labelRadius={150}
+                                                label={({ name, percent }) => {
+                                                    const displayName = name.split('@')[0];
+                                                    return `${displayName} ${(percent * 100).toFixed(0)}%`;
+                                                }}
+                                                dataKey="value"
+                                            >
+                                                {backServiceData.map((_, index) => (
+                                                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                                                ))}
+                                            </Pie>
+                                            <Tooltip />
+                                        </PieChart>
+                                    </ResponsiveContainer>
+                                </motion.div>
+                            )}
+                        </div>
+                    </div>
+
+                </div>
+            </motion.div>
         </div>
     )
 }
