@@ -770,20 +770,17 @@ export default function CreateReservation() {
                         <fieldset className="w-full rounded-2xl border p-4 space-y-4">
 
                             {/* Botón  y switch centrado */}
-                            <div className="flex flex-col items-center pt-4 space-y-4">
-                                <div>
-                                    <button type="submit" className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
-                                        Create Reservation
-                                    </button>
-                                    <button
-                                        type="button"
-                                        className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-700 ml-10"
-                                        onClick={() => handleReset()}
-                                    >
-                                        Reset Reservation
-                                    </button>
-                                </div>
-
+                            <div className="flex flex-col items-center justify-center lg:flex-row pt-4 gap-2">
+                                <button type="submit" className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
+                                    Create Reservation
+                                </button>
+                                <button
+                                    type="button"
+                                    className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-700"
+                                    onClick={() => handleReset()}
+                                >
+                                    Reset Reservation
+                                </button>
                             </div>
                         </fieldset>
                     </form>

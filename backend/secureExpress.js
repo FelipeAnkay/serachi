@@ -30,6 +30,7 @@ import closeTabRoutes from './routes/closeTab.route.js'
 import rolesRoutes from './routes/role.route.js'
 import formsRoutes from './routes/form.route.js'
 import formRecordsRoutes from './routes/formRecord.route.js'
+import favoriteDescriptionRoutes from './routes/favoriteDescription.route.js'
 
 dotenv.config();
 
@@ -78,6 +79,7 @@ app.use("/api/closetabs", closeTabRoutes);
 app.use("/api/roles", rolesRoutes);
 app.use("/api/forms", formsRoutes);
 app.use("/api/formrecords", formRecordsRoutes);
+app.use("/api/favoriteDescriptions", favoriteDescriptionRoutes);
 
 
 // === 4. Servir frontend en producción ===

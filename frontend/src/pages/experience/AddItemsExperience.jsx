@@ -208,10 +208,15 @@ export default function AddItemsExperience() {
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0, scale: 0.9 }}
                     transition={{ duration: 0.5 }}
-                    className="flex flex-col w-full max-w-9/12 mx-auto bg-blue-900 bg-opacity-80 backdrop-filter backdrop-blur-lg rounded-2xl shadow-2xl border border-gray-800 overflow-hidden min-h-screen items-center"
+                    className="flex flex-col mx-auto 
+                             bg-blue-900 bg-opacity-80 backdrop-filter backdrop-blur-lg 
+                               rounded-2xl shadow-2xl border border-gray-800 overflow-hidden 
+                               min-h-screen items-center
+                               ml-12 sm:mt-0 md:ml-64 
+                               w-full max-w-screen-2xl px-4"
                 >
                     <h1 className="text-2xl font-bold mb-6 text-center">Add Items to Experience</h1>
-                    <form onSubmit={handleSubmit} className='pl-5 pr-5 w-full'>
+                    <form onSubmit={handleSubmit} className='space-y-4 p-4 rounded-2xl shadow bg-blue-800 w-full box-border'>
                         <div className='flex flex-row'>
                             <CircleHelp className='text-white mr-2 hover:text-blue-600' onClick={() => setGuideOpen(!guideOpen)} />
                             {guideOpen && (
@@ -224,13 +229,13 @@ export default function AddItemsExperience() {
                                 </div>
                             )}
                         </div>
-                        <div className="mb-4">
-                            <div className="flex items-center gap-2">
+                        <div className="flex flex-col lg:flex-row gap-4 justify-center items-center">
+                            <div className="gap-2 w-full items-center justify-center">
                                 <label className='font-semibold'>Customer Email:</label>
                                 <input
                                     type="email"
                                     ref={customerEmailRef}
-                                    className="px-2 py-1 rounded ml-2 mr-2 bg-blue-700 text-white"
+                                    className="px-2 py-1 rounded bg-blue-700 text-white ml-2"
                                     placeholder="Customer email"
                                     onKeyDown={(e) => {
                                         if (e.key === 'Enter') {
@@ -242,7 +247,7 @@ export default function AddItemsExperience() {
                                 <button
                                     type="button"
                                     onClick={() => handleCustomerEmailSearch(customerEmailRef.current.value)}
-                                    className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700"
+                                    className="bg-blue-600 text-white px-2 py-1 rounded hover:bg-blue-700 ml-2"
                                 >
                                     <Search />
                                 </button>
@@ -293,11 +298,11 @@ export default function AddItemsExperience() {
                                     </select>
                                 </div>
                             )}
-                            <fieldset className='border rounded-2xl '>
+                            <fieldset className='border rounded-2xl gap-2 p-2'>
                                 <legend className='ml-4 font-semibold'>New Items:</legend>
                                 {selectedExperience && (
-                                    <div className='flex flex-row'>
-                                        <fieldset className="mb-4 border rounded-2xl w-1/3 ml-2">
+                                    <div className="flex flex-col lg:flex-row gap-2">
+                                        <fieldset className="border rounded-2xl w-full lg:w-1/3 p-2 gap-5 h-full">
                                             <legend className="block font-semibold mb-1 ml-2">Add Services</legend>
                                             <select multiple className="w-full h-32 text-white p-2 rounded" onChange={(e) => {
                                                 const selected = Array.from(e.target.selectedOptions).map(opt => serviceList.find(s => s._id === opt.value));
@@ -308,7 +313,7 @@ export default function AddItemsExperience() {
                                                 ))}
                                             </select>
                                         </fieldset>
-                                        <fieldset className="mb-4 border rounded-2xl w-1/3 ml-2">
+                                        <fieldset className="border rounded-2xl w-full lg:w-1/3 ml-2">
                                             <legend className="block font-semibold mb-1 ml-2">Add Reservations</legend>
                                             <select multiple className="w-full h-32 text-white p-2 rounded" onChange={(e) => {
                                                 const selected = Array.from(e.target.selectedOptions).map(opt => reservationList.find(r => r._id === opt.value));
@@ -319,7 +324,7 @@ export default function AddItemsExperience() {
                                                 ))}
                                             </select>
                                         </fieldset>
-                                        <fieldset className="mb-4 border rounded-2xl w-1/3 ml-2 mr-2">
+                                        <fieldset className="border rounded-2xl w-full lg:w-1/3 p-4 gap-2 mb-5">
                                             <legend className="block font-semibold mb-1 ml-2">Add Products</legend>
                                             <ProductSelect
                                                 products={productList}

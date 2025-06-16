@@ -11,6 +11,7 @@ import { useExpenseServices } from "../../store/expenseServices";
 import SupplierSelector from '../../components/SupplierSelector';
 import { useTypeServices } from '../../store/typeServices';
 import LoadingSpinner from "../../components/LoadingSpinner";
+import DescriptionSelect from '../../components/DescriptionSelect';
 
 
 export default function NewExpense() {
@@ -24,6 +25,7 @@ export default function NewExpense() {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [showNewSupplierForm, setShowNewSupplierForm] = useState(false);
     const [supplierKey, setSupplierKey] = useState(Date.now());
+    const [descriptionKey, setDescriptionKey] = useState(Date.now());
 
     useEffect(() => {
 
@@ -35,6 +37,7 @@ export default function NewExpense() {
                 //console.log("typesFromAPI: ", typesFromAPI)
                 setTypes(typesFromAPI.typeList);
             } catch (error) {
+                console.error("Error fetching types",error)
                 toast.error("Error fetching types")
             } finally {
                 setLoading(false)
@@ -92,6 +95,7 @@ export default function NewExpense() {
                 storeId: storeId
             });
             setSupplierKey(Date.now());
+            setDescriptionKey(Date.now());
             setShowNewSupplierForm(false);
         } catch (error) {
             toast.error("Error creating expense", error);
@@ -166,8 +170,14 @@ export default function NewExpense() {
                             </div>
                         </div>
                         <div>
-                            <label className="block font-medium mb-1">Description</label>
-                            <input type="text" name="description" value={formData.description} onChange={handleChange} className="w-full border rounded px-3 py-2 bg-gray-200 text-blue-950" />
+                            <DescriptionSelect
+                                key={descriptionKey}
+                                value={formData.description}
+                                onChange={(val) => setFormData({ ...formData, description: val })}
+                                type={"EXPENSE"}
+                                storeId={storeId}
+                                user={user}
+                            />
                         </div>
 
                         {/* Supplier Section */}
