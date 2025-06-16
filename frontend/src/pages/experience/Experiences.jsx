@@ -242,7 +242,7 @@ const Experiences = () => {
                                rounded-2xl shadow-2xl border border-gray-800 overflow-hidden 
                                min-h-screen items-center
                                ml-12 sm:mt-0 md:ml-64 
-                               w-full max-w-screen-2xl px-4"
+                               w-14/16 max-w-screen-2xl px-4"
                 >
                     <h2 className='text-3xl font-bold mb-6 text-center text-white bg-clip-text'>
                         Experiences Calendar

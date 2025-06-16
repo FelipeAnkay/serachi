@@ -139,7 +139,7 @@ export default function CashFlowSummary() {
                         {/* Totals Summary */}
                         <div className="bg-blue-900 p-4 rounded-lg mb-8">
                             <h2 className="text-xl font-semibold mb-2">Financial Summary</h2>
-                            <div className="grid grid-cols-3 gap-4 text-lg">
+                            <div className="flex flex-col lg:flex-row gap-4 text-lg">
                                 <div>Total Incomes: <span className="font-bold text-green-400">${totalIncomes.toFixed(2)}</span></div>
                                 <div>Total Expenses: <span className="font-bold text-red-400">${totalExpenses.toFixed(2)}</span></div>
                                 <div>Balance: <span className={`font-bold ${balance >= 0 ? "text-green-400" : "text-red-400"}`}>${balance.toFixed(2)}</span></div>
@@ -196,7 +196,6 @@ export default function CashFlowSummary() {
                         <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50">
                             <div className="bg-blue-900 text-white p-6 rounded-xl w-full max-w-md space-y-4">
                                 <h3 className="text-xl font-bold text-center">Edit {selectedItem.type}</h3>
-
                                 <label className="block text-sm">Date:</label>
                                 <input
                                     type="date"

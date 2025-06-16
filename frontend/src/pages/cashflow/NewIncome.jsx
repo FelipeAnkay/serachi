@@ -11,6 +11,7 @@ import { useQuoteServices } from '../../store/quoteServices';
 import { useAuthStore } from '../../store/authStore';
 import paymentMethods from '../../components/paymentMethods.json'
 import LoadingSpinner from "../../components/LoadingSpinner";
+import ProductSelectForm from "../../components/ProductSelectForm";
 
 export default function NewIncome() {
     const { createIncome, isLoading } = useIncomeServices();
@@ -133,15 +134,6 @@ export default function NewIncome() {
         return `${day}-${month}-${year} ${hours}:${minutes}`;
     };
 
-    const handleProductChange = (index, field, value) => {
-        const updated = [...formData.productList];
-        updated[index][field] = field.includes("Price") ? parseFloat(value) : value;
-        if (["Qty", "productUnitaryPrice"].includes(field)) {
-            updated[index].productFinalPrice = updated[index].Qty * updated[index].productUnitaryPrice;
-        }
-        setFormData((prev) => ({ ...prev, productList: updated }));
-    };
-
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (isSubmitting) return;
@@ -205,11 +197,6 @@ export default function NewIncome() {
         setFormData(prev => ({ ...prev, amount: value }));
     };
 
-    const handleRemoveProduct = (index) => {
-        const updatedList = [...formData.productList];
-        updatedList.splice(index, 1);
-        setFormData({ ...formData, productList: updatedList });
-    };
 
     return (
         <>
@@ -323,79 +310,12 @@ export default function NewIncome() {
                                 </button>
                             </div>
                             {showProductSelect && (
-                                <select onChange={handleSelectProduct} className="w-full border px-2 py-1 rounded mb-4">
-                                    <option value="" className="bg-gray-200 text-blue-950">Select a Product</option>
-                                    {products.map(p => (
-                                        <option key={p._id} value={p._id} className="bg-gray-200 text-blue-950">{p.name}</option>
-                                    ))}
-                                </select>
+                                <ProductSelectForm
+                                    products={products}
+                                    value={formData.productList}
+                                    onChange={(newList) => setFormData({ ...formData, productList: newList })}
+                                />
                             )}
-                            <div className="space-y-4">
-                                {formData.productList.map((product, index) => (
-                                    <div key={index} className="flex flex-col md:flex-row md:items-end md:space-x-2 space-y-2 md:space-y-0 mb-4">
-                                        <div className="flex-1">
-                                            <p>Name: {product.productName}</p>
-                                        </div>
-                                        <div className="flex-1">
-                                            <p>Quantity:</p>
-                                            <input
-                                                type="number"
-                                                step="1"
-                                                min="0"
-                                                placeholder="Quantity"
-                                                value={product.Qty}
-                                                onKeyDown={(e) => {
-                                                    if (e.key === 'Enter') {
-                                                        e.preventDefault();
-                                                    }
-                                                }}
-                                                onChange={(e) => {
-                                                    const value = e.target.value;
-                                                    if (value === '' || /^\d+$/.test(value)) {
-                                                        handleProductChange(index, "Qty", value);
-                                                    }
-                                                }}
-                                                className="border px-2 py-1 rounded w-full"
-                                            />
-                                        </div>
-                                        <div className="flex-1">
-                                            <p>Unitary Price:</p>
-                                            <input
-                                                type="number"
-                                                placeholder="Unitary Price"
-                                                value={product.productUnitaryPrice}
-                                                onChange={(e) => handleProductChange(index, "productUnitaryPrice", e.target.value)}
-                                                onKeyDown={(e) => {
-                                                    if (e.key === 'Enter') {
-                                                        e.preventDefault();
-                                                    }
-                                                }}
-                                                className="border px-2 py-1 rounded w-full"
-                                            />
-                                        </div>
-                                        <div className="flex-1">
-                                            <p>Final Price:</p>
-                                            <input
-                                                type="number"
-                                                placeholder="Final Price"
-                                                value={product.productFinalPrice}
-                                                disabled
-                                                className="bg-blue-950 border px-2 py-1 rounded w-full"
-                                            />
-                                        </div>
-                                        <div className="flex md:items-end">
-                                            <button
-                                                type="button"
-                                                onClick={() => handleRemoveProduct(index)}
-                                                className="text-red-500 hover:text-red-700"
-                                                title="Remove Product"
-                                            >
-                                                <Trash2 className="w-5 h-5" />
-                                            </button>
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
                         </div>
                         {/* TAGS SECTION */}
                         <fieldset className="w-full space-y-4 rounded-2xl border p-4">
