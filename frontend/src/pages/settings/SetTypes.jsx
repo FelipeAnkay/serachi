@@ -23,10 +23,11 @@ const SetTypes = () => {
         const fetchType = async () => {
             try {
                 const types = await getTypeList(storeId);
-                console.log("Respuesta de getTypeList: ", types);
+                //console.log("Respuesta de getTypeList: ", types);
                 setTypeList(types.typeList || []);
             } catch (error) {
-                console.error('Error fetching partner list:', error);
+                //console.error('Error fetching partner list:', error);
+                toast.error("Error getting the types")
             } finally {
                 setLoading(false);
             }
@@ -38,7 +39,7 @@ const SetTypes = () => {
     }, []);
 
     useEffect(() => {
-        console.log("El typeData es: ", typeData)
+        //console.log("El typeData es: ", typeData)
     }, [typeData]);
 
 
@@ -95,7 +96,7 @@ const SetTypes = () => {
             closeModal();
             window.location.reload();
         } catch (error) {
-            console.error('Error saving Type:', error);
+            //console.error('Error saving Type:', error);
             toast.error('Error saving Type');
         }
     };
@@ -107,7 +108,7 @@ const SetTypes = () => {
             closeModal();
             window.location.reload();
         } catch (error) {
-            console.error('Error removing type:', error);
+            //console.error('Error removing type:', error);
             toast.error('Error removing type');
         }
     };

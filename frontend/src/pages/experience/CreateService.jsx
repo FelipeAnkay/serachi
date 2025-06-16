@@ -316,14 +316,18 @@ export default function CreateService() {
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0, scale: 0.9 }}
                     transition={{ duration: 0.5 }}
-                    className="flex flex-col w-full max-w-9/12 mx-auto bg-blue-900 bg-opacity-80 backdrop-filter backdrop-blur-lg rounded-2xl shadow-2xl border border-gray-800 overflow-hidden min-h-screen items-center"
+                    className="flex flex-col mx-auto 
+             bg-blue-900 bg-opacity-80 backdrop-filter backdrop-blur-lg 
+             rounded-2xl shadow-2xl border border-gray-800 overflow-hidden 
+             items-center md:ml-64 
+             w-full max-w-screen-2xl px-4 box-border overflow-x-hidden"
                 >
                     <h1 className="text-3xl font-bold mt-6 mb-6 text-center text-white bg-clip-text">Create Service</h1>
-                    <form onSubmit={handleSubmit} className='w-full'>
-                        <fieldset className="border p-4 rounded-2xl mx-2">
+                    <form onSubmit={handleSubmit} className="space-y-4 p-4 rounded-2xl shadow bg-blue-800 w-full box-border">
+                        <fieldset className="border p-4 rounded-2xl box-border">
                             <legend className="font-semibold text-2xl">Service Data</legend>
                             <div>
-                                <div className="flex flex-col sm:flex-row items-center gap-2">
+                                <div className="flex flex-row sm:flex-row items-center gap-2 box-border">
                                     <input
                                         ref={customerEmailRef}
                                         type="email"
@@ -341,7 +345,7 @@ export default function CreateService() {
                                                 handleCustomerEmailSearch(customerEmailRef.current.value);
                                             }
                                         }}
-                                        className="w-full border px-2 py-1 rounded bg-white text-blue-950"
+                                        className="w-full border py-2 rounded bg-white text-blue-950"
                                         placeholder="Enter customer email"
                                     />
                                     <button
@@ -447,12 +451,12 @@ export default function CreateService() {
                                     )}
                                 </div>
                             </div>
-                            <div className="border rounded-2xl mt-5 bg-blue-800 p-4">
+                            <div className="border rounded-2xl mt-5 bg-blue-800 p-4 box-border">
                                 <div className="flex flex-col lg:flex-row gap-4">
                                     {/* DateTime Pickers */}
-                                    <fieldset className="border rounded-2xl w-full lg:w-1/4 p-4">
+                                    <fieldset className="border rounded-2xl w-full lg:w-1/4 p-4 box-border">
                                         <legend className='ml-2 text-lg font-bold'>Dates & Cycle</legend>
-                                        <div className='flex flex-row justify-between mt-2 ml-2 mr-2'>
+                                        <div className="flex flex-col lg:flex-row justify-between gap-4 mt-2">
                                             <div className="w-1/2 pr-2">
                                                 <label>Start Date & Time</label>
                                                 <input type="datetime-local"
@@ -508,9 +512,9 @@ export default function CreateService() {
                                         </div>
                                     </fieldset>
 
-                                    <fieldset className="border rounded-2xl w-full lg:w-3/4 p-4">
+                                    <fieldset className="border rounded-2xl w-full lg:w-3/4 p-4 box-border">
                                         <legend className='ml-2 text-lg font-bold'>Services to create: {customServiceList.length}</legend>
-                                        <div className='grid grid-cols-2 gap-2 ml-2'>
+                                        <div className='grid grid-cols-1 sm:grid-cols-2 gap-2 ml-2'>
                                             {(customServiceList || []).map((service, index) => (
                                                 <div className='flex flex-row items-center justify-center border rounded-2xl mr-2 mb-2 bg-blue-700'>
                                                     <div className='ml-2 flex-1 text-left'>

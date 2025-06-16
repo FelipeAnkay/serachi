@@ -91,6 +91,7 @@ const Experiences = () => {
         };
         try {
             //setLoading(true);
+            console.log("La llamada de getServiceById ", {startDate,endDate});
             const serviceDetail = await getServicesByDate(startDate, endDate, storeId);
             //console.log("La respuesta de getServiceById ", serviceDetail);
             const parseDate = (d) =>
@@ -204,7 +205,11 @@ const Experiences = () => {
 
         const newMonthStart = new Date(newDate.getFullYear(), newDate.getMonth(), -7);
         const newMonthEnd = new Date(newDate.getFullYear(), newDate.getMonth() + 1, +7);
-
+        //console.log("Nuevas fechas: ",{newMonthStart, newMonthEnd})
+        //console.log("Fechas de loadedRange: ", {loadedRange})
+        const auxStartYear = loadedRange.start.getFullYear()
+        const auxStartMonth = loadedRange.start.getMonth()
+        //console.log("Fechas a comparar: ", {auxStartMonth,auxStartYear})
         const isSameMonth =
             loadedRange.start &&
             loadedRange.end &&
@@ -216,12 +221,6 @@ const Experiences = () => {
             //console.log("newMonthStart: ", newMonthStart)
             //console.log("newMonthEnd: ", newMonthEnd)
             fetchExperiences(newMonthStart, newMonthEnd);
-        } else {
-            const now = new Date();
-            const firstDay = new Date(now.getFullYear(), now.getMonth(), -7);
-            const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, +7);
-            console.log("Fechas: ", firstDay, " TO ", lastDay)
-            fetchExperiences(firstDay, lastDay);
         }
     };
 
@@ -232,13 +231,18 @@ const Experiences = () => {
                     <LoadingSpinner />
                 )
             }
-            <div className="flex flex-col min-h-screen w-full bg-blue-950 text-white px-4 py-6 sm:px-8 sm:py-10">
+            <div className="flex flex-col min-h-screen w-full bg-blue-950 text-white px-4 py-6 sm:px-2 sm:py-2">
                 <motion.div
                     initial={{ opacity: 0, scale: 2 }}
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0, scale: 0.9 }}
                     transition={{ duration: 0.5 }}
-                    className="flex flex-col w-full max-w-9/12 mx-auto bg-blue-900 bg-opacity-80 backdrop-filter backdrop-blur-lg rounded-2xl shadow-2xl border border-gray-800 overflow-hidden min-h-screen items-center"
+                    className="flex flex-col mx-auto 
+                             bg-blue-900 bg-opacity-80 backdrop-filter backdrop-blur-lg 
+                               rounded-2xl shadow-2xl border border-gray-800 overflow-hidden 
+                               min-h-screen items-center
+                               ml-12 sm:mt-0 md:ml-64 
+                               w-full max-w-screen-2xl px-4"
                 >
                     <h2 className='text-3xl font-bold mb-6 text-center text-white bg-clip-text'>
                         Experiences Calendar

@@ -91,7 +91,7 @@ export default function OpenQuote() {
                                         return (
                                             <div
                                                 key={quote._id}
-                                                className={`border rounded-lg p-2 hover:shadow transition relative border-gray-300 bg-blue-100 flex flex-row justify-between items-center`}
+                                                className="border rounded-lg p-4 hover:shadow transition relative border-gray-300 bg-blue-100 flex flex-col sm:flex-row sm:justify-between sm:items-center space-y-4 sm:space-y-0"
 
                                             >
                                                 < h3 className="text-lg font-semibold text-gray-800">
@@ -109,7 +109,7 @@ export default function OpenQuote() {
                                                     })}
                                                     {' - ' + quote.productList.length + ' Products '} -  ${quote.finalPrice}
                                                 </h3>
-                                                <div className='flex flex-row justify-between items-center w-1/4'>
+                                                <div className='justify-between items-center flex flex-col sm:flex-row gap-2 w-full sm:justify-end sm:w-1/2'>
                                                     <motion.button
                                                         type='button'
                                                         whileHover={{ scale: 1.05 }}
