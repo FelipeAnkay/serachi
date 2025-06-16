@@ -119,7 +119,12 @@ export default function ExperienceList() {
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0, scale: 0.9 }}
                     transition={{ duration: 0.5 }}
-                    className="flex flex-col w-full max-w-9/12 mx-auto bg-blue-900 bg-opacity-80 backdrop-filter backdrop-blur-lg rounded-2xl shadow-2xl border border-gray-800 overflow-hidden min-h-screen items-center"
+                    className="flex flex-col mx-auto 
+                             bg-blue-900 bg-opacity-80 backdrop-filter backdrop-blur-lg 
+                               rounded-2xl shadow-2xl border border-gray-800 overflow-hidden 
+                               min-h-screen items-center
+                               ml-12 sm:mt-0 md:ml-64 
+                               w-full max-w-screen-2xl px-4"
                 >
                     <h1 className="text-3xl font-bold mt-6 mb-6 text-center text-white bg-clip-text">Active Experiences</h1>
                     <div className='w-full'>
@@ -150,7 +155,7 @@ export default function ExperienceList() {
                                             return (
                                                 <div
                                                     key={experience._id}
-                                                    className={`border rounded-lg p-2 hover:shadow transition relative border-gray-300 bg-blue-100 flex flex-row justify-between items-center`}
+                                                    className="border rounded-lg p-4 hover:shadow transition relative border-gray-300 bg-blue-100 flex flex-col sm:flex-row sm:justify-between sm:items-center space-y-4 sm:space-y-0"
 
                                                 >
                                                     < h3 className="text-lg font-semibold text-gray-800">
@@ -168,7 +173,7 @@ export default function ExperienceList() {
                                                         })}
                                                         {' - ' + experience.serviceList.length + ' Services '}
                                                     </h3>
-                                                    <div className='flex flex-row justify-end gap-2 items-center w-1/4'>
+                                                    <div className='justify-between items-center flex flex-col sm:flex-row gap-2 w-full sm:justify-end sm:w-1/2'>
                                                         <motion.button
                                                             type='button'
                                                             whileHover={{ scale: 1.05 }}

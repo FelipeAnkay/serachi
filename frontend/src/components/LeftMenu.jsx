@@ -110,11 +110,17 @@ const LeftMenu = ({ show, setShow }) => {
         logout();
     };
 
+    const handleLinkClick = () => {
+        if (window.innerWidth < 768) {
+            setShow(false); // colapsar menú
+        }
+    };
+
     return (
         <div
             onMouseEnter={() => setShow(true)}
             onMouseLeave={() => setShow(false)}
-              className={`fixed top-0 left-0 z-50 h-screen ${show ? "w-64" : "w-16"} 
+            className={`fixed top-0 left-0 z-50 h-screen ${show ? "w-64" : "w-16"} 
               bg-gray-900/30 text-white transition-all duration-300 ease-in-out 
               overflow-y-auto flex flex-col`}
         >
@@ -153,7 +159,11 @@ const LeftMenu = ({ show, setShow }) => {
                             <div className="mt-2 ml-4 space-y-1">
                                 {children.map(({ to, label, icon }) => (
                                     <li key={to} className="hover:bg-blue-500 rounded-lg">
-                                        <Link to={to} className="flex items-center gap-2 py-1 px-2">
+                                        <Link
+                                            to={to}
+                                            className="flex items-center gap-2 py-1 px-2"
+                                            onClick={handleLinkClick}
+                                        >
                                             {icon}{label}
                                         </Link>
                                     </li>
