@@ -316,11 +316,16 @@ export default function CreateService() {
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0, scale: 0.9 }}
                     transition={{ duration: 0.5 }}
-                    className="flex flex-col mx-auto 
-             bg-blue-900 bg-opacity-80 backdrop-filter backdrop-blur-lg 
-             rounded-2xl shadow-2xl border border-gray-800 overflow-hidden 
-             items-center md:ml-64 
-             w-full max-w-screen-2xl px-4 box-border overflow-x-hidden"
+                    className="
+                                flex flex-col
+                                bg-blue-900 bg-opacity-80 backdrop-filter backdrop-blur-lg
+                                rounded-2xl shadow-2xl border border-gray-800 overflow-hidden
+                                min-h-[calc(100vh-5rem)]
+                                w-full max-w-7xl
+                                px-4 py-6
+                                mt-4
+                                mx-auto
+                            "
                 >
                     <h1 className="text-3xl font-bold mt-6 mb-6 text-center text-white bg-clip-text">Create Service</h1>
                     <form onSubmit={handleSubmit} className="space-y-4 p-4 rounded-2xl shadow bg-blue-800 w-full box-border">
@@ -456,8 +461,8 @@ export default function CreateService() {
                                     {/* DateTime Pickers */}
                                     <fieldset className="border rounded-2xl w-full lg:w-1/4 p-4 box-border">
                                         <legend className='ml-2 text-lg font-bold'>Dates & Cycle</legend>
-                                        <div className="flex flex-col lg:flex-row justify-between gap-4 mt-2">
-                                            <div className="w-1/2 pr-2">
+                                        <div className="flex flex-col lg:flex-row gap-4 mt-2">
+                                            <div className="pr-2">
                                                 <label>Start Date & Time</label>
                                                 <input type="datetime-local"
                                                     value={customService.dateIn || ''}
@@ -465,7 +470,7 @@ export default function CreateService() {
                                                     className="w-full border px-2 py-1 rounded bg-white text-blue-950"
                                                 />
                                             </div>
-                                            <div className="w-1/2 pl-2">
+                                            <div className="pl-2">
                                                 <label>End Date & Time</label>
                                                 <input type="datetime-local"
                                                     value={customService.dateOut || ''}
