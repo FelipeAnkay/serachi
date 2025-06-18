@@ -178,7 +178,7 @@ const SetPartner = () => {
                 </div>
 
 
-                <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 ml-3 mr-3 mb-3">
+                <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 ml-3 mr-3 mb-3">
                     {partnerList.length === 0 ? (
                         <div className="text-center text-gray-400 col-span-full">No partner found</div>
                     ) : (
