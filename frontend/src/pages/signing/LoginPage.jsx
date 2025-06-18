@@ -8,6 +8,7 @@ import { useAuthStore } from '../../store/authStore';
 import Cookies from 'js-cookie';
 import { useStoreServices } from '../../store/storeServices';
 import { useNavigate } from "react-router-dom";
+import { useCustomerServices } from '../../store/customerServices';
 
 const LoginPage = () => {
   const [email, setEmail] = useState('');
@@ -15,6 +16,7 @@ const LoginPage = () => {
   const [storeId, setStoreId] = useState('');
   const { login, isLoading, error } = useAuthStore();
   const { getStoreById } = useStoreServices();
+  const { getCustomerList } = useCustomerServices();
   const navigate = useNavigate();
 
   const handleLogin = async (e) => {
@@ -26,8 +28,10 @@ const LoginPage = () => {
       Cookies.set('storeId', storeId);
       const store = await getStoreById(storeId)
       //console.log ("La store encontrada es:", store)
+      const customerList = await getCustomerList(storeId)
+      console.log ("La customerList encontrada es:", customerList)
       Cookies.set('timezone', store.store.timezone);
-      window.location.reload();
+      //window.location.reload();
     } catch (error) {
 
     }
