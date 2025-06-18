@@ -21,7 +21,7 @@ const menuItems = [
         key: "quotes",
         children: [
             { to: "/new-quote", label: "New", icon: <Receipt /> },
-            { to: "/past-quote", label: "Past", icon: <BanknoteArrowDown /> },
+            { to: "/past-quote", label: "Created", icon: <BanknoteArrowDown /> },
             { to: "/confirmed-quote", label: "Confirmed", icon: <TicketCheck /> },
         ]
     },

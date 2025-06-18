@@ -26,7 +26,8 @@ export const useCustomerServices = create((set) => ({
         try {
             //console.log("Entre a createCustomer", customerData);
             const response = await axios.post(`${URL_API}/create`, customerData);
-            set({ customerList: response.data.customerList, isLoading: false });
+            const auxList = await axios.get(`${URL_API}/list/${customerData.storeId}`);
+            set({ customerList: auxList.data.customerList, isLoading: false });
             return response.data;
         } catch (error) {
             set({ error: error.response.data.message || "Error creating customer", isLoading: false });
@@ -39,19 +40,20 @@ export const useCustomerServices = create((set) => ({
         try {
             delete updatedVars._id;;
             delete updatedVars.__v;
-
+/*
             console.log("Payload enviado a updateCustomer:", {
                 email: email,
                 ...updatedVars
             });
-
+*/
             const response = await axios.post(`${URL_API}/update`, {
                 email: email,
                 storeId: storeId,
                 ...updatedVars
             });
             //console.log("F: Respueste de updateStaff: ", response);
-            set({ customerList: response.data.customerList, isLoading: false });
+            const auxList = await axios.get(`${URL_API}/list/${customerData.storeId}`);
+            set({ customerList: auxList.data.customerList, isLoading: false });
             return response.data;
         } catch (error) {
             set({ error: error || "Error updating customer", isLoading: false });
@@ -77,7 +79,6 @@ export const useCustomerServices = create((set) => ({
             console.log("F: Llamado a customerEmail");
             const response = await axios.get(`${URL_API}/get/${email}/${storeId}`);
             //console.log("F: Respueste de customerEmail: ", response);
-            set({ customerList: response.data.customerList, isLoading: false });
             return response.data;
         } catch (error) {
             set({ error: error.response.data.message || "Error getting customer", isLoading: false });
@@ -90,7 +91,8 @@ export const useCustomerServices = create((set) => ({
             //console.log("F: Llamado a customerEmail");
             const response = await axios.get(`${URL_API}/remove/${email}`);
             //console.log("F: Respueste de customerEmail: ", response);
-            set({ customerList: response.data.customerList, isLoading: false });
+            const auxList = await axios.get(`${URL_API}/list/${customerData.storeId}`);
+            set({ customerList: auxList.data.customerList, isLoading: false });
             return response.data;
         } catch (error) {
             set({ error: error.response.data.message || "Error getting customer", isLoading: false });

@@ -148,6 +148,7 @@ export default function PendingServices() {
                                                                 onClick={() => {
                                                                     setSelectedService(service);
                                                                     setIsServiceModalOpen(true);
+                                                                    window.scrollTo({ top: 0, behavior: 'smooth' });
                                                                 }}
                                                                 className='w-full py-3 px-4 bg-gradient-to-r from-blue-500 to-blue-600 text-white font-bold rounded-lg shadow-lg
                                                          hover:from-blue-600 hover:to-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-gray-900'

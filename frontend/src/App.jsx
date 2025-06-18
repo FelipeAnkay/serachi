@@ -11,7 +11,7 @@ import LoadingSpinner from './components/LoadingSpinner';
 import ForgotPasswordPage from './pages/signing/ForgotPasswordPage';
 import ResetPasswordPage from './pages/signing/ResetPasswordPage';
 import LeftMenu from "./components/LeftMenu";
-import { Menu } from "lucide-react";
+import { BookUser, Menu } from "lucide-react";
 import Booking from './pages/booking/Booking';
 import CashFlow from './pages/CashFlow';
 import Experiences from './pages/experience/Experiences';
@@ -52,6 +52,7 @@ import ExperienceList from './pages/experience/ExperienceList';
 import ViewExperiences from './pages/experience/ViewExperiences';
 import SetTypes from './pages/settings/SetTypes';
 import SetCustomerView from './pages/settings/SetCustomerView';
+import UserAddressBookModal from './components/UserAddressBookModal';
 
 const ProtectedRoute = ({ children, requiredPermission }) => {
   const { isAuthenticated, user, logout } = useAuthStore();
@@ -60,6 +61,8 @@ const ProtectedRoute = ({ children, requiredPermission }) => {
   const [permissions, setPermissions] = useState([]);
   const [loadingPermissions, setLoadingPermissions] = useState(true);
   const storeId = Cookies.get('storeId');
+  
+
   useEffect(() => {
     const fetchPermissions = async () => {
       //console.log("Entré a fetchPermissions")
@@ -170,8 +173,8 @@ const RedirectAuthenticatedUser = ({ children }) => {
 }
 
 function App() {
-
-  const { isCheckingAuth, checkAuth } = useAuthStore();
+  const { isCheckingAuth, checkAuth, isAuthenticated } = useAuthStore();
+  const [showAddressBook, setShowAddressBook] = useState(false);
   const basepage = true;
 
   useEffect(() => {
@@ -484,6 +487,21 @@ function App() {
 
       </Routes>
       <Toaster />
+      {isAuthenticated && (
+        <>
+          <button
+            onClick={() => setShowAddressBook(true)}
+            className="fixed bottom-4 right-4 z-50 bg-blue-800 hover:bg-blue-700 text-white p-4 rounded-full shadow-lg"
+            title="Open user address book"
+          >
+            <BookUser className="w-6 h-6" />
+          </button>
+
+          {showAddressBook && (
+            <UserAddressBookModal onClose={() => setShowAddressBook(false)} />
+          )}
+        </>
+      )}
     </div>
   );
 }
