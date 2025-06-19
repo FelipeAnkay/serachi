@@ -279,7 +279,7 @@ const SetStaffFee = () => {
                                                 type="number"
                                                 value={rule.value}
                                                 onChange={(e) => handleRuleChange(index, "value", Number(e.target.value))}
-                                                className="w-full border px-2 py-1 rounded bg-gray-200"
+                                                className="w-full border px-2 py-1 rounded bg-blue-800"
                                             />
                                         </div>
                                         <div className="flex-1 min-w-[80px]">
@@ -293,7 +293,7 @@ const SetStaffFee = () => {
                                                     const value = e.target.value;
                                                     handleRuleChange(index, "fee", value === "" ? 0 : Number(value));
                                                 }}
-                                                className="w-full border px-2 py-1 rounded bg-gray-200"
+                                                className="w-full border px-2 py-1 rounded bg-blue-800"
                                             />
                                         </div>
                                         <button
