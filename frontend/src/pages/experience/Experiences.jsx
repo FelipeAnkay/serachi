@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import Cookies from 'js-cookie';
 import { Calendar, momentLocalizer, Views } from 'react-big-calendar';
@@ -9,6 +9,7 @@ import toast from 'react-hot-toast';
 import { useStaffServices } from '../../store/staffServices';
 import { useServiceServices } from '../../store/serviceServices';
 import LoadingSpinner from '../../components/LoadingSpinner';
+import CustomCalendarToolbar from '../../components/CustomCalendarToolbar';
 
 const localizer = momentLocalizer(moment);
 
@@ -32,7 +33,8 @@ const Experiences = () => {
     useEffect(() => {
         const now = new Date();
         const firstDay = new Date(now.getFullYear(), now.getMonth(), -7);
-        const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, +7);
+        const lastDay = new Date(now);
+        lastDay.setMonth(lastDay.getMonth() + 1);
         //console.log("Fechas: ", firstDay, " TO ", lastDay)
         fetchStaff();
         fetchExperiences(firstDay, lastDay);
@@ -66,7 +68,7 @@ const Experiences = () => {
         const allServiceEvents = [];
         const staffColorMap = {};
         const typesSet = new Set();
-        //console.log("Entre a fetchExperiences")
+        //console.log("Entre a fetchExperiences", { startDate, endDate })
         const getColorForStaff = async (email) => {
             //console.log("Entre a getColorForStaff ", email);
             //console.log("El staffColorMap es: ", staffColorMap);
@@ -85,7 +87,7 @@ const Experiences = () => {
                 return color;
             } catch {
                 return "gray-500";
-            }finally{
+            } finally {
                 setLoading(false)
             }
         };
@@ -237,7 +239,7 @@ const Experiences = () => {
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0, scale: 0.9 }}
                     transition={{ duration: 0.5 }}
-                      className="
+                    className="
                                 flex flex-col
                                 bg-blue-900 bg-opacity-80 backdrop-filter backdrop-blur-lg
                                 rounded-2xl shadow-2xl border border-gray-800 overflow-hidden
@@ -251,7 +253,7 @@ const Experiences = () => {
                     <h2 className='text-3xl font-bold mb-6 text-center text-white bg-clip-text'>
                         Experiences Calendar
                     </h2>
-                    <div className="flex-grow p-4 overflow-hidden w-full">
+                    <div className="flex-grow p-4 overflow-auto w-full">
                         <div className="flex items-center gap-4 px-4 mb-4">
                             <label className="text-white font-semibold">Filter Events by Type:</label>
                             <select
@@ -294,6 +296,9 @@ const Experiences = () => {
                                             paddingRight: "0.5rem",
                                         },
                                     };
+                                }}
+                                components={{
+                                    toolbar: (props) => <CustomCalendarToolbar {...props} />
                                 }}
                             />
                         </div>

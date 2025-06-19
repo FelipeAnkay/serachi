@@ -98,7 +98,8 @@ export default function ServiceDetails({ isOpen, onClose, service, setService, o
                         </div>
                         <div className="w-1/2">
                             <label>Check-in</label>
-                            <input type="datetime-local"
+                            <input
+                                type="datetime-local"
                                 name="dateIn"
                                 value={formatDateInput(service.dateIn)}
                                 onChange={(e) => setService((prev) => ({
@@ -107,11 +108,9 @@ export default function ServiceDetails({ isOpen, onClose, service, setService, o
                                 }))}
                                 className="w-full border px-2 py-1 rounded bg-white text-blue-950"
                                 min={new Date().toISOString().split('T')[0]}
+                                max={service.dateOut || undefined}
                                 onKeyDown={(e) => {
-                                    if (e.key === 'Enter') {
-                                        e.preventDefault();
-                                        // Add logic if we want to do something when enter is pressed
-                                    }
+                                    if (e.key === 'Enter') e.preventDefault();
                                 }}
                             />
                         </div>

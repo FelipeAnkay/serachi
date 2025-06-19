@@ -8,14 +8,26 @@ import { motion, AnimatePresence } from 'framer-motion';
 
 
 export default function UserAddressBookModal({ onClose }) {
-    const { customerList } = useCustomerServices();
+    const { customerList, getCustomerList } = useCustomerServices();
     const [query, setQuery] = useState('');
     const [customerData, setCustomerData] = useState({});
     const [modalOpen, setModalOpen] = useState(false);
     const { store } = useStoreServices();
 
     useEffect(() => {
-        console.log("customerList: ", customerList)
+        //console.log("customerList: ", customerList)
+        const fetchCustomers = async () => {
+            try {
+                await getCustomerList(store.storeId)
+            } catch (error) {
+                toast.error("Error filling the address book")
+            }
+            
+        }
+        if(!customerList){
+            //console.log("Entré a cargar clientes")
+            fetchCustomers();
+        }
     }, []);
 
     const openEditCustomerModal = (customer) => {

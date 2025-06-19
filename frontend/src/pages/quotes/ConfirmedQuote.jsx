@@ -267,6 +267,10 @@ export default function ConfirmedQuote() {
     };
 
     const handleCreateCustomExperience = async (quote, customServiceList) => {
+        if (customServiceList.length === 0) {
+            toast.error("At least 1 service must be created");
+            return;
+        }
         setLoading(true);
         try {
             const serviceIds = [];

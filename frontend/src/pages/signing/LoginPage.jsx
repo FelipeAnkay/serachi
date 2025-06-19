@@ -28,10 +28,8 @@ const LoginPage = () => {
       Cookies.set('storeId', storeId);
       const store = await getStoreById(storeId)
       //console.log ("La store encontrada es:", store)
-      const customerList = await getCustomerList(storeId)
-      console.log ("La customerList encontrada es:", customerList)
       Cookies.set('timezone', store.store.timezone);
-      //window.location.reload();
+      window.location.reload();
     } catch (error) {
 
     }
