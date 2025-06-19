@@ -208,15 +208,42 @@ export const getServiceByDates = async (req, res) => {
         const { storeId, dateIn, dateOut } = req.params;
         const normalizedStoreId = storeId?.toUpperCase();
 
-        console.log("Entre a getServiceByDates: ", normalizedStoreId, " - ", dateIn, " - ", dateOut);
+        //console.log("Entre a getServiceByDates: ", normalizedStoreId, " - ", dateIn, " - ", dateOut);
 
         const serviceList = await Service.find({
             storeId: normalizedStoreId,
-            dateIn: { $lte: new Date(dateOut) },  // empieza antes o el mismo día que el final del rango
-            dateOut: { $gte: new Date(dateIn) },
+            dateIn: { $gte: new Date(dateIn) },
+            dateOut: { $lte: new Date(dateOut) },
         });
 
-        console.log("Respuesta de Service.find: ", serviceList);
+        //console.log("Respuesta de Service.find: ", serviceList);
+
+        if (!serviceList || serviceList.length === 0) {
+            return res.status(200).json({ success: false, message: "No services found in date range" });
+        }
+
+        res.status(200).json({ success: true, serviceList });
+    } catch (error) {
+        return res.status(400).json({ success: false, message: error.message });
+    }
+};
+
+export const getServicesForCommissions = async (req, res) => {
+    try {
+        const { storeId, dateIn, dateOut } = req.params;
+        const normalizedStoreId = storeId?.toUpperCase();
+
+        //console.log("Entre a getServiceByDates: ", normalizedStoreId, " - ", dateIn, " - ", dateOut);
+
+        const serviceList = await Service.find({
+            storeId: normalizedStoreId,
+            dateOut: {
+                $gte: new Date(dateIn),
+                $lte: new Date(dateOut)
+            }
+        });
+
+        //console.log("Respuesta de Service.find: ", serviceList);
 
         if (!serviceList || serviceList.length === 0) {
             return res.status(200).json({ success: false, message: "No services found in date range" });

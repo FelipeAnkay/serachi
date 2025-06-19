@@ -18,7 +18,7 @@ import LoadingSpinner from '../../components/LoadingSpinner.jsx';
 const PRCalculator = () => {
     const { getProductById } = useProductServices();
     const { user } = useAuthStore();
-    const { getServicesByDate, updateService } = useServiceServices();
+    const { getServicesForFees, updateService } = useServiceServices();
     const { getPayrateByEmail } = usePayRateServices();
     const { createPRrecord } = usePRrecordServices();
     const { createExpense } = useExpenseServices();
@@ -45,7 +45,13 @@ const PRCalculator = () => {
         if (!dateIn || !dateOut) return;
         setLoading(true);
         try {
-            const servicesResponse = await getServicesByDate(dateIn, dateOut, storeId);
+            const servicesResponse = await getServicesForFees(dateIn, dateOut, storeId);
+            console.log("servicesResponse is: ", servicesResponse);
+            if (!servicesResponse.success) {
+                toast.error("No services in the selected range")
+                setLoading(false);
+                return
+            }
             const services = servicesResponse.serviceList;
             //console.log("services is: ", services);
             const alreadyInPayroll = services.filter(s => Array.isArray(s.payrollList) && s.payrollList.length > 0);
@@ -182,7 +188,7 @@ const PRCalculator = () => {
                     //console.log("El expense a registrar es: ", expense)
                     await createExpense(expense);
                 }
-                
+
                 for (const updService of item.services) {
                     await updateService(updService._id, {
                         payrollList: [
@@ -191,7 +197,7 @@ const PRCalculator = () => {
                         ],
                     });
                 }
-                    
+
             }
             window.scrollTo({ top: 0, behavior: 'smooth' });
             toast.success('Payroll registered successfully');
@@ -211,11 +217,17 @@ const PRCalculator = () => {
     const handleExcludeSelectedServices = async () => {
         try {
             setLoading(true)
-            const remaining = services.filter(s => !excludedServiceIds.includes(s._id));
-            setServices(remaining);
-            setShowExistingServicesModal(false);
+            //console.log("excludedServiceIds: ", excludedServiceIds)
+            const remaining = existingPayrollServices.filter(s => !excludedServiceIds.includes(s._id));
+            setExistingPayrollServices(remaining);
             setExcludedServiceIds([]);
-
+            const allStaff = [...new Set(remaining.map(s => s.staffEmail))];
+            const allPayrates = [];
+            for (const staff of allStaff) {
+                const res = await getPayrateByEmail(storeId, staff);
+                //console.log("Res is: ", res)
+                allPayrates.push(...res.payrate);
+            }
             const newCommissions = calculateCommission(remaining, allPayrates);
             const newSummary = await Promise.all(
                 newCommissions.map(async (item) => {
@@ -235,9 +247,11 @@ const PRCalculator = () => {
                     };
                 })
             );
+            setShowExistingServicesModal(false);
             setSummary(newSummary);
             toast.success("Selected services excluded from calculation");
         } catch (error) {
+            console.error("El error es: ", error)
             toast.success("Error excluding from calculation");
         } finally {
             setLoading(false)
@@ -261,11 +275,11 @@ const PRCalculator = () => {
                 >
                     <h2 className='font-bold text-2xl flex justify-center text-white'>Payroll Calculator</h2>
 
-                    <fieldset className='mb-5 border rounded-2xl p-4 flex flex-col gap-4 bg-blue-900 text-white w-full'>
+                    <fieldset className='mb-5 border rounded-2xl p-4 flex flex-col gap-4 bg-blue-900 text-white w-max'>
                         <legend className='ml-2 font-bold text-lg'>Calculation Dates</legend>
 
-                        <div className="w-full mb-4">
-                            <label className="block mb-2 font-medium text-sm text-white">Date Range:</label>
+                        <div className="flex flex-col justify-center items-center w-full mb-4">
+                            <label className="mb-2 font-medium text-sm text-white">Date Range:</label>
                             <DateRangePicker value={dateRange} onChange={setDateRange} />
                         </div>
 
@@ -588,7 +602,7 @@ const PRCalculator = () => {
                             exit={{ opacity: 0 }}
                         >
                             <motion.div
-                                className='bg-white rounded-xl p-6 w-[90%] max-w-md shadow-xl'
+                                className='bg-blue-950 rounded-xl p-6 w-[90%] max-w-md shadow-xl'
                                 initial={{ scale: 0.9, opacity: 0 }}
                                 animate={{ scale: 1, opacity: 1 }}
                                 exit={{ scale: 0.9, opacity: 0 }}
@@ -600,7 +614,7 @@ const PRCalculator = () => {
                                         <p>No rules applied.</p>
                                     ) : (
                                         selectedRules.map((rule, idx) => (
-                                            <div key={idx} className='border p-2 rounded bg-gray-100'>
+                                            <div key={idx} className='border p-2 rounded bg-blue-500'>
                                                 <label className='block'><strong>Timeframe:</strong> {rule.timeframe}</label>
                                                 <label className='block'><strong>Operator:</strong> {rule.operator}</label>
                                                 <label className='block'><strong>Value:</strong> {rule.value}</label>
@@ -632,7 +646,7 @@ const PRCalculator = () => {
                             exit={{ opacity: 0 }}
                         >
                             <motion.div
-                                className='bg-white rounded-xl p-6 w-[90%] max-w-lg shadow-xl overflow-y-auto max-h-[80vh]'
+                                className='bg-blue-950 rounded-xl p-6 w-[90%] max-w-lg shadow-xl overflow-y-auto max-h-[80vh]'
                                 initial={{ scale: 0.9, opacity: 0 }}
                                 animate={{ scale: 1, opacity: 1 }}
                                 exit={{ scale: 0.9, opacity: 0 }}
@@ -644,7 +658,7 @@ const PRCalculator = () => {
                                         <li>No services found.</li>
                                     ) : (
                                         selectedServices.map((s, idx) => (
-                                            <li key={s._id} className='border rounded p-2 bg-gray-100'>
+                                            <li key={s._id} className='border rounded p-2 bg-blue-500'>
                                                 <p><strong>{s.name}</strong></p>
                                                 <p>Date In: {new Date(s.dateIn).toLocaleString()}</p>
                                                 <p>Date Out: {new Date(s.dateOut).toLocaleString()}</p>
@@ -680,9 +694,27 @@ const PRCalculator = () => {
                                 animate={{ scale: 1, opacity: 1 }}
                                 exit={{ scale: 0.9, opacity: 0 }}
                             >
-                                <h3 className='text-lg font-bold mb-4'>Services already included in previous payrolls</h3>
+                                <h3 className='text-lg font-bold mb-4 text-blue-950'>Services already included in previous payrolls</h3>
 
                                 <ul className='space-y-2 text-black'>
+                                    {/* Select All checkbox */}
+                                    <li className='border rounded p-2 bg-gray-200 flex items-center gap-3 font-semibold'>
+                                        <input
+                                            type="checkbox"
+                                            checked={existingPayrollServices.length > 0 && excludedServiceIds.length === existingPayrollServices.length}
+                                            onChange={(e) => {
+                                                if (e.target.checked) {
+                                                    // Select all
+                                                    const allIds = existingPayrollServices.map(s => s._id);
+                                                    setExcludedServiceIds(allIds);
+                                                } else {
+                                                    // Deselect all
+                                                    setExcludedServiceIds([]);
+                                                }
+                                            }}
+                                        />
+                                        <span>Select All</span>
+                                    </li>
                                     {existingPayrollServices.map((s) => (
                                         <li key={s._id} className='border rounded p-2 bg-gray-100 flex items-start gap-3'>
                                             <input

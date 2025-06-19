@@ -132,6 +132,23 @@ export const useServiceServices = create((set) => ({
             throw error;
         }
     },
+    getServicesForFees: async (start, end, storeId) => {
+        set({ isLoading: true, error: null });
+
+        try {
+            //console.log("FB: Entre a getAvailableRooms: ", start, " - ", end, " - ", storeId)
+            const formattedDateIn = formatDateISO(start);
+            const formattedDateOut = formatDateISO(end);
+            //console.log("FB: Entre a getAvailableRooms formated: ", formattedDateIn, " - ", formattedDateOut, " - ", storeId)
+            const response = await axios.get(`${URL_API}/fees/${storeId}/${formattedDateIn}/${formattedDateOut}`);
+            //console.log("response: ", response)
+            set({ serviceList: response.data.serviceList, isLoading: false });
+            return response.data;
+        } catch (error) {
+            set({ error: error.response?.data?.message || "Error getting services", isLoading: false });
+            throw error;
+        }
+    },
     getServicesByEmail: async (storeId, customerEmail) => {
         set({ isLoading: true, error: null });
         try {
