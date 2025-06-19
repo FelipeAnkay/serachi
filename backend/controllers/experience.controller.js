@@ -4,16 +4,6 @@ import { Experience } from "../models/experience.model.js";
 export const createExperience = async (req, res) => {
     const { name, serviceList, productList, bookList, storeId, userEmail, customerEmail, dateIn, dateOut, quoteId } = req.body;
     try {
-        const hasAnyItem = 
-        (Array.isArray(serviceList) && serviceList.length > 0) ||
-        (Array.isArray(productList) && productList.length > 0) ||
-        (Array.isArray(bookList) && bookList.length > 0);
-        
-        console.log("B: hasAnyItem tiene: ", hasAnyItem)
-
-        if (!hasAnyItem) {
-            throw new Error("At least one of serviceList, productList or bookList must have items");
-        }
 
         if (!name || !dateIn || !dateOut || !storeId || !customerEmail) {
             throw new Error("All fields are required");
