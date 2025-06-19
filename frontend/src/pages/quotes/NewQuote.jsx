@@ -553,7 +553,7 @@ export default function NewQuote() {
     }
     const handleSaveClient = async (e) => {
         try {
-            console.log("F: El cliente es:", customer);
+            //console.log("F: El cliente es:", customer);
             const customerPayload = {
                 _id: customer._id,
                 email: customer.email,
@@ -571,7 +571,7 @@ export default function NewQuote() {
                 divingCertificates: customer.divingCertificates,
                 storeId: storeId,
             };
-            console.log("F: El cliente a CREAR o EDITAR es:", customerPayload);
+            //console.log("F: El cliente a CREAR o EDITAR es:", customerPayload);
             if (customerPayload._id) {
                 // El cliente ya existe: actualizar
                 //console.log("F: entré a modificar");
@@ -684,7 +684,7 @@ export default function NewQuote() {
                                         isOpen={isCustomerModalOpen}
                                         onClose={() => setIsCustomerModalOpen(false)}
                                         customer={customer}
-                                        setCustomer={setCustomer} Add commentMore actions
+                                        setCustomer={setCustomer}
                                         onSave={handleSaveClient}
                                     />
                                 )}

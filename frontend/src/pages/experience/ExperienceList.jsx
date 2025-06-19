@@ -2,7 +2,7 @@ import Cookies from 'js-cookie';
 import { motion } from 'framer-motion';
 import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from "react-router-dom";
-import { Copy, FolderCheck, Pencil, UserCog } from 'lucide-react';
+import { Copy, FolderCheck, MapPinCheckInside, Pencil, UserCog } from 'lucide-react';
 import { useExperienceServices } from '../../store/experienceServices';
 import SendFormModal from '../../components/SendFormsModal';
 import LoadingSpinner from '../../components/LoadingSpinner';
@@ -10,11 +10,14 @@ import { useFormRecordServices } from '../../store/formRecordServices';
 import toast from 'react-hot-toast';
 import ViewSignedForms from '../../components/ViewSignedForm';
 import SendProfileModal from '../../components/SendProfileModal';
+import ExperienceModal from '../../components/ExperienceModal';
+import { useAuthStore } from '../../store/authStore';
 
 
 
 export default function ExperienceList() {
     const { getExperienceByCheckout } = useExperienceServices();
+    const { user } = useAuthStore();
     const [experiences, setExperiences] = useState([]);
     const [loading, setLoading] = useState(true);
     const storeId = Cookies.get('storeId');
@@ -29,6 +32,8 @@ export default function ExperienceList() {
     const [isModalFormOpen, setIsModalFormOpen] = useState(false);
     const [modalProfileOpen, setModalProfileOpen] = useState(false);
     const [selectedCustomer, setSelectedCustomer] = useState("");
+    const [modalExperienceOpen, setModalExperienceOpen] = useState(false);
+    const [experienceCreated, setExperienceCreated] = useState(false);
 
     const location = useLocation();
     const navigate = useNavigate();
@@ -92,6 +97,26 @@ export default function ExperienceList() {
         }
     }, [location]);
 
+    useEffect(() => {
+        const fetchExperiences = async () => {
+            try {
+                //console.log("llamaré a getExperienceByCheckout: ", storeId);
+                const response = await getExperienceByCheckout(storeId);
+                //console.log("getExperienceByCheckout: ", response);
+                setExperiences(response.experienceList);
+                setLoadRecords(true);
+            } catch (error) {
+                console.error('Error fetching experiences:', error);
+            } finally {
+                setLoading(false);
+            }
+        };
+        if (experienceCreated) {
+            fetchExperiences();
+            setExperienceCreated(false);
+        }
+    }, [experienceCreated]);
+
     const handleSendFormClick = () => {
         setIsModalOpen(true)
     }
@@ -104,6 +129,11 @@ export default function ExperienceList() {
         const filteredForms = records.filter(form => form.customerEmail === email);
         setSelectedForms(filteredForms);
         setIsModalFormOpen(true);
+    };
+
+    const handleNewExperience = () => {
+        console.log("Entre a handleNewExperience")
+        setModalExperienceOpen(true);
     };
 
     return (
@@ -119,7 +149,7 @@ export default function ExperienceList() {
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0, scale: 0.9 }}
                     transition={{ duration: 0.5 }}
-                      className="
+                    className="
                                 flex flex-col
                                 bg-blue-900 bg-opacity-80 backdrop-filter backdrop-blur-lg
                                 rounded-2xl shadow-2xl border border-gray-800 overflow-hidden
@@ -132,8 +162,18 @@ export default function ExperienceList() {
                 >
                     <h1 className="text-3xl font-bold mt-6 mb-6 text-center text-white bg-clip-text">Active Experiences</h1>
                     <div className='w-full'>
-                        <fieldset className="flex-grow space-y-4 border rounded-2xl p-4 ml-4 mr-4">
+                        <fieldset className="flex-grow space-y-4 border rounded-2xl p-4">
                             <legend className="text-2xl font-bold">Experience List</legend>
+                            <div className='flex flex-row items-center justify-center'>
+                                <button
+                                    className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded w-max flex flex-row gap-2"
+                                    type="button"
+                                    onClick={handleNewExperience}
+                                >
+                                   New Experience
+                                   <MapPinCheckInside/>
+                                </button>
+                            </div>
                             <input
                                 type="text"
                                 placeholder="Search experience by email or name..."
@@ -186,6 +226,7 @@ export default function ExperienceList() {
                                                             onClick={() => {
                                                                 setSelectedCustomer(experience.customerEmail);
                                                                 openSendProfileModal(experience.customerEmail);
+                                                                window.scrollTo({ top: 0, behavior: 'smooth' });
                                                             }}
                                                             className='py-3 px-4 bg-gradient-to-r from-blue-400 to-blue-500 text-white font-bold rounded-lg shadow-lg
                 hover:from-blue-500 hover:to-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-gray-900'
@@ -203,6 +244,7 @@ export default function ExperienceList() {
                                                             onClick={() => {
                                                                 setSelectedExperience(experience);
                                                                 handleSendFormClick(experience);
+                                                                window.scrollTo({ top: 0, behavior: 'smooth' });
                                                             }}
                                                             className='py-3 px-4 bg-gradient-to-r from-blue-500 to-blue-600 text-white font-bold rounded-lg shadow-lg
                 hover:from-blue-600 hover:to-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-gray-900'
@@ -257,6 +299,18 @@ export default function ExperienceList() {
                                 isOpen={modalProfileOpen}
                                 onClose={() => setModalProfileOpen(false)}
                                 customerEmail={selectedCustomer}
+                            />
+                        )}
+                        {modalExperienceOpen && (
+                            <ExperienceModal
+                                isOpen={modalExperienceOpen}
+                                onClose={() => setModalExperienceOpen(false)}
+                                experience={''}
+                                setExperience={''}
+                                onSave={''}
+                                storeId={storeId}
+                                userEmail={user.email}
+                                created={() => setExperienceCreated(true)}
                             />
                         )}
                     </div>
