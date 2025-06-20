@@ -35,6 +35,7 @@ export default function CreateService() {
     const [customer, setCustomer] = useState({});
     const { getCustomerEmail, createCustomer, updateCustomer } = useCustomerServices();
     const customerEmailRef = useRef(null);
+    const [selectedType, setSelectedType] = useState("")
 
     const formatDateInput = (dateStr) => {
         if (!dateStr) return "";
@@ -249,7 +250,7 @@ export default function CreateService() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        if (!isCustomerFilled) {
+        if (selectedType==="Customer" && !isCustomerFilled) {
             toast.error("Search the customer email is mandatory");
             return;
         }
@@ -437,7 +438,10 @@ export default function CreateService() {
                                         name="type"
                                         className="w-full border border-gray-300 bg-white text-blue-950 rounded px-3 py-2"
                                         value={customService.type || ''}
-                                        onChange={(e) => setCustomService({ ...customService, type: e.target.value })}
+                                        onChange={(e) => {
+                                            setCustomService({ ...customService, type: e.target.value }),
+                                            setSelectedType(e.target.value)
+                                        }}
                                     >
                                         <option value="">Select a Type</option>
                                         {types.map((t) => (

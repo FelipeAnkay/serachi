@@ -52,6 +52,7 @@ export default function NewQuote() {
     const [numberOfPeople, setNumberOfPeople] = useState(1);
     const [isPeopleLock, setIsPeopleLock] = useState(false);
     const hasInteractedWithToggle = useRef(false);
+    let roomType = "";
 
     const roomFill = (roomList) => {
         setSelectedRooms(roomList);
@@ -97,12 +98,12 @@ export default function NewQuote() {
                 const response = await getPartnerList(storeId);
                 //console.log("ProductList Response: ", response);
                 setPartners(response.partnerList);
-              
+
                 //console.log("ProductList: ", products);
             } catch (error) {
                 toast.error('Error fetching Partner');
-          
-            }finally{
+
+            } finally {
                 setLoading(false);
             }
         }
@@ -198,7 +199,7 @@ export default function NewQuote() {
                 setIsRoomVisible(true);
             } catch (error) {
                 toast.error('Error fetching available rooms');
-            }finally{
+            } finally {
                 setLoading(false)
             }
         };
@@ -266,7 +267,7 @@ export default function NewQuote() {
                 setFinalPrice(response.finalPrice + response.discount)
             } catch (error) {
                 toast.error('Error fetching Quote');
-            }finally{
+            } finally {
                 setLoading(true)
             }
         }
@@ -358,6 +359,12 @@ export default function NewQuote() {
     const updateQuoteFromSelectedRoom = (selected) => {
         //console.log("Entre a updateQuoteFromSelectedRoom ROOM: ", selected)
         const structuredList = Object.entries(selected).map(([id, qty]) => {
+            let auxType = true;
+            console.log("roomType", roomType)
+            if (roomType != "PRIVATE") {
+                auxType = false;
+            }
+            console.log("auxType: ", auxType)
             //console.log("La lista de rooms es: ", rooms)
             const room = rooms.find((p) => p._id === id);
             const startDate = roomStartDates[id] ? new Date(roomStartDates[id]) : new Date(quote.dateIn);
@@ -368,6 +375,13 @@ export default function NewQuote() {
             const adjustedQty = isPrivate ? room.availability : numberOfPeople;
             //console.log("El adjustedQty es: ", adjustedQty)
             //console.log("El startDate es: ", startDate)
+            let finalPrice = 0;
+            if (auxType) {
+                finalPrice = (room?.price || 0) * qty
+            } else {
+                finalPrice = (room?.price || 0) * qty * adjustedQty
+            }
+            console.log("finalPrice: ", finalPrice)
             return {
                 roomId: id,
                 roomName: room?.name || '',
@@ -375,13 +389,14 @@ export default function NewQuote() {
                 roomUnitaryPrice: (room?.price || 0),
                 roomNights: (qty || 0),
                 isPrivate: isPrivate,
-                roomFinalPrice: ((room?.price || 0) * qty * adjustedQty),
+                roomFinalPrice: finalPrice,
                 roomDateIn: isNaN(startDate) ? '' : startDate.toISOString(),
                 roomDateOut: isNaN(endDate) ? '' : endDate.toISOString(),
             };
         });
-
+        console.log("structuredList", structuredList)
         const roomSubtotal = structuredList.reduce((sum, item) => sum + item.roomFinalPrice, 0);
+
         const productSubtotal = quote.productList?.reduce((sum, p) => sum + p.productFinalPrice, 0) || 0;
 
         const total = productSubtotal + roomSubtotal;
@@ -477,7 +492,7 @@ export default function NewQuote() {
                 divingCertificates: [],
             });
             setIsCustomerModalOpen(true);
-        }finally{
+        } finally {
             setLoading(false)
         }
     };
@@ -621,14 +636,14 @@ export default function NewQuote() {
     };
 
     return (
-            <div className="flex flex-col min-h-screen w-full bg-blue-950 text-white px-4 py-6 sm:px-8 sm:py-10">
-                <motion.div
-                    initial={{ opacity: 0, scale: 2 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.9 }}
-                    transition={{ duration: 0.5 }}
-                    className="flex flex-col w-full max-w-9/12 mx-auto bg-blue-900 bg-opacity-80 backdrop-filter backdrop-blur-lg rounded-2xl shadow-2xl border border-gray-800 overflow-hidden min-h-screen items-center p-4"
-                >
+        <div className="flex flex-col min-h-screen w-full bg-blue-950 text-white px-4 py-6 sm:px-8 sm:py-10">
+            <motion.div
+                initial={{ opacity: 0, scale: 2 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.9 }}
+                transition={{ duration: 0.5 }}
+                className="flex flex-col w-full max-w-9/12 mx-auto bg-blue-900 bg-opacity-80 backdrop-filter backdrop-blur-lg rounded-2xl shadow-2xl border border-gray-800 overflow-hidden min-h-screen items-center p-4"
+            >
                 <h1 className="text-3xl font-bold mt-6 mb-6 text-center text-white">New Quote</h1>
 
                 <form onSubmit={handleSubmit} className="space-y-4 border p-4 rounded-2xl shadow bg-blue-800 mx-2 mb-2 w-full">
@@ -878,7 +893,13 @@ export default function NewQuote() {
                                                         })
                                                     );
                                                     const maxQty = maxContiguousDays;
-                                                    const totalPrice = unitPrice * qty * Qty;
+                                                    let totalPrice = 0
+
+                                                    if (room.type != "PRIVATE") {
+                                                        totalPrice = unitPrice * qty * Qty;
+                                                    } else {
+                                                        totalPrice = unitPrice * qty;
+                                                    }
 
                                                     return (
                                                         <div
@@ -925,7 +946,10 @@ export default function NewQuote() {
                                                                         type="button"
                                                                         className="bg-red-500 text-white px-2 rounded"
                                                                         disabled={qty <= 0}
-                                                                        onClick={() => decrementRoom(room._id)}
+                                                                        onClick={() => {
+                                                                            roomType = room.type,
+                                                                                decrementRoom(room._id)
+                                                                        }}
                                                                     >
                                                                         -
                                                                     </button>
@@ -966,6 +990,7 @@ export default function NewQuote() {
                                                                                 );
                                                                                 return;
                                                                             }
+                                                                            roomType = room.type,
                                                                             incrementRoom(room._id);
                                                                         }}
                                                                     >

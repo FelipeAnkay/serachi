@@ -92,7 +92,7 @@ const SetStaffFee = () => {
         if (!form.staffEmail || !form.productId || !form.feeRules || !form.startDate) return alert("Fill all the mandatory fields");
 
         if (isEditing) {
-            console.log("Payload to createPayRate - actualizando: ", form)
+            //console.log("Payload to createPayRate - actualizando: ", form)
             await updatePayrate(editingId, form)
         } else {
             const newPayrate = {
