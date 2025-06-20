@@ -607,7 +607,7 @@ const PRCalculator = () => {
                                 animate={{ scale: 1, opacity: 1 }}
                                 exit={{ scale: 0.9, opacity: 0 }}
                             >
-                                <h3 className='text-lg font-bold mb-4'>Applied Fee Rules</h3>
+                                <h3 className='text-lg font-bold mb-4'>Evaluated Fee Rules</h3>
 
                                 <div className='space-y-2'>
                                     {selectedRules.length === 0 ? (

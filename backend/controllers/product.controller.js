@@ -57,9 +57,9 @@ export const productList = async (req, res) => {
 export const getProductById = async (req, res) => {
     try {
         const {id} = req.params;
-        console.log("Llamando a Product.findById: ", id);
+        //console.log("Llamando a Product.findById: ", id);
         const product = await Product.findById(id);
-        console.log("La respuesta es: ", product);
+        //console.log("La respuesta es: ", product);
         if (!product) {
             return res.status(400).json({ success: false, message: "product not found" });
         }

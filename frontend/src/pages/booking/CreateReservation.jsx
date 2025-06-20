@@ -29,6 +29,7 @@ export default function CreateReservation() {
     const [selectedRooms, setSelectedRooms] = useState({});
     const [isRoomVisible, setIsRoomVisible] = useState(false);
     const [isRoomPrivate, setIsRoomPrivate] = useState({});
+    let roomType = "";
     const [roomSearch, setRoomSearch] = useState("");
     const hasFetchedEmail = useRef(false);
     const navigate = useNavigate();
@@ -202,6 +203,13 @@ export default function CreateReservation() {
 
     const updateReservationFromSelectedRoom = (selected) => {
         const structuredList = Object.entries(selected).map(([id, qty]) => {
+            //console.log("qty", qty)
+            //console.log("roomType", roomType)
+            let auxType = true;
+            if (roomType != "PRIVATE") {
+                auxType = false;
+            }
+            //console.log("auxType: ", auxType)
             const room = rooms.find((p) => p._id === id);
             const startDate = roomStartDates[id] ? new Date(roomStartDates[id]) : new Date(reservation.dateIn);
             const endDate = new Date(startDate);
@@ -209,18 +217,25 @@ export default function CreateReservation() {
             const isPrivate = isRoomPrivate[id];
             const adjustedQty = isPrivate ? room.availability : numberOfPeople;
             const nights = (endDate - startDate) / (1000 * 60 * 60 * 24);
+            let finalPrice = 0;
+            if (auxType) {
+                finalPrice = (room?.price || 0) * qty
+            } else {
+                finalPrice = (room?.price || 0) * qty * adjustedQty
+            }
+            //console.log("finalPrice: ", finalPrice)
             return {
                 roomId: id,
                 roomName: room?.name || '',
                 bedsReserved: adjustedQty,
                 roomUnitaryPrice: (room?.price || 0),
-                roomFinalPrice: ((room?.price || 0) * qty * adjustedQty),
+                roomFinalPrice: finalPrice,
                 roomDateIn: isNaN(startDate) ? '' : startDate.toISOString(),
                 roomDateOut: isNaN(endDate) ? '' : endDate.toISOString(),
                 roomNights: nights
             };
         });
-
+        console.log("structuredList", structuredList)
         const roomSubtotal = structuredList.reduce((sum, item) => sum + item.roomFinalPrice, 0);
         const total = roomSubtotal;
         setFinalPrice(total);
@@ -602,7 +617,13 @@ export default function CreateReservation() {
                                                             })
                                                         );
                                                         const maxQty = maxContiguousDays;
-                                                        const totalPrice = unitPrice * qty * Qty;
+                                                        let totalPrice = 0
+
+                                                        if (room.type != "PRIVATE") {
+                                                            totalPrice = unitPrice * qty * Qty;
+                                                        } else {
+                                                            totalPrice = unitPrice * qty;
+                                                        }
 
                                                         return (
                                                             <div
@@ -649,7 +670,10 @@ export default function CreateReservation() {
                                                                             type="button"
                                                                             className="bg-red-500 text-white px-2 rounded"
                                                                             disabled={qty <= 0}
-                                                                            onClick={() => decrementRoom(room._id)}
+                                                                            onClick={() => {
+                                                                                roomType = room.type,
+                                                                                    decrementRoom(room._id)
+                                                                            }}
                                                                         >
                                                                             -
                                                                         </button>
@@ -690,6 +714,7 @@ export default function CreateReservation() {
                                                                                     );
                                                                                     return;
                                                                                 }
+                                                                                roomType = room.type,
                                                                                 incrementRoom(room._id);
                                                                             }}
                                                                         >
