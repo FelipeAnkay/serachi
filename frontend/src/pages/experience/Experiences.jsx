@@ -10,11 +10,12 @@ import { useStaffServices } from '../../store/staffServices';
 import { useServiceServices } from '../../store/serviceServices';
 import LoadingSpinner from '../../components/LoadingSpinner';
 import CustomCalendarToolbar from '../../components/CustomCalendarToolbar';
+import AgendaEventRenderer from '../../components/AgendaEventRenderer';
 
 const localizer = momentLocalizer(moment);
 
 const Experiences = () => {
-    const { updateService, getServicesByDate } = useServiceServices();
+    const { updateService, getServicesForCalendar } = useServiceServices();
     const { getStaffEmail, getStaffList } = useStaffServices();
     const storeId = Cookies.get("storeId");
     const [events, setEvents] = useState([]);
@@ -29,15 +30,25 @@ const Experiences = () => {
     const [staffList, setStaffList] = useState([]);
     const [serviceTypes, setServiceTypes] = useState([]);
     const [selectedType, setSelectedType] = useState("All");
+    const [startDay, setStartDay] = useState(new Date());
+    const [lastDay, setLastDay] = useState(new Date());
+    let loadServices = true;
 
     useEffect(() => {
         const now = new Date();
-        const firstDay = new Date(now.getFullYear(), now.getMonth(), -7);
-        const lastDay = new Date(now);
-        lastDay.setMonth(lastDay.getMonth() + 1);
+        // Primer día del mes actual
+        const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
+        // Último día del mes actual
+        const lastDay2 = new Date(now.getFullYear(), now.getMonth() + 1, 0);
         //console.log("Fechas: ", firstDay, " TO ", lastDay)
-        fetchStaff();
-        fetchExperiences(firstDay, lastDay);
+        if (loadServices) {
+            setStartDay(firstDay);
+            setLastDay(lastDay2)
+            fetchStaff();
+            fetchExperiences(firstDay, lastDay2);
+            loadServices = false;
+        }
+
     }, []);
 
     useEffect(() => {
@@ -65,6 +76,8 @@ const Experiences = () => {
     }
 
     const fetchExperiences = async (startDate, endDate) => {
+        setStartDay(startDate);
+        setLastDay(endDate)
         const allServiceEvents = [];
         const staffColorMap = {};
         const typesSet = new Set();
@@ -94,8 +107,8 @@ const Experiences = () => {
         try {
             //setLoading(true);
             //console.log("La llamada de getServiceById ", {startDate,endDate});
-            const serviceDetail = await getServicesByDate(startDate, endDate, storeId);
-            //console.log("La respuesta de getServiceById ", serviceDetail);
+            const serviceDetail = await getServicesForCalendar(startDate, endDate, storeId);
+            //console.log("La respuesta de getServicesByDate ", serviceDetail);
             const parseDate = (d) =>
                 typeof d === "object" && d.$date?.$numberLong
                     ? new Date(Number(d.$date.$numberLong))
@@ -120,18 +133,43 @@ const Experiences = () => {
                     }
                 }
             }
+            //console.log("allServiceEvents: ", allServiceEvents)
             setAllEvents(allServiceEvents);
             setEvents(allServiceEvents);
             setServiceTypes(["All", ...Array.from(typesSet)]);
             setLoadedRange({ start: startDate, end: endDate });
+            if (view === "agenda" && allServiceEvents.length > 0) {
+                const today = new Date();
+                const earliest = allServiceEvents.reduce((min, e) =>
+                    e.start < min.start ? e : min
+                );
+
+                setSelectedDate(earliest.start);
+
+                if (isSameMonth(earliest.start, today)) {
+                    const nextClosest = allServiceEvents.find(e => e.start >= today);
+                    //console.log("nextClosest es: ", nextClosest)
+                    if (nextClosest) {
+                        setTimeout(() => {
+                            const el = document.querySelector(`[data-id="event-${nextClosest.resource._id}"]`);
+                            //console.log("Documento encontrado: ", el)
+                            if (el) el.scrollIntoView({ behavior: "smooth", block: "center" });
+                        }, 500); // ⏱️ tiempo suficiente para que el calendario renderice
+                    }
+                }
+            }
         } catch (error) {
             toast.error("Theres no services for this month")
-            console.log("El error es: ", error)
+            //console.log("El error es: ", error)
             setEvents([]);
         } finally {
             //setLoading(false);
         }
     };
+
+    const isSameMonth = (date1, date2) =>
+        date1.getFullYear() === date2.getFullYear() &&
+        date1.getMonth() === date2.getMonth();
 
     const handleSelectSlot = ({ start }) => {
         setSelectedDate(start);
@@ -201,17 +239,17 @@ const Experiences = () => {
     };
 
     const handleNavigate = (newDate) => {
-
-        //console.log("Entre a handleNavigate: ", newDate)
+        console.log("Entre a handleNavigate: ", newDate)
         setSelectedDate(newDate);
-
-        const newMonthStart = new Date(newDate.getFullYear(), newDate.getMonth(), -7);
-        const newMonthEnd = new Date(newDate.getFullYear(), newDate.getMonth() + 1, +7);
-        //console.log("Nuevas fechas: ",{newMonthStart, newMonthEnd})
+        //const newMonthStart = new Date(newDate.getFullYear(), newDate.getMonth(), -7);
+        const newMonthStart = new Date(newDate.getFullYear(), newDate.getMonth(), 1);
+        const newMonthEnd = new Date(newDate.getFullYear(), newDate.getMonth() + 1, 0);
+        //const newMonthEnd = new Date(newDate.getFullYear(), newDate.getMonth() + 1, +7);
+        //console.log("Nuevas fechas: ", { newMonthStart, newMonthEnd })
         //console.log("Fechas de loadedRange: ", {loadedRange})
-        const auxStartYear = loadedRange.start.getFullYear()
         const auxStartMonth = loadedRange.start.getMonth()
-        //console.log("Fechas a comparar: ", {auxStartMonth,auxStartYear})
+        const auxNewStartMonth = newMonthStart.getMonth()
+        //console.log("Meses a comparar: ", {auxStartMonth,auxNewStartMonth})
         const isSameMonth =
             loadedRange.start &&
             loadedRange.end &&
@@ -220,11 +258,10 @@ const Experiences = () => {
 
         //console.log("isSameMonth: ", isSameMonth)
         if (!isSameMonth) {
-            //console.log("newMonthStart: ", newMonthStart)
-            //console.log("newMonthEnd: ", newMonthEnd)
             fetchExperiences(newMonthStart, newMonthEnd);
         }
     };
+
 
     return (
         <>
@@ -233,7 +270,7 @@ const Experiences = () => {
                     <LoadingSpinner />
                 )
             }
-            <div className="flex flex-col min-h-screen w-full bg-blue-950 text-white px-4 py-6 sm:px-8 sm:py-10">
+            <div className="flex flex-col min-h-screen w-full bg-blue-950 text-white px-4 py-6 sm:px-8 sm:py-5">
                 <motion.div
                     initial={{ opacity: 0, scale: 2 }}
                     animate={{ opacity: 1, scale: 1 }}
@@ -242,10 +279,10 @@ const Experiences = () => {
                     className="
                                 flex flex-col
                                 bg-blue-900 bg-opacity-80 backdrop-filter backdrop-blur-lg
-                                rounded-2xl shadow-2xl border border-gray-800 overflow-hidden
-                                min-h-[calc(100vh-5rem)]
+                                rounded-2xl shadow-2xl border border-gray-800 overflow-visible
+                                min-h-full
                                 w-full max-w-7xl
-                                px-4 py-6
+                                px-4 py-15
                                 mt-4
                                 mx-auto
                             "
@@ -253,7 +290,7 @@ const Experiences = () => {
                     <h2 className='text-3xl font-bold mb-6 text-center text-white bg-clip-text'>
                         Experiences Calendar
                     </h2>
-                    <div className="flex-grow p-4 overflow-auto w-full">
+                    <div className="flex-grow p-4 overflow-visible w-full">
                         <div className="flex items-center gap-4 px-4 mb-4">
                             <label className="text-white font-semibold">Filter Events by Type:</label>
                             <select
@@ -287,7 +324,9 @@ const Experiences = () => {
                                 max={new Date(0, 0, 0, 22, 0)}  // ⏰ Hasta las 10:00 pm
                                 eventPropGetter={(event) => {
                                     const color = event.staffColor || "#6b7280"; // valor por defecto (gray-500)
+                                    const id = event.resource?._id || event.title;
                                     return {
+                                        'data-id': `event-${id}`,
                                         style: {
                                             backgroundColor: color,
                                             color: "white",
@@ -298,7 +337,10 @@ const Experiences = () => {
                                     };
                                 }}
                                 components={{
-                                    toolbar: (props) => <CustomCalendarToolbar {...props} />
+                                    toolbar: (props) => <CustomCalendarToolbar {...props} startDate={startDay} endDate={lastDay} />,
+                                    agenda: {
+                                        event: AgendaEventRenderer
+                                    }
                                 }}
                             />
                         </div>

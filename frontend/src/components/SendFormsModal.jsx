@@ -17,13 +17,14 @@ export default function SendFormModal({ isOpen, onClose, experience }) {
     const [selectedForms, setSelectedForms] = useState([]);
     const [selectedDate, setSelectedDate] = useState(new Date());
     const [genToken, setGenToken] = useState(false);
+    const [tokenGenerated, setTokenGenerated] = useState('');
 
     const [formData, setFormData] = useState({
         customer: '',
         user: user,
         store: store,
         formList: '',
-        endDate: '',
+        endDate: selectedDate,
         urlToken: ''
     })
 
@@ -51,7 +52,8 @@ export default function SendFormModal({ isOpen, onClose, experience }) {
             //console.log("fetchToken: ", experience.customerEmail)
             if (genToken) {
                 const auxToken = await generateToken(experience.customerEmail, endDate, experience.storeId);
-                console.log("generateToken: ", auxToken);
+                setTokenGenerated(auxToken.token);
+                //console.log("generateToken: ", auxToken);
                 setFormData(prev => ({
                     ...prev,
                     urlToken: auxToken.token,
@@ -111,6 +113,11 @@ export default function SendFormModal({ isOpen, onClose, experience }) {
     }, [experience])
 
     const handleSendForms = async () => {
+        if(!tokenGenerated){
+            toast.error("Please select a date");
+            return;
+        }
+
         if (selectedForms.length === 0) {
             toast.error("Please select at least one form");
             return;

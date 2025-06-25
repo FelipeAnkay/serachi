@@ -151,7 +151,7 @@ export default function CashFlowSummary() {
                             {/* Incomes List */}
                             <div>
                                 <h3 className="text-lg font-semibold mb-2 border-b pb-1">Incomes</h3>
-                                <div className="space-y-2 max-h-80 overflow-auto">
+                                <div className="space-y-2 max-h-200 overflow-auto">
                                     {formData.incomeList.map((item, index) => (
                                         <div key={index} className="bg-green-800 p-3 rounded" onClick={() => handleItemClick("income", item)}>
                                             <div className="flex justify-between">
@@ -172,7 +172,7 @@ export default function CashFlowSummary() {
                             {/* Expenses List */}
                             <div>
                                 <h3 className="text-lg font-semibold mb-2 border-b pb-1">Expenses</h3>
-                                <div className="space-y-2 max-h-80 overflow-auto">
+                                <div className="space-y-2 max-h-200 overflow-auto">
                                     {formData.expenseList.map((item, index) => (
                                         <div key={index} className="bg-red-800 p-3 rounded" onClick={() => handleItemClick("expense", item)}>
                                             <div className="flex justify-between" >
