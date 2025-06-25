@@ -125,6 +125,17 @@ export default function SetStore() {
                                 disabled
                             />
                         </div>
+                        <div>
+                            <label className="block text-sm font-medium mb-1">
+                                Does your store manage bookings?
+                            </label>
+                            <input
+                                type="checkbox"
+                                className="h-5 w-5 text-blue-600 border-gray-300 rounded"
+                                checked={store.storeBookings || false}
+                                onChange={(e) => setStore({ ...store, storeBookings: e.target.checked })}
+                            />
+                        </div>
                         <div key="mainEmail">
                             <label className="block text-sm font-medium text-white">Main Contact (Email)</label>
                             <input

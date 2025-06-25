@@ -44,6 +44,14 @@ const storeSchema = new mongoose.Schema({
         type: Boolean,
         default: true
     },
+    plan:{
+        type: String,
+        default:"BAS"
+    },
+    storeBookings:{
+        type: Boolean,
+        default:false
+    },
     daysClosed:[{
         type: Date
     }]

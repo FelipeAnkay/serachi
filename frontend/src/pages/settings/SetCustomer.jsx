@@ -15,7 +15,8 @@ const SetCustomer = () => {
 
     const storeId = Cookies.get('storeId');
     const { user } = useAuthStore();
-    const { store } = useStoreServices();
+    const { getStoreById } = useStoreServices();
+    const [store, setStore] = useState({});
     const [customerList, setCustomerList] = useState([]);
     const [loading, setLoading] = useState(true);
     const [modalOpen, setModalOpen] = useState(false);
@@ -25,6 +26,7 @@ const SetCustomer = () => {
     const [confirmDelete, setConfirmDelete] = useState(null);
     const [searchTerm, setSearchTerm] = useState('');
     const [modalProfileOpen, setModalProfileOpen] = useState(false);
+    const [sendProfile, setSendProfile] = useState(false);
 
     useEffect(() => {
         const fetchCustomer = async () => {
@@ -38,9 +40,24 @@ const SetCustomer = () => {
                 setLoading(false);
             }
         };
+        const fetchStore = async () => {
+            try {
+                const auxStore = await getStoreById(storeId);
+                //console.log("Respuesta de getCustomerList", customer);
+                setStore(auxStore.store)
+                if (auxStore.store.plan != "BAS") {
+                    setSendProfile(true);
+                }
+            } catch (error) {
+                console.error('Error fetching customer list:', error);
+            } finally {
+                setLoading(false);
+            }
+        };
 
         if (storeId) {
             fetchCustomer();
+            fetchStore();
             //console.log("La lista de partner es: ", partnerList)
         }
     }, []);
@@ -244,13 +261,15 @@ const SetCustomer = () => {
                                                 <p><strong>Phone:</strong> {customer.phone || '-'}</p>
                                             </div>
                                             <div className='w-1/8 flex flex-col items-center ml-2'>
-                                                <button
-                                                    onClick={() => openSendProfileModal(customer)}
-                                                    className=" text-green-600 hover:text-green-800"
-                                                    title="Send Profile"
-                                                >
-                                                    <Send />
-                                                </button>
+                                                {sendProfile && (
+                                                    <button
+                                                        onClick={() => openSendProfileModal(customer)}
+                                                        className=" text-green-600 hover:text-green-800"
+                                                        title="Send Profile"
+                                                    >
+                                                        <Send />
+                                                    </button>
+                                                )}
                                                 <button className='mt-2' title="Copy Email">
                                                     <Copy
                                                         onClick={(e) => {

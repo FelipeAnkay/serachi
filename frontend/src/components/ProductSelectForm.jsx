@@ -14,7 +14,7 @@ const ProductSelectForm = ({ products, value = [], onChange }) => {
       productName: product.name,
       Qty: 1,
       productUnitaryPrice: product.price || 0,
-      productFinalPrice: product.price || 0,
+      productFinalPrice: product.finalPrice || 0,
     };
 
     onChange([...value, newItem]);
