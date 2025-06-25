@@ -54,14 +54,14 @@ import SetTypes from './pages/settings/SetTypes';
 import SetCustomerView from './pages/settings/SetCustomerView';
 import UserAddressBookModal from './components/UserAddressBookModal';
 
-const ProtectedRoute = ({ children, requiredPermission }) => {
+const ProtectedRoute = ({ children, requiredPermission, storePermission }) => {
   const { isAuthenticated, user, logout } = useAuthStore();
   const { getRoleById } = useRoleServices();
   const { getStoreById } = useStoreServices();
   const [permissions, setPermissions] = useState([]);
+  const [storePlan, setStorePlan] = useState("");
   const [loadingPermissions, setLoadingPermissions] = useState(true);
   const storeId = Cookies.get('storeId');
-  
 
   useEffect(() => {
     const fetchPermissions = async () => {
@@ -75,7 +75,9 @@ const ProtectedRoute = ({ children, requiredPermission }) => {
         Cookies.remove('timezone');
         logout();
       }
-      const perms = await getUserPermissions(user, storeId, getRoleById, getStoreById);
+      const auxStore = await getStoreById(storeId)
+      setStorePlan(auxStore.store.plan)
+      const perms = await getUserPermissions(user, storeId, getRoleById, auxStore.store.mainEmail);
       //console.log("getUserPermissions: ", perms);
       setPermissions(perms);
       setLoadingPermissions(false);
@@ -100,18 +102,19 @@ const ProtectedRoute = ({ children, requiredPermission }) => {
     return <Navigate to="/" replace state={{ unauthorized: true }} />;
   }
 
+  if (storePermission && !storePermission.includes(storePlan)) {
+    return <Navigate to="/" replace state={{ unauthorized: true }} />;
+  }
+
   return children;
 };
 
-const getUserPermissions = async (user, storeId, getRoleById, getStoreById) => {
+const getUserPermissions = async (user, storeId, getRoleById, mainEmail) => {
   if (!user || !Array.isArray(user.role)) return [];
-  //console.log("Entre a getUserPermissions USER: ", user)
-  //console.log("Entre a getUserPermissions storeId: ", storeId)
-
-  const store = await getStoreById(storeId); // necesitas esta función si no tienes ya el store cargado
   //console.log("getStoreById: ", store);
+
   // Si es el mainEmail, devolver permisos completos
-  if (user.email === store.store.mainEmail) {
+  if (user.email === mainEmail) {
     return [
       "VIEW_REPORTS",
       "VIEW_SETTINGS",
@@ -200,56 +203,56 @@ function App() {
         <Route
           path="/experience-calendar"
           element={
-            <ProtectedRoute requiredPermission="VIEW_EXPERIENCES">
+            <ProtectedRoute requiredPermission="VIEW_EXPERIENCES" storePermission={["BAS","MED","PRO"]}>
               <Experiences />
             </ProtectedRoute>}
         />
         <Route
           path="/experience-create-service"
           element={
-            <ProtectedRoute requiredPermission="VIEW_EXPERIENCES">
+            <ProtectedRoute requiredPermission="VIEW_EXPERIENCES" storePermission={["BAS","MED","PRO"]}>
               <CreateService />
             </ProtectedRoute>}
         />
         <Route
           path="/experience-add-items"
           element={
-            <ProtectedRoute requiredPermission="VIEW_EXPERIENCES">
+            <ProtectedRoute requiredPermission="VIEW_EXPERIENCES" storePermission={["BAS","MED","PRO"]}>
               <AddItemsExperience />
             </ProtectedRoute>}
         />
         <Route
           path="/experience-open-tabs"
           element={
-            <ProtectedRoute requiredPermission="VIEW_EXPERIENCES">
+            <ProtectedRoute requiredPermission="VIEW_EXPERIENCES" storePermission={["BAS","MED","PRO"]}>
               <OpenTabs />
             </ProtectedRoute>}
         />
         <Route
           path="/delete-services"
           element={
-            <ProtectedRoute requiredPermission="VIEW_EXPERIENCES">
+            <ProtectedRoute requiredPermission="VIEW_EXPERIENCES" storePermission={["BAS","MED","PRO"]}>
               <DeleteServices />
             </ProtectedRoute>}
         />
         <Route
           path="/experience-list"
           element={
-            <ProtectedRoute requiredPermission="VIEW_EXPERIENCES">
+            <ProtectedRoute requiredPermission="VIEW_EXPERIENCES" storePermission={["MED","PRO"]}>
               <ExperienceList />
             </ProtectedRoute>}
         />
         <Route
           path="/set-service-staff"
           element={
-            <ProtectedRoute requiredPermission="VIEW_EXPERIENCES">
+            <ProtectedRoute requiredPermission="VIEW_EXPERIENCES" storePermission={["BAS","MED","PRO"]}>
               <AssignStaff />
             </ProtectedRoute>}
         />
         <Route
           path="/set-service-dates"
           element={
-            <ProtectedRoute requiredPermission="VIEW_EXPERIENCES">
+            <ProtectedRoute requiredPermission="VIEW_EXPERIENCES" storePermission={["BAS","MED","PRO"]}>
               <PendingServices />
             </ProtectedRoute>}
         />
@@ -261,154 +264,154 @@ function App() {
         <Route
           path="/bookings"
           element={
-            <ProtectedRoute requiredPermission="VIEW_BOOKINGS">
+            <ProtectedRoute requiredPermission="VIEW_BOOKINGS" storePermission={["MED","PRO"]}>
               <Booking />
             </ProtectedRoute>}
         />
         <Route
           path="/booking-calendar"
           element={
-            <ProtectedRoute requiredPermission="VIEW_BOOKINGS">
+            <ProtectedRoute requiredPermission="VIEW_BOOKINGS" storePermission={["MED","PRO"]}>
               <BookingSchedule />
             </ProtectedRoute>}
         />
         <Route
           path="/create-reservation"
           element={
-            <ProtectedRoute requiredPermission="VIEW_BOOKINGS">
+            <ProtectedRoute requiredPermission="VIEW_BOOKINGS" storePermission={["MED","PRO"]}>
               <CreateReservation />
             </ProtectedRoute>}
         />
         <Route
           path="/new-quote"
           element={
-            <ProtectedRoute requiredPermission="VIEW_QUOTES">
+            <ProtectedRoute requiredPermission="VIEW_QUOTES" storePermission={["BAS","MED","PRO"]}>
               <NewQuote />
             </ProtectedRoute>}
         />
         <Route
           path="/new-quote/:quoteId"
           element={
-            <ProtectedRoute requiredPermission="VIEW_QUOTES">
+            <ProtectedRoute requiredPermission="VIEW_QUOTES" storePermission={["BAS","MED","PRO"]}>
               <NewQuote />
             </ProtectedRoute>}
         />
         <Route
           path="/past-quote"
           element={
-            <ProtectedRoute requiredPermission="VIEW_QUOTES">
+            <ProtectedRoute requiredPermission="VIEW_QUOTES" storePermission={["BAS","MED","PRO"]}>
               <OpenQuote />
             </ProtectedRoute>}
         />
         <Route
           path="/confirmed-quote"
           element={
-            <ProtectedRoute requiredPermission="VIEW_QUOTES">
+            <ProtectedRoute requiredPermission="VIEW_QUOTES" storePermission={["BAS","MED","PRO"]}>
               <ConfirmedQuote />
             </ProtectedRoute>}
         />
         <Route
           path="/cashflow"
           element={
-            <ProtectedRoute requiredPermission="VIEW_CASHFLOW">
+            <ProtectedRoute requiredPermission="VIEW_CASHFLOW" storePermission={["BAS","MED","PRO"]}>
               <CashFlow />
             </ProtectedRoute>}
         />
         <Route
           path="/cashflow-summary"
           element={
-            <ProtectedRoute requiredPermission="VIEW_CASHFLOW">
+            <ProtectedRoute requiredPermission="VIEW_CASHFLOW" storePermission={["BAS","MED","PRO"]}>
               <CashFlowSummary />
             </ProtectedRoute>}
         />
         <Route
           path="/new-income"
           element={
-            <ProtectedRoute requiredPermission="VIEW_CASHFLOW">
+            <ProtectedRoute requiredPermission="VIEW_CASHFLOW" storePermission={["BAS","MED","PRO"]}>
               <NewIncome />
             </ProtectedRoute>}
         />
         <Route
           path="/new-expense"
           element={
-            <ProtectedRoute requiredPermission="VIEW_CASHFLOW">
+            <ProtectedRoute requiredPermission="VIEW_CASHFLOW" storePermission={["BAS","MED","PRO"]}>
               <NewExpense />
             </ProtectedRoute>}
         />
         <Route
           path="/payroll-calculator"
           element={
-            <ProtectedRoute requiredPermission="VIEW_PAYROLL">
+            <ProtectedRoute requiredPermission="VIEW_PAYROLL" storePermission={["MED","PRO"]}>
               <PRCalculator />
             </ProtectedRoute>}
         />
         <Route
           path="/set-products"
           element={
-            <ProtectedRoute requiredPermission="VIEW_SETTINGS">
+            <ProtectedRoute requiredPermission="VIEW_SETTINGS" storePermission={["BAS","MED","PRO"]}>
               <SetProducts />
             </ProtectedRoute>}
         />
         <Route
           path="/set-rooms"
           element={
-            <ProtectedRoute requiredPermission="VIEW_SETTINGS">
+            <ProtectedRoute requiredPermission="VIEW_SETTINGS" storePermission={["BAS","MED","PRO"]}>
               <SetRooms />
             </ProtectedRoute>}
         />
         <Route
           path="/set-staff-rates"
           element={
-            <ProtectedRoute requiredPermission="VIEW_SETTINGS">
+            <ProtectedRoute requiredPermission="VIEW_SETTINGS" storePermission={["BAS","MED","PRO"]}>
               <SetStaffFee />
             </ProtectedRoute>}
         />
         <Route
           path="/set-roles"
           element={
-            <ProtectedRoute requiredPermission="VIEW_SETTINGS">
+            <ProtectedRoute requiredPermission="VIEW_SETTINGS" storePermission={["BAS","MED","PRO"]}>
               <SetRoles />
             </ProtectedRoute>}
         />
         <Route
           path="/set-supplier"
           element={
-            <ProtectedRoute requiredPermission="VIEW_SETTINGS">
+            <ProtectedRoute requiredPermission="VIEW_SETTINGS" storePermission={["BAS","MED","PRO"]}>
               <SetSupplier />
             </ProtectedRoute>}
         />
         <Route
           path="/set-store"
           element={
-            <ProtectedRoute requiredPermission="VIEW_SETTINGS">
+            <ProtectedRoute requiredPermission="VIEW_SETTINGS" storePermission={["BAS","MED","PRO"]}>
               <SetStore />
             </ProtectedRoute>}
         />
         <Route
           path="/set-users"
           element={
-            <ProtectedRoute requiredPermission="VIEW_SETTINGS">
+            <ProtectedRoute requiredPermission="VIEW_SETTINGS" storePermission={["BAS","MED","PRO"]}>
               <SetUsers2 />
             </ProtectedRoute>}
         />
         <Route
           path="/set-customer"
           element={
-            <ProtectedRoute requiredPermission="VIEW_SETTINGS">
+            <ProtectedRoute requiredPermission="VIEW_SETTINGS" storePermission={["BAS","MED","PRO"]}>
               <SetCustomer />
             </ProtectedRoute>}
         />
         <Route
           path="/set-partner"
           element={
-            <ProtectedRoute requiredPermission="VIEW_SETTINGS">
+            <ProtectedRoute requiredPermission="VIEW_SETTINGS" storePermission={["BAS","MED","PRO"]}>
               <SetPartner />
             </ProtectedRoute>}
         />
         <Route
           path="/set-staff"
           element={
-            <ProtectedRoute requiredPermission="VIEW_SETTINGS">
+            <ProtectedRoute requiredPermission="VIEW_SETTINGS" storePermission={["BAS","MED","PRO"]}>
               <SetStaff />
             </ProtectedRoute>}
         />
@@ -420,7 +423,7 @@ function App() {
         <Route
           path="/set-types"
           element={
-            <ProtectedRoute requiredPermission="VIEW_SETTINGS">
+            <ProtectedRoute requiredPermission="VIEW_SETTINGS" storePermission={["BAS","MED","PRO"]}>
               <SetTypes />
             </ProtectedRoute>}
         />
@@ -469,14 +472,14 @@ function App() {
         <Route
           path="/report-incomes"
           element={
-            <ProtectedRoute requiredPermission="VIEW_REPORTS">
+            <ProtectedRoute requiredPermission="VIEW_REPORTS" storePermission={["BAS","MED","PRO"]}>
               <Reports />
             </ProtectedRoute>}
         />
         <Route
           path="/report-cashflow"
           element={
-            <ProtectedRoute requiredPermission="VIEW_REPORTS">
+            <ProtectedRoute requiredPermission="VIEW_REPORTS" storePermission={["BAS","MED","PRO"]}>
               <MonthlyCashFlow />
             </ProtectedRoute>}
         />

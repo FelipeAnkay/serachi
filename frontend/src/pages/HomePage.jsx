@@ -12,7 +12,7 @@ const HomePage = () => {
 
   useEffect(() => {
     if (location.state?.unauthorized) {
-      toast.error("User not authorized");
+      toast.error("User or store not authorized to use this option");
     }
   }, [location]);
 

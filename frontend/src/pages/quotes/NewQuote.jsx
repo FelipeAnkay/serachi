@@ -14,6 +14,7 @@ import { useNavigate } from "react-router-dom";
 import CustomerDetails from '../../components/CustomerDetail'
 import { useRoomReservationServices } from '../../store/roomReservationServices';
 import DateRangePicker from "../../components/DateRangePicker"
+import { useStoreServices } from '../../store/storeServices';
 
 
 export default function NewQuote() {
@@ -23,6 +24,7 @@ export default function NewQuote() {
     const storeId = Cookies.get('storeId');
     const clone = Cookies.get('clone');
     const { user } = useAuthStore();
+    const { store } = useStoreServices();
     const { getCustomerEmail, createCustomer, updateCustomer } = useCustomerServices();
     const [isCustomerModalOpen, setIsCustomerModalOpen] = useState(false);
     const [isNew, setIsNew] = useState(true);
@@ -126,7 +128,7 @@ export default function NewQuote() {
 
     // Cuando cambian las fechas, buscar habitaciones disponibles
     useEffect(() => {
-        //console.log("Entre a UE 4");
+        console.log("Entre a UE 4 - PLAN", {store});
         const fetchAvailableRooms = async () => {
             setLoading(true)
             if (!quote.dateIn || !quote.dateOut) {
@@ -203,13 +205,14 @@ export default function NewQuote() {
                 setLoading(false)
             }
         };
-
-        fetchAvailableRooms();
-        const nights = daysCalc(quote.dateIn, quote.dateOut)
-        setQuote((prev) => ({
-            ...prev,
-            numberOfNights: nights
-        }));
+        if (store.plan != "BAS" && store.storeBookings) {
+            fetchAvailableRooms();
+            const nights = daysCalc(quote.dateIn, quote.dateOut)
+            setQuote((prev) => ({
+                ...prev,
+                numberOfNights: nights
+            }));
+        }
     }, [quote.dateIn, quote.dateOut, storeId]);
 
     useEffect(() => {
@@ -991,7 +994,7 @@ export default function NewQuote() {
                                                                                 return;
                                                                             }
                                                                             roomType = room.type,
-                                                                            incrementRoom(room._id);
+                                                                                incrementRoom(room._id);
                                                                         }}
                                                                     >
                                                                         +

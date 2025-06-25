@@ -67,7 +67,7 @@ export const useStoreServices = create((set) => ({
             set({ store: response.data.store, isLoading: false });
             return response.data;
         } catch (error) {
-            set({ error: error.response.data.message || "Error getting quotes", isLoading: false });
+            set({ error: error || "Error getting Stores", isLoading: false });
             throw error;
         }
     },
