@@ -69,6 +69,40 @@ const CashflowReports = () => {
         });
     };
 
+    const filteredIncomes = incomeData.filter((income) =>
+        income.customerEmail.toLowerCase().includes(incomeTerm.toLowerCase())
+    );
+
+    const totalIncomeAmount = filteredIncomes.reduce((sum, income) => sum + income.amount, 0);
+    const avgIncomeAmount = filteredIncomes.length > 0 ? totalIncomeAmount / filteredIncomes.length : 0;
+
+    const filteredExpenses = expenseData
+        .map((expense) => {
+            const supplier = supplierList.find(s => s._id === expense.supplierId);
+            const staff = staffList.find(s => s.email === expense.staffEmail);
+
+            const responsible = supplier?.name || staff?.name || "Unknown";
+
+            return {
+                ...expense,
+                responsibleName: responsible.toLowerCase(),
+                descriptionLower: expense.description?.toLowerCase() || "",
+                typeLower: expense.type?.toLowerCase() || "",
+            };
+        })
+        .filter((expense) => {
+            if (!expenseTerm) return true;
+            const term = expenseTerm.toLowerCase();
+            return (
+                expense.responsibleName.includes(term) ||
+                expense.descriptionLower.includes(term) ||
+                expense.typeLower.includes(term)
+            );
+        });
+
+    const totalExpensesFiltered = filteredExpenses.reduce((sum, e) => sum + e.amount, 0);
+    const avgExpensesFiltered = filteredExpenses.length > 0 ? totalExpensesFiltered / filteredExpenses.length : 0;
+
     return (
         <div className="flex flex-col min-h-screen w-full bg-blue-950 text-white px-4 py-6 sm:px-8 sm:py-10">
             <motion.div
@@ -91,7 +125,9 @@ const CashflowReports = () => {
                                 exit={{ opacity: 0 }}
                                 className="bg-blue-800 p-4 rounded-2xl shadow-md text-white"
                             >
-                                <h2 className="text-xl font-semibold mb-2">Income List</h2>
+                                <h2 className="text-xl font-semibold mb-2">
+                                    Income List - Qty: {filteredIncomes.length} | Total Amount: <span className="text-green-300">${totalIncomeAmount.toFixed(2)}</span> | Avg: <span className="text-blue-300">${avgIncomeAmount.toFixed(2)}</span>
+                                </h2>
 
                                 {incomeData?.length > 0 && (
                                     <div>
@@ -112,23 +148,16 @@ const CashflowReports = () => {
                                                         <th>Payment Method</th>
                                                     </tr>
                                                 </thead>
-                                                {incomeData
-                                                    .filter(income => {
-                                                        const term = incomeTerm.toLowerCase();
-                                                        return (
-                                                            income.customerEmail.toLowerCase().includes(term)
-                                                        );
-                                                    })
-                                                    .map((income, i) => (
-                                                        <tbody>
-                                                            <tr key={i} className="text-center">
-                                                                <td>{formatDateShort(income.date)}</td>
-                                                                <td>{income.customerEmail}</td>
-                                                                <td>{income.amount}</td>
-                                                                <td>{income.paymentMethod}</td>
-                                                            </tr>
-                                                        </tbody>
-                                                    ))}
+                                                {filteredIncomes.map((income, i) => (
+                                                    <tbody key={i}>
+                                                        <tr className="text-center">
+                                                            <td>{formatDateShort(income.date)}</td>
+                                                            <td>{income.customerEmail}</td>
+                                                            <td>{income.amount}</td>
+                                                            <td>{income.paymentMethod}</td>
+                                                        </tr>
+                                                    </tbody>
+                                                ))}
                                             </table>
                                             <button
                                                 onClick={() => copyTableToClipboard("incomes")}
@@ -154,7 +183,10 @@ const CashflowReports = () => {
                             exit={{ opacity: 0 }}
                             className="bg-blue-800 p-4 rounded-2xl shadow-md text-white"
                         >
-                            <h2 className="text-xl font-semibold mb-2">Expense List</h2>
+                            <h2 className="text-xl font-semibold mb-2">
+                                Expense List - Qty: {filteredExpenses.length} | Total: <span className="text-red-300">${totalExpensesFiltered.toFixed(2)}</span> | Avg: <span className="text-orange-300">${avgExpensesFiltered.toFixed(2)}</span>
+                            </h2>
+
                             <div className="w-full">
                                 <input
                                     type="text"
@@ -177,39 +209,16 @@ const CashflowReports = () => {
                                         </thead>
 
                                         <tbody>
-                                            {expenseData
-                                                .map((expense) => {
-                                                    const supplier = supplierList.find(s => s._id === expense.supplierId);
-                                                    const staff = staffList.find(s => s.email === expense.staffEmail);
-
-                                                    const responsible = supplier?.name || staff?.name || "Unknown";
-
-                                                    return {
-                                                        ...expense,
-                                                        responsibleName: responsible.toLowerCase(), // para buscar con seguridad
-                                                        descriptionLower: expense.description?.toLowerCase() || "",
-                                                        typeLower: expense.type?.toLowerCase() || "",
-                                                    };
-                                                })
-                                                .filter(expense => {
-                                                    if (!expenseTerm) return true;
-                                                    const term = expenseTerm.toLowerCase();
-                                                    return (
-                                                        expense.responsibleName.includes(term) ||
-                                                        expense.descriptionLower.includes(term) ||
-                                                        expense.typeLower.includes(term)
-                                                    );
-                                                })
-                                                .map((expense, i) => (
-                                                    <tr key={i} className="text-center">
-                                                        <td>{formatDateShort(expense.date)}</td>
-                                                        <td>{expense.description}</td>
-                                                        <td>{expense.responsibleName}</td>
-                                                        <td>{expense.amount}</td>
-                                                        <td>{expense.paymentMethod}</td>
-                                                        <td>{expense.type}</td>
-                                                    </tr>
-                                                ))}
+                                            {filteredExpenses.map((expense, i) => (
+                                                <tr key={i} className="text-center">
+                                                    <td>{formatDateShort(expense.date)}</td>
+                                                    <td>{expense.description}</td>
+                                                    <td>{expense.responsibleName}</td>
+                                                    <td>{expense.amount}</td>
+                                                    <td>{expense.paymentMethod}</td>
+                                                    <td>{expense.type}</td>
+                                                </tr>
+                                            ))}
                                         </tbody>
                                     </table>
                                     <button
