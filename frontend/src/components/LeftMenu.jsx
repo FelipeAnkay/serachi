@@ -4,7 +4,8 @@ import {
     MapPinCheckInside, PiggyBank, Receipt, Scale, Settings, ShieldCheck, ShieldUser, Ship, ShoppingBasket, Store,
     TicketCheck, Truck, Wallet, Menu,
     Trash2,
-    TrendingUp
+    TrendingUp,
+    Coins
 } from "lucide-react";
 
 import logo from "../../public/Serachi_logo-nobg.png";
@@ -129,6 +130,8 @@ const menuItemsMed = [
         children: [
             { to: "/report-incomes", label: "Report", icon: <ChartColumnIncreasing /> },
             { to: "/report-cashflow", label: "Monthly Cash Flow", icon: <TrendingUp /> },
+            { to: "/report-cashflow-detail", label: "Income & Expenses", icon: <Coins /> },
+            
         ]
     },
     {
@@ -210,6 +213,7 @@ const menuItemsPro = [
         children: [
             { to: "/report-incomes", label: "Report", icon: <ChartColumnIncreasing /> },
             { to: "/report-cashflow", label: "Monthly Cash Flow", icon: <TrendingUp /> },
+            { to: "/report-cashflow-detail", label: "Income & Expenses", icon: <Coins /> },
         ]
     },
     {

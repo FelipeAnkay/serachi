@@ -7,6 +7,7 @@ import { useServiceServices } from "../../store/serviceServices"
 import { useIncomeServices } from "../../store/incomeServices"
 import { useExpenseServices } from "../../store/expenseServices"
 import Cookies from 'js-cookie';
+import toast from "react-hot-toast"
 
 const COLORS = ["#6366F1", "#10B981", "#F59E0B", "#EF4444", "#3B82F6"]
 
@@ -36,11 +37,16 @@ const Reports = () => {
     }, [dateRange])
 
     useEffect(() => {
-        if (rawServices.length > 0) {
-            //console.log("rawServices: ", rawServices)
-            setAuxCustomerServices(rawServices.filter(service => service.type === "Customer"));
-            setAuxBackServices(rawServices.filter(service => service.type === "Back"));
+        try {
+            if (rawServices?.length > 0) {
+                //console.log("rawServices: ", rawServices)
+                setAuxCustomerServices(rawServices.filter(service => service.type === "Customer"));
+                setAuxBackServices(rawServices.filter(service => service.type === "Back"));
+            }
+        } catch (error) {
+            toast.error("No data found")
         }
+
     }, [rawServices])
     useEffect(() => {
         if (auxCustomerServices.length > 0) {
