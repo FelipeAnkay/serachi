@@ -67,6 +67,7 @@ const menuItems = [
             { to: "/set-supplier", label: "Supplier", icon: <Truck /> },
             { to: "/set-types", label: "Types", icon: <Boxes /> },
             { to: "/set-store", label: "Store", icon: <Store /> },
+            { to: "/set-facility", label: "Facility", icon: <Ship /> },
         ]
     }
 ];
@@ -150,6 +151,7 @@ const menuItemsMed = [
             { to: "/set-supplier", label: "Supplier", icon: <Truck /> },
             { to: "/set-types", label: "Types", icon: <Boxes /> },
             { to: "/set-store", label: "Store", icon: <Store /> },
+            { to: "/set-facility", label: "Facility", icon: <Ship /> },
         ]
     }
 ];
@@ -232,6 +234,8 @@ const menuItemsPro = [
             { to: "/set-supplier", label: "Supplier", icon: <Truck /> },
             { to: "/set-types", label: "Types", icon: <Boxes /> },
             { to: "/set-store", label: "Store", icon: <Store /> },
+            { to: "/set-facility", label: "Facility", icon: <Ship /> },
+            
         ]
     }
 ];

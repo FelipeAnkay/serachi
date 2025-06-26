@@ -54,6 +54,7 @@ import SetTypes from './pages/settings/SetTypes';
 import SetCustomerView from './pages/settings/SetCustomerView';
 import UserAddressBookModal from './components/UserAddressBookModal';
 import CashflowReports from './pages/reports/CashflowReports';
+import SetFacilities from './pages/settings/SetFacilities';
 
 const ProtectedRoute = ({ children, requiredPermission, storePermission }) => {
   const { isAuthenticated, user, logout } = useAuthStore();
@@ -426,6 +427,13 @@ function App() {
           element={
             <ProtectedRoute requiredPermission="VIEW_SETTINGS" storePermission={["BAS","MED","PRO"]}>
               <SetTypes />
+            </ProtectedRoute>}
+        />
+        <Route
+          path="/set-facility"
+          element={
+            <ProtectedRoute requiredPermission="VIEW_SETTINGS" storePermission={["BAS","MED","PRO"]}>
+              <SetFacilities />
             </ProtectedRoute>}
         />
         <Route

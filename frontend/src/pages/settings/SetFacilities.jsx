@@ -1,70 +1,55 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { BedDouble, CirclePlus, CircleX, Currency, Delete, Save, Trash2, UserPlus } from 'lucide-react';
+import { CirclePlus, CircleX, Save, Ship, Trash2 } from 'lucide-react';
 import Cookies from 'js-cookie';
 import toast from 'react-hot-toast';
-import { useRoomServices } from '../../store/roomServices';
 import { useAuthStore } from '../../store/authStore'
-import { useTypeServices } from '../../store/typeServices';
+import { useFacilityServices } from '../../store/facilityServices';
 
 
-const SetRooms = () => {
-    const { createRoom, updateRoom, getRoomList } = useRoomServices();
-    const { getTypeByCategory } = useTypeServices();
+
+const SetFacilities = () => {
+    const { createFacility, updateFacility, getFacilityList } = useFacilityServices();
     const storeId = Cookies.get('storeId');
-    const [roomList, setRoomList] = useState([]);
+    const [facilityList, setFacilityList] = useState([]);
     const [loading, setLoading] = useState(true);
     const [modalOpen, setModalOpen] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
-    const [roomData, setRoomData] = useState({});
+    const [facilityData, setFacilityData] = useState({});
     const [confirmDelete, setConfirmDelete] = useState(null);
     const [showActive, setShowActive] = useState(true);
     const { user } = useAuthStore();
-    const [typeList, setTypeList] = useState([]);
-    const [selectedType, setSelectedType] = useState(null);
+    const [firstTime, setFirstTime] = useState(true);
 
     useEffect(() => {
-        const fetchRooms = async () => {
+        const fetchFacility = async () => {
             try {
-                const rooms = await getRoomList(storeId);
-                console.log("F: Respuesta de fetch:", rooms);
-                setRoomList(rooms.roomList || []);
+                const facilities = await getFacilityList(storeId);
+                //console.log("F: Respuesta de fetch:", facilities);
+                setFacilityList(facilities.facilityList || []);
             } catch (error) {
-                console.error('Error fetching room list:', error);
+                //console.error('Error fetching room list:', error);
+                toast.error("Error fetching the facilities")
             } finally {
                 setLoading(false);
             }
         };
-        const fetchTypes = async () => {
-            try {
-                const auxTypeList = await getTypeByCategory("ROOM", storeId);
-                console.log("F: Respuesta de getTypeByCategory:", auxTypeList);
-                setTypeList(auxTypeList.typeList || []);
-            } catch (error) {
-                console.error('Error fetching product list:', error);
-            } finally {
-                setLoading(false);
-            }
-        };
-        if (storeId) {
-            fetchRooms();
-            fetchTypes();
+
+        if (storeId && firstTime) {
+            fetchFacility();
+            setFirstTime(false);
         }
     }, []);
 
-    useEffect(() => {
-        console.log("Cambio el TypeList: ", typeList)
-    }, [typeList]);
-
-    const openNewRoomModal = () => {
-        setRoomData({ name: '' });
+    const openNewFacilityModal = () => {
+        setFacilityData({ name: '' });
         setIsEditing(false);
         setModalOpen(true);
     };
 
-    const openEditRoomModal = (room) => {
-        setRoomData({
-            ...room,
+    const openEditFacilityModal = (facility) => {
+        setFacilityData({
+            ...facility,
         });
         setIsEditing(true);
         setModalOpen(true);
@@ -78,70 +63,69 @@ const SetRooms = () => {
     const handleSave = async () => {
         try {
             const payload = {
-                ...roomData,
+                ...facilityData,
                 storeId: storeId?.toUpperCase(),
                 userEmail: user.email,
             };
-            console.log("Payload a enviar: ", payload)
+            //console.log("Payload a enviar: ", payload)
             if (isEditing) {
-                await updateRoom(payload._id, payload);
+                await updateFacility(payload._id, payload);
                 toast.success('Room updated successfully');
             } else {
-                await createRoom(payload);
+                await createFacility(payload);
                 toast.success('Room created successfully');
             }
 
             closeModal();
             window.location.reload();
         } catch (error) {
-            console.error('Error saving Room:', error);
-            toast.error('Error saving Room');
+            //console.error('Error saving Facility:', error);
+            toast.error('Error saving Facility');
         }
     };
 
     const confirmRemove = async () => {
         try {
-            setConfirmDelete(prev => ({
-                ...prev,
-                isActive: false,
-            }));
-            await updateRoom(confirmDelete._id, confirmDelete);
-            toast.success(`Room ${confirmDelete.name} removed from store.`);
+            //console.log("confirmRemove: ", confirmDelete)            
+            const auxId = confirmDelete._id
+            const auxVars = confirmDelete
+            const auxName = confirmDelete.name
+            //console.log("confirmRemove: ", {auxId,auxVars})
+            await updateFacility(auxId,auxVars);
+            toast.success(`Facility ${auxName} removed from store.`);
             closeModal();
             window.location.reload();
         } catch (error) {
-            console.error('Error removing room:', error);
-            toast.error('Error removing room');
+            //console.error('Error removing Facility:', error);
+            toast.error('Error removing Facility');
         }
     };
 
-    const roomTypes = [...new Set(roomList.map(p => p.type).filter(Boolean))];
-    const filteredRooms = roomList
+    const filteredFacility = facilityList
         .filter(p => p.isActive === showActive)
-        .filter(p => !selectedType || p.type === selectedType);
 
 
-    if (loading) return <div className="text-white text-center mt-10">Loading Rooms...</div>;
+    if (loading) return <div className="text-white text-center mt-10">Loading Facilities...</div>;
 
     return (
-            <div className="flex flex-col min-h-screen w-full bg-blue-950 text-white px-4 py-6 sm:px-8 sm:py-10">
-                <motion.div
-                    initial={{ opacity: 0, scale: 2 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.9 }}
-                    transition={{ duration: 0.5 }}
-                    className="flex flex-col w-full max-w-9/12 mx-auto bg-blue-900 bg-opacity-80 backdrop-filter backdrop-blur-lg rounded-2xl shadow-2xl border border-gray-800 overflow-hidden min-h-screen items-center p-4"
-                >
+        <div className="flex flex-col min-h-screen w-full bg-blue-950 text-white px-4 py-6 sm:px-8 sm:py-10">
+            <motion.div
+                initial={{ opacity: 0, scale: 2 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.9 }}
+                transition={{ duration: 0.5 }}
+                className="flex flex-col w-full max-w-9/12 mx-auto bg-blue-900 bg-opacity-80 backdrop-filter backdrop-blur-lg rounded-2xl shadow-2xl border border-gray-800 overflow-hidden min-h-screen items-center p-4"
+            >
                 <h2 className="text-3xl font-bold mb-6 text-center text-white bg-clip-text">
-                    Room List
+                    Facility List
                 </h2>
 
                 <div className="flex justify-center mb-4">
                     <button
                         className="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded flex items-center gap-2"
-                        onClick={openNewRoomModal}
+                        onClick={openNewFacilityModal}
                     >
-                        <p>Add Room</p><BedDouble />
+                        <p>Add Facility</p><Ship />
                     </button>
                 </div>
                 <div className="flex justify-center mb-2">
@@ -149,47 +133,34 @@ const SetRooms = () => {
                         onClick={() => setShowActive(!showActive)}
                         className="text-sm text-blue-400 hover:text-blue-200 underline"
                     >
-                        {showActive ? 'Show Inactive Rooms' : 'Show Active Rooms'}
+                        {showActive ? 'Show Inactive Facilites' : 'Show Active Facilities'}
                     </button>
                 </div>
-                {roomTypes.length > 0 && (
-                    <div className="flex flex-wrap gap-2 justify-center mb-6">
-                        <button
-                            onClick={() => setSelectedType(null)}
-                            className={`px-3 py-1 rounded text-sm ${!selectedType ? 'bg-blue-600 text-white' : 'bg-gray-700 text-gray-300'}`}
-                        >
-                            All
-                        </button>
-                        {roomTypes.map(type => (
-                            <button
-                                key={type}
-                                onClick={() => setSelectedType(type)}
-                                className={`px-3 py-1 rounded text-sm ${selectedType === type ? 'bg-blue-600 text-white' : 'bg-gray-700 text-gray-300'}`}
-                            >
-                                {type}
-                            </button>
-                        ))}
-                    </div>
-                )}
 
                 <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 ml-3 mr-3 mb-3 w-full">
-                    {filteredRooms.length === 0 ? (
-                        <div className="text-center text-gray-400 col-span-full">No Rooms found</div>
+                    {filteredFacility.length === 0 ? (
+                        <div className="text-center text-gray-400 col-span-full">No Facility found</div>
                     ) : (
-                        filteredRooms.map((room) => (
+                        filteredFacility.map((facility) => (
                             <div
-                                key={room._id}
+                                key={facility._id}
                                 className="relative bg-white text-black rounded-lg shadow p-4 hover:bg-blue-100 transition-all"
                             >
-                                <div onClick={() => openEditRoomModal(room)}>
-                                    <h3 className="font-semibold text-lg mb-1">{room.name}</h3>
-                                    <p className="text-sm text-gray-700">Availability: {room.availability}</p>
-                                    <p className="text-sm text-gray-700">Type: {room.type || 'N/A'}</p>
-                                    <p className="text-sm text-gray-700">Price: ${room.price}</p>
+                                <div onClick={() => openEditFacilityModal(facility)}>
+                                    <h3 className="font-semibold text-lg mb-1">{facility.name}</h3>
+                                    <p className="text-sm text-gray-700">Availability: {facility.availability}</p>
                                 </div>
-                                {room.isActive ? (
+                                {facility.isActive ? (
                                     <button
-                                        onClick={() => setConfirmDelete({ room })}
+                                        onClick={() => {
+                                            setConfirmDelete(prev => ({
+                                                ...prev,
+                                                _id: facility._id,
+                                                name: facility.name,
+                                                availability: facility.availability,
+                                                isActive: false,
+                                            }));
+                                        }}
                                         className="absolute top-2 right-2 text-red-600 hover:text-red-800"
                                         title="Remove from Store"
                                     >
@@ -199,12 +170,12 @@ const SetRooms = () => {
                                     <button
                                         onClick={async () => {
                                             try {
-                                                await updateRoom(room._id, { isActive: true });
-                                                toast.success(`${room.name} reactivated.`);
+                                                await updateFacility(facility._id, { isActive: true });
+                                                toast.success(`${facility.name} reactivated.`);
                                                 window.location.reload();
                                             } catch (error) {
-                                                console.error('Error reactivating room:', error);
-                                                toast.error('Error reactivating room');
+                                                //console.error('Error reactivating facility:', error);
+                                                toast.error('Error reactivating facility');
                                             }
                                         }}
                                         className="absolute top-2 right-2 text-green-600 hover:text-green-800"
@@ -270,7 +241,7 @@ const SetRooms = () => {
                                 </button>
 
                                 <h3 className="text-2xl font-bold mb-6 text-center bg-gradient-to-r from-blue-400 to-blue-600 text-transparent bg-clip-text">
-                                    {isEditing ? 'Edit Room' : 'New Room'}
+                                    {isEditing ? 'Edit Facility' : 'New Facility'}
                                 </h3>
                                 <div className="space-y-4 text-sm">
                                     <div>
@@ -278,8 +249,8 @@ const SetRooms = () => {
                                         <input
                                             type='text'
                                             className="w-full p-2 mt-1 rounded bg-gray-800 text-white"
-                                            value={roomData.name || ''}
-                                            onChange={(e) => setRoomData({ ...roomData, name: e.target.value })}
+                                            value={facilityData.name || ''}
+                                            onChange={(e) => setFacilityData({ ...facilityData, name: e.target.value })}
                                         />
                                     </div>
                                     <div>
@@ -287,34 +258,9 @@ const SetRooms = () => {
                                         <input
                                             type='number'
                                             className="w-full p-2 mt-1 rounded bg-gray-800 text-white"
-                                            value={roomData.availability || ''}
-                                            onChange={(e) => setRoomData({ ...roomData, availability: e.target.value })}
+                                            value={facilityData.availability || ''}
+                                            onChange={(e) => setFacilityData({ ...facilityData, availability: e.target.value })}
                                         />
-                                    </div>
-                                    <div>
-                                        <label className="capitalize">Price:</label>
-                                        <input
-                                            type='number'
-                                            className="w-full p-2 mt-1 rounded bg-gray-800 text-white"
-                                            value={roomData.price || ''}
-                                            onChange={(e) => setRoomData({ ...roomData, price: e.target.value })}
-                                        />
-                                    </div>
-                                    <div className='mt-2 flex flex-row ml-2'>
-                                        <label className="block text-sm font-medium">Room Type:</label>
-                                        <select
-                                            name="type"
-                                            className="ml-2 w-full border border-gray-300 bg-white text-blue-950 rounded px-3 py-2"
-                                            value={roomData.type || ''}
-                                            onChange={(e) => setRoomData({ ...roomData, type: e.target.value })}
-                                        >
-                                            <option value="">Select a Type</option>
-                                            {typeList.map((t) => (
-                                                <option key={t.name} value={t.name}>
-                                                    {t.name}
-                                                </option>
-                                            ))}
-                                        </select>
                                     </div>
 
                                     <div className="flex justify-center mt-6">
@@ -335,4 +281,4 @@ const SetRooms = () => {
     );
 };
 
-export default SetRooms;
+export default SetFacilities;
