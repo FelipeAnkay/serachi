@@ -1,5 +1,5 @@
 import { mailtrapClient, sender } from "./mailtrap.js"
-import { VERIFICATION_EMAIL_TEMPLATE, VERIFY_USER, PASSWORD_RESET_REQUEST_TEMPLATE, PASSWORD_RESET_SUCCESS_TEMPLATE, SEND_QUOTE, SEND_FORMS, SEND_PROFILE } from "./emailTemplates.js"
+import { VERIFICATION_EMAIL_TEMPLATE, VERIFY_USER, PASSWORD_RESET_REQUEST_TEMPLATE, PASSWORD_RESET_SUCCESS_TEMPLATE, SEND_QUOTE, SEND_FORMS, SEND_PROFILE, SEND_QUOTE_BAS } from "./emailTemplates.js"
 
 export const sendVerificationEmail = async (email, verificationToken) => {
     const recipient = [{ email }];
@@ -72,7 +72,7 @@ export const sendResetPasswordSuccessEmail = async (email) => {
     }
 }
 
-export const sendQuoteEmail = async (email, customerName, dateIn, dateOut, productList, roomList, discount, finalPrice, userEmail, userName, storeName) => {
+export const sendQuoteEmail = async (email, customerName, dateIn, dateOut, productList, roomList, discount, finalPrice, userEmail, userName, storeName, tcLink, plan) => {
 
     const recipient = [{ email }];
 
@@ -116,6 +116,11 @@ export const sendQuoteEmail = async (email, customerName, dateIn, dateOut, produ
   `;
     }
 
+    const tycLink = () => {
+        return `
+            <a href="${tcLink}" target="_blank">Link</a>
+        `;
+    };
 
     const html = SEND_QUOTE
         .replace('{{customerName}}', customerName)
@@ -124,10 +129,28 @@ export const sendQuoteEmail = async (email, customerName, dateIn, dateOut, produ
         .replace('{{discount}}', discount)
         .replace('{{finalPrice}}', finalPrice)
         .replace('{{roomList}}', roomRows)
-        .replace('{{productList}}', productRows // reemplaza el bloque con las filas generadas
+        .replace('{{productList}}', productRows)
+        .replace('{{tycLink}}', tycLink
+        );
+    const html_bas = SEND_QUOTE_BAS
+        .replace('{{customerName}}', customerName)
+        .replace('{{dateIn}}', dateIn)
+        .replace('{{dateOut}}', dateOut)
+        .replace('{{discount}}', discount)
+        .replace('{{finalPrice}}', finalPrice)
+        .replace('{{roomList}}', roomRows)
+        .replace('{{productList}}', productRows
         );
 
     const customSubject = storeName + " Quote"
+
+    let finalHtml = ""
+
+    if(plan!="BAS"){
+        finalHtml = html;
+    }else{
+        finalHtml = html_bas;
+    }
 
     //console.log("Los datos para sendQuoteEmail:", recipient, " - ", customSender, " - ", productRows, " - ", html, " - ", storeName, " - ", customSubject);
 
@@ -137,7 +160,7 @@ export const sendQuoteEmail = async (email, customerName, dateIn, dateOut, produ
             from: customSender,
             to: recipient,
             subject: customSubject,
-            html,
+            html: finalHtml,
             category: "Quote",
         });
         console.log("Quote Sent", response);
@@ -183,14 +206,14 @@ export const sendProfileEmail = async (email, customerName, userEmail, userName,
         );
 
     const customSubject = storeName + " Profile completion is required"
-/*
-    console.log("Variables a enviar: ", {
-            customSender,
-            recipient,
-            customSubject,
-            html,
-        })
-*/
+    /*
+        console.log("Variables a enviar: ", {
+                customSender,
+                recipient,
+                customSubject,
+                html,
+            })
+    */
     try {
         //console.log("Entré al TRY de sendQuoteEmail:", customSender, " - ", recipient, " - ", customSubject, " - ", html);
         const response = await mailtrapClient.send({
@@ -243,14 +266,14 @@ export const sendFormEmail = async (email, customerName, formList, userEmail, us
         );
 
     const customSubject = storeName + " Sign Form Required"
-/*
-    console.log("Variables a enviar: ", {
-            customSender,
-            recipient,
-            customSubject,
-            html,
-        })
-*/
+    /*
+        console.log("Variables a enviar: ", {
+                customSender,
+                recipient,
+                customSubject,
+                html,
+            })
+    */
     try {
         //console.log("Entré al TRY de sendQuoteEmail:", customSender, " - ", recipient, " - ", customSubject, " - ", html);
         const response = await mailtrapClient.send({

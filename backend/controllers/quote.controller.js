@@ -41,7 +41,7 @@ export const createQuote = async (req, res) => {
 
         if (sendEmail) {
             //console.log("B: Los datos para el envío de mail son: ", customerEmail," - ",customerName," - ",dateIn," - ",dateOut," - ",productList," - ",discount," - ",finalPrice," - ",userEmail," - ", userName," - ",store.name);
-            await sendQuoteEmail(customerEmail, customerName, dateIn, dateOut, productList, roomList, discount, finalPrice, userEmail, userName, store.name);
+            await sendQuoteEmail(customerEmail, customerName, dateIn, dateOut, productList, roomList, discount, finalPrice, userEmail, userName, store.name, store.tcLink, store.plan);
         }
 
 
