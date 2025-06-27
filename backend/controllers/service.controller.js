@@ -265,7 +265,8 @@ export const getServicesForCommissions = async (req, res) => {
             dateOut: {
                 $gte: new Date(dateIn),
                 $lte: new Date(dateOut)
-            }
+            },
+            isActive:true
         });
 
         //console.log("Respuesta de Service.find: ", serviceList);
