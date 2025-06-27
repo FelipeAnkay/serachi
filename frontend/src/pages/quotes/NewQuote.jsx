@@ -128,7 +128,7 @@ export default function NewQuote() {
 
     // Cuando cambian las fechas, buscar habitaciones disponibles
     useEffect(() => {
-        console.log("Entre a UE 4 - PLAN", {store});
+        //console.log("Entre a UE 4 - PLAN", {store});
         const fetchAvailableRooms = async () => {
             setLoading(true)
             if (!quote.dateIn || !quote.dateOut) {
@@ -363,11 +363,11 @@ export default function NewQuote() {
         //console.log("Entre a updateQuoteFromSelectedRoom ROOM: ", selected)
         const structuredList = Object.entries(selected).map(([id, qty]) => {
             let auxType = true;
-            console.log("roomType", roomType)
+            //console.log("roomType", roomType)
             if (roomType != "PRIVATE") {
                 auxType = false;
             }
-            console.log("auxType: ", auxType)
+            //console.log("auxType: ", auxType)
             //console.log("La lista de rooms es: ", rooms)
             const room = rooms.find((p) => p._id === id);
             const startDate = roomStartDates[id] ? new Date(roomStartDates[id]) : new Date(quote.dateIn);
@@ -384,7 +384,7 @@ export default function NewQuote() {
             } else {
                 finalPrice = (room?.price || 0) * qty * adjustedQty
             }
-            console.log("finalPrice: ", finalPrice)
+            //console.log("finalPrice: ", finalPrice)
             return {
                 roomId: id,
                 roomName: room?.name || '',
@@ -397,7 +397,7 @@ export default function NewQuote() {
                 roomDateOut: isNaN(endDate) ? '' : endDate.toISOString(),
             };
         });
-        console.log("structuredList", structuredList)
+        //console.log("structuredList", structuredList)
         const roomSubtotal = structuredList.reduce((sum, item) => sum + item.roomFinalPrice, 0);
 
         const productSubtotal = quote.productList?.reduce((sum, p) => sum + p.productFinalPrice, 0) || 0;
