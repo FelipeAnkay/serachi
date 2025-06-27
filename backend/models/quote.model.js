@@ -76,6 +76,10 @@ const quoteSchema = new mongoose.Schema({
         type: Boolean,
         default: false  
     },
+    status:{
+        type: String,
+        default: "open"
+    },
     isReturningCustomer:{
         type: Boolean,
         default: false  

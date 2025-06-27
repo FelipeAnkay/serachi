@@ -26,7 +26,7 @@ export const useQuoteServices = create((set) => ({
     createQuote: async (quoteData) => {
         set({ isLoading: true, error: null });
         try {
-            console.log("Los datos a enviar en createQuote son: ", quoteData)
+            //console.log("Los datos a enviar en createQuote son: ", quoteData)
             const response = await axios.post(`${URL_API}/create`, quoteData);
             set({ quoteList: response.data.quoteList, isLoading: false });
             return response.data;

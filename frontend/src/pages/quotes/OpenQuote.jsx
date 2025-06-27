@@ -1,13 +1,14 @@
 import Cookies from 'js-cookie';
 import { motion } from 'framer-motion';
 import { useState, useEffect } from 'react';
+import toast from 'react-hot-toast';
 import { useQuoteServices } from '../../store/quoteServices';
 import { useNavigate, useLocation } from "react-router-dom";
-import { Copy, Pencil } from 'lucide-react';
+import { ArchiveX, CheckCheck, Copy, Pencil } from 'lucide-react';
 
 
 export default function OpenQuote() {
-    const { getQuoteByCheckout } = useQuoteServices();
+    const { getQuoteByCheckout, updateQuote } = useQuoteServices();
     const [quotes, setQuotes] = useState([]);
     const [loading, setLoading] = useState(true);
     const storeId = Cookies.get('storeId');
@@ -23,24 +24,59 @@ export default function OpenQuote() {
         navigate(`/new-quote/${quoteId}`);
     };
     const handleCloneClick = (quoteId) => {
-        Cookies.set('clone',true)
+        Cookies.set('clone', true)
         navigate(`/new-quote/${quoteId}`);
+    };
+
+    const handleConfirm = async (quote) => {
+        console.log("handleConfirm: ", quote)
+        try {
+            const auxId = quote._id;
+            const quotePayload = {
+                id: auxId,
+                isConfirmed: true
+            }
+            await updateQuote(auxId, quotePayload);
+            toast.success("Quote confirmed");
+            fetchQuotes();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        } catch (error) {
+            toast.error("Error confirming quote")
+        }
+    }
+
+    const handleArchive = async (quote) => {
+        console.log("handleArchive: ", quote)
+        try {
+            const auxId = quote._id;
+            const auxStatus = "archived"
+            const quotePayload = {
+                id: auxId,
+                status: auxStatus
+            }
+            await updateQuote(auxId, quotePayload);
+            toast.success("Quote Archived");
+            fetchQuotes();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        } catch (error) {
+            toast.error("Error confirming quote")
+        }
+    }
+
+    const fetchQuotes = async () => {
+        try {
+            const response = await getQuoteByCheckout(storeId, false);
+            //console.log("Quote Response: ", response);
+            setQuotes(response.quoteList);
+        } catch (error) {
+            console.error('Error fetching quotes:', error);
+        } finally {
+            setLoading(false);
+        }
     };
 
     useEffect(() => {
         //console.log("Entre a useEffect [storeId, location.key]", timezone);
-        const fetchQuotes = async () => {
-            try {
-                const response = await getQuoteByCheckout(storeId,false);
-                //console.log("Quote Response: ", response);
-                setQuotes(response.quoteList);
-            } catch (error) {
-                console.error('Error fetching quotes:', error);
-            } finally {
-                setLoading(false);
-            }
-        };
-
         if (storeId) {
             fetchQuotes();
         }
@@ -54,14 +90,14 @@ export default function OpenQuote() {
     }, [location]);
 
     return (
-            <div className="flex flex-col min-h-screen w-full bg-blue-950 text-white px-4 py-6 sm:px-8 sm:py-10">
-                <motion.div
-                    initial={{ opacity: 0, scale: 2 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.9 }}
-                    transition={{ duration: 0.5 }}
-                    className="flex flex-col w-full max-w-9/12 mx-auto bg-blue-900 bg-opacity-80 backdrop-filter backdrop-blur-lg rounded-2xl shadow-2xl border border-gray-800 overflow-hidden min-h-screen items-center p-4"
-                >
+        <div className="flex flex-col min-h-screen w-full bg-blue-950 text-white px-4 py-6 sm:px-8 sm:py-10">
+            <motion.div
+                initial={{ opacity: 0, scale: 2 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.9 }}
+                transition={{ duration: 0.5 }}
+                className="flex flex-col w-full max-w-9/12 mx-auto bg-blue-900 bg-opacity-80 backdrop-filter backdrop-blur-lg rounded-2xl shadow-2xl border border-gray-800 overflow-hidden min-h-screen items-center p-4"
+            >
                 <h1 className="text-3xl font-bold mt-6 mb-6 text-center text-white bg-clip-text">Created (not confirmed) Quotes</h1>
                 <div className='w-full'>
                     <fieldset className="flex-grow space-y-4 border rounded-2xl p-4 ml-4 mr-4">
@@ -80,7 +116,7 @@ export default function OpenQuote() {
                             }}
                         />
                         <div className="grid gap-4 grid-cols-1 sm:grid-cols-3 md:grid-cols-2 lg:grid-cols-1">
-                           {!quotes || quotes.length === 0 ? (
+                            {!quotes || quotes.length === 0 ? (
                                 <p>No Quotes found for this store.</p>
                             ) : (
                                 quotes
@@ -95,7 +131,7 @@ export default function OpenQuote() {
 
                                             >
                                                 < h3 className="text-lg font-semibold text-gray-800">
-                                                    {(quote.customerName? quote.customerName : quote.customerEmail)} - From: {new Date(quote.dateIn).toLocaleDateString("en-US", {
+                                                    {(quote.customerName ? quote.customerName : quote.customerEmail)} - From: {new Date(quote.dateIn).toLocaleDateString("en-US", {
                                                         timeZone: timezone || "America/Guatemala",
                                                         year: "numeric",
                                                         month: "long",
@@ -119,7 +155,7 @@ export default function OpenQuote() {
                                                          hover:from-blue-600 hover:to-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-gray-900'
                                                     >
                                                         <div className='flex flex-col justify-center items-center'>
-                                                            <Copy    className="" />
+                                                            <Copy className="" />
                                                             <span className="">Clone Quote</span>
                                                         </div>
                                                     </motion.button>
@@ -134,6 +170,32 @@ export default function OpenQuote() {
                                                         <div className='flex flex-col justify-center items-center'>
                                                             <Pencil className="" />
                                                             <span className="">Edit Quote</span>
+                                                        </div>
+                                                    </motion.button>
+                                                    <motion.button
+                                                        type='button'
+                                                        whileHover={{ scale: 1.05 }}
+                                                        whileTap={{ scale: 0.95 }}
+                                                        onClick={() => handleConfirm(quote)}
+                                                        className='w-full py-3 px-4 bg-gradient-to-r from-blue-500 to-blue-600 text-white font-bold rounded-lg shadow-lg
+                                                         hover:from-blue-600 hover:to-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-gray-900'
+                                                    >
+                                                        <div className='flex flex-col justify-center items-center'>
+                                                            <CheckCheck className="" />
+                                                            <span className="">Confirm Quote</span>
+                                                        </div>
+                                                    </motion.button>
+                                                    <motion.button
+                                                        type='button'
+                                                        whileHover={{ scale: 1.05 }}
+                                                        whileTap={{ scale: 0.95 }}
+                                                        onClick={() => handleArchive(quote)}
+                                                        className='w-full py-3 px-4 bg-gradient-to-r from-blue-500 to-blue-600 text-white font-bold rounded-lg shadow-lg
+                                                         hover:from-blue-600 hover:to-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-gray-900'
+                                                    >
+                                                        <div className='flex flex-col justify-center items-center'>
+                                                            <ArchiveX className="" />
+                                                            <span className="">Archive Quote</span>
                                                         </div>
                                                     </motion.button>
                                                 </div>

@@ -107,7 +107,7 @@ export const openQuoteList = async (req, res) => {
             throw new Error("StoreID is required");
         }
         const normalizeStoreID = storeId?.toUpperCase();
-        const quoteList = await Quote.find({ storeId: normalizeStoreID, isConfirmed: false });
+        const quoteList = await Quote.find({ storeId: normalizeStoreID, isConfirmed: false, status: { $ne: "archived" } });
         //console.log("El listado de quotes es:", quoteList);
         if (!quoteList) {
             return res.status(400).json({ success: false, message: "Quotes not found" });
@@ -174,6 +174,7 @@ export const getQuoteByCheckout = async (req, res) => {
             storeId: normalizeStoreID,
             isConfirmed: isConfirmed,
             dateOut: {$gte: startOfToday },
+            status: { $ne: "archived" }
         });
         console.log("quoteList: ", quoteList)
         if (quoteList.length === 0) {
