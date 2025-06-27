@@ -9,7 +9,8 @@ import Cookies from 'js-cookie';
 import toast from "react-hot-toast"
 import { useSupplierServices } from "../../store/supplierServices"
 import { useStaffServices } from "../../store/staffServices"
-import { Copy } from "lucide-react"
+import { ChartPie, Copy } from "lucide-react"
+import PieChartComponent from "../../components/PieChartComponent"
 
 const COLORS = ["#6366F1", "#10B981", "#F59E0B", "#EF4444", "#3B82F6"]
 
@@ -26,6 +27,11 @@ const CashflowReports = () => {
     const storeId = Cookies.get('storeId');
     const [incomeTerm, setIncomeTerm] = useState('');
     const [expenseTerm, setExpenseTerm] = useState('');
+    const [openModal, setOpenModal] = useState(false);
+    const [dataChart, setDataChart] = useState([]);
+    const [valueChart, setValueChart] = useState('');
+    const [datakeyChart, setDataKeyChart] = useState('');
+    const [titleChart, setTitleChart] = useState('');
 
     useEffect(() => {
         if (dateRange.start && dateRange.end) {
@@ -67,6 +73,14 @@ const CashflowReports = () => {
         }).catch(err => {
             toast.error("Failed to copy");
         });
+    };
+
+    const openModalPieChart = (data, value, dataKey, title) => {
+        setDataChart(data);
+        setValueChart(value);
+        setDataKeyChart(dataKey)
+        setTitleChart(title)
+        setOpenModal(true);
     };
 
     const filteredIncomes = incomeData.filter((income) =>
@@ -159,13 +173,22 @@ const CashflowReports = () => {
                                                     </tbody>
                                                 ))}
                                             </table>
-                                            <button
-                                                onClick={() => copyTableToClipboard("incomes")}
-                                                className="mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 w-full flex flex-row items-center justify-center"
-                                            >
-                                                Copy Table
-                                                <Copy className="ml-2"></Copy>
-                                            </button>
+                                            <div className="flex flex-row">
+                                                <button
+                                                    onClick={() => copyTableToClipboard("incomes")}
+                                                    className="mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 w-full flex flex-row items-center justify-center"
+                                                >
+                                                    Copy Table
+                                                    <Copy className="ml-2"></Copy>
+                                                </button>
+                                                <button
+                                                    onClick={() => openModalPieChart(filteredIncomes, "amount", "paymentMethod", "Income Amount by Payment Method")}
+                                                    className=" ml-2 mt-4 px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700 w-full flex flex-row items-center justify-center"
+                                                >
+                                                    View Pie Chart
+                                                    <ChartPie className="ml-2" />
+                                                </button>
+                                            </div>
                                         </div>
                                     </div>
                                 )}
@@ -221,17 +244,35 @@ const CashflowReports = () => {
                                             ))}
                                         </tbody>
                                     </table>
-                                    <button
-                                        onClick={() => copyTableToClipboard("expenses")}
-                                        className="mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 w-full flex flex-row items-center justify-center"
-                                    >
-                                        Copy Table
-                                        <Copy className="ml-2"></Copy>
-                                    </button>
+                                    <div className="flex flex-row">
+                                        <button
+                                            onClick={() => copyTableToClipboard("expenses")}
+                                            className="mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 w-full flex flex-row items-center justify-center"
+                                        >
+                                            Copy Table
+                                            <Copy className="ml-2"></Copy>
+                                        </button>
+                                        <button
+                                            onClick={() => openModalPieChart(filteredExpenses, "amount", "responsibleName", "Expense Amount by Supplier")}
+                                            className=" ml-2 mt-4 px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700 w-full flex flex-row items-center justify-center"
+                                        >
+                                            View Pie Chart
+                                            <ChartPie className="ml-2" />
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
-
                         </motion.div>
+                    )}
+                    {openModal && (
+                        <PieChartComponent
+                            isOpen={openModal}
+                            onClose={() => setOpenModal(false)}
+                            data={dataChart}
+                            values={valueChart}
+                            datakey={datakeyChart}
+                            title={titleChart}
+                        />
                     )}
                 </div>
             </motion.div >
