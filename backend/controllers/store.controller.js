@@ -2,7 +2,7 @@ import { Store } from "../models/store.model.js"
 
 /*STORE FUNCTIONS */
 export const createStore = async (req, res) => {
-    const { name, mainEmail, address, storeId, phone,timezone,userList,daysClosed,filterList } = req.body;
+    const { name, mainEmail, address, storeId, phone,timezone,userList,daysClosed,tcLink } = req.body;
 
     try {
         if (!name || !mainEmail || !phone) {
@@ -22,7 +22,7 @@ export const createStore = async (req, res) => {
             timezone,
             userList,
             daysClosed,
-            filterList
+            tcLink
         });
 
         await store.save();

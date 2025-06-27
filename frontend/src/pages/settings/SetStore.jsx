@@ -145,6 +145,15 @@ export default function SetStore() {
                                 onChange={(e) => setStore({ ...store, mainEmail: e.target.value })}
                             />
                         </div>
+                        <div key="tcLink">
+                            <label className="block text-sm font-medium text-white">Terms and conditions URL</label>
+                            <input
+                                type="text"
+                                className="w-full bg-white text-blue-950 border border-gray-300 rounded px-3 py-2 mt-1"
+                                value={store.mainEmail || ''}
+                                onChange={(e) => setStore({ ...store, mainEmail: e.target.value })}
+                            />
+                        </div>
                         <div>
                             <label className="block text-sm font-medium text-white">Authorized Emails</label>
                             {(store.userList || []).map((email, index) => (

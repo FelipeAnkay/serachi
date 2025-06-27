@@ -83,6 +83,15 @@ export function formatDateISO(dateInput) {
 /**
  * Format: ISO local datetime: "2025-05-26T14:30"
  */
+export function formatEndOfDayDateISO(dateInput) {
+  const date = toDate(dateInput);
+  date.setHours(23, 59, 59, 999);
+  return date ? format(date, "yyyy-MM-dd'T'HH:mm") : "";
+}
+
+/**
+ * Format: ISO local datetime: "2025-05-26T14:30"
+ */
 export function formatDateISOShort(dateInput) {
   if (!dateInput) return '';
   return new Date(dateInput).toISOString().split('T')[0]; // devuelve solo YYYY-MM-DD
