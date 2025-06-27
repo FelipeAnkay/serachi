@@ -52,6 +52,9 @@ const storeSchema = new mongoose.Schema({
         type: Boolean,
         default:false
     },
+    tcLink:{
+        type: String,
+    },
     daysClosed:[{
         type: Date
     }]
