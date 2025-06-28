@@ -95,17 +95,6 @@ export default function DeleteServices() {
         }
     }
 
-    {
-        loading && (
-            <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
-                <div className="text-center text-white">
-                    <div className="mb-4 text-xl font-semibold">Work In Progress...</div>
-                    <div className="w-12 h-12 border-4 border-white border-t-transparent rounded-full animate-spin mx-auto" />
-                </div>
-            </div>
-        )
-    }
-
     return (
         <>
             {
@@ -113,16 +102,16 @@ export default function DeleteServices() {
                     <LoadingSpinner />
                 )
             }
-            <div className="flex flex-col min-h-screen w-full bg-blue-950 text-white px-4 py-6 sm:px-8 sm:py-10">
+            <div className="flex flex-col min-h-screen w-full bg-[#18394C] text-slate-800 px-4 py-6 sm:px-8 sm:py-10">
                 <motion.div
                     initial={{ opacity: 0, scale: 2 }}
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0, scale: 0.9 }}
                     transition={{ duration: 0.5 }}
-                    className="flex flex-col w-full max-w-9/12 mx-auto bg-blue-900 bg-opacity-80 backdrop-filter backdrop-blur-lg rounded-2xl shadow-2xl border border-gray-800 overflow-hidden min-h-screen items-center"
+                    className="flex flex-col w-full max-w-9/12 mx-auto bg-sky-50 backdrop-filter backdrop-blur-lg rounded-2xl shadow-2xl border border-gray-800 overflow-hidden min-h-screen items-center"
                 >
-                    <h1 className="text-3xl font-bold mb-6 text-center text-white">Service Deletion</h1>
-                    <form onSubmit={handleSubmit} className="space-y-6 border rounded-lg p-6 shadow-sm bg-blue-900 text-white w-full">
+                    <h1 className="text-3xl font-bold mb-6 text-center text-[#00C49F]">Service Deletion</h1>
+                    <form onSubmit={handleSubmit} className="space-y-6 rounded-lg p-6 bg-sky-50 text-slate-800 w-full">
                         <div>
                             <label className="block font-medium mb-1">Name the staff or customer assigned to the service:</label>
                             <input
@@ -135,7 +124,7 @@ export default function DeleteServices() {
                                         e.preventDefault();
                                     }
                                 }}
-                                className="w-full border rounded px-3 py-2 bg-gray-200 text-blue-950"
+                                className="w-full border rounded px-3 py-2 bg-white text-slate-900  border-slate-300"
                             />
                         </div>
                         {/* Date Filters */}
@@ -144,7 +133,7 @@ export default function DeleteServices() {
                             <DateRangePicker value={{ start: formData.dateStart, end: formData.dateEnd }} onChange={handleDateRangeChange} />
                         </div>
                         <div className='flex justify-center'>
-                            <button type='button' className='bg-blue-600 hover:bg-blue-800 rounded border flex flex-row px-2 py-2' onClick={handleSearchServices}>
+                            <button type='button' className='bg-[#118290] hover:bg-[#0d6c77] text-cyan-50 rounded border flex flex-row px-2 py-2' onClick={handleSearchServices}>
                                 Search Services
                                 <Search className='ml-2' />
                             </button>
@@ -170,7 +159,7 @@ export default function DeleteServices() {
                                 </label>
 
                                 {(formData.serviceList || []).map((service, index) => (
-                                    <div className='flex flex-row items-center justify-center    mr-2 mb-2 bg-blue-700 mt-2 ml-2'>
+                                    <div className='flex flex-row items-center justify-center mr-2 mb-2 bg-cyan-100 rounded py-2 mt-2 ml-2'>
                                         <div className='ml-2 flex-1 text-left'>
                                             <label key={service._id} className='flex flex-row'>
                                                 <div>
@@ -207,7 +196,7 @@ export default function DeleteServices() {
                                 ))}
                                 {(formData.serviceList.length > 0) ? (
                                     <div className='flex justify-center items-center'>
-                                        <button type='button' onClick={handleSubmit} className='bg-red-600 hover:bg-red-800 rounded px-2 py-2 border flex flex-row mb-2'>
+                                        <button type='button' onClick={handleSubmit} className='bg-red-400 hover:bg-red-500 text-cyan-50 rounded px-2 py-2 border flex flex-row mb-2'>
                                             Delete Selected Services
                                             <Trash2 className='ml-2'></Trash2>
                                         </button>

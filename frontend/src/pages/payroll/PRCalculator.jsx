@@ -265,26 +265,24 @@ const PRCalculator = () => {
                     <LoadingSpinner />
                 )
             }
-            <div className="flex flex-col min-h-screen w-full bg-blue-950 text-white px-4 py-6 sm:px-8 sm:py-10">
+            <div className="flex flex-col min-h-screen w-full bg-[#18394C] text-slate-800 px-4 py-6 sm:px-8 sm:py-10">
                 <motion.div
                     initial={{ opacity: 0, scale: 2 }}
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0, scale: 0.9 }}
                     transition={{ duration: 0.5 }}
-                    className="flex flex-col w-full max-w-9/12 mx-auto bg-blue-900 bg-opacity-80 backdrop-filter backdrop-blur-lg rounded-2xl shadow-2xl border border-gray-800 overflow-hidden min-h-screen items-center p-4"
+                    className="flex flex-col w-full max-w-9/12 mx-auto bg-sky-50 backdrop-filter backdrop-blur-lg rounded-2xl shadow-2xl border border-gray-800 overflow-hidden min-h-screen items-center p-4"
                 >
-                    <h2 className='font-bold text-2xl flex justify-center text-white'>Payroll Calculator</h2>
+                    <h1 className='font-bold text-2xl flex justify-center text-[#00C49F]'>Payroll Calculator</h1>
 
-                    <fieldset className='mb-5 border rounded-2xl p-4 flex flex-col gap-4 bg-blue-900 text-white w-max'>
-                        <legend className='ml-2 font-bold text-lg'>Calculation Dates</legend>
-
+                    <fieldset className='mb-5 border rounded-2xl p-4 flex flex-col gap-4 bg-white text-slate-800 w-max mt-5'>
                         <div className="flex flex-col justify-center items-center w-full mb-4">
-                            <label className="mb-2 font-medium text-sm text-white">Date Range:</label>
+                            <label className="mb-2 font-medium text-sm text-slate-800">Date Range:</label>
                             <DateRangePicker value={dateRange} onChange={setDateRange} />
                         </div>
 
                         <div className='flex justify-center mt-4'>
-                            <button onClick={fetchData} className='px-6 py-2 rounded bg-blue-700 text-white hover:bg-blue-800 flex justify-center'>
+                            <button onClick={fetchData} className='px-6 py-2 bg-[#118290] hover:bg-[#0d6c77] text-cyan-50 rounded flex justify-center'>
                                 <Calculator className='mr-2' />
                                 Calculate
                             </button>
@@ -294,7 +292,7 @@ const PRCalculator = () => {
                                 <span>⚠️ {existingPayrollServices.length} service(s) were already included in previous payrolls.</span>
                                 <button
                                     onClick={() => setShowExistingServicesModal(true)}
-                                    className="bg-yellow-600 hover:bg-yellow-700 text-white px-2 py-1 rounded"
+                                    className="bg-[#3BA0AC] hover:bg-[#6BBCC5] text-cyan-50 px-2 py-1 rounded"
                                 >
                                     <Search className="inline mr-1" /> View
                                 </button>
@@ -302,17 +300,17 @@ const PRCalculator = () => {
                         )}
                     </fieldset>
 
-                    {loading && <p className='text-white text-lg font-bold'>Loading...</p>}
+                    {loading && <p className='text-slate-800 text-lg font-bold'>Loading...</p>}
 
                     {/* Tabla resumen de comisiones por staff */}
                     {tableVisible && (
                         <div>
-                            <fieldset className='border rounded-2xl p-2 mb-5 bg-blue-900'>
-                                <legend className='ml-2 text-lg text-white font-bold'>
+                            <fieldset className='border rounded-2xl p-2 mb-5 bg-white'>
+                                <legend className='ml-2 text-lg text-slate-800 font-bold'>
                                     {`Fees for ${dateIn} to ${dateOut}`}
                                 </legend>
 
-                                <table className='text-white w-full'>
+                                <table className='text-slate-800 w-full'>
                                     <thead>
                                         <tr>
                                             <th className='px-2 py-1 text-center'>Staff Email</th>
@@ -359,7 +357,7 @@ const PRCalculator = () => {
                                                     <div className='flex justify-center'>
                                                         <button
                                                             onClick={() => handleEditCommission(index, item.editedCommission)}
-                                                            className='bg-green-600 hover:bg-green-700 text-white px-2 py-1 rounded'
+                                                            className='bg-[#118290] hover:bg-[#0d6c77] text-cyan-50 px-2 py-1 rounded'
                                                         >
                                                             <Save />
                                                         </button>
@@ -372,7 +370,7 @@ const PRCalculator = () => {
                                                                 setSelectedRules(item.feeRules);
                                                                 setShowModal(true);
                                                             }}
-                                                            className='bg-blue-600 hover:bg-blue-700 text-white px-2 py-1 rounded'
+                                                            className='bg-[#3BA0AC] hover:bg-[#6BBCC5] text-cyan-50 px-2 py-1 rounded'
                                                         >
                                                             <Search />
                                                         </button>
@@ -385,7 +383,7 @@ const PRCalculator = () => {
                                                                 setSelectedServices(item.services);
                                                                 setShowServicesModal(true);
                                                             }}
-                                                            className='bg-purple-600 hover:bg-purple-700 text-white px-2 py-1 rounded'
+                                                            className='bg-[#3BA0AC] hover:bg-[#6BBCC5] text-cyan-50 px-2 py-1 rounded'
                                                         >
                                                             <Search />
                                                         </button>
@@ -402,7 +400,7 @@ const PRCalculator = () => {
                                                                     updated[index].paymentMethod = e.target.value;
                                                                     setSummary(updated);
                                                                 }}
-                                                                className="w-full border rounded px-3 py-2 bg-gray-200 text-blue-950"
+                                                                className="w-full px-3 py-2 bg-white text-slate-900 border border-slate-300 rounded"
                                                             >
                                                                 <option value="">Select Payment Method</option>
                                                                 {paymentList.map((method, index) => (
@@ -416,7 +414,7 @@ const PRCalculator = () => {
                                                     <div className='flex justify-center'>
                                                         <button
                                                             onClick={() => handleRemoveRow(index)}
-                                                            className='bg-red-600 hover:bg-red-700 text-white px-2 py-1 rounded'
+                                                            className='bg-red-400 hover:bg-red-600 text-cyan-50 px-2 py-1 rounded'
                                                         >
                                                             <Trash2 />
                                                         </button>
@@ -426,7 +424,7 @@ const PRCalculator = () => {
                                         ))}
                                     </tbody>
                                 </table>
-                                <div className="flex items-center gap-4 mt-4 text-white">
+                                <div className="flex items-center gap-4 mt-4 text-slate-800">
                                     <label className="font-semibold">Same Payment Method for all the commissions:</label>
                                     <input
                                         type="checkbox"
@@ -446,7 +444,7 @@ const PRCalculator = () => {
                                     />
                                     {useGlobalPaymentMethod && (
                                         <select
-                                            className="bg-white text-black rounded px-2 py-1"
+                                            className="bg-white text-slate-900 border border-slate-300 rounded px-3 py-2"
                                             value={globalPaymentMethod}
                                             onChange={e => {
                                                 const selected = e.target.value;
@@ -458,7 +456,7 @@ const PRCalculator = () => {
                                                 setSummary(updated);
                                             }}
                                         >
-                                            <option value="">Select</option>
+                                            <option value="">Select Payment Method</option>
                                             {paymentList.map(method => (
                                                 <option key={method.name} value={method.name}>{method.name}</option>
                                             ))}
@@ -467,12 +465,12 @@ const PRCalculator = () => {
                                 </div>
                             </fieldset>
                             {/* Tabla resumen de staff y total de comisiones*/}
-                            <fieldset className='border rounded-2xl p-4 mb-6 bg-blue-900'>
-                                <legend className='ml-2 text-lg text-white font-bold'>
+                            <fieldset className='border rounded-2xl p-4 mb-6 bg-white'>
+                                <legend className='ml-2 text-lg text-slate-800 font-bold'>
                                     {`Total Payroll Summary from ${dateIn} to ${dateOut}`}
                                 </legend>
 
-                                <table className='text-white w-full'>
+                                <table className='text-slate-800 w-full'>
                                     <thead>
                                         <tr>
                                             <th className='px-4 py-2 text-left'>Staff Email</th>
@@ -490,7 +488,7 @@ const PRCalculator = () => {
                                         ).map(([staffEmail, total], index) => (
                                             <tr key={staffEmail || index} className='border-t border-white/20'>
                                                 <td className='px-4 py-2 text-left'>{staffEmail}</td>
-                                                <td className='px-4 py-2 text-center font-bold text-green-300'>
+                                                <td className='px-4 py-2 text-center font-bold text-green-400'>
                                                     ${total.toFixed(2)}
                                                 </td>
                                             </tr>
@@ -499,14 +497,14 @@ const PRCalculator = () => {
                                 </table>
                             </fieldset>
                             {/* TAG SECTION */}
-                            <fieldset className="w-full space-y-4 rounded-2xl border p-4 text-white mb-5">
+                            <fieldset className="w-full space-y-4 rounded-2xl border p-4 text-slate-800 mb-5 bg-white">
                                 <legend className="font-bold">Tags</legend>
 
                                 <div className="flex gap-2">
                                     <input
                                         type="text"
                                         placeholder="Name"
-                                        className="w-1/2 p-2 border border-gray-300 rounded bg-gray-200 text-blue-950"
+                                        className="w-1/2 p-2 bg-white text-slate-900 border border-slate-300 rounded"
                                         value={newTag.name}
                                         onChange={(e) => setNewTag((prev) => ({ ...prev, name: e.target.value }))}
                                         onKeyDown={(e) => {
@@ -522,7 +520,7 @@ const PRCalculator = () => {
                                     <input
                                         type="text"
                                         placeholder="Code"
-                                        className="w-1/2 p-2 border border-gray-300 rounded bg-gray-200 text-blue-950"
+                                        className="w-1/2 p-2 bg-white text-slate-900 border border-slate-300 rounded"
                                         value={newTag.code}
                                         onChange={(e) => setNewTag((prev) => ({ ...prev, code: e.target.value }))}
                                         onKeyDown={(e) => {
@@ -551,7 +549,7 @@ const PRCalculator = () => {
                                             }
                                         }}
                                     >
-                                        <CirclePlus className='hover:bg-green-500 rounded-4xl' />
+                                        <CirclePlus className='hover:bg-cyan-600 rounded-4xl' />
                                     </button>
                                 </div>
 
@@ -584,7 +582,7 @@ const PRCalculator = () => {
                             <button
                                 onClick={handleRegisterPayroll}
                                 disabled={isSubmitting}
-                                className={`mt-4 px-4 py-2 rounded text-white font-semibold ${isSubmitting ? 'bg-gray-500 cursor-not-allowed' : 'bg-green-600 hover:bg-green-700'}
+                                className={`mt-4 px-4 py-2 rounded text-slate-800 font-semibold ${isSubmitting ? 'bg-gray-500 cursor-not-allowed' : 'bg-green-600 hover:bg-green-700'}
   `}
                             >
                                 {isSubmitting ? 'Processing...' : 'Register Payroll'}
@@ -596,13 +594,13 @@ const PRCalculator = () => {
                 <AnimatePresence>
                     {showModal && (
                         <motion.div
-                            className='fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50'
+                            className='fixed inset-0 bg-black/95 flex items-center justify-center z-50'
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
                             exit={{ opacity: 0 }}
                         >
                             <motion.div
-                                className='bg-blue-950 rounded-xl p-6 w-[90%] max-w-md shadow-xl'
+                                className='bg-sky-50 rounded-xl p-6 w-[90%] max-w-md shadow-xl'
                                 initial={{ scale: 0.9, opacity: 0 }}
                                 animate={{ scale: 1, opacity: 1 }}
                                 exit={{ scale: 0.9, opacity: 0 }}
@@ -614,7 +612,7 @@ const PRCalculator = () => {
                                         <p>No rules applied.</p>
                                     ) : (
                                         selectedRules.map((rule, idx) => (
-                                            <div key={idx} className='border p-2 rounded bg-blue-500'>
+                                            <div key={idx} className='border p-2 rounded bg-cyan-100'>
                                                 <label className='block'><strong>Timeframe:</strong> {rule.timeframe}</label>
                                                 <label className='block'><strong>Operator:</strong> {rule.operator}</label>
                                                 <label className='block'><strong>Value:</strong> {rule.value}</label>
@@ -627,7 +625,7 @@ const PRCalculator = () => {
                                 <div className='mt-6 flex justify-end'>
                                     <button
                                         onClick={() => setShowModal(false)}
-                                        className='px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700'
+                                        className='px-4 py-2 bg-red-400 text-slate-800 rounded hover:bg-red-700'
                                     >
                                         Close
                                     </button>
@@ -640,13 +638,13 @@ const PRCalculator = () => {
                 <AnimatePresence>
                     {showServicesModal && (
                         <motion.div
-                            className='fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50'
+                            className='fixed inset-0 bg-black/95 flex items-center justify-center z-50'
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
                             exit={{ opacity: 0 }}
                         >
                             <motion.div
-                                className='bg-blue-950 rounded-xl p-6 w-[90%] max-w-lg shadow-xl overflow-y-auto max-h-[80vh]'
+                                className='bg-sky-50 rounded-xl p-6 w-[90%] max-w-lg shadow-xl overflow-y-auto max-h-[80vh]'
                                 initial={{ scale: 0.9, opacity: 0 }}
                                 animate={{ scale: 1, opacity: 1 }}
                                 exit={{ scale: 0.9, opacity: 0 }}
@@ -658,7 +656,7 @@ const PRCalculator = () => {
                                         <li>No services found.</li>
                                     ) : (
                                         selectedServices.map((s, idx) => (
-                                            <li key={s._id} className='border rounded p-2 bg-blue-500'>
+                                            <li key={s._id} className='border rounded p-2 bg-cyan-100'>
                                                 <p><strong>{s.name}</strong></p>
                                                 <p>Date In: {new Date(s.dateIn).toLocaleString()}</p>
                                                 <p>Date Out: {new Date(s.dateOut).toLocaleString()}</p>
@@ -670,7 +668,7 @@ const PRCalculator = () => {
                                 <div className='mt-6 flex justify-end'>
                                     <button
                                         onClick={() => setShowServicesModal(false)}
-                                        className='px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700'
+                                        className='px-4 py-2 bg-red-400 text-slate-800 rounded hover:bg-red-700'
                                     >
                                         Close
                                     </button>
@@ -683,18 +681,18 @@ const PRCalculator = () => {
                 <AnimatePresence>
                     {showExistingServicesModal && (
                         <motion.div
-                            className='fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50'
+                            className='fixed inset-0 bg-black/95 flex items-center justify-center z-50'
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
                             exit={{ opacity: 0 }}
                         >
                             <motion.div
-                                className='bg-white rounded-xl p-6 w-[90%] max-w-lg shadow-xl overflow-y-auto max-h-[80vh]'
+                                className='bg-sky-50 rounded-xl p-6 w-[90%] max-w-lg shadow-xl overflow-y-auto max-h-[80vh]'
                                 initial={{ scale: 0.9, opacity: 0 }}
                                 animate={{ scale: 1, opacity: 1 }}
                                 exit={{ scale: 0.9, opacity: 0 }}
                             >
-                                <h3 className='text-lg font-bold mb-4 text-blue-950'>Services already included in previous payrolls</h3>
+                                <h3 className='text-lg font-bold mb-4 text-slate-900'>Services already included in previous payrolls</h3>
 
                                 <ul className='space-y-2 text-black'>
                                     {/* Select All checkbox */}
@@ -716,7 +714,7 @@ const PRCalculator = () => {
                                         <span>Select All</span>
                                     </li>
                                     {existingPayrollServices.map((s) => (
-                                        <li key={s._id} className='border rounded p-2 bg-gray-100 flex items-start gap-3'>
+                                        <li key={s._id} className='border rounded p-2 bg-cyan-100 flex items-start gap-3'>
                                             <input
                                                 type="checkbox"
                                                 checked={excludedServiceIds.includes(s._id)}
@@ -742,13 +740,13 @@ const PRCalculator = () => {
                                     <button
                                         onClick={handleExcludeSelectedServices}
                                         disabled={excludedServiceIds.length === 0}
-                                        className='px-4 py-2 mr-2 bg-red-400 text-white rounded hover:bg-red-700'
+                                        className='px-4 py-2 mr-2 bg-red-400 text-slate-800 rounded hover:bg-red-700'
                                     >
                                         Exclude Selected Services
                                     </button>
                                     <button
                                         onClick={() => setShowExistingServicesModal(false)}
-                                        className='px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700'
+                                        className='px-4 py-2 bg-slate-600 hover:bg-slate-700 text-cyan-50 rounded'
                                     >
                                         Close
                                     </button>

@@ -3,7 +3,7 @@ import { Calendar, momentLocalizer, Views } from 'react-big-calendar';
 import moment from "moment";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import { AnimatePresence, motion } from "framer-motion";
-import { X } from "lucide-react";
+import { CircleX, X } from "lucide-react";
 import { useRoomReservationServices } from "../../store/roomReservationServices";
 import { useCustomerServices } from "../../store/customerServices";
 import { useRoomServices } from "../../store/roomServices";
@@ -160,7 +160,7 @@ useEffect(() => {
                     <LoadingSpinner />
                 )
             }
-            <div className="flex flex-col min-h-screen w-full bg-blue-950 text-white px-4 py-6 sm:px-8 sm:py-10">
+            <div className="flex flex-col min-h-screen w-full bg-[#18394C] text-slate-800 px-4 py-6 sm:px-8 sm:py-10">
                 <motion.div
                     initial={{ opacity: 0, scale: 2 }}
                     animate={{ opacity: 1, scale: 1 }}
@@ -168,7 +168,7 @@ useEffect(() => {
                     transition={{ duration: 0.5 }}
                     className="
                                 flex flex-col
-                                bg-blue-900 bg-opacity-80 backdrop-filter backdrop-blur-lg
+                                bg-sky-50 backdrop-filter backdrop-blur-lg
                                 rounded-2xl shadow-2xl border border-gray-800 overflow-hidden
                                 min-h-[calc(100vh-5rem)]
                                 w-full max-w-7xl
@@ -181,12 +181,12 @@ useEffect(() => {
                         initial={{ opacity: 0, y: -10 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.4 }}
-                        className="text-3xl font-semibold mb-6 text-white text-center"
+                        className="text-3xl font-semibold mb-6 text-[#00C49F] text-center"
                     >
                         Room Schedule
                     </motion.h1>
 
-                    <div className="w-full max-w-6xl bg-card p-4 rounded-2xl shadow-md border text-blue-950">
+                    <div className="w-full bg-card p-4 rounded-2xl shadow-md border text-slate-900">
                         <Calendar
                             localizer={localizer}
                             events={events}
@@ -225,7 +225,7 @@ useEffect(() => {
                                         className="absolute top-3 right-3 text-muted-foreground hover:text-foreground transition"
                                         onClick={() => setShowModal(false)}
                                     >
-                                        <X className="w-5 h-5" />
+                                        <CircleX className="w-5 h-5" />
                                     </button>
                                     <h2 className="text-xl font-semibold mb-4">Customer Info</h2>
                                     <div className="space-y-2">
@@ -257,7 +257,7 @@ useEffect(() => {
                                         />
                                         <button
                                             onClick={handleUpdateReservation}
-                                            className="mt-4 w-full py-2 px-4 bg-primary text-white rounded-md hover:bg-primary/80 transition"
+                                            className="bg-[#118290] hover:bg-[#0d6c77] text-cyan-50 px-4 py-2 rounded"
                                         >
                                             Save Changes
                                         </button>

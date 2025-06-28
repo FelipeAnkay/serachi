@@ -25,13 +25,13 @@ export default function CustomerDetails({ isOpen, onClose, customer, setCustomer
     return (
         <AnimatePresence>
             <motion.div
-                className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+                className="fixed inset-0 bg-black/95  flex items-center justify-center z-50"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
             >
                 <motion.div
-                    className="bg-blue-900 rounded-2xl p-6 max-w-lg w-[90%] h-[90%] overflow-y-auto relative"
+                    className="bg-[#EEF9FC] rounded-2xl p-6 max-w-lg w-[90%] h-[90%] overflow-y-auto relative"
                     initial={{ scale: 0.8 }}
                     animate={{ scale: 1 }}
                     exit={{ scale: 0.8 }}
@@ -39,19 +39,19 @@ export default function CustomerDetails({ isOpen, onClose, customer, setCustomer
                 >
                     <button
                         type="button"
-                        className="absolute top-3 right-3 text-gray-300 hover:text-white"
+                        className="absolute top-3 right-3 text-slate-900 hover:text-slate-800"
                         onClick={onClose}
                     >
                         <CircleX />
                     </button>
 
-                    <h2 className="text-xl font-bold mb-4 text-center text-white">Customer</h2>
+                    <h2 className="text-xl font-bold mb-4 text-center text-slate-800">Customer</h2>
                     <div className="space-y-4">
                         <div>
                             <label className="block text-sm font-medium">Name</label>
                             <input
                                 type="text"
-                                className="w-full border border-gray-300 rounded px-3 py-2 mt-1"
+                                className="w-full bg-white text-slate-900 border border-slate-300 rounded px-3 py-2 mt-1"
                                 value={customer.name || ''}
                                 onChange={(e) => setCustomer({ ...customer, name: e.target.value })}
                             />
@@ -60,7 +60,7 @@ export default function CustomerDetails({ isOpen, onClose, customer, setCustomer
                             <label className="block text-sm font-medium">Last Name</label>
                             <input
                                 type="text"
-                                className="w-full border border-gray-300 rounded px-3 py-2 mt-1"
+                                className="w-full bg-white text-slate-900 border border-slate-300 rounded px-3 py-2 mt-1"
                                 value={customer.lastName || ''}
                                 onChange={(e) => setCustomer({ ...customer, lastName: e.target.value })}
                             />
@@ -69,7 +69,7 @@ export default function CustomerDetails({ isOpen, onClose, customer, setCustomer
                             <label className="block text-sm font-medium">Email</label>
                             <input
                                 type="text"
-                                className="w-full border border-gray-300 rounded px-3 py-2 mt-1"
+                                className="w-full bg-white text-slate-900 border border-slate-300 rounded px-3 py-2 mt-1"
                                 value={customer.email || ''}
                                 onChange={(e) => setCustomer({ ...customer, email: e.target.value })}
                             />
@@ -78,13 +78,13 @@ export default function CustomerDetails({ isOpen, onClose, customer, setCustomer
                             <label className="block text-sm font-medium">Gender</label>
                             <select
                                 type="text"
-                                className="w-full border border-gray-300 rounded px-3 py-2 mt-1"
+                                className="w-full bg-white text-slate-900 border border-slate-300 rounded px-3 py-2 mt-1"
                                 value={customer.gender || ''}
                                 onChange={(e) => setCustomer({ ...customer, gender: e.target.value })}
                             >
-                                <option value="" className="text-blue-950">Select Gender</option>
-                                <option key="FEM" value="Female" className='text-blue-950'>Female</option>
-                                <option key="MAL" value="Male" className='text-blue-950'>Male</option>
+                                <option value="" className="text-slate-900">Select Gender</option>
+                                <option key="FEM" value="Female" className='text-slate-900'>Female</option>
+                                <option key="MAL" value="Male" className='text-slate-900'>Male</option>
                             </select>
 
                         </div>
@@ -92,7 +92,7 @@ export default function CustomerDetails({ isOpen, onClose, customer, setCustomer
                             <label className="block text-sm font-medium">Phone</label>
                             <input
                                 type="text"
-                                className="w-full border border-gray-300 rounded px-3 py-2 mt-1"
+                                className="w-full bg-white text-slate-900 border border-slate-300 rounded px-3 py-2 mt-1"
                                 value={customer.phone || ''}
                                 onChange={(e) => setCustomer({ ...customer, phone: e.target.value })}
                             />
@@ -101,7 +101,7 @@ export default function CustomerDetails({ isOpen, onClose, customer, setCustomer
                             <label className="block text-sm font-medium">Birthdate</label>
                             <input
                                 type="date"
-                                className="w-full border border-gray-300 rounded px-3 py-2 mt-1"
+                                className="w-full bg-white text-slate-900 border border-slate-300 rounded px-3 py-2 mt-1"
                                 value={customer.birthdate?.slice(0, 10) || ''}
                                 onChange={(e) => setCustomer({ ...customer, birthdate: e.target.value })}
                             />
@@ -110,7 +110,7 @@ export default function CustomerDetails({ isOpen, onClose, customer, setCustomer
                             <label className="block text-sm font-medium">National Id or Passport</label>
                             <input
                                 type="text"
-                                className="w-full border border-gray-300 rounded px-3 py-2 mt-1"
+                                className="w-full bg-white text-slate-900 border border-slate-300 rounded px-3 py-2 mt-1"
                                 value={customer.nationalId || ''}
                                 onChange={(e) => setCustomer({ ...customer, nationalId: e.target.value })}
                             />
@@ -118,7 +118,7 @@ export default function CustomerDetails({ isOpen, onClose, customer, setCustomer
                         <div>
                             <label className="block text-sm font-medium">Country</label>
                             <select
-                                className="w-full border border-gray-300 rounded px-3 py-2 mt-1"
+                                className="w-full bg-white text-slate-900 border border-slate-300 rounded px-3 py-2 mt-1"
                                 value={countrySelectValue}
                                 onChange={(e) => {
                                     const selected = e.target.value;
@@ -131,9 +131,9 @@ export default function CustomerDetails({ isOpen, onClose, customer, setCustomer
                                     }
                                 }}
                             >
-                                <option value="" className="text-blue-950">Select Country</option>
+                                <option value="" className="text-slate-900">Select Country</option>
                                 {countries.map((c) => (
-                                    <option key={c.code} value={c.name} className='text-blue-950'>{c.name}</option>
+                                    <option key={c.code} value={c.name} className='text-slate-900'>{c.name}</option>
                                 ))}
                             </select>
 
@@ -141,7 +141,7 @@ export default function CustomerDetails({ isOpen, onClose, customer, setCustomer
                                 <input
                                     type="text"
                                     placeholder="Enter your country"
-                                    className="w-full mt-2 border border-gray-300 rounded px-3 py-2"
+                                    className="w-full mt-2 bg-white text-slate-900 border border-slate-300 rounded px-3 py-2"
                                     value={customCountry}
                                     onChange={(e) => {
                                         setCustomCountry(e.target.value);
@@ -153,13 +153,13 @@ export default function CustomerDetails({ isOpen, onClose, customer, setCustomer
                         <div>
                             <label className="block text-sm font-medium">Dietary Restriction</label>
                             <select
-                                className="w-full border border-gray-300 rounded px-3 py-2 mt-1"
+                                className="w-full bg-white text-slate-900 border border-slate-300 rounded px-3 py-2 mt-1"
                                 value={customer.diet || ''}
                                 onChange={(e) => setCustomer({ ...customer, diet: e.target.value })}
                             >
-                                <option value="" className='text-blue-950'>Select Diet</option>
+                                <option value="" className='text-slate-900'>Select Diet</option>
                                 {dietaryList.map((item, index) => (
-                                    <option key={index} value={item.name} className='text-blue-950'>
+                                    <option key={index} value={item.name} className='text-slate-900'>
                                         {item.name}
                                     </option>
                                 ))}
@@ -169,7 +169,7 @@ export default function CustomerDetails({ isOpen, onClose, customer, setCustomer
                             <label className="block text-sm font-medium">Allergies</label>
                             <input
                                 type="text"
-                                className="w-full border border-gray-300 rounded px-3 py-2 mt-1"
+                                className="w-full bg-white text-slate-900 border border-slate-300 rounded px-3 py-2 mt-1"
                                 value={customer.allergies || ''}
                                 onChange={(e) => setCustomer({ ...customer, allergies: e.target.value })}
                             />
@@ -198,15 +198,15 @@ export default function CustomerDetails({ isOpen, onClose, customer, setCustomer
                             </div>
                         </div>
                         <div className="space-y-4 mt-6">
-                            <h3 className="text-lg font-semibold  text-white">
+                            <h3 className="text-lg font-semibold  text-slate-800">
                                 Emergency Contact:
                             </h3>
 
                             <div>
-                                <label className="block text-sm font-medium  text-white">Name:</label>
+                                <label className="block text-sm font-medium  text-slate-800">Name:</label>
                                 <input
                                     type="text"
-                                    className="w-full border border-gray-300 rounded px-3 py-2 mt-1"
+                                    className="w-full bg-white text-slate-900 border border-slate-300 rounded px-3 py-2 mt-1"
                                     value={customer.emergencyContactName || ''}
                                     onChange={(e) =>
                                         setCustomer({
@@ -219,10 +219,10 @@ export default function CustomerDetails({ isOpen, onClose, customer, setCustomer
                             </div>
 
                             <div>
-                                <label className="block text-sm font-medium  text-white">Phone</label>
+                                <label className="block text-sm font-medium  text-slate-800">Phone</label>
                                 <input
                                     type="text"
-                                    className="w-full border border-gray-300 rounded px-3 py-2 mt-1"
+                                    className="w-full bg-white text-slate-900 border border-slate-300 rounded px-3 py-2 mt-1"
                                     value={customer.emergencyContactPhone || ''}
                                     onChange={(e) =>
                                         setCustomer({
@@ -235,49 +235,50 @@ export default function CustomerDetails({ isOpen, onClose, customer, setCustomer
                         </div>
                         <div className="space-y-4">
                             <h4 className="text-lg font-bold">Diving Certificates</h4>
-                            {(customer.divingCertificates || []).map((cert, certIndex) => (
-                                <div key={certIndex} className="border border-gray-700 rounded-lg p-4 relative space-y-2 bg-gray-800">
-                                    <button
-                                        type="button"
-                                        className="absolute top-2 right-2 text-red-400 hover:text-red-600"
-                                        onClick={() => {
-                                            const updated = customer.divingCertificates.filter((_, i) => i !== certIndex);
-                                            setCustomer({ ...customer, divingCertificates: updated });
-                                        }}
-                                    >
-                                        Delete
-                                    </button>
-                                    <div key="organization">
-                                        <label className="">Certifying Organization:</label>
-                                        <input
-                                            type="text"
-                                            className="w-full p-2 mt-1 rounded bg-gray-700 text-white"
-                                            value={cert["organization"] || ''}
-                                            onChange={(e) => {
-                                                const updated = [...customer.divingCertificates];
-                                                updated[certIndex]["organization"] = e.target.value;
+                            <div className="border border-gray-700 rounded-lg p-4 relative space-y-2 bg-white">
+                                {(customer.divingCertificates || []).map((cert, certIndex) => (
+                                    <div key={certIndex}>
+                                        <button
+                                            type="button"
+                                            className="absolute top-2 right-2 text-red-400 hover:text-red-600"
+                                            onClick={() => {
+                                                const updated = customer.divingCertificates.filter((_, i) => i !== certIndex);
                                                 setCustomer({ ...customer, divingCertificates: updated });
                                             }}
-                                        />
-                                    </div>
-                                    <div key="certificateName">
-                                        <label>Certification Level:</label>
-                                        <input
-                                            type="text"
-                                            className="w-full p-2 mt-1 rounded bg-gray-700 text-white"
-                                            value={cert["certificateName"] || ''}
-                                            onChange={(e) => {
-                                                const updated = [...customer.divingCertificates];
-                                                updated[certIndex]["certificateName"] = e.target.value;
-                                                setCustomer({ ...customer, divingCertificates: updated });
-                                            }}
-                                        />
-                                    </div>
-                                    <div key="certificateId">
+                                        >
+                                            Delete
+                                        </button>
+                                        <div key="organization">
+                                            <label className="">Certifying Organization:</label>
+                                            <input
+                                                type="text"
+                                                className="w-full p-2 mt-1 rounded bg-white text-slate-900 border border-slate-300"
+                                                value={cert["organization"] || ''}
+                                                onChange={(e) => {
+                                                    const updated = [...customer.divingCertificates];
+                                                    updated[certIndex]["organization"] = e.target.value;
+                                                    setCustomer({ ...customer, divingCertificates: updated });
+                                                }}
+                                            />
+                                        </div>
+                                        <div key="certificateName">
+                                            <label>Certification Level:</label>
+                                            <input
+                                                type="text"
+                                                className="w-full p-2 mt-1 rounded bg-white text-slate-900 border border-slate-300"
+                                                value={cert["certificateName"] || ''}
+                                                onChange={(e) => {
+                                                    const updated = [...customer.divingCertificates];
+                                                    updated[certIndex]["certificateName"] = e.target.value;
+                                                    setCustomer({ ...customer, divingCertificates: updated });
+                                                }}
+                                            />
+                                        </div>
+                                        <div key="certificateId">
                                             <label>ID Number:</label>
                                             <input
                                                 type="text"
-                                                className="w-full p-2 mt-1 rounded bg-gray-700 text-white"
+                                                className="w-full p-2 mt-1 rounded bg-white text-slate-900 border border-slate-300"
                                                 value={cert["certificateId"] || ''}
                                                 onChange={(e) => {
                                                     const updated = [...customer.divingCertificates];
@@ -286,23 +287,25 @@ export default function CustomerDetails({ isOpen, onClose, customer, setCustomer
                                                 }}
                                             />
                                         </div>
-                                </div>
-                            ))}
-                            <button
-                                type="button"
-                                className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded mt-4"
-                                onClick={() => {
-                                    const updated = [...(customer.divingCertificates || [])];
-                                    updated.push({ organization: '', certificateName: '', certificateId: '' });
-                                    setCustomer({ ...customer, divingCertificates: updated });
-                                }}
-                            >
-                                Add Certificate
-                            </button>
+
+                                    </div>
+                                ))}
+                                <button
+                                    type="button"
+                                    className="bg-[#3BA0AC] hover:bg-[#6BBCC5] text-white px-4 py-2 rounded mt-4"
+                                    onClick={() => {
+                                        const updated = [...(customer.divingCertificates || [])];
+                                        updated.push({ organization: '', certificateName: '', certificateId: '' });
+                                        setCustomer({ ...customer, divingCertificates: updated });
+                                    }}
+                                >
+                                    Add Certificate
+                                </button>
+                            </div>
                         </div>
 
                         <button
-                            className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded w-full mt-4"
+                            className="bg-[#118290] hover:bg-[#0d6c77] text-cyan-50 px-4 py-2 rounded w-full mt-4"
                             type="button"
                             onClick={onSave}
                         >

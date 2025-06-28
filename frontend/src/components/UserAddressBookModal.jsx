@@ -63,7 +63,7 @@ export default function UserAddressBookModal({ onClose }) {
     );
 
     return (
-        <div className="fixed top-0 right-0 w-full sm:w-[400px] h-full bg-white text-blue-950 shadow-2xl z-[60] flex flex-col border-l border-gray-300">
+        <div className="fixed top-0 right-0 w-full sm:w-[400px] h-full bg-white text-slate-900 shadow-2xl z-[60] flex flex-col border-l border-gray-300">
             <div className="flex justify-between items-center px-4 py-3 border-b">
                 <h2 className="text-lg font-semibold">User Address Book</h2>
                 <button onClick={onClose}>
@@ -77,7 +77,7 @@ export default function UserAddressBookModal({ onClose }) {
                     placeholder="Search by name or email"
                     value={query}
                     onChange={(e) => setQuery(e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded"
+                    className="w-full px-3 py-2 bg-white text-slate-900 border border-slate-300 rounded"
                 />
                 <ul className="mt-4 space-y-2">
                     {filteredUsers?.length === 0 && (
@@ -100,20 +100,20 @@ export default function UserAddressBookModal({ onClose }) {
 
                 {(modalOpen) && (
                     <motion.div
-                        className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 overflow-y-auto scrollbar-thin scrollbar-thumb-blue-600 scrollbar-track-gray-800 scrollbar-thumb-rounded-full"
+                        className="fixed inset-0 bg-black/95 flex items-center justify-center z-50 overflow-y-auto scrollbar-thin scrollbar-thumb-blue-600 scrollbar-track-gray-800 scrollbar-thumb-rounded-full"
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
                     >
                         <motion.div
-                            className="bg-gray-900 text-white rounded-2xl shadow-2xl p-8 w-[90%] max-w-md relative max-h-[90vh] overflow-y-auto scrollbar-thin scrollbar-thumb-blue-600 scrollbar-track-gray-800 scrollbar-thumb-rounded-full"
+                            className="bg-sky-50 text-slate-800 rounded-2xl shadow-2xl p-8 w-[90%] max-w-md relative max-h-[90vh] overflow-y-auto scrollbar-thin scrollbar-thumb-blue-600 scrollbar-track-gray-800 scrollbar-thumb-rounded-full"
                             initial={{ scale: 0.8 }}
                             animate={{ scale: 1 }}
                             exit={{ scale: 0.8 }}
                             transition={{ duration: 0.3 }}
                         >
                             <button
-                                className="absolute top-4 right-4 text-gray-400 hover:text-white"
+                                className="absolute top-4 right-4 text-gray-400 hover:text-slate-800"
                                 onClick={closeModal}
                             >
                                 <CircleX />

@@ -118,23 +118,23 @@ const MonthlyCashFlow = () => {
     };
 
     return (
-        <div className="flex flex-col min-h-screen w-full bg-blue-950 text-white px-4 py-6 sm:px-8 sm:py-10">
+        <div className="flex flex-col min-h-screen w-full bg-[#18394C] text-slate-800 px-4 py-6 sm:px-8 sm:py-10">
             <motion.div
                 initial={{ opacity: 0, scale: 2 }}
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.9 }}
                 transition={{ duration: 0.5 }}
-                className="flex flex-col w-full max-w-9/12 mx-auto bg-blue-900 bg-opacity-80 backdrop-filter backdrop-blur-lg rounded-2xl shadow-2xl border border-gray-800 overflow-hidden min-h-screen items-center p-4"
+                className="flex flex-col w-full max-w-9/12 mx-auto bg-sky-50 backdrop-filter backdrop-blur-lg rounded-2xl shadow-2xl border border-gray-800 overflow-hidden min-h-screen items-center p-4"
             >
                 <h1 className="text-3xl font-bold mb-6 text-center">Year Cashflow by Month</h1>
-                <div className="p-6 space-y-6 text-white w-full">
+                <div className="p-6 space-y-6 text-slate-800 w-full">
                     <div className="flex items-center gap-4">
                         <label htmlFor="year" className="font-medium">Select year:</label>
                         <select
                             id="year"
                             value={selectedYear}
                             onChange={(e) => setSelectedYear(Number(e.target.value))}
-                            className="bg-gray-800 text-white p-2 rounded"
+                            className="bg-white text-slate-900 border border-slate-300 rounded p-2"
                         >
                             {getYears().map((year) => (
                                 <option key={year} value={year}>{year}</option>
@@ -220,7 +220,7 @@ const MonthlyCashFlow = () => {
 
                                     {/* Movimiento mensual */}
                                     <tr className="border-t border-gray-300">
-                                        <td className="text-white">Movement</td>
+                                        <td className="text-slate-800">Movement</td>
                                         {monthlyData.months.map(month => {
                                             const movement = monthlyData.data[month]?.movement || 0;
                                             const isPositive = movement >= 0;

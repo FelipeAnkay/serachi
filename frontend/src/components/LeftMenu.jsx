@@ -324,7 +324,7 @@ const LeftMenu = ({ show, setShow }) => {
             onMouseEnter={() => setShow(true)}
             onMouseLeave={() => setShow(false)}
             className={`fixed top-0 left-0 z-50 h-screen ${show ? "w-64" : "w-16"} 
-              bg-gray-900/30 text-white transition-all duration-300 ease-in-out 
+              bg-gray-900/30 text-slate-200 border-slate-200 transition-all duration-300 ease-in-out 
               overflow-y-auto flex flex-col`}
         >
             <div className="flex items-center justify-between p-4">
@@ -338,12 +338,12 @@ const LeftMenu = ({ show, setShow }) => {
             </div>
 
             <ul className="space-y-2 px-2">
-                <li className="px-2 py-2 rounded-lg hover:bg-blue-700">
+                <li className="px-2 py-2 rounded-lg hover:bg-[#0d6c77]">
                     <Link to="/" className="flex items-center gap-2"><Home />{show && "Home"}</Link>
                 </li>
 
                 {menuList.map(({ label, icon, key, children }) => (
-                    <div key={key} className="px-2 py-1 rounded-lg hover:bg-blue-700 transition-all">
+                    <div key={key} className="px-2 py-1 rounded-lg hover:bg-[#0d6c77] transition-all">
                         <li
                             className="flex items-center gap-2 cursor-pointer"
                             onClick={() => {
@@ -361,7 +361,7 @@ const LeftMenu = ({ show, setShow }) => {
                         {show && openMenus[key] && (
                             <div className="mt-2 ml-4 space-y-1">
                                 {children.map(({ to, label, icon }) => (
-                                    <li key={to} className="hover:bg-blue-500 rounded-lg">
+                                    <li key={to} className="hover:bg-cyan-500 hover:text-slate-900 rounded-lg">
                                         <Link
                                             to={to}
                                             className="flex items-center gap-2 py-1 px-2"
@@ -382,7 +382,7 @@ const LeftMenu = ({ show, setShow }) => {
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
                     onClick={handleLogout}
-                    className='mt-5 mx-4 py-2 px-4 bg-gradient-to-r from-blue-500 to-blue-600 text-white font-bold rounded-lg shadow-lg hover:from-blue-600 hover:to-blue-700'
+                    className='mt-5 mx-4 py-2 px-4 bg-[#118290] hover:bg-[#0d6c77] text-slate-800 font-bold rounded-lg shadow-lg'
                 >
                     Logout
                 </motion.button>

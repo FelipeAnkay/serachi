@@ -109,7 +109,7 @@ const Reports = () => {
     const CustomTooltip = ({ active, payload, label }) => {
         if (active && payload && payload.length) {
             return (
-                <div className="bg-gray-800 text-white rounded-lg p-3 shadow-lg text-sm">
+                <div className="bg-gray-800 text-slate-800 rounded-lg p-3 shadow-lg text-sm">
                     <p className="font-semibold mb-2">{label}</p>
                     {payload.map((entry, index) => (
                         <p key={index} className="flex items-center space-x-2">
@@ -128,13 +128,13 @@ const Reports = () => {
     }
 
     return (
-        <div className="flex flex-col min-h-screen w-full bg-blue-950 text-white px-4 py-6 sm:px-8 sm:py-10">
+        <div className="flex flex-col min-h-screen w-full bg-[#18394C] text-slate-800 px-4 py-6 sm:px-8 sm:py-10">
             <motion.div
                 initial={{ opacity: 0, scale: 2 }}
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.9 }}
                 transition={{ duration: 0.5 }}
-                className="flex flex-col w-full max-w-9/12 mx-auto bg-blue-900 bg-opacity-80 backdrop-filter backdrop-blur-lg rounded-2xl shadow-2xl border border-gray-800 overflow-hidden min-h-screen items-center p-4"
+                className="flex flex-col w-full max-w-9/12 mx-auto bg-sky-50 backdrop-filter backdrop-blur-lg rounded-2xl shadow-2xl border border-gray-800 overflow-hidden min-h-screen items-center p-4"
             >
                 <h1 className="text-3xl font-bold mb-6 text-center">Ops Reports</h1>
                 <DateRangePicker value={dateRange} onChange={setDateRange} />
@@ -147,7 +147,7 @@ const Reports = () => {
                                 initial={{ opacity: 0, y: 20 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 exit={{ opacity: 0 }}
-                                className="bg-blue-800 p-4 rounded-2xl shadow-md text-white"
+                                className="bg-sky-50 p-4 rounded-2xl shadow-md text-slate-800"
                             >
                                 <h2 className="text-xl font-semibold mb-2">Incomes vs Expenses</h2>
                                 <ResponsiveContainer width="100%" height={300}>
@@ -179,7 +179,7 @@ const Reports = () => {
                                     initial={{ opacity: 0, y: 20 }}
                                     animate={{ opacity: 1, y: 0 }}
                                     exit={{ opacity: 0 }}
-                                    className="bg-blue-800 p-4 rounded-2xl shadow-md min-w-[400px] max-w-xl mx-auto"
+                                    className="bg-sky-50 p-4 rounded-2xl shadow-md min-w-[400px] max-w-xl mx-auto"
                                 >
                                     <h2 className="text-xl font-semibold mb-2">Services by Staff [ {auxBackServices.length + auxCustomerServices.length} ]</h2>
                                     <ResponsiveContainer width="100%" height={350}>
@@ -215,7 +215,7 @@ const Reports = () => {
                                     initial={{ opacity: 0, y: 20 }}
                                     animate={{ opacity: 1, y: 0 }}
                                     exit={{ opacity: 0 }}
-                                    className="bg-blue-800 p-4 rounded-2xl shadow-md min-w-[400px] max-w-xl mx-auto"
+                                    className="bg-sky-50 p-4 rounded-2xl shadow-md min-w-[400px] max-w-xl mx-auto"
                                 >
                                     <h2 className="text-xl font-semibold mb-2">Services to Customer [ {auxCustomerServices.length || 0} ]</h2>
                                     <ResponsiveContainer width="100%" height={350}>
@@ -249,7 +249,7 @@ const Reports = () => {
                                     initial={{ opacity: 0, y: 20 }}
                                     animate={{ opacity: 1, y: 0 }}
                                     exit={{ opacity: 0 }}
-                                    className="bg-blue-800 p-4 rounded-2xl shadow-md min-w-[400px] max-w-xl mx-auto"
+                                    className="bg-sky-50 p-4 rounded-2xl shadow-md min-w-[400px] max-w-xl mx-auto"
                                 >
                                     <h2 className="text-xl font-semibold mb-2">Backoffice Services [ {auxBackServices.length || 0} ]</h2>
                                     <ResponsiveContainer width="100%" height={350}>

@@ -118,13 +118,13 @@ const CashflowReports = () => {
     const avgExpensesFiltered = filteredExpenses.length > 0 ? totalExpensesFiltered / filteredExpenses.length : 0;
 
     return (
-        <div className="flex flex-col min-h-screen w-full bg-blue-950 text-white px-4 py-6 sm:px-8 sm:py-10">
+        <div className="flex flex-col min-h-screen w-full bg-[#18394C] text-slate-800 px-4 py-6 sm:px-8 sm:py-10">
             <motion.div
                 initial={{ opacity: 0, scale: 2 }}
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.9 }}
                 transition={{ duration: 0.5 }}
-                className="flex flex-col w-full max-w-9/12 mx-auto bg-blue-900 bg-opacity-80 backdrop-filter backdrop-blur-lg rounded-2xl shadow-2xl border border-gray-800 overflow-hidden min-h-screen items-center p-4"
+                className="flex flex-col w-full max-w-9/12 mx-auto bg-sky-50 backdrop-filter backdrop-blur-lg rounded-2xl shadow-2xl border border-gray-800 overflow-hidden min-h-screen items-center p-4"
             >
                 <h1 className="text-3xl font-bold mb-6 text-center">Income & Expense List</h1>
                 <DateRangePicker value={dateRange} onChange={setDateRange} />
@@ -137,7 +137,7 @@ const CashflowReports = () => {
                                 initial={{ opacity: 0, y: 20 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 exit={{ opacity: 0 }}
-                                className="bg-blue-800 p-4 rounded-2xl shadow-md text-white"
+                                className="bg-sky-50 p-4 rounded-2xl shadow-md text-slate-800"
                             >
                                 <h2 className="text-xl font-semibold mb-2">
                                     Income List - Qty: {filteredIncomes.length} | Total Amount: <span className="text-green-300">${totalIncomeAmount.toFixed(2)}</span> | Avg: <span className="text-blue-300">${avgIncomeAmount.toFixed(2)}</span>
@@ -150,10 +150,10 @@ const CashflowReports = () => {
                                             placeholder="Search by email..."
                                             value={incomeTerm}
                                             onChange={(e) => setIncomeTerm(e.target.value)}
-                                            className="w-full max-w-md px-4 py-2 rounded bg-blue-400 text-white border border-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            className="w-full max-w-md px-4 py-2 rounded bg-white text-slate-900 border border-slate-300  focus:outline-none focus:ring-2 focus:ring-cyan-500"
                                         />
                                         <div className="mt-2">
-                                            <table id="incomes-table" className="w-full text-left border-collapse">
+                                            <table id="incomes-table" className="w-full text-left border-collapse bg-white rounded text-slate-900">
                                                 <thead>
                                                     <tr className="text-center">
                                                         <th>Date</th>
@@ -176,14 +176,14 @@ const CashflowReports = () => {
                                             <div className="flex flex-row">
                                                 <button
                                                     onClick={() => copyTableToClipboard("incomes")}
-                                                    className="mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 w-full flex flex-row items-center justify-center"
+                                                    className="mt-4 px-4 py-2 bg-[#118290] hover:bg-[#0d6c77] text-cyan-50 w-full flex flex-row items-center justify-center"
                                                 >
                                                     Copy Table
                                                     <Copy className="ml-2"></Copy>
                                                 </button>
                                                 <button
                                                     onClick={() => openModalPieChart(filteredIncomes, "amount", "paymentMethod", "Income Amount by Payment Method")}
-                                                    className=" ml-2 mt-4 px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700 w-full flex flex-row items-center justify-center"
+                                                    className=" ml-2 mt-4 px-4 py-2 bg-[#3BA0AC] hover:bg-[#6BBCC5] text-cyan-50 w-full flex flex-row items-center justify-center"
                                                 >
                                                     View Pie Chart
                                                     <ChartPie className="ml-2" />
@@ -204,7 +204,7 @@ const CashflowReports = () => {
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
                             exit={{ opacity: 0 }}
-                            className="bg-blue-800 p-4 rounded-2xl shadow-md text-white"
+                            className="bg-sky-50 p-4 rounded-2xl shadow-md text-slate-800"
                         >
                             <h2 className="text-xl font-semibold mb-2">
                                 Expense List - Qty: {filteredExpenses.length} | Total: <span className="text-red-300">${totalExpensesFiltered.toFixed(2)}</span> | Avg: <span className="text-orange-300">${avgExpensesFiltered.toFixed(2)}</span>
@@ -216,10 +216,10 @@ const CashflowReports = () => {
                                     placeholder="Search by name, description or type..."
                                     value={expenseTerm}
                                     onChange={(e) => setExpenseTerm(e.target.value)}
-                                    className="w-full max-w-md px-4 py-2 rounded bg-blue-400 text-white border border-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    className="w-full max-w-md px-4 py-2 rounded bg-white text-slate-900 border border-slate-300  focus:outline-none focus:ring-2 focus:ring-cyan-500"
                                 />
                                 <div className="mt-5">
-                                    <table id="expenses-table" className="w-full text-left border-collapse">
+                                    <table id="expenses-table" className="w-full text-left border-collapse bg-white rounded text-slate-900">
                                         <thead>
                                             <tr className="text-center">
                                                 <th>Date</th>
@@ -247,14 +247,14 @@ const CashflowReports = () => {
                                     <div className="flex flex-row">
                                         <button
                                             onClick={() => copyTableToClipboard("expenses")}
-                                            className="mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 w-full flex flex-row items-center justify-center"
+                                            className="mt-4 px-4 py-2 bg-[#118290] hover:bg-[#0d6c77] text-cyan-50 w-full flex flex-row items-center justify-center"
                                         >
                                             Copy Table
                                             <Copy className="ml-2"></Copy>
                                         </button>
                                         <button
                                             onClick={() => openModalPieChart(filteredExpenses, "amount", "responsibleName", "Expense Amount by Supplier")}
-                                            className=" ml-2 mt-4 px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700 w-full flex flex-row items-center justify-center"
+                                            className=" ml-2 mt-4 px-4 py-2 bg-[#3BA0AC] hover:bg-[#6BBCC5] text-cyan-50 w-full flex flex-row items-center justify-center"
                                         >
                                             View Pie Chart
                                             <ChartPie className="ml-2" />

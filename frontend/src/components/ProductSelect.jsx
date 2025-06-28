@@ -21,13 +21,13 @@ const ProductSelect = ({ productList, customService, setCustomService, setNameAu
 
   return (
     <div className="mt-2">
-      <label className="block text-sm font-medium mb-1">Product:</label>
+      <label className="block text-sm font-medium mb-1 text-slate-800">Product:</label>
       <Select
         options={options}
         value={options.find(opt => opt.value === customService.productId) || null} // ← aquí lo haces controlado
         onChange={handleChange}
         placeholder="Select or search a product..."
-        className="text-blue-950"
+        className="text-slate-900"
         classNamePrefix="react-select"
         styles={{
           control: (base) => ({
@@ -39,6 +39,11 @@ const ProductSelect = ({ productList, customService, setCustomService, setNameAu
           menu: (base) => ({
             ...base,
             zIndex: 50,
+          }),
+          option: (provided, state) => ({
+            ...provided,
+            backgroundColor: state.isFocused ? "#3BA0AC" : "white",
+            color: "#1e293b", // slate-900
           }),
         }}
       />

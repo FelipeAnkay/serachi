@@ -87,15 +87,15 @@ export default function PendingServices() {
                     <LoadingSpinner />
                 )
             }
-            <div className="flex flex-col min-h-screen w-full bg-blue-950 text-white px-4 py-6 sm:px-8 sm:py-10 md:ml-12">
+            <div className="flex flex-col min-h-screen w-full bg-[#18394C] text-slate-800 px-4 py-6 sm:px-8 sm:py-10">
                 <motion.div
                     initial={{ opacity: 0, scale: 2 }}
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0, scale: 0.9 }}
                     transition={{ duration: 0.5 }}
-                      className="
+                    className="
                                 flex flex-col
-                                bg-blue-900 bg-opacity-80 backdrop-filter backdrop-blur-lg
+                                bg-sky-50 backdrop-filter backdrop-blur-lg
                                 rounded-2xl shadow-2xl border border-gray-800 overflow-hidden
                                 min-h-[calc(100vh-5rem)]
                                 w-full max-w-7xl
@@ -104,14 +104,14 @@ export default function PendingServices() {
                                 mx-auto
                             "
                 >
-                    <h1 className="text-3xl font-bold mt-6 mb-6 text-center text-white bg-clip-text">Services with missing data</h1>
+                    <h1 className="text-3xl font-bold mt-6 mb-6 text-center text-slate-800 bg-clip-text">Services with missing data</h1>
                     <div className='w-full'>
-                        <fieldset className="flex-grow space-y-4 border rounded-2xl p-4 ml-4 mr-4">
+                        <fieldset className="flex-grow space-y-4 rounded-2xl p-4 ml-4 mr-4">
                             <legend className="text-2xl font-bold">Service List</legend>
                             <input
                                 type="text"
                                 placeholder="Search service by Customer email..."
-                                className="w-full p-2 border border-gray-300 rounded"
+                                className="w-full p-2 bg-white text-slate-900 border border-slate-300 rounded"
                                 value={serviceSearch}
                                 onChange={(e) => setServiceSearch(e.target.value)}
                                 onKeyDown={(e) => {
@@ -134,7 +134,7 @@ export default function PendingServices() {
                                             return (
                                                 <div
                                                     key={service._id}
-                                                    className="border rounded-lg p-4 hover:shadow transition relative border-gray-300 bg-blue-100 flex flex-col sm:flex-row sm:justify-between sm:items-center space-y-4 sm:space-y-0"
+                                                    className="border rounded-lg p-4 hover:shadow transition relative bg-white border-slate-300 flex flex-col sm:flex-row sm:justify-between sm:items-center space-y-4 sm:space-y-0"
                                                 >
                                                     <h3 className="text-lg font-semibold text-gray-800">
                                                         {service.name}
@@ -150,8 +150,8 @@ export default function PendingServices() {
                                                                     setIsServiceModalOpen(true);
                                                                     window.scrollTo({ top: 0, behavior: 'smooth' });
                                                                 }}
-                                                                className='w-full py-3 px-4 bg-gradient-to-r from-blue-500 to-blue-600 text-white font-bold rounded-lg shadow-lg
-                                                         hover:from-blue-600 hover:to-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-gray-900'
+                                                                className='w-full py-3 px-4 bg-[#118290] hover:bg-[#0d6c77] text-cyan-50 font-bold rounded-lg shadow-lg
+                                                         focus:ring-offset-1 focus:ring-offset-cyan-900'
                                                             >
                                                                 <div className='flex flex-col justify-center items-center'>
                                                                     <CalendarPlus className="" />

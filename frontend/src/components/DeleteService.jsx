@@ -32,8 +32,8 @@ const DeleteService = ({ serviceId, onDeleted }) => {
       whileTap={{ scale: 0.95 }}
       disabled={loading}
       onClick={handleDelete}
-      className="w-full py-3 px-4 bg-gradient-to-r from-red-500 to-red-600 text-white font-bold rounded-lg shadow-lg
-                 hover:from-red-600 hover:to-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 focus:ring-offset-gray-900
+      className="w-full py-3 px-4 bg-gradient-to-r  text-slate-800 font-bold rounded-lg shadow-lg
+                 bg-red-400 hover:bg-red-500
                  disabled:opacity-50 disabled:cursor-not-allowed"
     >
       <div className="flex flex-col justify-center items-center">

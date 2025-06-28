@@ -371,22 +371,22 @@ export default function ConfirmedQuote() {
                     <LoadingSpinner />
                 )
             }
-            <div className="flex flex-col min-h-screen w-full bg-blue-950 text-white px-4 py-6 sm:px-8 sm:py-10">
+            <div className="flex flex-col min-h-screen w-full bg-[#18394C] text-slate-800 px-4 py-6 sm:px-8 sm:py-10">
                 <motion.div
                     initial={{ opacity: 0, scale: 2 }}
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0, scale: 0.9 }}
                     transition={{ duration: 0.5 }}
-                    className="flex flex-col w-full max-w-9/12 mx-auto bg-blue-900 bg-opacity-80 backdrop-filter backdrop-blur-lg rounded-2xl shadow-2xl border border-gray-800 overflow-hidden min-h-screen"
+                    className="flex flex-col w-full max-w-9/12 mx-auto bg-sky-50 backdrop-filter backdrop-blur-lg rounded-2xl shadow-2xl border border-gray-800 overflow-hidden min-h-screen"
                 >
-                    <h1 className="text-3xl font-bold mt-6 mb-6 text-center text-white bg-clip-text">Confirmed Quotes</h1>
+                    <h1 className="text-3xl font-bold mt-6 mb-6 text-center text-slate-800 bg-clip-text">Confirmed Quotes</h1>
                     <div>
-                        <fieldset className="flex-grow space-y-4 border rounded-2xl p-4 ml-4 mr-4">
+                        <fieldset className="flex-grow space-y-4 rounded-2xl p-4 ml-4 mr-4">
                             <legend className="text-2xl font-bold">Quote List</legend>
                             <input
                                 type="text"
                                 placeholder="Search quote by email..."
-                                className="w-full p-2 border border-gray-300 rounded"
+                                className="w-full p-2 bg-white text-slate-900 border border-slate-300"
                                 value={quoteSearch}
                                 onChange={(e) => setQuoteSearch(e.target.value)}
                                 onKeyDown={(e) => {
@@ -397,7 +397,7 @@ export default function ConfirmedQuote() {
                                 }}
                             />
                             <div className="flex items-center space-x-2 mb-2">
-                                <label htmlFor="filterSwitch" className="text-white font-medium">Show only unprocessed quotes</label>
+                                <label htmlFor="filterSwitch" className="text-slate-800 font-medium">Show only unprocessed quotes</label>
                                 <input
                                     id="filterSwitch"
                                     type="checkbox"
@@ -424,7 +424,7 @@ export default function ConfirmedQuote() {
                                             return (
                                                 <div
                                                     key={quote._id}
-                                                    className="border rounded-lg p-4 hover:shadow transition relative border-gray-300 bg-blue-100 flex flex-col sm:flex-row sm:justify-between sm:items-center space-y-4 sm:space-y-0"
+                                                    className="border rounded-lg p-4 hover:shadow transition relative bg-white border-slate-300 flex flex-col sm:flex-row sm:justify-between sm:items-center space-y-4 sm:space-y-0"
                                                 >
                                                     <div>
                                                         <h3 className="text-md sm:text-lg font-semibold text-gray-800">
@@ -450,9 +450,8 @@ export default function ConfirmedQuote() {
                                                             whileHover={{ scale: 1.05 }}
                                                             whileTap={{ scale: 0.95 }}
                                                             onClick={() => handleCloneClick(quote._id)}
-                                                            className={`py-2 px-3 sm:py-3 sm:px-4 bg-gradient-to-r from-blue-500 to-blue-600 text-white font-bold rounded-lg shadow-lg
-                                                            hover:from-blue-600 hover:to-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-gray-900
-                                                            w-full ${alreadyExists ? "sm:w-1/4 sm:self-end" : ""}`}
+                                                            className={`w-full py-3 px-4 bg-[#118290] hover:bg-[#0d6c77] text-cyan-50 font-bold rounded-lg shadow-lg
+                                                         focus:ring-offset-1 focus:ring-offset-cyan-900 ${alreadyExists ? "sm:w-1/4 sm:self-end" : ""}`}
                                                         >
                                                             <div className='flex flex-col justify-center items-center text-sm sm:text-base'>
                                                                 <Copy />
@@ -465,9 +464,8 @@ export default function ConfirmedQuote() {
                                                                 whileHover={{ scale: 1.05 }}
                                                                 whileTap={{ scale: 0.95 }}
                                                                 onClick={() => handleCreateReservation(quote)}
-                                                                className={`py-2 px-3 sm:py-3 sm:px-4 bg-gradient-to-r from-blue-500 to-blue-600 text-white font-bold rounded-lg shadow-lg
-                                                            hover:from-blue-600 hover:to-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-gray-900
-                                                            w-full ${alreadyExists ? "sm:w-1/4 sm:self-end" : ""}`}
+                                                                className={`w-full py-3 px-4 bg-[#118290] hover:bg-[#0d6c77] text-cyan-50 font-bold rounded-lg shadow-lg
+                                                         focus:ring-offset-1 focus:ring-offset-cyan-900 ${alreadyExists ? "sm:w-1/4 sm:self-end" : ""}`}
                                                             >
                                                                 <div className='flex flex-col justify-center items-center text-sm sm:text-base'>
                                                                     <Bed />
@@ -483,8 +481,8 @@ export default function ConfirmedQuote() {
                                                                     whileHover={{ scale: 1.05 }}
                                                                     whileTap={{ scale: 0.95 }}
                                                                     onClick={() => handleCreateExperience(quote)}
-                                                                    className='w-full py-2 px-3 sm:py-3 sm:px-4 bg-gradient-to-r from-blue-500 to-blue-600 text-white font-bold rounded-lg shadow-lg
-                                                                 hover:from-blue-600 hover:to-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-gray-900'
+                                                                    className='w-full py-3 px-4 bg-[#118290] hover:bg-[#0d6c77] text-cyan-50 font-bold rounded-lg shadow-lg
+                                                         focus:ring-offset-1 focus:ring-offset-cyan-900'
                                                                 >
                                                                     <div className='flex flex-col justify-center items-center text-sm sm:text-base'>
                                                                         <MapPinCheckInside />
@@ -497,8 +495,8 @@ export default function ConfirmedQuote() {
                                                                     whileHover={{ scale: 1.05 }}
                                                                     whileTap={{ scale: 0.95 }}
                                                                     onClick={() => handleOpenModal(quote)}
-                                                                    className='w-full py-2 px-3 sm:py-3 sm:px-4 bg-gradient-to-r from-blue-500 to-blue-600 text-white font-bold rounded-lg shadow-lg
-                                                                 hover:from-blue-600 hover:to-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-gray-900'
+                                                                    className='w-full py-3 px-4 bg-[#118290] hover:bg-[#0d6c77] text-cyan-50 font-bold rounded-lg shadow-lg
+                                                         focus:ring-offset-1 focus:ring-offset-cyan-900'
                                                                 >
                                                                     <div className='flex flex-col justify-center items-center text-sm sm:text-base'>
                                                                         <MapPinPlus />
@@ -516,7 +514,7 @@ export default function ConfirmedQuote() {
                                 <AnimatePresence className="relative">
                                     {loading && (
                                         <div className="absolute inset-0 bg-black bg-opacity-40 backdrop-blur-sm flex items-center justify-center z-50 rounded-2xl">
-                                            <div className="text-white text-lg font-semibold animate-pulse">Creating...</div>
+                                            <div className="text-slate-800 text-lg font-semibold animate-pulse">Creating...</div>
                                         </div>
                                     )}
                                     {isModalOpen && modalQuote && (
@@ -524,13 +522,13 @@ export default function ConfirmedQuote() {
 
                                             <motion.div
                                                 key="custom-experience-modal"
-                                                className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 "
+                                                className="fixed inset-0 bg-black/95 flex items-center justify-center z-50 "
                                                 initial={{ opacity: 0 }}
                                                 animate={{ opacity: 1 }}
                                                 exit={{ opacity: 0 }}
                                             >
                                                 <motion.div
-                                                    className="bg-blue-900 rounded-2xl p-6 h-[90%] overflow-y-auto relative"
+                                                    className="bg-[#EEF9FC] rounded-2xl p-6 h-[90%] overflow-y-auto relative"
                                                     initial={{ scale: 0.8 }}
                                                     animate={{ scale: 1 }}
                                                     exit={{ scale: 0.8 }}
@@ -538,7 +536,7 @@ export default function ConfirmedQuote() {
                                                 >
                                                     <button
                                                         type="button"
-                                                        className="absolute top-3 right-3 text-gray-300 hover:text-white"
+                                                        className="absolute top-3 right-3 text-slate-700 hover:text-slate-800"
                                                         onClick={() => {
                                                             setIsModalOpen(false);
                                                             setModalQuote(null); // Resetear
@@ -547,9 +545,9 @@ export default function ConfirmedQuote() {
                                                         <CircleX />
                                                     </button>
 
-                                                    <h2 className="text-xl font-bold mb-4 text-center text-white">Custom Experience</h2>
+                                                    <h2 className="text-xl font-bold mb-4 text-center text-slate-800">Custom Experience</h2>
 
-                                                    <fieldset className='flex-1 border p-4 rounded-2xl'>
+                                                    <fieldset className='flex-1 border p-4 rounded-2xl bg-white'>
                                                         <legend className="font-semibold text-sm">Quoted Dates</legend>
                                                         <div className='flex flex-row justify-center'>
                                                             <label htmlFor="quoteDateIn" className='text-lg font-bold'>Date In: {formatDateDisplay(modalQuote.dateIn)}</label>
@@ -560,7 +558,7 @@ export default function ConfirmedQuote() {
                                                     {/* CONTENIDO DEL MODAL (usa modalQuote en vez de quote directamente) */}
                                                     <div className="space-y-4 mt-2">
                                                         <div className='flex flex-row w-full gap-x-2'>
-                                                            <fieldset className='flex-1 border p-4 rounded-2xl'>
+                                                            <fieldset className='flex-1 border p-4 rounded-2xl bg-white'>
                                                                 <legend className="font-semibold text-sm">Quoted Products</legend>
                                                                 <div className='flex flex-col'>
                                                                     {(modalQuote.productList || []).map((product) => (
@@ -572,7 +570,7 @@ export default function ConfirmedQuote() {
                                                             </fieldset>
                                                         </div>
                                                         <div className='flex flex-row'>
-                                                            <fieldset className='border p-4 rounded-2xl mr-2'>
+                                                            <fieldset className='border p-4 rounded-2xl mr-2 bg-white'>
                                                                 <legend className="font-semibold text-sm">Service Data</legend>
                                                                 {/* Product Selection */}
                                                                 <div>
@@ -587,7 +585,7 @@ export default function ConfirmedQuote() {
                                                                     <label className="block text-sm font-medium">Base Service Name:</label>
                                                                     <input
                                                                         type="text"
-                                                                        className={`w-full border border-gray-300  ${!customService.productId ? 'bg-gray-600' : 'bg-white'} text-blue-950 rounded px-3 py-2 mt-1`}
+                                                                        className={`w-full border border-gray-300  ${!customService.productId ? 'bg-slate-300' : 'bg-white'} text-slate-900 rounded px-3 py-2 mt-1`}
                                                                         value={customService.name || ''}
                                                                         disabled={!customService.productId}
                                                                         onChange={(e) => {
@@ -602,7 +600,7 @@ export default function ConfirmedQuote() {
                                                                 <div className='mt-2'>
                                                                     <label className="block text-sm font-medium">Staff Email:</label>
                                                                     <select
-                                                                        className="w-full border border-gray-300 bg-white text-blue-950 rounded px-3 py-2 mt-1"
+                                                                        className="w-full border border-gray-300 bg-white text-slate-900 rounded px-3 py-2 mt-1"
                                                                         value={customService.staffEmail || ''}
                                                                         onChange={(e) => setCustomService({ ...customService, staffEmail: e.target.value })}
                                                                     >
@@ -623,7 +621,7 @@ export default function ConfirmedQuote() {
                                                                             value={customService.dateIn || ''}
                                                                             min={formatDateISO(modalQuote.dateIn)}
                                                                             onChange={(e) => setCustomService({ ...customService, dateIn: e.target.value })}
-                                                                            className="w-full border px-2 py-1 rounded bg-white text-blue-950"
+                                                                            className="w-full border px-2 py-1 rounded bg-white text-slate-900"
                                                                         />
                                                                     </div>
                                                                     <div className="w-1/2 pl-2">
@@ -633,7 +631,7 @@ export default function ConfirmedQuote() {
                                                                             min={customService.dateIn || new Date().toISOString().split('T')[0]}
                                                                             disabled={!customService.dateIn}
                                                                             onChange={(e) => setCustomService({ ...customService, dateOut: e.target.value })}
-                                                                            className="w-full border px-2 py-1 rounded bg-white text-blue-950"
+                                                                            className="w-full border px-2 py-1 rounded bg-white text-slate-900"
                                                                         />
                                                                     </div>
                                                                 </div>
@@ -670,7 +668,7 @@ export default function ConfirmedQuote() {
                                                                         min={0}
                                                                         value={customService.repetitions || 0}
                                                                         onChange={(e) => setCustomService({ ...customService, repetitions: parseInt(e.target.value, 10) })}
-                                                                        className="w-full border px-2 py-1 rounded bg-white text-blue-950"
+                                                                        className="w-full border px-2 py-1 rounded bg-white text-slate-900"
                                                                     />
                                                                 </div>
 
@@ -678,7 +676,7 @@ export default function ConfirmedQuote() {
                                                                 {/* Add Button */}
                                                                 <div className='flex justify-center'>
                                                                     <button
-                                                                        className="mt-4 px-4 py-2 rounded bg-blue-600 text-white hover:bg-blue-700"
+                                                                        className="mt-4 px-4 py-2 rounded bg-[#3BA0AC] hover:bg-[#6BBCC5] text-cyan-50"
                                                                         onClick={(e) => {
                                                                             e.preventDefault();
                                                                             try {
@@ -693,7 +691,7 @@ export default function ConfirmedQuote() {
                                                                         Add Service(s)
                                                                     </button>
                                                                     <button
-                                                                        className="mt-4 px-4 py-2 ml-2 rounded bg-yellow-600 text-white hover:bg-yellow-700"
+                                                                        className="mt-4 px-4 py-2 ml-2 rounded bg-slate-600 hover:bg-slate-700 text-cyan-50"
                                                                         onClick={() => handleResetCustomService()}
                                                                     >
                                                                         Reset Service(s)
@@ -701,11 +699,11 @@ export default function ConfirmedQuote() {
                                                                 </div>
                                                             </fieldset>
 
-                                                            <fieldset className='flex-1 border p-4 rounded-2xl'>
+                                                            <fieldset className='flex-1 border p-4 rounded-2xl bg-white'>
                                                                 <legend className="font-semibold text-sm">Custom Services</legend>
                                                                 <div className='flex flex-col'>
                                                                     {(customServiceList || []).map((service, index) => (
-                                                                        <div className='flex flex-row items-center justify-center border rounded-2xl mr-2 mb-2 bg-blue-700'>
+                                                                        <div className='flex flex-row items-center justify-center border rounded-2xl mr-2 mb-2 bg-cyan-50'>
                                                                             <div className='ml-2 flex-1 text-left'>
                                                                                 <label>
                                                                                     {index + 1}.- {service.name} - {formatDateTimeDisplayHours(service.dateIn)} to {formatDateTimeDisplayHours(service.dateOut)}
@@ -713,7 +711,7 @@ export default function ConfirmedQuote() {
                                                                             </div>
                                                                             <div className='mr-2'>
                                                                                 <Trash2
-                                                                                    className='text-red-500 hover:text-red-900'
+                                                                                    className='text-red-400 hover:text-red-500'
                                                                                     onClick={() => handleDeleteCustomService(index)}
                                                                                 />
                                                                             </div>
@@ -727,7 +725,7 @@ export default function ConfirmedQuote() {
                                                     </div>
 
                                                     <button
-                                                        className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded w-full mt-4"
+                                                        className="bg-[#118290] hover:bg-[#0d6c77] text-cyan-50 px-4 py-2 rounded w-full mt-4"
                                                         type="button"
                                                         onClick={() => handleCreateCustomExperience(modalQuote, customServiceList)}
                                                     >

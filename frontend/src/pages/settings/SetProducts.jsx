@@ -141,24 +141,24 @@ const SetProduct = () => {
         .sort((a, b) => a.name.localeCompare(b.name));
 
 
-    if (loading) return <div className="text-white text-center mt-10">Loading Products...</div>;
+    if (loading) return <div className="text-slate-800 text-center mt-10">Loading Products...</div>;
 
     return (
-            <div className="flex flex-col min-h-screen w-full bg-blue-950 text-white px-4 py-6 sm:px-8 sm:py-10">
-                <motion.div
-                    initial={{ opacity: 0, scale: 2 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.9 }}
-                    transition={{ duration: 0.5 }}
-                    className="flex flex-col w-full max-w-9/12 mx-auto bg-blue-900 bg-opacity-80 backdrop-filter backdrop-blur-lg rounded-2xl shadow-2xl border border-gray-800 overflow-hidden min-h-screen items-center p-4"
-                >
-                <h2 className="text-3xl font-bold mb-6 text-center text-white bg-clip-text">
+        <div className="flex flex-col min-h-screen w-full bg-[#18394C] text-slate-800 px-4 py-6 sm:px-8 sm:py-10">
+            <motion.div
+                initial={{ opacity: 0, scale: 2 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.9 }}
+                transition={{ duration: 0.5 }}
+                className="flex flex-col w-full max-w-9/12 mx-auto bg-sky-50 backdrop-filter backdrop-blur-lg rounded-2xl shadow-2xl border border-gray-800 overflow-hidden min-h-screen items-center p-4"
+            >
+                <h2 className="text-3xl font-bold mb-6 text-center text-[#00C49F] bg-clip-text">
                     Product List
                 </h2>
 
                 <div className="flex justify-center mb-4">
                     <button
-                        className="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded flex items-center gap-2"
+                        className="bg-[#118290] hover:bg-[#0d6c77] text-cyan-50 px-6 py-2 rounded flex items-center gap-2"
                         onClick={openNewProductModal}
                     >
                         <p>Add Product</p><UserPlus />
@@ -167,7 +167,7 @@ const SetProduct = () => {
                 <div className="flex justify-center mb-2">
                     <button
                         onClick={() => setShowActive(!showActive)}
-                        className="text-sm text-blue-400 hover:text-blue-200 underline"
+                        className="text-sm text-slate-800 hover:text-slate-400 underline"
                     >
                         {showActive ? 'Show Inactive Products' : 'Show Active Products'}
                     </button>
@@ -176,7 +176,7 @@ const SetProduct = () => {
                     <div className="flex flex-wrap gap-2 justify-center mb-6">
                         <button
                             onClick={() => setSelectedType(null)}
-                            className={`px-3 py-1 rounded text-sm ${!selectedType ? 'bg-blue-600 text-white' : 'bg-gray-700 text-gray-300'}`}
+                            className={`px-3 py-1 rounded text-sm ${!selectedType ? 'bg-[#3BA0AC] hover:bg-[#6BBCC5] text-cyan-50' : 'bg-slate-600 hover:bg-slate-700 text-slate-100'}`}
                         >
                             All
                         </button>
@@ -184,7 +184,7 @@ const SetProduct = () => {
                             <button
                                 key={type}
                                 onClick={() => setSelectedType(type)}
-                                className={`px-3 py-1 rounded text-sm ${selectedType === type ? 'bg-blue-600 text-white' : 'bg-gray-700 text-gray-300'}`}
+                                className={`px-3 py-1 rounded text-sm ${selectedType === type ? 'bg-[#3BA0AC] hover:bg-[#6BBCC5] text-cyan-50' : 'bg-slate-600 hover:bg-slate-700 text-slate-100'}`}
                             >
                                 {type}
                             </button>
@@ -195,64 +195,65 @@ const SetProduct = () => {
                     <input
                         type="text"
                         placeholder="Search product by name..."
-                        className="w-full max-w-md p-2 rounded bg-gray-800 text-white border border-gray-600"
+                        className="w-full max-w-md p-2 rounded bg-white text-slate-900 border border-gray-600"
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                     />
                 </div>
 
-                <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 ml-3 mr-3 mb-3">
+                <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 px-2">
                     {filteredProducts.length === 0 ? (
                         <div className="text-center text-gray-400 col-span-full">No Products found</div>
                     ) : (
                         filteredProducts.map((product) => (
                             <div
                                 key={product._id}
-                                className="relative bg-white text-black rounded-lg shadow p-4 hover:bg-blue-100 transition-all"
+                                className="relative text-slate-800 rounded-lg shadow p-4 bg-white border border-slate-300  hover:bg-blue-100 transition-all"
                             >
-                                <div onClick={() => openEditProductModal(product)} className='w-3/4'>
-                                    <h3 className="font-semibold text-lg mb-1">{product.name}</h3>
-                                    <p className="text-sm text-gray-700">Price: {product.price}</p>
-                                    <p className="text-sm text-gray-700">Tax: {product.tax}</p>
-                                    <p className="text-sm text-gray-700">Type: {product.type || 'N/A'}</p>
-                                </div>
-                                {product.isActive ? (
-                                    <div className='flex flex-col absolute top-2 right-2 text-sm w-1/4'>
-                                        <button
-                                            onClick={() => setConfirmDelete({ id: product._id, name: product.name })}
-                                            className="text-red-600 hover:text-red-800 flex flex-col justify-center items-center"
-                                            title="Remove from Store"
-                                        >
-                                            <Trash2 />
-                                            Remove
-                                        </button>
-                                        <button
-                                            onClick={() => handleDuplicate(product)}
-                                            className="text-blue-600 hover:text-blue-800 flex flex-col justify-center items-center mt-2"
-                                            title="Duplicate Product"
-                                        >
-                                            <Copy />
-                                            Duplicate
-                                        </button>
+                                <div className='flex flex-row'>
+                                    <div onClick={() => openEditProductModal(product)} className="flex flex-col w-7/8">
+                                        <h3 className="font-semibold text-lg mb-1">{product.name}</h3>
+                                        <p className="text-sm text-gray-700">Price: {product.price}</p>
+                                        <p className="text-sm text-gray-700">Tax: {product.tax}</p>
+                                        <p className="text-sm text-gray-700">Type: {product.type || 'N/A'}</p>
                                     </div>
-                                ) : (
-                                    <button
-                                        onClick={async () => {
-                                            try {
-                                                await updateProduct(product._id, { isActive: true });
-                                                toast.success(`${product.name} reactivated.`);
-                                                window.location.reload();
-                                            } catch (error) {
-                                                console.error('Error reactivating product:', error);
-                                                toast.error('Error reactivating product');
-                                            }
-                                        }}
-                                        className="absolute top-2 right-2 text-green-600 hover:text-green-800"
-                                        title="Add to Store"
-                                    >
-                                        <CirclePlus />
-                                    </button>
-                                )}
+                                    {product.isActive ? (
+                                        <div className='w-1/8 flex flex-col items-center ml-2'>
+                                            <button
+                                                onClick={() => setConfirmDelete({ id: product._id, name: product.name })}
+                                                className="text-red-600 hover:text-red-800"
+                                                title="Remove from Store"
+                                            >
+                                                <Trash2 />
+                                            </button>
+                                            <button
+                                                onClick={() => handleDuplicate(product)}
+                                                className="text-blue-600 hover:text-blue-800 mt-2"
+                                                title="Duplicate Product"
+                                            >
+                                                <Copy />
+                                                
+                                            </button>
+                                        </div>
+                                    ) : (
+                                        <button
+                                            onClick={async () => {
+                                                try {
+                                                    await updateProduct(product._id, { isActive: true });
+                                                    toast.success(`${product.name} reactivated.`);
+                                                    window.location.reload();
+                                                } catch (error) {
+                                                    console.error('Error reactivating product:', error);
+                                                    toast.error('Error reactivating product');
+                                                }
+                                            }}
+                                            className="absolute top-2 right-2 text-green-600 hover:text-green-800"
+                                            title="Add to Store"
+                                        >
+                                            <CirclePlus />
+                                        </button>
+                                    )}
+                                </div>
                             </div>
                         ))
                     )}
@@ -263,14 +264,14 @@ const SetProduct = () => {
             <AnimatePresence>
                 {(modalOpen || confirmDelete) && (
                     <motion.div
-                        className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 overflow-y-auto scrollbar-thin scrollbar-thumb-blue-600 scrollbar-track-gray-800 scrollbar-thumb-rounded-full"
+                        className="fixed inset-0 bg-black/95 flex items-center justify-center z-50 overflow-y-auto scrollbar-thin scrollbar-thumb-blue-600 scrollbar-track-gray-800 scrollbar-thumb-rounded-full"
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
                     >
                         {confirmDelete ? (
                             <motion.div
-                                className="bg-gray-900 text-white rounded-2xl shadow-2xl p-8 w-[90%] max-w-md relative"
+                                className="bg-sky-50 text-slate-800 rounded-2xl shadow-2xl p-8 w-[90%] max-w-md relative"
                                 initial={{ scale: 0.8 }}
                                 animate={{ scale: 1 }}
                                 exit={{ scale: 0.8 }}
@@ -281,13 +282,13 @@ const SetProduct = () => {
                                 </h3>
                                 <div className="flex justify-around">
                                     <button
-                                        className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded"
+                                        className="bg-red-400 hover:bg-red-500 text-slate-800 px-4 py-2 rounded"
                                         onClick={confirmRemove}
                                     >
                                         Yes, Remove
                                     </button>
                                     <button
-                                        className="bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded"
+                                        className="bg-gray-700 hover:bg-gray-600 text-slate-800 px-4 py-2 rounded"
                                         onClick={closeModal}
                                     >
                                         Cancel
@@ -296,20 +297,20 @@ const SetProduct = () => {
                             </motion.div>
                         ) : (
                             <motion.div
-                                className="bg-gray-900 text-white rounded-2xl shadow-2xl p-8 w-[90%] max-w-md relative max-h-[90vh] overflow-y-auto scrollbar-thin scrollbar-thumb-blue-600 scrollbar-track-gray-800 scrollbar-thumb-rounded-full"
+                                className="bg-sky-50 text-slate-800 rounded-2xl shadow-2xl p-8 w-[90%] max-w-md relative max-h-[90vh] overflow-y-auto scrollbar-thin scrollbar-thumb-blue-600 scrollbar-track-gray-800 scrollbar-thumb-rounded-full"
                                 initial={{ scale: 0.8 }}
                                 animate={{ scale: 1 }}
                                 exit={{ scale: 0.8 }}
                                 transition={{ duration: 0.3 }}
                             >
                                 <button
-                                    className="absolute top-4 right-4 text-gray-400 hover:text-white"
+                                    className="absolute top-4 right-4 text-gray-400 hover:text-slate-800"
                                     onClick={closeModal}
                                 >
                                     <CircleX />
                                 </button>
 
-                                <h3 className="text-2xl font-bold mb-6 text-center bg-gradient-to-r from-blue-400 to-blue-600 text-transparent bg-clip-text">
+                                <h3 className="text-2xl font-bold mb-6 text-center text-[#00C49F] bg-clip-text">
                                     {isEditing ? 'Edit Product' : 'New Product'}
                                 </h3>
                                 <div className="space-y-4 text-sm">
@@ -317,7 +318,7 @@ const SetProduct = () => {
                                         <label className="capitalize">Name:*</label>
                                         <input
                                             type="text"
-                                            className="w-full p-2 mt-1 rounded bg-gray-800 text-white"
+                                            className="w-full p-2 mt-1 rounded bg-white text-slate-900 border border-slate-300"
                                             value={productData.name || ''}
                                             onChange={(e) =>
                                                 setProductData({ ...productData, name: e.target.value })
@@ -330,7 +331,7 @@ const SetProduct = () => {
                                         <input
                                             type="text"
                                             inputMode="decimal"
-                                            className="w-full p-2 mt-1 rounded bg-gray-800 text-white"
+                                            className="w-full p-2 mt-1 rounded bg-white text-slate-900 border border-slate-300"
                                             value={productData.price?.toString().replace('.', ',') || ''}
                                             onChange={(e) => {
                                                 const raw = e.target.value.replace(',', '.');
@@ -353,7 +354,7 @@ const SetProduct = () => {
                                         <input
                                             type="text"
                                             inputMode="decimal"
-                                            className="w-full p-2 mt-1 rounded bg-gray-800 text-white"
+                                            className="w-full p-2 mt-1 rounded bg-white text-slate-900 border border-slate-300"
                                             value={productData.taxPercent?.toString().replace('.', ',') || ''}
                                             onChange={(e) => {
                                                 const raw = e.target.value.replace(',', '.');
@@ -376,7 +377,7 @@ const SetProduct = () => {
                                         <input
                                             type="text"
                                             inputMode="decimal"
-                                            className="w-full p-2 mt-1 rounded bg-gray-800 text-white"
+                                            className="w-full p-2 mt-1 rounded bg-white text-slate-900 border border-slate-300"
                                             value={productData.tax?.toString().replace('.', ',') || ''}
                                             onChange={(e) => {
                                                 const raw = e.target.value.replace(',', '.');
@@ -399,7 +400,7 @@ const SetProduct = () => {
                                         <input
                                             type="text"
                                             inputMode="decimal"
-                                            className="w-full p-2 mt-1 rounded bg-gray-800 text-white"
+                                            className="w-full p-2 mt-1 rounded bg-white text-slate-900 border border-slate-300"
                                             value={productData.finalPrice?.toString().replace('.', ',') || ''}
                                             onChange={(e) => {
                                                 const raw = e.target.value.replace(',', '.');
@@ -420,7 +421,7 @@ const SetProduct = () => {
                                         <label className="block text-sm font-medium">Product Type:*</label>
                                         <select
                                             name="type"
-                                            className="ml-2 w-full border border-gray-300 bg-white text-blue-950 rounded px-3 py-2"
+                                            className="ml-2 w-full bg-white text-slate-900 border border-slate-300 rounded px-3 py-2"
                                             value={productData.type || ''}
                                             onChange={(e) => setProductData({ ...productData, type: e.target.value })}
                                         >
@@ -437,7 +438,7 @@ const SetProduct = () => {
                                     </div>
                                     <div className="flex justify-center mt-6">
                                         <button
-                                            className="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded flex items-center gap-2"
+                                            className="bg-[#118290] hover:bg-[#0d6c77] text-cyan-50 px-6 py-2 rounded flex items-center gap-2"
                                             onClick={handleSave}
                                         >
                                             <p>Save</p><Save />

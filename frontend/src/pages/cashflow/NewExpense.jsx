@@ -137,21 +137,21 @@ export default function NewExpense() {
                     <LoadingSpinner />
                 )
             }
-            <div className="flex flex-col min-h-screen w-full bg-blue-950 text-white px-4 py-6 sm:px-8 sm:py-10">
+            <div className="flex flex-col min-h-screen w-full bg-[#18394C] text-slate-800 px-4 py-6 sm:px-8 sm:py-10">
                 <motion.div
                     initial={{ opacity: 0, scale: 2 }}
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0, scale: 0.9 }}
                     transition={{ duration: 0.5 }}
-                    className="flex flex-col w-full max-w-9/12 mx-auto bg-blue-950 bg-opacity-80 backdrop-filter backdrop-blur-lg overflow-hidden min-h-screen items-center"
+                    className="flex flex-col w-full max-w-9/12 mx-auto bg-[#18394C] bg-opacity-80 backdrop-filter backdrop-blur-lg overflow-hidden min-h-screen items-center"
                 >
-                    <h1 className="text-3xl font-bold mb-6 text-center text-white">New Expense</h1>
-                    <form onSubmit={handleSubmit} className="space-y-6 border rounded-lg p-6 shadow-sm bg-blue-900 text-white">
+                    <h1 className="text-3xl font-bold mb-6 text-center text-[#00C49F]">New Expense</h1>
+                    <form onSubmit={handleSubmit} className="space-y-6 border rounded-lg p-6 shadow-sm bg-sky-50 text-slate-800">
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
                                 <label className="block font-medium mb-1">Date</label>
-                                <input type="date" name="date" value={formData.date} onChange={handleChange} className="w-full border rounded px-3 py-2 bg-gray-200 text-blue-950" />
+                                <input type="date" name="date" value={formData.date} onChange={handleChange} className="w-full px-3 py-2 bg-white text-slate-900 border border-slate-300 rounded" />
                             </div>
                             <div>
                                 <label className="block font-medium mb-1">Amount</label>
@@ -165,7 +165,7 @@ export default function NewExpense() {
                                             e.preventDefault();
                                         }
                                     }}
-                                    className="w-full border rounded px-3 py-2 bg-gray-200 text-blue-950"
+                                    className="w-full px-3 py-2 bg-white text-slate-900 border border-slate-300 rounded"
                                 />
                             </div>
                         </div>
@@ -199,7 +199,7 @@ export default function NewExpense() {
                                 <input
                                     type="text"
                                     placeholder="Name"
-                                    className="w-1/2 p-2 border border-gray-300 rounded bg-gray-200 text-blue-950"
+                                    className="w-1/2 p-2 bg-white text-slate-900 border border-slate-300 rounded"
                                     value={newTag.name}
                                     onChange={(e) => setNewTag((prev) => ({ ...prev, name: e.target.value }))}
                                     onKeyDown={(e) => {
@@ -218,7 +218,7 @@ export default function NewExpense() {
                                 <input
                                     type="text"
                                     placeholder="Code"
-                                    className="w-1/2 p-2 border border-gray-300 rounded bg-gray-200 text-blue-950"
+                                    className="w-1/2 p-2 bg-white text-slate-900 border border-slate-300 rounded"
                                     value={newTag.code}
                                     onChange={(e) => setNewTag((prev) => ({ ...prev, code: e.target.value }))}
                                     onKeyDown={(e) => {
@@ -257,7 +257,7 @@ export default function NewExpense() {
                                         }
                                     }}
                                 >
-                                    <CirclePlus className='hover:bg-green-500 rounded-4xl' />
+                                    <CirclePlus className='hover:bg-cyan-600 rounded-4xl' />
                                 </button>
                             </div>
 
@@ -270,7 +270,7 @@ export default function NewExpense() {
                                         <span>{tag.name} - {tag.code}</span>
                                         <button
                                             type="button"
-                                            className="text-red-500 hover:text-red-700"
+                                            className="text-red-400 hover:text-red-700"
                                             onClick={() => {
                                                 const updatedTags = formData.tag.filter((_, i) => i !== index);
                                                 setFormData((prev) => ({ ...prev, tag: updatedTags }));
@@ -288,7 +288,7 @@ export default function NewExpense() {
                             <label className="block font-medium mb-1">Expense Type:</label>
                             <select
                                 name="type"
-                                className="w-full border rounded px-3 py-2 bg-gray-200 text-blue-950"
+                                className="w-full px-3 py-2 bg-white text-slate-900 border border-slate-300 rounded"
                                 value={formData.type}
                                 onChange={handleChange}
                             >
@@ -306,7 +306,7 @@ export default function NewExpense() {
                                 name="paymentMethod"
                                 value={formData.paymentMethod}
                                 onChange={handleChange}
-                                className="w-full border rounded px-3 py-2 bg-gray-200 text-blue-950"
+                                className="w-full px-3 py-2 bg-white text-slate-900 border border-slate-300 rounded"
                             >
                                 <option value="">Select Payment Method</option>
                                 {paymentMethods.map((method, index) => (
@@ -315,7 +315,7 @@ export default function NewExpense() {
                             </select>
                         </div>
                         <div className="flex justify-center">
-                            <button type="submit" disabled={loading} className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition">
+                            <button type="submit" disabled={loading} className="bg-[#118290] hover:bg-[#0d6c77] text-cyan-50 rounded px-4 py-2 transition">
                                 {loading ? (
                                     <span className="flex items-center gap-2">
                                         <Loader2 className="animate-spin w-4 h-4" />

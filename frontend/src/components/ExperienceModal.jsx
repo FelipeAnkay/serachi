@@ -204,13 +204,13 @@ export default function ExperienceModal({ isOpen, onClose, experience, setExperi
     return (
         <AnimatePresence>
             <motion.div
-                className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+                className="fixed inset-0 bg-black/95 flex items-center justify-center z-50"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
             >
                 <motion.div
-                    className="bg-blue-900 rounded-2xl p-6 max-w-lg w-[90%] h-[90%] overflow-y-auto relative"
+                    className="bg-sky-50 rounded-2xl p-6 max-w-lg w-[90%] h-[90%] overflow-y-auto relative"
                     initial={{ scale: 0.8 }}
                     animate={{ scale: 1 }}
                     exit={{ scale: 0.8 }}
@@ -218,13 +218,13 @@ export default function ExperienceModal({ isOpen, onClose, experience, setExperi
                 >
                     <button
                         type="button"
-                        className="absolute top-3 right-3 text-gray-300 hover:text-white"
+                        className="absolute top-3 right-3 text-gray-800 hover:text-slate-500"
                         onClick={onClose}
                     >
                         <CircleX />
                     </button>
 
-                    <h2 className="text-xl font-bold mb-4 text-center text-white">Create Experience</h2>
+                    <h2 className="text-xl font-bold mb-4 text-center text-slate-800">Create Experience</h2>
                     <div className="space-y-4">
                         <div className="flex items-center gap-2">
                             <input
@@ -247,13 +247,13 @@ export default function ExperienceModal({ isOpen, onClose, experience, setExperi
                                 onBlur={() => {
                                     handleCustomerEmailSearch(customerEmailRef.current.value);
                                 }}
-                                className="w-full border px-2 py-1 rounded bg-white text-blue-950"
+                                className="w-full border px-2 py-1 rounded bg-white text-slate-900"
                                 placeholder="Enter customer email"
                             />
                             <button
                                 type="button"
                                 onClick={() => handleCustomerEmailSearch(customerEmailRef.current.value)}
-                                className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700"
+                                className="bg-[#118290] hover:bg-[#0d6c77] text-cyan-50 px-3 py-1 rounded"
                             >
                                 <Search />
                             </button>
@@ -261,7 +261,7 @@ export default function ExperienceModal({ isOpen, onClose, experience, setExperi
                             {!isNew && (
                                 <button
                                     type="button"
-                                    className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700"
+                                    className="bg-slate-600 hover:bg-slate-700 text-cyan-50 px-3 py-1 rounded"
                                     onClick={() => setIsCustomerModalOpen(true)}
                                 >
                                     <Contact2 />
@@ -281,7 +281,7 @@ export default function ExperienceModal({ isOpen, onClose, experience, setExperi
                             <label className="block text-sm font-medium">Experience Name</label>
                             <input
                                 type="text"
-                                className="w-full border border-gray-300 bg-white text-blue-950 rounded px-3 py-2 mt-1"
+                                className="w-full border border-gray-300 bg-white text-slate-900 rounded px-3 py-2 mt-1"
                                 value={experiencePayload.name || ''}
                                 onChange={(e) =>
                                     setExperiencePayload((prev) => ({
@@ -313,14 +313,14 @@ export default function ExperienceModal({ isOpen, onClose, experience, setExperi
                                 </div>
                             </div>
                         </div>
-                        {(quoteList?.length>0) && (
+                        {(quoteList?.length > 0) && (
                             <div>
                                 <label className="block text-sm font-medium">Associate Quote (if its needed)</label>
                                 <Select
                                     options={quoteOptions}
                                     onChange={handleSelectChange}
                                     placeholder="Select or search a quote..."
-                                    className="text-blue-950"
+                                    className="text-slate-900"
                                     classNamePrefix="react-select"
                                     styles={{
                                         control: (base) => ({
@@ -344,18 +344,17 @@ export default function ExperienceModal({ isOpen, onClose, experience, setExperi
                                             backgroundColor: '#ffffff',
                                             color: '#0f172a',
                                         }),
-                                        option: (base, state) => ({
-                                            ...base,
-                                            backgroundColor: state.isFocused ? '#e2e8f0' : '#ffffff',
-                                            color: '#0f172a',
-                                            cursor: 'pointer',
+                                        option: (provided, state) => ({
+                                            ...provided,
+                                            backgroundColor: state.isFocused ? "#3BA0AC" : "white",
+                                            color: "#1e293b", // slate-900
                                         }),
                                     }}
                                 />
                             </div>
                         )}
                         <button
-                            className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded w-full mt-4"
+                            className="bg-[#118290] hover:bg-[#0d6c77] text-cyan-50 px-4 py-2 rounded w-full mt-4"
                             type="button"
                             onClick={handleCreateExperience}
                         >

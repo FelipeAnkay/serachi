@@ -119,15 +119,15 @@ const AssignStaff = () => {
                     <LoadingSpinner />
                 )
             }
-            <div className="flex flex-col min-h-screen w-full bg-blue-950 text-white px-4 py-6 sm:px-8 sm:py-10">
+            <div className="flex flex-col min-h-screen w-full bg-[#18394C] text-slate-800 px-4 py-6 sm:px-8 sm:py-10">
                 <motion.div
                     initial={{ opacity: 0, scale: 2 }}
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0, scale: 0.9 }}
                     transition={{ duration: 0.5 }}
-                    className="flex flex-col w-full max-w-9/12 mx-auto bg-blue-900 bg-opacity-80 backdrop-filter backdrop-blur-lg rounded-2xl shadow-2xl border border-gray-800 overflow-hidden min-h-screen items-center"
+                    className="flex flex-col w-full max-w-9/12 mx-auto bg-sky-50 backdrop-filter backdrop-blur-lg rounded-2xl shadow-2xl border border-gray-800 overflow-hidden min-h-screen items-center"
                 >
-                    <h2 className="text-3xl font-bold mb-6 text-center bg-gradient-to-r from-blue-400 to-blue-600 text-transparent bg-clip-text">
+                    <h2 className="text-3xl font-bold mb-6 text-center text-[#00C49F] bg-clip-text">
                         Assign Staff to Services
                     </h2>
                     <div className="flex-grow overflow-auto p-4 space-y-4">
@@ -155,26 +155,26 @@ const AssignStaff = () => {
                 <AnimatePresence>
                     {modalOpen && selectedService && (
                         <motion.div
-                            className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+                            className="fixed inset-0 bg-black/95 flex items-center justify-center z-50"
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
                             exit={{ opacity: 0 }}
                         >
                             <motion.div
-                                className="bg-gray-900 text-white rounded-2xl shadow-2xl p-8 w-[90%] max-w-md relative"
+                                className="bg-sky-50 text-slate-800 rounded-2xl shadow-2xl p-8 w-[90%] max-w-md relative"
                                 initial={{ scale: 0.8 }}
                                 animate={{ scale: 1 }}
                                 exit={{ scale: 0.8 }}
                                 transition={{ duration: 0.3 }}
                             >
                                 <button
-                                    className="absolute top-4 right-4 text-gray-400 hover:text-white"
+                                    className="absolute top-4 right-4 text-gray-400 hover:text-slate-800"
                                     onClick={closeModal}
                                 >
                                     <CircleX />
                                 </button>
 
-                                <h3 className="text-2xl font-bold mb-6 text-center bg-gradient-to-r from-blue-400 to-blue-600 text-transparent bg-clip-text">
+                                <h3 className="text-2xl font-bold mb-6 text-center text-[#00C49F] bg-clip-text">
                                     Edit Service
                                 </h3>
 
@@ -184,7 +184,7 @@ const AssignStaff = () => {
                                     <div>
                                         <label className="capitalize">Staff Email:</label>
                                         <select
-                                            className="w-full p-2 mt-1 rounded bg-gray-800 text-white"
+                                            className="w-full p-2 mt-1 bg-white text-slate-900 border border-slate-300 rounded"
                                             value={editData.staffEmail}
                                             onChange={(e) => setEditData({ ...editData, staffEmail: e.target.value })}
                                         >
@@ -203,7 +203,7 @@ const AssignStaff = () => {
                                         <label className="capitalize">Product Name:</label>
                                         <input
                                             type="text"
-                                            className="w-full p-2 mt-1 rounded bg-gray-800 text-white opacity-50 cursor-not-allowed"
+                                            className="w-full p-2 mt-1 bg-white text-slate-900 border border-slate-300 rounded opacity-50 cursor-not-allowed"
                                             value={selectedService.productName}
                                             disabled
                                         />
@@ -218,7 +218,7 @@ const AssignStaff = () => {
                                                 </label>
                                                 <input
                                                     type={field.includes('date') ? 'datetime-local' : 'text'}
-                                                    className="w-full p-2 mt-1 rounded bg-gray-800 text-white"
+                                                    className="w-full p-2 mt-1 bg-white text-slate-900 border border-slate-300 rounded"
                                                     value={editData[field]}
                                                     onChange={(e) => setEditData({ ...editData, [field]: e.target.value })}
                                                 />
@@ -228,7 +228,7 @@ const AssignStaff = () => {
                                     {/* Botón Save */}
                                     <div className="flex justify-center mt-6">
                                         <button
-                                            className="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded flex items-center gap-2"
+                                            className="bg-[#118290] hover:bg-[#0d6c77] text-cyan-50 px-6 py-2 rounded flex items-center gap-2"
                                             onClick={handleUpdate}
                                         >
                                             <p>Save</p><Save />
