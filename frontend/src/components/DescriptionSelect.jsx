@@ -107,30 +107,18 @@ const DescriptionSelect = ({
                         styles={{
                             control: (base) => ({
                                 ...base,
-                                backgroundColor: '#ffffff',
-                                color: '#0f172a',
-                                borderColor: '#d1d5db',
-                                fontSize: '0.875rem',
-                            }),
-                            singleValue: (base) => ({
-                                ...base,
-                                color: '#0f172a',
-                            }),
-                            input: (base) => ({
-                                ...base,
-                                color: '#0f172a',
+                                borderColor: '#d1d5db', // Tailwind border-gray-300
+                                padding: '2px',
+                                fontSize: '0.875rem', // text-sm
                             }),
                             menu: (base) => ({
                                 ...base,
                                 zIndex: 50,
-                                backgroundColor: '#ffffff',
-                                color: '#0f172a',
                             }),
-                            option: (base, state) => ({
-                                ...base,
-                                backgroundColor: state.isFocused ? '#e2e8f0' : '#ffffff',
-                                color: '#0f172a',
-                                cursor: 'pointer',
+                            option: (provided, state) => ({
+                                ...provided,
+                                backgroundColor: state.isFocused ? "#3BA0AC" : "white",
+                                color: "#1e293b", // slate-900
                             }),
                         }}
                     />
@@ -140,7 +128,7 @@ const DescriptionSelect = ({
                             <input
                                 ref={inputRef}
                                 type="text"
-                                className="w-full border border-gray-300 rounded px-2 py-1 text-blue-950 bg-white"
+                                className="w-full bg-white text-slate-900 border border-slate-300 rounded px-2 py-1 text-slate-900 bg-white"
                                 placeholder="You can modify or extend description here"
                                 value={value}
                                 onChange={(e) => onChange(e.target.value)}
@@ -148,7 +136,7 @@ const DescriptionSelect = ({
                             <button
                                 type="button"
                                 onClick={isInList ? handleRemove : handleAdd}
-                                className="text-blue-300 hover:text-blue-500 ml-2"
+                                className="text-cyan-500 hover:text-cyan-800 ml-2"
                                 title={isInList ? 'Remove from saved list' : 'Add to saved list'}
                             >
                                 {isInList ? <HeartOff className="w-5 h-5" /> : <Heart className="w-5 h-5" />}

@@ -42,13 +42,13 @@ export default function UserDetails({ isOpen, onClose, user, setUser, onSave }) 
     return (
         <AnimatePresence>
             <motion.div
-                className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+                className="fixed inset-0 bg-black-95 flex items-center justify-center z-50"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
             >
                 <motion.div
-                    className="bg-blue-900 rounded-2xl p-6 max-w-lg w-[90%] h-[90%] overflow-y-auto relative"
+                    className="bg-sky-50 rounded-2xl p-6 max-w-lg w-[90%] h-[90%] overflow-y-auto relative"
                     initial={{ scale: 0.8 }}
                     animate={{ scale: 1 }}
                     exit={{ scale: 0.8 }}
@@ -56,20 +56,20 @@ export default function UserDetails({ isOpen, onClose, user, setUser, onSave }) 
                 >
                     <button
                         type="button"
-                        className="absolute top-3 right-3 text-gray-300 hover:text-white"
+                        className="absolute top-3 right-3 text-gray-300 hover:text-slate-800"
                         onClick={onClose}
                     >
                         <CircleX />
                     </button>
 
-                    <h2 className="text-xl font-bold mb-4 text-center text-white">User</h2>
+                    <h2 className="text-xl font-bold mb-4 text-center text-slate-800">User</h2>
                     <div className="space-y-4">
                         {/* Ejemplo de campo: */}
                         <div>
                             <label className="block text-sm font-medium">Name</label>
                             <input
                                 type="text"
-                                className="w-full border border-gray-300 rounded px-3 py-2 mt-1"
+                                className="w-full bg-white text-slate-900 border border-slate-300 rounded px-3 py-2 mt-1"
                                 value={user.name || ''}
                                 onChange={(e) => setUser({ ...user, name: e.target.value })}
                             />
@@ -78,7 +78,7 @@ export default function UserDetails({ isOpen, onClose, user, setUser, onSave }) 
                             <label className="block text-sm font-medium">Email</label>
                             <input
                                 type="text"
-                                className="w-full border border-gray-300 rounded px-3 py-2 mt-1"
+                                className="w-full bg-white text-slate-900 border border-slate-300 rounded px-3 py-2 mt-1"
                                 value={user.email || ''}
                                 onChange={(e) => setUser({ ...user, email: e.target.value })}
                             />
@@ -87,7 +87,7 @@ export default function UserDetails({ isOpen, onClose, user, setUser, onSave }) 
                             <label className="block text-sm font-medium">Phone</label>
                             <input
                                 type="text"
-                                className="w-full border border-gray-300 rounded px-3 py-2 mt-1"
+                                className="w-full bg-white text-slate-900 border border-slate-300 rounded px-3 py-2 mt-1"
                                 value={user.phone || ''}
                                 onChange={(e) => setUser({ ...user, phone: e.target.value })}
                             />
@@ -109,17 +109,17 @@ export default function UserDetails({ isOpen, onClose, user, setUser, onSave }) 
 
                                     setUser({ ...user, role: updatedRoles });
                                 }}
-                                className='w-full px-3 py-2 border border-gray-300 rounded'
+                                className='w-full px-3 py-2 bg-white text-slate-900 border border-slate-300 rounded'
                             >
-                                <option value="" className='text-blue-950'>Select Role</option>
+                                <option value="" className='text-slate-900'>Select Role</option>
                                 {roleList.map((r) => (
-                                    <option key={r._id} value={r._id} className='text-blue-950'>{r.name} - {r.description}</option>
+                                    <option key={r._id} value={r._id} className='text-slate-900'>{r.name} - {r.description}</option>
                                 ))}
                             </select>
                         </div>
 
                         <button
-                            className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded w-full mt-4"
+                            className="bg-[#118290] hover:bg-[#0d6c77] text-cyan-50 px-4 py-2 rounded w-full mt-4"
                             type="button"
                             onClick={onSave}
                         >

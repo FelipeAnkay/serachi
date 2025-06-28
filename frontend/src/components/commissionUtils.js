@@ -116,7 +116,7 @@ export const calculateCommission = (services, payrates) => {
       curr.commissionForThisRate < min.commissionForThisRate ? curr : min
       , { auxTimeframe: null, commissionForThisRate: Infinity });
 
-    console.log("Menor comisión encontrada:", {staffEmail, minCommissionObj});
+    //console.log("Menor comisión encontrada:", {staffEmail, minCommissionObj});
 
     result.push({
       staffEmail,

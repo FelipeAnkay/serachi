@@ -202,7 +202,7 @@ export default function AddItemsExperience() {
                     <LoadingSpinner />
                 )
             }
-            <div className="flex flex-col min-h-screen w-full bg-blue-950 text-white px-4 py-6 sm:px-8 sm:py-10">
+            <div className="flex flex-col min-h-screen w-full bg-[#18394C] text-slate-800 px-4 py-6 sm:px-8 sm:py-10">
                 <motion.div
                     initial={{ opacity: 0, scale: 2 }}
                     animate={{ opacity: 1, scale: 1 }}
@@ -210,7 +210,7 @@ export default function AddItemsExperience() {
                     transition={{ duration: 0.5 }}
                     className="
                                 flex flex-col
-                                bg-blue-900 bg-opacity-80 backdrop-filter backdrop-blur-lg
+                                bg-sky-50 backdrop-filter backdrop-blur-lg
                                 rounded-2xl shadow-2xl border border-gray-800 overflow-hidden
                                 min-h-[calc(100vh-5rem)]
                                 w-full max-w-7xl
@@ -220,9 +220,9 @@ export default function AddItemsExperience() {
                             "
                 >
                     <h1 className="text-2xl font-bold mb-6 text-center">Add Items to Experience</h1>
-                    <form onSubmit={handleSubmit} className='space-y-4 p-4 rounded-2xl shadow bg-blue-800 w-full box-border'>
+                    <form onSubmit={handleSubmit} className='space-y-4 p-4 rounded-2xl shadow bg-sky-50 w-full box-border'>
                         <div className='flex flex-row'>
-                            <CircleHelp className='text-white mr-2 hover:text-blue-600' onClick={() => setGuideOpen(!guideOpen)} />
+                            <CircleHelp className='text-slate-800 mr-2 hover:text-cyan-600' onClick={() => setGuideOpen(!guideOpen)} />
                             {guideOpen && (
                                 <div className='mb-4 border rounded-2xl w-max flex flex-col text-sm'>
                                     <label className='font-semibold ml-2 mt-2'>Guide:</label>
@@ -239,7 +239,7 @@ export default function AddItemsExperience() {
                                 <input
                                     type="email"
                                     ref={customerEmailRef}
-                                    className="px-2 py-1 rounded bg-blue-700 text-white ml-2"
+                                    className="px-2 py-1 rounded bg-white text-slate-900 border border-slate-300 ml-2"
                                     placeholder="Customer email"
                                     onKeyDown={(e) => {
                                         if (e.key === 'Enter') {
@@ -251,7 +251,7 @@ export default function AddItemsExperience() {
                                 <button
                                     type="button"
                                     onClick={() => handleCustomerEmailSearch(customerEmailRef.current.value)}
-                                    className="bg-blue-600 text-white px-2 py-1 rounded hover:bg-blue-700 ml-2"
+                                    className="bg-[#118290] hover:bg-[#0d6c77] text-cyan-50 py-1 px-2 rounded ml-2"
                                 >
                                     <Search />
                                 </button>
@@ -260,7 +260,7 @@ export default function AddItemsExperience() {
                                     <button
                                         type="button"
                                         variant="outline"
-                                        className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700"
+                                        className="bg-slate-600 hover:bg-slate-700 text-cyan-50 px-2 py-1 rounded ml-2"
                                         onClick={() => setIsCustomerModalOpen(true)}
                                     >
                                         <Contact2 />
@@ -291,7 +291,7 @@ export default function AddItemsExperience() {
                             {experienceList.length > 0 && (
                                 <div className="mb-4 flex flex-row items-center">
                                     <label className="mb-1 font-semibold">Select Experience: </label>
-                                    <select className="text-white bg-blue-700 p-2 rounded ml-2" onChange={(e) => {
+                                    <select className="text-slate-800 bg-white border p-2 rounded ml-2" onChange={(e) => {
                                         const exp = experienceList.find(ex => ex._id === e.target.value);
                                         setSelectedExperience(exp);
                                     }}>
@@ -306,20 +306,20 @@ export default function AddItemsExperience() {
                                 <legend className='ml-4 font-semibold'>New Items:</legend>
                                 {selectedExperience && (
                                     <div className="flex flex-col lg:flex-row gap-2">
-                                        <fieldset className="border rounded-2xl w-full lg:w-1/3 p-2 gap-5 h-full">
+                                        <fieldset className="border rounded-2xl w-full lg:w-1/3 p-2 gap-5 h-full bg-white">
                                             <legend className="block font-semibold mb-1 ml-2">Add Services</legend>
-                                            <select multiple className="w-full h-32 text-white p-2 rounded" onChange={(e) => {
+                                            <select multiple className="w-full h-32 text-slate-800 p-2 rounded" onChange={(e) => {
                                                 const selected = Array.from(e.target.selectedOptions).map(opt => serviceList.find(s => s._id === opt.value));
                                                 setSelectedServices(selected);
                                             }}>
                                                 {serviceList.map(s => (
-                                                    <option key={s._id} value={s._id} className='text-white'>{s.name}</option>
+                                                    <option key={s._id} value={s._id} className='text-slate-800'>{s.name}</option>
                                                 ))}
                                             </select>
                                         </fieldset>
-                                        <fieldset className="border rounded-2xl w-full lg:w-1/3 ml-2">
+                                        <fieldset className="border rounded-2xl w-full lg:w-1/3 ml-2 bg-white">
                                             <legend className="block font-semibold mb-1 ml-2">Add Reservations</legend>
-                                            <select multiple className="w-full h-32 text-white p-2 rounded" onChange={(e) => {
+                                            <select multiple className="w-full h-32 text-slate-800 p-2 rounded" onChange={(e) => {
                                                 const selected = Array.from(e.target.selectedOptions).map(opt => reservationList.find(r => r._id === opt.value));
                                                 setSelectedBookings(selected);
                                             }}>
@@ -328,7 +328,7 @@ export default function AddItemsExperience() {
                                                 ))}
                                             </select>
                                         </fieldset>
-                                        <fieldset className="border rounded-2xl w-full lg:w-1/3 p-4 gap-2 mb-5">
+                                        <fieldset className="border rounded-2xl w-full lg:w-1/3 p-4 bg-white">
                                             <legend className="block font-semibold mb-1 ml-2">Add Products</legend>
                                             <ProductSelect
                                                 products={productList}
@@ -341,10 +341,10 @@ export default function AddItemsExperience() {
                             </fieldset>
                         </div>
                         <div className="text-center">
-                            <button type="submit" className="bg-green-600 px-4 py-2 rounded text-white mt-2">
+                            <button type="submit" className="bg-[#118290] hover:bg-[#0d6c77] text-cyan-50 px-4 py-2 rounded  mt-2">
                                 {loading ? 'Saving...' : 'Save'}
                             </button>
-                            <button type="button" onClick={handleReset} className="bg-yellow-600 px-4 py-2 rounded text-white mt-2 ml-2">
+                            <button type="button" onClick={handleReset} className="bg-slate-600 hover:bg-slate-700 text-cyan-50 px-4 py-2 rounded mt-2 ml-2">
                                 Reset
                             </button>
                         </div>

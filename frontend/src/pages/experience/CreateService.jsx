@@ -320,7 +320,7 @@ export default function CreateService() {
                     <LoadingSpinner />
                 )
             }
-            <div className="flex flex-col min-h-screen w-full bg-blue-950 text-white px-4 py-6 sm:px-8 sm:py-10">
+            <div className="flex flex-col min-h-screen w-full bg-[#18394C] text-slate-800 px-4 py-6 sm:px-8 sm:py-10">
                 <motion.div
                     initial={{ opacity: 0, scale: 2 }}
                     animate={{ opacity: 1, scale: 1 }}
@@ -328,8 +328,8 @@ export default function CreateService() {
                     transition={{ duration: 0.5 }}
                     className="
                                 flex flex-col
-                                bg-blue-900 bg-opacity-80 backdrop-filter backdrop-blur-lg
-                                rounded-2xl shadow-2xl border border-gray-800 overflow-hidden
+                                bg-sky-50 backdrop-filter backdrop-blur-lg
+                                rounded-2xl shadow-2xl  overflow-hidden
                                 min-h-[calc(100vh-5rem)]
                                 w-full max-w-7xl
                                 px-4 py-6
@@ -337,9 +337,9 @@ export default function CreateService() {
                                 mx-auto
                             "
                 >
-                    <h1 className="text-3xl font-bold mt-6 mb-6 text-center text-white bg-clip-text">Create Service</h1>
-                    <form onSubmit={handleSubmit} className="space-y-4 p-4 rounded-2xl shadow bg-blue-800 w-full box-border">
-                        <fieldset className="border p-4 rounded-2xl box-border">
+                    <h1 className="text-3xl font-bold mt-6 mb-6 text-center text-slate-800 bg-clip-text">Create Service</h1>
+                    <form onSubmit={handleSubmit} className="space-y-4 p-4 rounded-2xl bg-sky-50 w-full">
+                        <fieldset className=" p-4 rounded-2xl bg-white">
                             <legend className="font-semibold text-2xl">Service Data</legend>
                             <div>
                                 <div className="flex flex-row sm:flex-row items-center gap-2 box-border">
@@ -360,13 +360,13 @@ export default function CreateService() {
                                                 handleCustomerEmailSearch(customerEmailRef.current.value);
                                             }
                                         }}
-                                        className="w-full border py-2 rounded bg-white text-blue-950"
+                                        className="w-full border py-2 rounded bg-white text-slate-900"
                                         placeholder="Enter customer email"
                                     />
                                     <button
                                         type="button"
                                         onClick={() => handleCustomerEmailSearch(customerEmailRef.current.value)}
-                                        className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700"
+                                        className="bg-[#118290] hover:bg-[#0d6c77] text-cyan-50 px-3 py-1 rounded"
                                     >
                                         <Search />
                                     </button>
@@ -375,7 +375,7 @@ export default function CreateService() {
                                         <button
                                             type="button"
                                             variant="outline"
-                                            className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700"
+                                            className="bg-slate-600 hover:bg-slate-700 text-cyan-50 px-3 py-1 rounded"
                                             onClick={() => setIsCustomerModalOpen(true)}
                                         >
                                             <Contact2 />
@@ -405,7 +405,7 @@ export default function CreateService() {
                                 <label className="block text-sm font-medium mt-5">Base Service Name:</label>
                                 <input
                                     type="text"
-                                    className={`w-full border border-gray-300  ${!customService.productId ? 'bg-gray-600' : 'bg-white'} text-blue-950 rounded px-3 py-2 mt-1`}
+                                    className={`w-full border border-gray-300  ${!customService.productId ? 'bg-gray-300' : 'bg-white'} text-slate-900 rounded px-3 py-2 mt-1`}
                                     value={customService.name || ''}
                                     disabled={!customService.productId}
                                     onChange={(e) => {
@@ -419,7 +419,7 @@ export default function CreateService() {
                                 <div className="mt-2 w-full md:w-1/2">
                                     <label className="block text-sm font-medium">Staff Email:</label>
                                     <select
-                                        className="w-full border border-gray-300 bg-white text-blue-950 rounded px-3 py-2"
+                                        className="w-full border border-gray-300 bg-white text-slate-900 rounded px-3 py-2"
                                         value={customService.staffEmail || ''}
                                         onChange={(e) => setCustomService({ ...customService, staffEmail: e.target.value })}
                                     >
@@ -432,11 +432,11 @@ export default function CreateService() {
                                     </select>
                                 </div>
                                 <div className="w-full md:w-1/2 flex flex-col mt-2">
-                                    <label className="text-sm font-medium text-left text-white">Service Type:</label>
+                                    <label className="text-sm font-medium text-left text-slate-800">Service Type:</label>
 
                                     <select
                                         name="type"
-                                        className="w-full border border-gray-300 bg-white text-blue-950 rounded px-3 py-2"
+                                        className="w-full border border-gray-300 bg-white text-slate-900 rounded px-3 py-2"
                                         value={customService.type || ''}
                                         onChange={(e) => {
                                             setCustomService({ ...customService, type: e.target.value }),
@@ -469,7 +469,7 @@ export default function CreateService() {
                                     )}
                                 </div>
                             </div>
-                            <div className="border rounded-2xl mt-5 bg-blue-800 p-4 box-border">
+                            <div className="border rounded-2xl mt-5 bg-white p-4 box-border">
                                 <div className="flex flex-col lg:flex-row gap-4">
                                     {/* DateTime Pickers */}
                                     <fieldset className="border rounded-2xl w-full lg:w-1/4 p-4 box-border">
@@ -480,7 +480,7 @@ export default function CreateService() {
                                                 <input type="datetime-local"
                                                     value={customService.dateIn || ''}
                                                     onChange={(e) => setCustomService({ ...customService, dateIn: e.target.value })}
-                                                    className="w-full border px-2 py-1 rounded bg-white text-blue-950"
+                                                    className="w-full border px-2 py-1 rounded bg-white text-slate-900"
                                                 />
                                             </div>
                                             <div className="pl-2">
@@ -488,7 +488,7 @@ export default function CreateService() {
                                                 <input type="datetime-local"
                                                     value={customService.dateOut || ''}
                                                     onChange={(e) => setCustomService({ ...customService, dateOut: e.target.value })}
-                                                    className="w-full border px-2 py-1 rounded bg-white text-blue-950"
+                                                    className="w-full border px-2 py-1 rounded bg-white text-slate-900"
                                                 />
                                             </div>
                                         </div>
@@ -525,7 +525,7 @@ export default function CreateService() {
                                                 min={0}
                                                 value={customService.repetitions || 0}
                                                 onChange={(e) => setCustomService({ ...customService, repetitions: parseInt(e.target.value, 10) })}
-                                                className="w-full border px-2 py-1 rounded bg-white text-blue-950"
+                                                className="w-full border px-2 py-1 rounded bg-white text-slate-900"
                                             />
                                         </div>
                                     </fieldset>
@@ -554,7 +554,7 @@ export default function CreateService() {
                                 {/* Add Button */}
                                 <div className="flex justify-center mt-6">
                                     <button
-                                        className="mt-4 px-4 py-2 rounded bg-blue-600 text-white hover:bg-blue-700"
+                                        className="mt-4 px-4 py-2 rounded bg-[#3BA0AC] hover:bg-[#6BBCC5] text-cyan-50"
                                         onClick={(e) => {
                                             e.preventDefault();
                                             try {
@@ -569,7 +569,7 @@ export default function CreateService() {
                                         Add Service(s)
                                     </button>
                                     <button
-                                        className="mt-4 px-4 py-2 ml-2 rounded bg-yellow-600 text-white hover:bg-yellow-700"
+                                        className="mt-4 px-4 py-2 ml-2 rounded bg-slate-600 hover:bg-slate-700 text-cyan-50"
                                         type='button'
                                         onClick={() => handleResetCustomService()}
                                     >
@@ -580,7 +580,7 @@ export default function CreateService() {
 
                         </fieldset>
                         <div className="flex flex-row justify-center">
-                            <button type="submit" className="mt-4 mb-4 px-4 py-2 rounded bg-blue-600 text-white hover:bg-blue-700" disabled={loading}>
+                            <button type="submit" className="mt-4 mb-4 px-4 py-2 rounded bg-[#118290] hover:bg-[#0d6c77] text-cyan-50" disabled={loading}>
                                 {loading ? "Creating Services..." : "Create Services"}
                             </button>
                         </div>

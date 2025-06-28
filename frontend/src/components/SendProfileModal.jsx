@@ -103,13 +103,13 @@ export default function SendProfileModal({ isOpen, onClose, customerEmail }) {
     return (
         <AnimatePresence>
             <motion.div
-                className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+                className="fixed inset-0 bg-black/95 flex items-center justify-center z-50"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
             >
                 <motion.div
-                    className="bg-blue-900 rounded-2xl p-6 max-w-lg w-[90%] h-[90%] overflow-y-auto relative"
+                    className="bg-sky-50 rounded-2xl p-6 max-w-lg w-[90%] h-[90%] overflow-y-auto relative"
                     initial={{ scale: 0.8 }}
                     animate={{ scale: 1 }}
                     exit={{ scale: 0.8 }}
@@ -117,13 +117,13 @@ export default function SendProfileModal({ isOpen, onClose, customerEmail }) {
                 >
                     <button
                         type="button"
-                        className="absolute top-3 right-3 text-gray-300 hover:text-white"
+                        className="absolute top-3 right-3 text-gray-700 hover:text-slate-500"
                         onClick={onClose}
                     >
                         <CircleX />
                     </button>
 
-                    <h2 className="text-xl font-bold mb-4 text-center text-white">Send profile to fill out</h2>
+                    <h2 className="text-xl font-bold mb-4 text-center text-slate-800">Send profile to fill out</h2>
                     <div>
                         <div className="mt-4">
                             <label className="block text-sm font-medium mb-1">Last Day to Complete:</label>
@@ -139,12 +139,12 @@ export default function SendProfileModal({ isOpen, onClose, customerEmail }) {
                                         endDate: selected.toISOString().split('T')[0], // formato YYYY-MM-DD
                                     }));
                                 }}
-                                className="w-full border border-gray-300 rounded px-3 py-2 bg-white text-black"
+                                className="w-full bg-white text-slate-900 border border-slate-300 rounded px-3 py-2 bg-white text-black"
                             />
                         </div>
                         <div>
                             <button
-                                className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded w-full mt-4 flex flex-row justify-center text-center items-center"
+                                className="bg-[#118290] hover:bg-[#0d6c77] text-cyan-50 px-4 py-2 rounded w-full mt-4 flex flex-row justify-center text-center items-center"
                                 type="button"
                                 onClick={handleSendProfile}
                             >

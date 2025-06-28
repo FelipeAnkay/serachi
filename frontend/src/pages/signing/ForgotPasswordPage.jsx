@@ -21,7 +21,7 @@ const ForgotPasswordPage = () => {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
-      className='max-w-md w-full bg-blue-950 bg-opacity-50 backdrop-filter backdrop-blur-xl rounded-2xl shadow-xl 
+      className='max-w-md w-full bg-[#18394C] bg-opacity-50 backdrop-filter backdrop-blur-xl rounded-2xl shadow-xl 
             overflow-hidden'
     >
       <div className="p-8">
@@ -40,7 +40,7 @@ const ForgotPasswordPage = () => {
               required
             />
             <motion.button
-              className='mt-5 w-full py-3 px-4 bg-gradient-to-r from-blue-500 to-blue-700 text-white 
+              className='mt-5 w-full py-3 px-4 bg-gradient-to-r from-blue-500 to-blue-700 text-slate-800 
                       font-bold rounded-lg shadow-lg hover:from-blue-600
                       hover:to-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2
                        focus:ring-offset-gray-900 transition duration-200'
@@ -60,7 +60,7 @@ const ForgotPasswordPage = () => {
               transition={{ type: "spring", stiffness: 500, damping: 30 }}
               className='w-16 h-16 bg-blue-500 rounded-full flex items-center justify-center mx-auto mb-4'
             >
-              <Mail className='h-8 w-8 text-white' />
+              <Mail className='h-8 w-8 text-slate-800' />
             </motion.div>
             <p className='text-gray-300 mb-6'>
               If an account exists for {email}, you will receive a password reset link shortly.

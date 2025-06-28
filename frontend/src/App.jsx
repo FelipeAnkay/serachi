@@ -510,7 +510,7 @@ function App() {
         <>
           <button
             onClick={() => setShowAddressBook(true)}
-            className="fixed bottom-4 right-4 z-50 bg-blue-800 hover:bg-blue-700 text-white p-4 rounded-full shadow-lg"
+            className="fixed bottom-4 right-4 z-50 bg-[#3BA0AC] hover:bg-[#0d6c77] text-cyan-50 p-4 rounded-full shadow-lg"
             title="Open user address book"
           >
             <BookUser className="w-6 h-6" />

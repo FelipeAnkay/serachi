@@ -64,12 +64,12 @@ const EmailVerificationPage = () => {
     }, [code]);
 
     return (
-        <div className="w-screen h-screen flex items-center justify-center bg-blue-950">
+        <div className="w-screen h-screen flex items-center justify-center bg-[#18394C]">
             <motion.div
                 initial={{ opacity: 0, y: -50 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5 }}
-                className="bg-blue-950 bg-opacity-50 backdrop-filter backdrop-blur-xl rounded-2xl shadow-2xl p-8 w-full max-w-md text-center"
+                className="bg-[#18394C] bg-opacity-50 backdrop-filter backdrop-blur-xl rounded-2xl shadow-2xl p-8 w-full max-w-md text-center"
             >
                 <h2 className="text-3xl font-bold mb-6 text-center bg-gradient-to-r from-blue-400 to-blue-700 text-transparent bg-clip-text">
                     Verify Your Email
@@ -88,14 +88,14 @@ const EmailVerificationPage = () => {
                                 value={digit}
                                 onChange={(e) => handleChange(index, e.target.value)}
                                 onKeyDown={(e) => handleKeyDown(index, e)}
-                                className="w-12 h-12 text-center text-2xl font-bold bg-gray-700 text-white border-2 border-gray-600 rounded-lg focus:border-blue-500 focus:outline-none"
+                                className="w-12 h-12 text-center text-2xl font-bold bg-gray-700 text-slate-800 border-2 border-gray-600 rounded-lg focus:border-blue-500 focus:outline-none"
                             />
                         ))}
                     </div>
                 </form>
                 {error && <p className="text-red-500 font-semibold mt-2">{error}</p>}
                 <motion.button
-                    className="mt-5 w-full py-3 px-4 bg-gradient-to-r from-blue-500 to-blue-700 text-white 
+                    className="mt-5 w-full py-3 px-4 bg-gradient-to-r from-blue-500 to-blue-700 text-slate-800 
           font-bold rounded-lg shadow-lg hover:from-blue-600
           hover:to-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2
            focus:ring-offset-gray-900 transition duration-200 disabled:opacity-50"

@@ -157,24 +157,24 @@ const SetStaff = () => {
         }
     };
 
-    if (loading) return <div className="text-white text-center mt-10">Loading staff...</div>;
+    if (loading) return <div className="text-slate-800 text-center mt-10">Loading staff...</div>;
 
     return (
-            <div className="flex flex-col min-h-screen w-full bg-blue-950 text-white px-4 py-6 sm:px-8 sm:py-10">
+            <div className="flex flex-col min-h-screen w-full bg-[#18394C] text-slate-800 px-4 py-6 sm:px-8 sm:py-10">
                 <motion.div
                     initial={{ opacity: 0, scale: 2 }}
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0, scale: 0.9 }}
                     transition={{ duration: 0.5 }}
-                    className="flex flex-col w-full max-w-9/12 mx-auto bg-blue-900 bg-opacity-80 backdrop-filter backdrop-blur-lg rounded-2xl shadow-2xl border border-gray-800 overflow-hidden min-h-screen items-center p-4"
+                    className="flex flex-col w-full max-w-9/12 mx-auto bg-sky-50 backdrop-filter backdrop-blur-lg rounded-2xl shadow-2xl border border-gray-800 overflow-hidden min-h-screen items-center p-4"
                 >
-                <h2 className="text-3xl font-bold mb-6 text-center text-white bg-clip-text">
+                <h2 className="text-3xl font-bold mb-6 text-center text-[#00C49F] bg-clip-text">
                     Staff List
                 </h2>
 
                 <div className="flex flex-col items-center gap-3 mb-4">
                     <button
-                        className="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded flex items-center gap-2"
+                        className="bg-[#118290] hover:bg-[#0d6c77] text-cyan-50 px-6 py-2 rounded flex items-center gap-2"
                         onClick={openNewStaffModal}
                     >
                         <p>Add Staff</p><UserPlus />
@@ -185,7 +185,7 @@ const SetStaff = () => {
                         placeholder="Search by name or email..."
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
-                        className="w-full max-w-md px-4 py-2 rounded bg-gray-800 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full max-w-md px-4 py-2 rounded bg-white text-slate-900 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
                 </div>
 
@@ -216,7 +216,7 @@ const SetStaff = () => {
                                     </div>
                                     <button
                                         onClick={() => setConfirmDelete({ email: staff.email })}
-                                        className="absolute top-2 right-2 text-red-600 hover:text-red-800"
+                                        className="absolute top-2 right-2 text-red-400 hover:text-red-600"
                                         title="Remove from Store"
                                     >
                                         <Trash2 />
@@ -232,14 +232,14 @@ const SetStaff = () => {
 
                 {(modalOpen || confirmDelete) && (
                     <motion.div
-                        className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 overflow-y-auto scrollbar-thin scrollbar-thumb-blue-600 scrollbar-track-gray-800 scrollbar-thumb-rounded-full"
+                        className="fixed inset-0 bg-black/95 flex items-center justify-center z-50 overflow-y-auto scrollbar-thin scrollbar-thumb-blue-600 scrollbar-track-gray-800 scrollbar-thumb-rounded-full"
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
                     >
                         {confirmDelete ? (
                             <motion.div
-                                className="bg-gray-900 text-white rounded-2xl shadow-2xl p-8 w-[90%] max-w-md relative"
+                                className="bg-sky-50 text-slate-800 rounded-2xl shadow-2xl p-8 w-[90%] max-w-md relative"
                                 initial={{ scale: 0.8 }}
                                 animate={{ scale: 1 }}
                                 exit={{ scale: 0.8 }}
@@ -250,13 +250,13 @@ const SetStaff = () => {
                                 </h3>
                                 <div className="flex justify-around">
                                     <button
-                                        className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded"
+                                        className="bg-red-400 hover:bg-red-500 text-slate-800 px-4 py-2 rounded"
                                         onClick={confirmRemove}
                                     >
                                         Yes, Remove
                                     </button>
                                     <button
-                                        className="bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded"
+                                        className="bg-gray-700 hover:bg-gray-600 text-slate-800 px-4 py-2 rounded"
                                         onClick={closeModal}
                                     >
                                         Cancel
@@ -265,20 +265,20 @@ const SetStaff = () => {
                             </motion.div>
                         ) : (
                             <motion.div
-                                className="bg-gray-900 text-white rounded-2xl shadow-2xl p-8 w-[90%] max-w-md relative max-h-[90vh] overflow-y-auto scrollbar-thin scrollbar-thumb-blue-600 scrollbar-track-gray-800 scrollbar-thumb-rounded-full"
+                                className="bg-sky-50 text-slate-800 rounded-2xl shadow-2xl p-8 w-[90%] max-w-md relative max-h-[90vh] overflow-y-auto scrollbar-thin scrollbar-thumb-blue-600 scrollbar-track-gray-800 scrollbar-thumb-rounded-full"
                                 initial={{ scale: 0.8 }}
                                 animate={{ scale: 1 }}
                                 exit={{ scale: 0.8 }}
                                 transition={{ duration: 0.3 }}
                             >
                                 <button
-                                    className="absolute top-4 right-4 text-gray-400 hover:text-white"
+                                    className="absolute top-4 right-4 text-gray-400 hover:text-slate-800"
                                     onClick={closeModal}
                                 >
                                     <CircleX />
                                 </button>
 
-                                <h3 className="text-2xl font-bold mb-6 text-center bg-gradient-to-r from-blue-400 to-blue-600 text-transparent bg-clip-text">
+                                <h3 className="text-2xl font-bold mb-6 text-center text-[#00C49F] bg-clip-text">
                                     {isEditing ? 'Edit Staff' : 'New Staff'}
                                 </h3>
 
@@ -287,12 +287,12 @@ const SetStaff = () => {
                                         <label>Email del Staff:</label>
                                         <input
                                             type="email"
-                                            className="w-full p-2 rounded bg-gray-800 text-white"
+                                            className="bg-white text-slate-900 border border-slate-300 rounded w-full p-2"
                                             value={staffData.email || ''}
                                             onChange={(e) => setStaffData({ ...staffData, email: e.target.value })}
                                         />
                                         <button
-                                            className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded w-full mt-4"
+                                            className="bg-[#118290] hover:bg-[#0d6c77] text-cyan-50 px-4 py-2 rounded w-full mt-4"
                                             onClick={handleEmailCheck}
                                         >
                                             {isEditing ? 'Continue' : 'Staff Search'}
@@ -304,7 +304,7 @@ const SetStaff = () => {
                                             <label className="">Name:</label>
                                             <input
                                                 type="text"
-                                                className="w-full p-2 mt-1 rounded bg-gray-800 text-white"
+                                                className="w-full p-2 mt-1 bg-white text-slate-900 border border-slate-300 rounded"
                                                 value={staffData.name || ''}
                                                 onChange={(e) => setStaffData({ ...staffData, name: e.target.value })}
                                             />
@@ -314,7 +314,7 @@ const SetStaff = () => {
                                             <label className="">Phone (+Country Code-Phone):</label>
                                             <input
                                                 type="text"
-                                                className="w-full p-2 mt-1 rounded bg-gray-800 text-white"
+                                                className="w-full p-2 mt-1 bg-white text-slate-900 border border-slate-300 rounded"
                                                 value={staffData.phone || ''}
                                                 onChange={(e) => setStaffData({ ...staffData, phone: e.target.value })}
                                             />
@@ -324,7 +324,7 @@ const SetStaff = () => {
                                             <label className="">Birthdate:</label>
                                             <input
                                                 type="date"
-                                                className="w-full p-2 mt-1 rounded bg-gray-800 text-white"
+                                                className="w-full p-2 mt-1 bg-white text-slate-900 border border-slate-300 rounded"
                                                 value={staffData.birthdate || ''}
                                                 onChange={(e) => setStaffData({ ...staffData, birthdate: e.target.value })}
                                             />
@@ -334,7 +334,7 @@ const SetStaff = () => {
                                             <label className="capitalize">National Id or Passport:</label>
                                             <input
                                                 type="text"
-                                                className="w-full p-2 mt-1 rounded bg-gray-800 text-white"
+                                                className="w-full p-2 mt-1 bg-white text-slate-900 border border-slate-300 rounded"
                                                 value={staffData.nationalId || ''}
                                                 onChange={(e) => setStaffData({ ...staffData, nationalId: e.target.value })}
                                             />
@@ -342,7 +342,7 @@ const SetStaff = () => {
                                         <div>
                                             <label className="block text-sm font-medium">Country</label>
                                             <select
-                                                className="w-full border border-gray-300 rounded px-3 py-2 mt-1"
+                                                className="w-full bg-white text-slate-900 border border-slate-300 rounded px-3 py-2 mt-1"
                                                 value={staffData.country}
                                                 onChange={(e) =>
                                                     setStaffData({
@@ -351,9 +351,9 @@ const SetStaff = () => {
                                                     })
                                                 }
                                             >
-                                                <option value="" className="text-blue-950">Select Country</option>
+                                                <option value="" className="text-slate-900">Select Country</option>
                                                 {countries.map((c) => (
-                                                    <option key={c.code} value={c.name} className='text-blue-950'>{c.name}</option>
+                                                    <option key={c.code} value={c.name} className='text-slate-900'>{c.name}</option>
                                                 ))}
                                             </select>
                                         </div>
@@ -406,10 +406,10 @@ const SetStaff = () => {
                                                         { key: "certificateId", label: "Certificate ID" },
                                                     ].map(({ key, label }) => (
                                                         <div key={key}>
-                                                            <label className="block text-sm font-medium text-white">{label}:</label>
+                                                            <label className="block text-sm font-medium text-slate-800">{label}:</label>
                                                             <input
                                                                 type="text"
-                                                                className="w-full p-2 mt-1 rounded bg-gray-700 text-white"
+                                                                className="w-full p-2 mt-1 rounded bg-gray-700 text-slate-800"
                                                                 value={cert[key] || ""}
                                                                 onChange={(e) => {
                                                                     const updated = [...staffData.professionalCertificates];
@@ -423,7 +423,7 @@ const SetStaff = () => {
                                             ))}
                                             <button
                                                 type="button"
-                                                className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded mt-4"
+                                                className="bg-[#3BA0AC] hover:bg-[#6BBCC5] text-cyan-50 px-4 py-2 rounded mt-4"
                                                 onClick={() => {
                                                     const updated = [...(staffData.professionalCertificates || [])];
                                                     updated.push({ organization: '', certificateName: '', certificateId: '' });
@@ -437,7 +437,7 @@ const SetStaff = () => {
                                         <div className="flex justify-center mt-6 flex-col items-center gap-4">
                                             {/* Selector de color */}
                                             <div className="flex items-center gap-4">
-                                                <label htmlFor="colorPicker" className="text-white font-medium">Staff Color:</label>
+                                                <label htmlFor="colorPicker" className="text-slate-800 font-medium">Staff Color:</label>
                                                 <input
                                                     id="colorPicker"
                                                     type="color"
@@ -450,7 +450,7 @@ const SetStaff = () => {
 
                                         <div className="flex justify-center mt-6">
                                             <button
-                                                className="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded flex items-center gap-2"
+                                                className="bg-[#118290] hover:bg-[#0d6c77] text-cyan-50 px-6 py-2 rounded flex items-center gap-2"
                                                 onClick={handleSave}
                                             >
                                                 <p>Save</p><Save />

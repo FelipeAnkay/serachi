@@ -47,13 +47,13 @@ export default function ViewSignedForms({ forms, isOpen, onClose }) {
 
     return (
         <motion.div
-            className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+            className="fixed inset-0 bg-black/95 flex items-center justify-center z-50"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
         >
             <motion.div
-                className="bg-blue-900 rounded-2xl p-6 max-w-lg w-[90%] h-[90%] overflow-y-auto relative"
+                className="bg-sky-50 rounded-2xl p-6 max-w-lg w-[90%] h-[90%] overflow-y-auto relative"
                 initial={{ scale: 0.8 }}
                 animate={{ scale: 1 }}
                 exit={{ scale: 0.8 }}
@@ -61,19 +61,19 @@ export default function ViewSignedForms({ forms, isOpen, onClose }) {
             >
                 <button
                     type="button"
-                    className="absolute top-3 right-3 text-gray-300 hover:text-white"
+                    className="absolute top-3 right-3 text-slate-700 hover:text-slate-800"
                     onClick={onClose}
                 >
                     <CircleX />
                 </button>
-                <h2 className="text-xl font-bold mb-4 text-center text-white">View Forms</h2>
+                <h2 className="text-xl font-bold mb-4 text-center text-slate-800">View Forms</h2>
                 <div>
                     <div className='flex flex-row items-center'>
                         <div>
                             <label className="block text-sm font-medium">Name: </label>
                         </div>
                         <div>
-                            <label className="block font-medium text-lg bg-blue-800 ml-2 px-2">{customer.name || ''} {customer.lastName || ''}</label>
+                            <label className="block font-medium text-lg ml-2 px-2">{customer.name || ''} {customer.lastName || ''}</label>
                         </div>
                     </div>
                     <div className='flex flex-row items-center mt-2'>
@@ -81,7 +81,7 @@ export default function ViewSignedForms({ forms, isOpen, onClose }) {
                             <label className="block text-sm font-medium">Email: </label>
                         </div>
                         <div>
-                            <label className="block font-medium text-sm ml-2 bg-blue-800 px-2">{customer.email || ''}</label>
+                            <label className="block font-medium text-sm ml-2 px-2">{customer.email || ''}</label>
                         </div>
                     </div>
                 </div>
@@ -94,7 +94,7 @@ export default function ViewSignedForms({ forms, isOpen, onClose }) {
                             className="cursor-pointer flex flex-col items-center bg-white text-gray-800 rounded-xl shadow-md p-3"
                             onClick={() => setSelectedForm(form)}
                         >
-                            <FileSpreadsheet className="w-10 h-10 text-blue-600" />
+                            <FileSpreadsheet className="w-10 h-10 text-cyan-900" />
                             <span className="text-sm mt-2 font-semibold text-center">{form.formName}</span>
                             <span className="text-sm mt-2 font-semibold text-center">{formatDateShort(form.signedAt)}</span>
                         </motion.div>

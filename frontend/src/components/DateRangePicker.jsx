@@ -28,7 +28,7 @@ const DateRangePicker = ({ value, onChange }) => {
       <button
         type="button"
         onClick={() => setOpen(!open)}
-        className="flex items-center space-x-2 px-4 py-2 bg-white text-blue-950 rounded-xl shadow-md hover:bg-blue-300 transition"
+        className="flex items-center space-x-2 px-4 py-2 bg-[#118290] hover:bg-[#0d6c77] rounded-xl shadow-md text-cyan-50 transition"
       >
         <CalendarIcon className="w-5 h-5" />
         <span>
@@ -52,10 +52,10 @@ const DateRangePicker = ({ value, onChange }) => {
               onChange={handleSelect}
               moveRangeOnFirstSelection={false}
               ranges={range}
-              rangeColors={["#322feb"]}
+              rangeColors={["#00C49F"]}
               months={1}
               direction="horizontal"
-              className="bg-white text-black dark:bg-zinc-800 dark:text-white"
+              className="bg-white text-black dark:bg-zinc-800 dark:text-slate-800"
             />
           </motion.div>
         )}

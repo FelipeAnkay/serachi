@@ -451,16 +451,16 @@ export default function CreateReservation() {
                     <LoadingSpinner />
                 )
             }
-            <div className="flex flex-col min-h-screen w-full bg-blue-950 text-white px-4 py-6 sm:px-8 sm:py-10">
+            <div className="flex flex-col min-h-screen w-full bg-[#18394C] text-slate-800 px-4 py-6 sm:px-8 sm:py-10">
                 <motion.div
                     initial={{ opacity: 0, scale: 2 }}
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0, scale: 0.9 }}
                     transition={{ duration: 0.5 }}
-                    className="flex flex-col w-full max-w-9/12 mx-auto bg-blue-900 bg-opacity-80 backdrop-filter backdrop-blur-lg rounded-2xl shadow-2xl border border-gray-800 overflow-hidden min-h-screen items-center"
+                    className="flex flex-col w-full max-w-9/12 mx-auto bg-sky-50 backdrop-filter backdrop-blur-lg rounded-2xl shadow-2xl border border-gray-800 overflow-hidden min-h-screen items-center"
                 >
-                    <h1 className="text-3xl font-bold mt-6 mb-6 text-center text-white bg-clip-text">New Reservation</h1>
-                    <form onSubmit={handleSubmit} className="space-y-4 border p-4 rounded-2xl shadow bg-blue ml-2 mr-2 mb-2 bg-blue-800 w-full">
+                    <h1 className="text-3xl font-bold mt-6 mb-6 text-center text-[#00C49F] bg-clip-text">New Reservation</h1>
+                    <form onSubmit={handleSubmit} className="space-y-4 border p-4 rounded-2xl shadow ml-2 mr-2 mb-2 bg-white w-full">
                         {/* DATOS DE CLIENTE*/}
                         <div className="flex flex-col lg:flex-row gap-1">
                             <fieldset className="border p-4 rounded-2xl w-full">
@@ -486,13 +486,13 @@ export default function CreateReservation() {
                                         onBlur={() => {
                                             handleCustomerEmailSearch(customerEmailRef.current.value);
                                         }}
-                                        className="w-full border px-2 py-1 rounded bg-white text-blue-950"
+                                        className="w-full border px-2 py-1 rounded bg-white text-slate-900"
                                         placeholder="Enter customer email"
                                     />
                                     <button
                                         type="button"
                                         onClick={() => handleCustomerEmailSearch(customerEmailRef.current.value)}
-                                        className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700"
+                                        className=" text-cyan-50 px-3 py-1 rounded bg-[#118290] hover:bg-[#0d6c77]"
                                     >
                                         <Search />
                                     </button>
@@ -501,7 +501,7 @@ export default function CreateReservation() {
                                         <button
                                             type="button"
                                             variant="outline"
-                                            className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700"
+                                            className="bg-slate-500 hover:bg-slate-700 text-cyan-50 px-3 py-1 rounded"
                                             onClick={() => setIsCustomerModalOpen(true)}
                                         >
                                             <Contact2 />
@@ -523,16 +523,16 @@ export default function CreateReservation() {
                                         <button
                                             type="button"
                                             onClick={() => setNumberOfPeople(prev => Math.max(1, prev - 1))}
-                                            className={`${isPeopleLock ? 'bg-gray-500' : 'bg-red-500 hover:bg-red-600'} text-white px-2 rounded  ml-2`}
+                                            className={`${isPeopleLock ? 'bg-gray-500' : 'bg-red-400 hover:bg-red-500'} text-cyan-50 px-2 rounded`}
                                             disabled={isPeopleLock || numberOfPeople <= 1}
                                         >
                                             -
                                         </button>
-                                        <span className="text-sm font-bold text-white ml-2 mr-2">{numberOfPeople}</span>
+                                        <span className="text-sm font-bold text-slate-800 ml-2 mr-2">{numberOfPeople}</span>
                                         <button
                                             type="button"
                                             onClick={() => setNumberOfPeople(prev => prev + 1)}
-                                            className={`${isPeopleLock ? 'bg-gray-500' : 'bg-green-500 hover:bg-green-600'} text-white px-2 rounded `}
+                                            className={`${isPeopleLock ? 'bg-gray-500' : 'bg-[#118290] hover:bg-[#0d6c77]'} text-cyan-50 px-2 rounded`}
                                             disabled={isPeopleLock}
                                         >
                                             +
@@ -578,7 +578,7 @@ export default function CreateReservation() {
                                         <input
                                             type="text"
                                             placeholder="Search room by name..."
-                                            className="w-full p-2 border border-gray-300 rounded"
+                                            className="w-full p-2 bg-white text-slate-900 border border-slate-300 rounded"
                                             value={roomSearch}
                                             onChange={(e) => setRoomSearch(e.target.value)}
                                             onKeyDown={(e) => {
@@ -668,7 +668,7 @@ export default function CreateReservation() {
                                                                     <div className="flex items-center justify-center gap-2">
                                                                         <button
                                                                             type="button"
-                                                                            className="bg-red-500 text-white px-2 rounded"
+                                                                            className="bg-red-400 hover:bg-red-500 text-cyan-50 px-2 rounded"
                                                                             disabled={qty <= 0}
                                                                             onClick={() => {
                                                                                 roomType = room.type,
@@ -695,7 +695,7 @@ export default function CreateReservation() {
                                                                                 !room.availableEveryNight &&
                                                                                 !roomStartDates[room._id]
                                                                                 ? "bg-gray-400 cursor-not-allowed"
-                                                                                : "bg-green-600 hover:bg-green-700 text-white"
+                                                                                : "bg-[#118290] hover:bg-[#0d6c77] text-cyan-50"
                                                                                 }`}
                                                                             disabled={
                                                                                 qty >= maxQty ||
@@ -768,7 +768,7 @@ export default function CreateReservation() {
                                                         return (
                                                             <div
                                                                 key={room.roomId}
-                                                                className='ml-5 flex flex-row text-sm text-white'
+                                                                className='ml-5 flex flex-row text-sm text-slate-800'
                                                             >
                                                                 <div className="w-3/4">
                                                                     {room.roomName} ({room.roomNights} Nights)
@@ -784,8 +784,8 @@ export default function CreateReservation() {
                                         </div>
 
                                         <div className="ml-4 mr-4 flex items-center justify-center">
-                                            <label className=" text-white font-bold text-lg mt-6">Final Price: </label>
-                                            <label className=" text-white font-bold text-2xl mt-6 ml-2">${Number(reservation.roomFinalPrice).toFixed(2)}</label>
+                                            <label className=" text-slate-800 font-bold text-lg mt-6">Final Price: </label>
+                                            <label className=" text-slate-800 font-bold text-2xl mt-6 ml-2">${Number(reservation.roomFinalPrice).toFixed(2)}</label>
                                         </div>
                                     </fieldset>
                                 </div>
@@ -796,12 +796,12 @@ export default function CreateReservation() {
 
                             {/* Botón  y switch centrado */}
                             <div className="flex flex-col items-center justify-center lg:flex-row pt-4 gap-2">
-                                <button type="submit" className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
+                                <button type="submit" className="bg-[#118290] hover:bg-[#0d6c77] text-cyan-50 px-4 py-2 rounded">
                                     Create Reservation
                                 </button>
                                 <button
                                     type="button"
-                                    className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-700"
+                                    className="bg-slate-600 hover:bg-slate-700 text-cyan-50 px-4 py-2 rounded"
                                     onClick={() => handleReset()}
                                 >
                                     Reset Reservation

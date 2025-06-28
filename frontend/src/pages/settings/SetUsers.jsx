@@ -58,7 +58,7 @@ const SetUsers = () => {
     };
 
     return (
-        <div className="flex w-full max-w-full overflow-x-hidden bg-blue-950 text-white" >
+        <div className="flex w-full max-w-full overflow-x-hidden bg-[#18394C] text-slate-800" >
             {/* Contenido principal */}
             <motion.div
                 initial={{ opacity: 0, scale: 2 }}
@@ -67,7 +67,7 @@ const SetUsers = () => {
                 transition={{ duration: 0.5 }}
                 className='max-w-md w-full mx-auto mt-10 p-8 bg-gray-900 bg-opacity-80 backdrop-filter backdrop-blur-lg rounded-xl shadow-2xl border border-gray-800'
             >
-                <h2 className='text-3xl font-bold mb-6 text-center bg-gradient-to-r from-blue-400 to-blue-600 text-transparent bg-clip-text'>
+                <h2 className='text-3xl font-bold mb-6 text-center text-[#00C49F] bg-clip-text'>
                     Listado de Usuarios
                 </h2>
                 {loading && <p className="text-center">Loading usuarios...</p>}
@@ -79,7 +79,7 @@ const SetUsers = () => {
                             <span>{user}</span>
                             <button
                                 onClick={() => handleDelete(index)}
-                                className="ml-2 bg-red-600 text-white px-2 py-1 rounded hover:bg-red-700"
+                                className="ml-2 bg-red-600 text-slate-800 px-2 py-1 rounded hover:bg-red-700"
                             >
                                 <Trash/>
                             </button>

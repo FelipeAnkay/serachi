@@ -49,13 +49,13 @@ export default function ServiceDetails({ isOpen, onClose, service, setService, o
     return (
         <AnimatePresence>
             <motion.div
-                className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+                className="fixed inset-0 bg-black/95 flex items-center justify-center z-50"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
             >
                 <motion.div
-                    className="bg-blue-900 rounded-2xl p-6 max-w-lg w-[90%] h-[90%] overflow-y-auto relative"
+                    className="bg-sky-50 rounded-2xl p-6 max-w-lg w-[90%] h-[90%] overflow-y-auto relative"
                     initial={{ scale: 0.8 }}
                     animate={{ scale: 1 }}
                     exit={{ scale: 0.8 }}
@@ -63,20 +63,20 @@ export default function ServiceDetails({ isOpen, onClose, service, setService, o
                 >
                     <button
                         type="button"
-                        className="absolute top-3 right-3 text-gray-300 hover:text-white"
+                        className="absolute top-3 right-3 text-gray-300 hover:text-slate-800"
                         onClick={onClose}
                     >
                         <CircleX />
                     </button>
 
-                    <h2 className="text-xl font-bold mb-4 text-center text-white">Service</h2>
+                    <h2 className="text-xl font-bold mb-4 text-center text-slate-800">Service</h2>
                     <div className="space-y-4">
                         {/* Ejemplo de campo: */}
                         <div>
                             <label className="block text-sm font-medium">Service Name:</label>
                             <input
                                 type="text"
-                                className="w-full border border-gray-300 bg-white text-blue-950 rounded px-3 py-2 mt-1"
+                                className="w-full border border-gray-300 bg-white text-slate-900 rounded px-3 py-2 mt-1"
                                 value={service.name || ''}
                                 onChange={(e) => setService({ ...service, name: e.target.value })}
                             />
@@ -84,7 +84,7 @@ export default function ServiceDetails({ isOpen, onClose, service, setService, o
                         <div>
                             <label className="block text-sm font-medium">Staff Email:</label>
                             <select
-                                className="w-full border border-gray-300 bg-white text-blue-950 rounded px-3 py-2 mt-1"
+                                className="w-full border border-gray-300 bg-white text-slate-900 rounded px-3 py-2 mt-1"
                                 value={service.staffEmail || ''}
                                 onChange={(e) => setService({ ...service, staffEmail: e.target.value })}
                             >
@@ -106,7 +106,7 @@ export default function ServiceDetails({ isOpen, onClose, service, setService, o
                                     ...prev,
                                     dateIn: e.target.value
                                 }))}
-                                className="w-full border px-2 py-1 rounded bg-white text-blue-950"
+                                className="w-full border px-2 py-1 rounded bg-white text-slate-900"
                                 min={new Date().toISOString().split('T')[0]}
                                 max={service.dateOut || undefined}
                                 onKeyDown={(e) => {
@@ -120,7 +120,7 @@ export default function ServiceDetails({ isOpen, onClose, service, setService, o
                                 name="dateOut"
                                 value={formatDateInput(service.dateOut)}
                                 onChange={(e) => setService({ ...service, dateOut: e.target.value })}
-                                className={`w-full border px-2 py-1 rounded text-blue-950 ${!service.dateIn ? 'bg-gray-400' : 'bg-white'}`}
+                                className={`w-full border px-2 py-1 rounded text-slate-900 ${!service.dateIn ? 'bg-gray-400' : 'bg-white'}`}
                                 min={service.dateIn || new Date().toISOString().split('T')[0]}
                                 disabled={!service.dateIn}
                                 onKeyDown={(e) => {
@@ -134,7 +134,7 @@ export default function ServiceDetails({ isOpen, onClose, service, setService, o
                     </div>
 
                     <button
-                        className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded w-full mt-4"
+                        className="bg-[#118290] hover:bg-[#0d6c77] text-cyan-50 px-4 py-2 rounded w-full mt-4"
                         type="button"
                         onClick={onSave}
                     >

@@ -19,13 +19,13 @@ export default function StoreDetails({ isOpen, onClose, store, setStore, onSave 
     return (
         <AnimatePresence>
             <motion.div
-                className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+                className="fixed inset-0 bg-black/95 flex items-center justify-center z-50"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
             >
                 <motion.div
-                    className="bg-blue-900 rounded-2xl p-6 max-w-lg w-[90%] h-[90%] overflow-y-auto relative"
+                    className="bg-sky-50 rounded-2xl p-6 max-w-lg w-[90%] h-[90%] overflow-y-auto relative"
                     initial={{ scale: 0.8 }}
                     animate={{ scale: 1 }}
                     exit={{ scale: 0.8 }}
@@ -33,19 +33,19 @@ export default function StoreDetails({ isOpen, onClose, store, setStore, onSave 
                 >
                     <button
                         type="button"
-                        className="absolute top-3 right-3 text-gray-300 hover:text-white"
+                        className="absolute top-3 right-3 text-gray-300 hover:text-slate-800"
                         onClick={onClose}
                     >
                         <CircleX />
                     </button>
 
-                    <h2 className="text-xl font-bold mb-4 text-center text-white">Store</h2>
-                    <div className="space-y-4 text-white">
+                    <h2 className="text-xl font-bold mb-4 text-center text-slate-800">Store</h2>
+                    <div className="space-y-4 text-slate-800">
                         <div>
                             <label className="block text-sm font-medium">Name</label>
                             <input
                                 type="text"
-                                className="w-full border border-gray-300 rounded px-3 py-2 mt-1 text-black"
+                                className="w-full bg-white text-slate-900 border border-slate-300 rounded px-3 py-2 mt-1 text-black"
                                 value={store.name || ''}
                                 onChange={(e) => setStore({ ...store, name: e.target.value })}
                             />
@@ -54,7 +54,7 @@ export default function StoreDetails({ isOpen, onClose, store, setStore, onSave 
                             <label className="block text-sm font-medium">Description</label>
                             <input
                                 type="text"
-                                className="w-full border border-gray-300 rounded px-3 py-2 mt-1 text-black"
+                                className="w-full bg-white text-slate-900 border border-slate-300 rounded px-3 py-2 mt-1 text-black"
                                 value={store.description || ''}
                                 onChange={(e) => setStore({ ...store, description: e.target.value })}
                             />
@@ -74,7 +74,7 @@ export default function StoreDetails({ isOpen, onClose, store, setStore, onSave 
                             <label className="block text-sm font-medium">Location</label>
                             <input
                                 type="text"
-                                className="w-full border border-gray-300 rounded px-3 py-2 mt-1 text-black"
+                                className="w-full bg-white text-slate-900 border border-slate-300 rounded px-3 py-2 mt-1 text-black"
                                 value={store.location || ''}
                                 onChange={(e) => setStore({ ...store, location: e.target.value })}
                             />
@@ -82,7 +82,7 @@ export default function StoreDetails({ isOpen, onClose, store, setStore, onSave 
                         <div>
                             <label className="block text-sm font-medium">Currency</label>
                             <select
-                                className="w-full border border-gray-300 rounded px-3 py-2 mt-1 text-black"
+                                className="w-full bg-white text-slate-900 border border-slate-300 rounded px-3 py-2 mt-1 text-black"
                                 value={currencySelectValue}
                                 onChange={(e) => {
                                     const selected = e.target.value
@@ -105,7 +105,7 @@ export default function StoreDetails({ isOpen, onClose, store, setStore, onSave 
                                 <input
                                     type="text"
                                     placeholder="Enter custom currency"
-                                    className="w-full mt-2 border border-gray-300 rounded px-3 py-2 text-black"
+                                    className="w-full mt-2 bg-white text-slate-900 border border-slate-300 rounded px-3 py-2 text-black"
                                     value={customCurrency}
                                     onChange={(e) => {
                                         setCustomCurrency(e.target.value)
@@ -118,7 +118,7 @@ export default function StoreDetails({ isOpen, onClose, store, setStore, onSave 
                             <label className="block text-sm font-medium">Opening Balance</label>
                             <input
                                 type="number"
-                                className="w-full border border-gray-300 rounded px-3 py-2 mt-1 text-black"
+                                className="w-full bg-white text-slate-900 border border-slate-300 rounded px-3 py-2 mt-1 text-black"
                                 value={store.openningBalance || ''}
                                 onChange={(e) => setStore({ ...store, openningBalance: parseFloat(e.target.value) })}
                             />
@@ -128,7 +128,7 @@ export default function StoreDetails({ isOpen, onClose, store, setStore, onSave 
                             <input
                                 type="email"
                                 placeholder="staff@example.com"
-                                className="w-full border border-gray-300 rounded px-3 py-2 mt-1 text-black"
+                                className="w-full bg-white text-slate-900 border border-slate-300 rounded px-3 py-2 mt-1 text-black"
                                 value={store.mainStaffEmail || ''}
                                 onChange={(e) => setStore({ ...store, mainStaffEmail: e.target.value })}
                             />
@@ -136,7 +136,7 @@ export default function StoreDetails({ isOpen, onClose, store, setStore, onSave 
                         <div>
                             <label className="block text-sm font-medium">Is Active</label>
                             <select
-                                className="w-full border border-gray-300 rounded px-3 py-2 mt-1 text-black"
+                                className="w-full bg-white text-slate-900 border border-slate-300 rounded px-3 py-2 mt-1 text-black"
                                 value={store.isActive ? 'true' : 'false'}
                                 onChange={(e) => setStore({ ...store, isActive: e.target.value === 'true' })}
                             >
@@ -146,7 +146,7 @@ export default function StoreDetails({ isOpen, onClose, store, setStore, onSave 
                         </div>
 
                         <button
-                            className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded w-full mt-4"
+                            className="bg-[#118290] hover:bg-[#0d6c77] text-cyan-50 px-4 py-2 rounded w-full mt-4"
                             type="button"
                             onClick={onSave}
                         >

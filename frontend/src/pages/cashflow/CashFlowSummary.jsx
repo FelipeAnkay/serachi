@@ -118,15 +118,15 @@ export default function CashFlowSummary() {
                     <LoadingSpinner />
                 )
             }
-            <div className="flex flex-col min-h-screen w-full bg-blue-950 text-white px-4 py-6 sm:px-8 sm:py-10">
+            <div className="flex flex-col min-h-screen w-full bg-[#18394C] text-slate-800 px-4 py-6 sm:px-8 sm:py-10">
                 <motion.div
                     initial={{ opacity: 0, scale: 2 }}
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0, scale: 0.9 }}
                     transition={{ duration: 0.5 }}
-                    className="flex flex-col w-full max-w-9/12 mx-auto bg-blue-900 bg-opacity-80 backdrop-filter backdrop-blur-lg rounded-2xl shadow-2xl border border-gray-800 overflow-hidden min-h-screen items-center p-4"
+                    className="flex flex-col w-full max-w-9/12 mx-auto bg-sky-50 backdrop-filter backdrop-blur-lg rounded-2xl shadow-2xl border border-gray-800 overflow-hidden min-h-screen items-center p-4"
                 >
-                    <h1 className="text-3xl font-bold mb-6 text-center">Cashflow Summary</h1>
+                    <h1 className="text-3xl font-bold mb-6 text-center text-[#00C49F]">Cashflow Summary</h1>
 
                     {/* Date Filters */}
                     <div className="flex flex-col justify-center items-center">
@@ -137,7 +137,7 @@ export default function CashFlowSummary() {
                     </div>
                     <div className="border rounded-2xl px-5 py-2">
                         {/* Totals Summary */}
-                        <div className="bg-blue-900 p-4 rounded-lg mb-8">
+                        <div className="bg-white p-4 rounded-lg mb-8">
                             <h2 className="text-xl font-semibold mb-2">Financial Summary</h2>
                             <div className="flex flex-col lg:flex-row gap-4 text-lg">
                                 <div>Total Incomes: <span className="font-bold text-green-400">${totalIncomes.toFixed(2)}</span></div>
@@ -147,9 +147,9 @@ export default function CashFlowSummary() {
                         </div>
 
                         {/* Listings */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 bg-white">
                             {/* Incomes List */}
-                            <div>
+                            <div className="ml-2">
                                 <h3 className="text-lg font-semibold mb-2 border-b pb-1">Incomes</h3>
                                 <div className="space-y-2 max-h-200 overflow-auto">
                                     {formData.incomeList.map((item, index) => (
@@ -170,7 +170,7 @@ export default function CashFlowSummary() {
                             </div>
 
                             {/* Expenses List */}
-                            <div>
+                            <div className="mr-2">
                                 <h3 className="text-lg font-semibold mb-2 border-b pb-1">Expenses</h3>
                                 <div className="space-y-2 max-h-200 overflow-auto">
                                     {formData.expenseList.map((item, index) => (
@@ -194,7 +194,7 @@ export default function CashFlowSummary() {
                     {/* MODAL EDICIÓN */}
                     {selectedItem && (
                         <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50">
-                            <div className="bg-blue-900 text-white p-6 rounded-xl w-full max-w-md space-y-4">
+                            <div className="bg-blue-900 text-slate-800 p-6 rounded-xl w-full max-w-md space-y-4">
                                 <h3 className="text-xl font-bold text-center">Edit {selectedItem.type}</h3>
                                 <label className="block text-sm">Date:</label>
                                 <input
@@ -227,7 +227,7 @@ export default function CashFlowSummary() {
                                         <label className="block font-medium mb-1">Type:</label>
                                         <select
                                             name="type"
-                                            className="w-full border rounded px-3 py-2 bg-gray-200 text-blue-950"
+                                            className="w-full px-3 py-2 bg-white text-slate-900 border border-slate-300 rounded"
                                             value={selectedItem.data.type || ''}
                                             onChange={handleEditChange}
                                         >
@@ -245,7 +245,7 @@ export default function CashFlowSummary() {
 
                                 <select
                                     name="paymentMethod"
-                                    className="w-full border rounded px-3 py-2 bg-gray-200 text-blue-950"
+                                    className="w-full px-3 py-2 bg-white text-slate-900 border border-slate-300 rounded"
                                     value={selectedItem.data.paymentMethod}
                                     onChange={handleEditChange}
                                 >
@@ -261,7 +261,7 @@ export default function CashFlowSummary() {
                                     <button onClick={() => setSelectedItem(null)} className="bg-red-800 px-4 py-2 rounded">
                                         Cancel
                                     </button>
-                                    <button onClick={handleSave} className="bg-green-800 text-white px-4 py-2 rounded">
+                                    <button onClick={handleSave} className="bg-green-800 text-slate-800 px-4 py-2 rounded">
                                         Save
                                     </button>
                                 </div>

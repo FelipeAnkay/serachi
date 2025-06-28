@@ -143,7 +143,7 @@ export default function ExperienceList() {
                     <LoadingSpinner />
                 )
             }
-            <div className="flex flex-col min-h-screen w-full bg-blue-950 text-white px-4 py-6 sm:px-8 sm:py-10">
+            <div className="flex flex-col min-h-screen w-full bg-[#18394C] text-slate-800 px-4 py-6 sm:px-8 sm:py-10">
                 <motion.div
                     initial={{ opacity: 0, scale: 2 }}
                     animate={{ opacity: 1, scale: 1 }}
@@ -151,7 +151,7 @@ export default function ExperienceList() {
                     transition={{ duration: 0.5 }}
                     className="
                                 flex flex-col
-                                bg-blue-900 bg-opacity-80 backdrop-filter backdrop-blur-lg
+                                bg-sky-50 backdrop-filter backdrop-blur-lg
                                 rounded-2xl shadow-2xl border border-gray-800 overflow-hidden
                                 min-h-[calc(100vh-5rem)]
                                 w-full max-w-7xl
@@ -160,13 +160,13 @@ export default function ExperienceList() {
                                 mx-auto
                             "
                 >
-                    <h1 className="text-3xl font-bold mt-6 mb-6 text-center text-white bg-clip-text">Active Experiences</h1>
+                    <h1 className="text-3xl font-bold mt-6 mb-6 text-center text-[#00C49F] bg-clip-text">Active Experiences</h1>
                     <div className='w-full'>
-                        <fieldset className="flex-grow space-y-4 border rounded-2xl p-4">
+                        <fieldset className="flex-grow space-y-2 rounded-2xl p-4">
                             <legend className="text-2xl font-bold">Experience List</legend>
                             <div className='flex flex-row items-center justify-center'>
                                 <button
-                                    className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded w-max flex flex-row gap-2"
+                                    className="bg-[#118290] hover:bg-[#0d6c77] text-cyan-50 px-4 py-2 rounded w-max flex flex-row gap-2"
                                     type="button"
                                     onClick={handleNewExperience}
                                 >
@@ -176,8 +176,8 @@ export default function ExperienceList() {
                             </div>
                             <input
                                 type="text"
-                                placeholder="Search experience by email or name..."
-                                className="w-full p-2 border border-gray-300 rounded"
+                                placeholder="Search experience by name..."
+                                className="w-full p-2 border rounded bg-white text-slate-900  border-slate-300"
                                 value={experienceSearch}
                                 onChange={(e) => setExperienceSearch(e.target.value)}
                                 onKeyDown={(e) => {
@@ -199,7 +199,7 @@ export default function ExperienceList() {
                                             return (
                                                 <div
                                                     key={experience._id}
-                                                    className="border rounded-lg p-4 hover:shadow transition relative border-gray-300 bg-blue-100 flex flex-col sm:flex-row sm:justify-between sm:items-center space-y-4 sm:space-y-0"
+                                                    className="border rounded-lg p-4 hover:shadow transition relative bg-white border-slate-300 flex flex-col sm:flex-row sm:justify-between sm:items-center space-y-4 sm:space-y-0"
 
                                                 >
                                                     < h3 className="text-lg font-semibold text-gray-800">
@@ -228,8 +228,8 @@ export default function ExperienceList() {
                                                                 openSendProfileModal(experience.customerEmail);
                                                                 window.scrollTo({ top: 0, behavior: 'smooth' });
                                                             }}
-                                                            className='py-3 px-4 bg-gradient-to-r from-blue-400 to-blue-500 text-white font-bold rounded-lg shadow-lg
-                hover:from-blue-500 hover:to-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-gray-900'
+                                                            className='w-full py-3 px-4 bg-[#118290] hover:bg-[#0d6c77] text-cyan-50 font-bold rounded-lg shadow-lg
+                                                         focus:ring-offset-1 focus:ring-offset-cyan-900'
                                                         >
                                                             <div className='flex flex-col justify-center items-center'>
                                                                 <UserCog />
@@ -246,8 +246,8 @@ export default function ExperienceList() {
                                                                 handleSendFormClick(experience);
                                                                 window.scrollTo({ top: 0, behavior: 'smooth' });
                                                             }}
-                                                            className='py-3 px-4 bg-gradient-to-r from-blue-500 to-blue-600 text-white font-bold rounded-lg shadow-lg
-                hover:from-blue-600 hover:to-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-gray-900'
+                                                            className='w-full py-3 px-4 bg-[#118290] hover:bg-[#0d6c77] text-cyan-50 font-bold rounded-lg shadow-lg
+                                                         focus:ring-offset-1 focus:ring-offset-cyan-900'
                                                         >
                                                             <div className='flex flex-col justify-center items-center'>
                                                                 <FolderCheck />
@@ -266,8 +266,8 @@ export default function ExperienceList() {
                                                                         handleSelectedForms(experience.customerEmail),
                                                                         window.scrollTo({ top: 0, behavior: 'smooth' });
                                                                     }}
-                                                                    className='py-3 px-4 bg-gradient-to-r from-green-500 to-green-600 text-white font-bold rounded-lg shadow-lg
-                                                        hover:from-green-600 hover:to-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 focus:ring-offset-gray-900'
+                                                                    className='w-full py-3 px-4 bg-[#118290] hover:bg-[#0d6c77] text-cyan-50 font-bold rounded-lg shadow-lg
+                                                         focus:ring-offset-1 focus:ring-offset-cyan-900'
                                                                 >
                                                                     <div className='flex flex-col justify-center items-center'>
                                                                         <Copy />

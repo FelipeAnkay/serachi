@@ -205,16 +205,16 @@ export default function NewIncome() {
                     <LoadingSpinner />
                 )
             }
-            <div className="flex flex-col min-h-screen w-full bg-blue-950 text-white px-4 py-6 sm:px-8 sm:py-10">
+            <div className="flex flex-col min-h-screen w-full bg-[#18394C] text-slate-800 px-4 py-6 sm:px-8 sm:py-10">
                 <motion.div
                     initial={{ opacity: 0, scale: 2 }}
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0, scale: 0.9 }}
                     transition={{ duration: 0.5 }}
-                    className="flex flex-col w-full max-w-9/12 mx-auto bg-blue-950 bg-opacity-80 backdrop-filter backdrop-blur-lg overflow-hidden min-h-screen items-center"
+                    className="flex flex-col w-full max-w-9/12 mx-auto bg-[#18394C] bg-opacity-80 backdrop-filter backdrop-blur-lg overflow-hidden min-h-screen items-center"
                 >
-                    <h1 className="text-3xl font-bold mb-6 text-center text-white">New Income</h1>
-                    <form onSubmit={handleSubmit} className="space-y-6 border rounded-lg p-6 shadow-sm bg-blue-900 text-white">
+                    <h1 className="text-3xl font-bold mb-6 text-center text-[#00C49F]">New Income</h1>
+                    <form onSubmit={handleSubmit} className="space-y-6 border rounded-lg p-6 shadow-sm bg-sky-50 text-slate-800">
                         <div>
                             <label className="block font-medium mb-1">Customer Email</label>
                             <input
@@ -227,13 +227,13 @@ export default function NewIncome() {
                                         e.preventDefault();
                                     }
                                 }}
-                                className="w-full border rounded px-3 py-2 bg-gray-200 text-blue-950"
+                                className="w-full rounded px-3 py-2 bg-white text-slate-900 border border-slate-300"
                             />
                         </div>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
                                 <label className="block font-medium mb-1">Date</label>
-                                <input type="date" name="date" value={formData.date} onChange={handleChange} className="w-full border rounded px-3 py-2 bg-gray-200 text-blue-950" />
+                                <input type="date" name="date" value={formData.date} onChange={handleChange} className="w-full rounded px-3 py-2 bg-white text-slate-900 border border-slate-300" />
                             </div>
                             <div>
                                 <label className="block font-medium mb-1">Amount</label>
@@ -247,7 +247,7 @@ export default function NewIncome() {
                                             e.preventDefault();
                                         }
                                     }}
-                                    className="w-full border rounded px-3 py-2 bg-gray-200 text-blue-950"
+                                    className="w-full rounded px-3 py-2 bg-white text-slate-900 border border-slate-300"
                                 />
                             </div>
                         </div>
@@ -260,7 +260,7 @@ export default function NewIncome() {
                                     type="button"
                                     onClick={() => handleAddQuote(formData.customerEmail)}
                                     disabled={!formData.customerEmail}
-                                    className={`flex items-center text-sm ${formData.customerEmail ? "text-blue-300" : "text-gray-400 cursor-not-allowed"}`}
+                                    className={`flex items-center text-sm ${formData.customerEmail ? "text-cyan-800" : "text-gray-400 cursor-not-allowed"}`}
                                 >
                                     <PlusCircle className="w-4 h-4 mr-1" /> Add Quote
                                 </button>
@@ -271,9 +271,9 @@ export default function NewIncome() {
                                     onChange={(e) => setFormData(prev => ({ ...prev, quoteId: e.target.value }))}
                                     className="w-full border px-2 py-1 rounded"
                                 >
-                                    <option value="" className="bg-gray-200 text-blue-950">Select a Quote</option>
+                                    <option value="" className="bg-gray-200 text-slate-900">Select a Quote</option>
                                     {quotes.map(q => (
-                                        <option key={q._id} value={q._id} className="bg-gray-200 text-blue-950">{q.customerEmail || q._id} - IN: {formatDateDisplay(q.dateIn)} - OUT:{formatDateDisplay(q.dateOut)}</option>
+                                        <option key={q._id} value={q._id} className="bg-gray-200 text-slate-900">{q.customerEmail || q._id} - IN: {formatDateDisplay(q.dateIn)} - OUT:{formatDateDisplay(q.dateOut)}</option>
                                     ))}
                                 </select>
                             )}
@@ -283,7 +283,7 @@ export default function NewIncome() {
                         <div>
                             <div className="flex justify-between items-center mb-2">
                                 <label className="font-medium">Partner</label>
-                                <button type="button" onClick={handleAddPartner} className="flex items-center text-sm text-blue-300">
+                                <button type="button" onClick={handleAddPartner} className="flex items-center text-sm text-cyan-800">
                                     <PlusCircle className="w-4 h-4 mr-1" /> Add Partner
                                 </button>
                             </div>
@@ -293,9 +293,9 @@ export default function NewIncome() {
                                     onChange={(e) => setFormData(prev => ({ ...prev, partnerId: e.target.value }))}
                                     className="w-full border px-2 py-1 rounded"
                                 >
-                                    <option value="" className="bg-gray-200 text-blue-950">Select a Partner</option>
+                                    <option value="" className="bg-gray-200 text-slate-900">Select a Partner</option>
                                     {partners.map(p => (
-                                        <option key={p._id} value={p._id} className="bg-gray-200 text-blue-950">{p.name}</option>
+                                        <option key={p._id} value={p._id} className="bg-gray-200 text-slate-900">{p.name}</option>
                                     ))}
                                 </select>
                             )}
@@ -305,7 +305,7 @@ export default function NewIncome() {
                         <div>
                             <div className="flex justify-between items-center mb-2">
                                 <label className="font-medium">Products</label>
-                                <button type="button" onClick={handleAddProduct} className="flex items-center text-sm text-blue-300">
+                                <button type="button" onClick={handleAddProduct} className="flex items-center text-sm text-cyan-800">
                                     <PlusCircle className="w-4 h-4 mr-1" /> Add Product
                                 </button>
                             </div>
@@ -325,7 +325,7 @@ export default function NewIncome() {
                                 <input
                                     type="text"
                                     placeholder="Name"
-                                    className="w-1/2 p-2 border border-gray-300 rounded bg-gray-200 text-blue-950"
+                                    className="w-1/2 p-2 bg-white text-slate-900 border border-slate-300 rounded"
                                     value={newTag.name}
                                     onChange={(e) => setNewTag((prev) => ({ ...prev, name: e.target.value }))}
                                     onKeyDown={(e) => {
@@ -344,7 +344,7 @@ export default function NewIncome() {
                                 <input
                                     type="text"
                                     placeholder="Code"
-                                    className="w-1/2 p-2 border border-gray-300 rounded bg-gray-200 text-blue-950"
+                                    className="w-1/2 p-2 bg-white text-slate-900 border border-slate-300 rounded"
                                     value={newTag.code}
                                     onChange={(e) => setNewTag((prev) => ({ ...prev, code: e.target.value }))}
                                     onKeyDown={(e) => {
@@ -371,7 +371,7 @@ export default function NewIncome() {
                                 />
                                 <button
                                     type="button"
-                                    className=""
+                                    className="text-cyan-800"
                                     onClick={() => {
                                         if (newTag.name || newTag.code) {
                                             setFormData((prev) => ({
@@ -382,7 +382,7 @@ export default function NewIncome() {
                                         }
                                     }}
                                 >
-                                    <CirclePlus className='hover:bg-green-500 rounded-4xl' />
+                                    <CirclePlus className='hover:bg-cyan-600 rounded-4xl' />
                                 </button>
                             </div>
 
@@ -390,12 +390,12 @@ export default function NewIncome() {
                                 {(formData.tag || []).map((tag, index) => (
                                     <li
                                         key={index}
-                                        className="flex justify-between items-center bg-blue-700 rounded px-3 py-2"
+                                        className="flex justify-between items-center bg-cyan-100 rounded px-3 py-2"
                                     >
                                         <span>{tag.name} - {tag.code}</span>
                                         <button
                                             type="button"
-                                            className="text-red-500 hover:text-red-700"
+                                            className="text-red-400 hover:text-red-700"
                                             onClick={() => {
                                                 const updatedTags = formData.tag.filter((_, i) => i !== index);
                                                 setFormData((prev) => ({ ...prev, tag: updatedTags }));
@@ -413,7 +413,7 @@ export default function NewIncome() {
                                 name="paymentMethod"
                                 value={formData.paymentMethod}
                                 onChange={handleChange}
-                                className="w-full border rounded px-3 py-2 bg-gray-200 text-blue-950"
+                                className="w-full bg-white text-slate-900 border border-slate-300 rounded py-2"
                             >
                                 <option value="">Select Payment Method</option>
                                 {paymentMethods.map((method, index) => (
@@ -422,7 +422,7 @@ export default function NewIncome() {
                             </select>
                         </div>
                         <div className="flex justify-center">
-                            <button type="submit" disabled={isLoading} className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition">
+                            <button type="submit" disabled={isLoading} className="bg-[#118290] hover:bg-[#0d6c77] text-cyan-50 rounded px-4 py-2 transition">
                                 {isLoading ? (
                                     <span className="flex items-center gap-2">
                                         <Loader2 className="animate-spin w-4 h-4" />

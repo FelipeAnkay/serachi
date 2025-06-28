@@ -205,21 +205,21 @@ const SetCustomer = () => {
                     <LoadingSpinner />
                 )
             }
-            <div className="flex flex-col min-h-screen w-full bg-blue-950 text-white px-4 py-6 sm:px-8 sm:py-10">
+            <div className="flex flex-col min-h-screen w-full bg-[#18394C] text-slate-800 px-4 py-6 sm:px-8 sm:py-10">
                 <motion.div
                     initial={{ opacity: 0, scale: 2 }}
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0, scale: 0.9 }}
                     transition={{ duration: 0.5 }}
-                    className="flex flex-col w-full max-w-9/12 mx-auto bg-blue-900 bg-opacity-80 backdrop-filter backdrop-blur-lg rounded-2xl shadow-2xl border border-gray-800 overflow-hidden min-h-screen items-center p-4"
+                    className="flex flex-col w-full max-w-9/12 mx-auto bg-[#EEF9FC] bg-opacity-80 backdrop-filter backdrop-blur-lg rounded-2xl shadow-2xl border border-gray-800 overflow-hidden min-h-screen items-center p-4"
                 >
-                    <h2 className="text-3xl font-bold mb-6 text-center text-white bg-clip-text">
+                    <h2 className="text-3xl font-bold mb-6 text-center text-[#00C49F] bg-clip-text">
                         Customer List
                     </h2>
 
                     <div className="flex flex-col items-center gap-3 mb-4 w-full">
                         <button
-                            className="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded flex items-center gap-2"
+                            className="bg-[#118290] hover:bg-[#0d6c77] text-cyan-50 px-6 py-2 rounded flex items-center gap-2"
                             onClick={openNewCustomerModal}
                         >
                             <p>Add Customer</p><UsersRound />
@@ -230,13 +230,13 @@ const SetCustomer = () => {
                             placeholder="Search by name or email..."
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
-                            className="w-full max-w-md px-4 py-2 rounded bg-gray-800 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            className="w-full max-w-md px-4 py-2 rounded bg-white text-slate-900 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
                         />
                     </div>
 
                     <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 px-2">
                         {customerList.length === 0 ? (
-                            <div className="text-center text-gray-400 col-span-full">No customer found</div>
+                            <div className="text-center text-slate-900col-span-full">No customer found</div>
                         ) : (
                             customerList
                                 .filter(customer => {
@@ -249,7 +249,7 @@ const SetCustomer = () => {
                                 .map((customer) => (
                                     <div
                                         key={customer._id}
-                                        className="relative text-black rounded-lg shadow p-4 bg-gray-200 hover:bg-blue-100 transition-all"
+                                        className="relative text-slate-800 rounded-lg shadow p-4 bg-white border border-slate-300  hover:bg-blue-100 transition-all"
                                     >
                                         <div className='flex flex-row'>
                                             <div className="flex flex-col w-7/8" onClick={() => openEditCustomerModal(customer)}>
@@ -302,14 +302,14 @@ const SetCustomer = () => {
 
                     {(modalOpen || confirmDelete) && (
                         <motion.div
-                            className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 overflow-y-auto scrollbar-thin scrollbar-thumb-blue-600 scrollbar-track-gray-800 scrollbar-thumb-rounded-full"
+                            className="fixed inset-0 bg-black/95 flex items-center justify-center z-50 overflow-y-auto scrollbar-thin scrollbar-thumb-blue-600 scrollbar-track-gray-800 scrollbar-thumb-rounded-full"
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
                             exit={{ opacity: 0 }}
                         >
                             {confirmDelete ? (
                                 <motion.div
-                                    className="bg-gray-900 text-white rounded-2xl shadow-2xl p-8 w-[90%] max-w-md relative"
+                                    className="bg-sky-50 text-slate-800 rounded-2xl shadow-2xl p-8 w-[90%] max-w-md relative"
                                     initial={{ scale: 0.8 }}
                                     animate={{ scale: 1 }}
                                     exit={{ scale: 0.8 }}
@@ -320,13 +320,13 @@ const SetCustomer = () => {
                                     </h3>
                                     <div className="flex justify-around">
                                         <button
-                                            className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded"
+                                            className="bg-red-400 hover:bg-red-500 text-slate-800 px-4 py-2 rounded"
                                             onClick={confirmRemove}
                                         >
                                             Yes, Remove
                                         </button>
                                         <button
-                                            className="bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded"
+                                            className="bg-gray-700 hover:bg-gray-600 text-slate-800 px-4 py-2 rounded"
                                             onClick={closeModal}
                                         >
                                             Cancel
@@ -335,20 +335,20 @@ const SetCustomer = () => {
                                 </motion.div>
                             ) : (
                                 <motion.div
-                                    className="bg-gray-900 text-white rounded-2xl shadow-2xl p-8 w-[90%] max-w-md relative max-h-[90vh] overflow-y-auto scrollbar-thin scrollbar-thumb-blue-600 scrollbar-track-gray-800 scrollbar-thumb-rounded-full"
+                                    className="bg-sky-50 text-slate-800 rounded-2xl shadow-2xl p-8 w-[90%] max-w-md relative max-h-[90vh] overflow-y-auto scrollbar-thin scrollbar-thumb-blue-600 scrollbar-track-gray-800 scrollbar-thumb-rounded-full"
                                     initial={{ scale: 0.8 }}
                                     animate={{ scale: 1 }}
                                     exit={{ scale: 0.8 }}
                                     transition={{ duration: 0.3 }}
                                 >
                                     <button
-                                        className="absolute top-4 right-4 text-gray-400 hover:text-white"
+                                        className="absolute top-4 right-4 text-gray-400 hover:text-slate-800"
                                         onClick={closeModal}
                                     >
                                         <CircleX />
                                     </button>
 
-                                    <h3 className="text-2xl font-bold mb-6 text-center bg-gradient-to-r from-blue-400 to-blue-600 text-transparent bg-clip-text">
+                                    <h3 className="text-2xl font-bold mb-6 text-center text-[#00C49F] bg-clip-text">
                                         {isEditing ? 'Edit Customer' : 'New Customer'}
                                     </h3>
 
@@ -357,12 +357,12 @@ const SetCustomer = () => {
                                             <label>Email:</label>
                                             <input
                                                 type="email"
-                                                className="w-full p-2 rounded bg-gray-800 text-white"
+                                                className="bg-white text-slate-900 border border-slate-300 rounded w-full p-2"
                                                 value={customerData.email || ''}
                                                 onChange={(e) => setCustomerData({ ...customerData, email: e.target.value })}
                                             />
                                             <button
-                                                className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded w-full mt-4"
+                                                className="bg-[#118290] hover:bg-[#0d6c77] text-cyan-50 px-4 py-2 rounded w-full mt-4"
                                                 onClick={handleEmailCheck}
                                             >
                                                 {isEditing ? 'Continue' : 'Customer Search'}

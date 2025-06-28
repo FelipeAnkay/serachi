@@ -1,11 +1,12 @@
 import Cookies from 'js-cookie';
 import { motion } from 'framer-motion';
+import Select from 'react-select';
 import { useState, useEffect, useRef } from 'react';
 import toast from 'react-hot-toast';
 import { useQuoteServices } from '../../store/quoteServices';
 import { useAuthStore } from '../../store/authStore';
 import { useCustomerServices } from '../../store/customerServices';
-import { Contact2, Search, CirclePlus } from 'lucide-react';
+import { Contact2, Search, CirclePlus, Trash2 } from 'lucide-react';
 import sourceList from '../../components/sourceList.json';
 import { useProductServices } from '../../store/productServices';
 import { usePartnerServices } from '../../store/partnerServices';
@@ -639,17 +640,17 @@ export default function NewQuote() {
     };
 
     return (
-        <div className="flex flex-col min-h-screen w-full bg-blue-950 text-white px-4 py-6 sm:px-8 sm:py-10">
+        <div className="flex flex-col min-h-screen w-full bg-[#18394C] text-slate-800 px-4 py-6 sm:px-8 sm:py-10">
             <motion.div
                 initial={{ opacity: 0, scale: 2 }}
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.9 }}
                 transition={{ duration: 0.5 }}
-                className="flex flex-col w-full max-w-9/12 mx-auto bg-blue-900 bg-opacity-80 backdrop-filter backdrop-blur-lg rounded-2xl shadow-2xl border border-gray-800 overflow-hidden min-h-screen items-center p-4"
+                className="flex flex-col w-full max-w-9/12 mx-auto bg-sky-50 backdrop-filter backdrop-blur-lg rounded-2xl shadow-2xl overflow-hidden min-h-screen items-center p-4"
             >
-                <h1 className="text-3xl font-bold mt-6 mb-6 text-center text-white">New Quote</h1>
+                <h1 className="text-3xl font-bold mt-6 mb-6 text-center text-[#00C49F]">New Quote</h1>
 
-                <form onSubmit={handleSubmit} className="space-y-4 border p-4 rounded-2xl shadow bg-blue-800 mx-2 mb-2 w-full">
+                <form onSubmit={handleSubmit} className="space-y-4 border p-4 rounded-2xl shadow bg-white mx-2 mb-2 w-full">
                     {/* Customer + Dates */}
                     <div className='flex flex-col gap-4 sm:flex-col lg:flex-row'>
 
@@ -677,13 +678,13 @@ export default function NewQuote() {
                                     onBlur={() => {
                                         handleCustomerEmailSearch(customerEmailRef.current.value);
                                     }}
-                                    className="w-full border px-2 py-1 rounded bg-white text-blue-950"
+                                    className="w-full border px-2 py-1 rounded bg-white text-slate-900"
                                     placeholder="Enter customer email"
                                 />
                                 <button
                                     type="button"
                                     onClick={() => handleCustomerEmailSearch(customerEmailRef.current.value)}
-                                    className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700"
+                                    className=" text-cyan-50 px-3 py-1 rounded bg-[#118290] hover:bg-[#0d6c77]"
                                 >
                                     <Search />
                                 </button>
@@ -691,7 +692,7 @@ export default function NewQuote() {
                                 {!isNew && (
                                     <button
                                         type="button"
-                                        className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700"
+                                        className="bg-slate-500 hover:bg-slate-700 text-cyan-50 px-3 py-1 rounded"
                                         onClick={() => setIsCustomerModalOpen(true)}
                                     >
                                         <Contact2 />
@@ -710,21 +711,21 @@ export default function NewQuote() {
 
                             {/* Number of people */}
                             <div className='flex flex-col sm:flex-row items-center justify-center gap-2 mt-4'>
-                                <span className="text-sm">Number of people:</span>
+                                <span className="text-sm font-bold text-slate-800">Number of people:</span>
                                 <div className="flex items-center gap-2">
                                     <button
                                         type="button"
                                         onClick={() => setNumberOfPeople(prev => Math.max(1, prev - 1))}
-                                        className={`${isPeopleLock ? 'bg-gray-500' : 'bg-red-500 hover:bg-red-600'} text-white px-2 rounded`}
+                                        className={`${isPeopleLock ? 'bg-gray-500' : 'bg-red-400 hover:bg-red-500'} text-cyan-50 px-2 rounded`}
                                         disabled={isPeopleLock || numberOfPeople <= 1}
                                     >
                                         -
                                     </button>
-                                    <span className="text-sm font-bold text-white">{numberOfPeople}</span>
+                                    <span className="text-sm font-bold text-slate-800">{numberOfPeople}</span>
                                     <button
                                         type="button"
                                         onClick={() => setNumberOfPeople(prev => prev + 1)}
-                                        className={`${isPeopleLock ? 'bg-gray-500' : 'bg-green-500 hover:bg-green-600'} text-white px-2 rounded`}
+                                        className={`${isPeopleLock ? 'bg-gray-500' : 'bg-[#118290] hover:bg-[#0d6c77]'} text-cyan-50 px-2 rounded`}
                                         disabled={isPeopleLock}
                                     >
                                         +
@@ -767,7 +768,7 @@ export default function NewQuote() {
                                 <input
                                     type="text"
                                     placeholder="Search product by name..."
-                                    className="w-full p-2 border border-gray-300 rounded"
+                                    className="w-full p-2 bg-white text-slate-900 border border-slate-300 rounded"
                                     value={productSearch}
                                     onChange={(e) => setProductSearch(e.target.value)}
                                     onKeyDown={(e) => {
@@ -793,7 +794,7 @@ export default function NewQuote() {
                                                 return (
                                                     <div
                                                         key={product._id}
-                                                        className={`border rounded-lg p-2 hover:shadow transition relative flex flex-col sm:flex-row items-center sm:items-start gap-2 ${qty > 0 ? 'bg-green-100 border-green-500 border-2' : 'border-gray-300 bg-blue-100'
+                                                        className={`border rounded-lg p-2 hover:ring-1 transition relative flex flex-col sm:flex-row items-center sm:items-start gap-2 ${qty > 0 ? 'bg-green-100 border-green-200 border-2' : 'border-gray-300 bg-cyan-50'
                                                             }`}
                                                     >
                                                         <div className='w-full sm:w-3/4'>
@@ -808,7 +809,7 @@ export default function NewQuote() {
                                                                     <button
                                                                         type="button"
                                                                         onClick={() => decrementProduct(product._id)}
-                                                                        className="bg-red-500 text-white px-2 rounded hover:bg-red-600"
+                                                                        className="bg-red-400 hover:bg-red-500 text-cyan-50 px-2 rounded"
                                                                     >
                                                                         -
                                                                     </button>
@@ -829,7 +830,7 @@ export default function NewQuote() {
                                                                     <button
                                                                         type="button"
                                                                         onClick={() => incrementProduct(product._id)}
-                                                                        className="bg-green-500 text-white px-2 rounded hover:bg-green-600"
+                                                                        className="bg-[#3BA0AC] hover:bg-[#6BBCC5] text-cyan-50 px-2 rounded"
                                                                     >
                                                                         +
                                                                     </button>
@@ -838,7 +839,7 @@ export default function NewQuote() {
                                                                 <button
                                                                     type="button"
                                                                     onClick={() => incrementProduct(product._id)}
-                                                                    className="bg-green-500 text-white px-2 rounded hover:bg-green-600"
+                                                                    className="bg-[#118290] hover:bg-[#0d6c77] text-cyan-50 px-2 rounded"
                                                                 >
                                                                     +
                                                                 </button>
@@ -857,7 +858,7 @@ export default function NewQuote() {
                                     <input
                                         type="text"
                                         placeholder="Search room by name..."
-                                        className="w-full p-2 border border-gray-300 rounded"
+                                        className="w-full p-2 bg-white text-slate-900 border border-slate-300 rounded"
                                         value={roomSearch}
                                         onChange={(e) => setRoomSearch(e.target.value)}
                                         onKeyDown={(e) => {
@@ -907,12 +908,12 @@ export default function NewQuote() {
                                                     return (
                                                         <div
                                                             key={room._id}
-                                                            className="bg-gray-100 p-2 rounded shadow text-black flex flex-col sm:flex-row"
+                                                            className="bg-white border border-slate-300 p-2 rounded shadow text-black flex flex-col sm:flex-row"
                                                         >
                                                             <div className='w-full sm:w-3/4'>
                                                                 <h4 className="font-semibold text-lg">{room.name} - ${room.price.toFixed(2)}</h4>
-                                                                <p className="text-sm text-gray-700">Tipo: {room.type}</p>
-                                                                <p className="text-sm text-gray-700">Capacidad: {room.availability}</p>
+                                                                <p className="text-sm text-slate-700">Tipo: {room.type}</p>
+                                                                <p className="text-sm text-slate-700">Capacidad: {room.availability}</p>
                                                                 <div className='flex flex-row'>
                                                                     {roomDateRanges[room._id]?.map((range, idx) => (
                                                                         <p key={idx} className="text-xs text-green-500">
@@ -947,7 +948,7 @@ export default function NewQuote() {
                                                                 <div className="flex items-center justify-center gap-2">
                                                                     <button
                                                                         type="button"
-                                                                        className="bg-red-500 text-white px-2 rounded"
+                                                                        className="bg-red-500 text-cyan-50 px-2 rounded"
                                                                         disabled={qty <= 0}
                                                                         onClick={() => {
                                                                             roomType = room.type,
@@ -974,7 +975,7 @@ export default function NewQuote() {
                                                                             !room.availableEveryNight &&
                                                                             !roomStartDates[room._id]
                                                                             ? "bg-gray-400 cursor-not-allowed"
-                                                                            : "bg-green-600 hover:bg-green-700 text-white mr-5"
+                                                                            : "bg-[#118290] hover:bg-[#0d6c77] text-cyan-50 mr-5"
                                                                             }`}
                                                                         disabled={
                                                                             qty >= maxQty ||
@@ -1047,7 +1048,7 @@ export default function NewQuote() {
                                                 return (
                                                     <div
                                                         key={product.productID}
-                                                        className='mt-5 mb-5 ml-5 flex flex-row text-sm text-white'
+                                                        className='mt-5 mb-5 ml-5 flex flex-row text-sm text-slate-800'
                                                     >
                                                         <div className="w-3/4">
                                                             {product.productName}
@@ -1068,7 +1069,7 @@ export default function NewQuote() {
                                                 return (
                                                     <div
                                                         key={room.roomId}
-                                                        className='ml-5 flex flex-row text-sm text-white'
+                                                        className='ml-5 flex flex-row text-sm text-slate-800'
                                                     >
                                                         <div className="w-3/4">
                                                             {room.roomName}  ({room.roomNights} Nights)
@@ -1084,18 +1085,18 @@ export default function NewQuote() {
                                 </div>
 
                                 <div className="flex ml-4 mr-4 items-center justify-center">
-                                    <label className=" text-white font-bold text-lg">Price: ${Number(finalPrice).toFixed(2)}</label>
+                                    <label className=" text-slate-800 font-bold text-lg">Price: ${Number(finalPrice).toFixed(2)}</label>
                                 </div>
                                 <div className="ml-4 mr-4">
                                     <div className="flex justify-between w-full">
-                                        <label className="block text-sm font-medium text-white">Discount</label>
-                                        <label className="block text-sm font-medium text-white">{(finalPrice && quote.discount) ? ((quote.discount / finalPrice) * 100).toFixed(2) : '0.00'}%</label>
+                                        <label className="block text-sm font-medium text-slate-800">Discount</label>
+                                        <label className="block text-sm font-medium text-slate-800">{(finalPrice && quote.discount) ? ((quote.discount / finalPrice) * 100).toFixed(2) : '0.00'}%</label>
                                     </div>
                                     <input
                                         type="number"
                                         step="0.01"
                                         min="0"
-                                        className="w-full mt-1 p-2 border border-gray-300 rounded"
+                                        className="w-full mt-1 p-2 bg-white text-slate-900 border border-slate-300 rounded"
                                         value={quote.discount}
                                         onChange={(e) => {
                                             let raw = e.target.value.replace(',', '.'); // Soporta coma decimal
@@ -1119,8 +1120,8 @@ export default function NewQuote() {
                                     />
                                 </div>
                                 <div className="ml-4 mr-4 flex items-center justify-center">
-                                    <label className=" text-white font-bold text-lg mt-6">Final Price: </label>
-                                    <label className=" text-white font-bold text-2xl mt-6 ml-2">${Number(quote.finalPrice).toFixed(2)}</label>
+                                    <label className=" text-slate-800 font-bold text-lg mt-6">Final Price: </label>
+                                    <label className=" text-slate-800 font-bold text-2xl mt-6 ml-2">${Number(quote.finalPrice).toFixed(2)}</label>
                                 </div>
                             </fieldset>
                         </div>
@@ -1135,11 +1136,17 @@ export default function NewQuote() {
                             <div className="flex flex-col gap-4 w-full">
                                 <div>
                                     <label className="block text-sm font-medium">Source</label>
-                                    <select
-                                        className="w-full border border-gray-300 rounded px-3 py-2 mt-1"
-                                        value={quote.source || ''}
-                                        onChange={(e) => {
-                                            const selected = e.target.value;
+                                    <Select
+                                        options={sourceList.map(item => ({
+                                            value: item.name,
+                                            label: item.name,
+                                            item,
+                                        }))}
+                                        value={sourceList
+                                            .map(item => ({ value: item.name, label: item.name }))
+                                            .find(opt => opt.value === quote.source) || null}
+                                        onChange={(selectedOption) => {
+                                            const selected = selectedOption?.value || "";
                                             const updatedQuote = {
                                                 ...quote,
                                                 source: selected,
@@ -1148,21 +1155,35 @@ export default function NewQuote() {
                                             if (selected !== 'Partner') updatedQuote.partnerId = '';
                                             setQuote(updatedQuote);
                                         }}
-                                    >
-                                        <option value="" className='text-blue-950'>Select Source</option>
-                                        {sourceList.map((item, index) => (
-                                            <option key={index} value={item.name} className='text-blue-950'>
-                                                {item.name}
-                                            </option>
-                                        ))}
-                                    </select>
+                                        placeholder="Select source..."
+                                        className="text-slate-900"
+                                        classNamePrefix="react-select"
+                                        styles={{
+                                            control: (base) => ({
+                                                ...base,
+                                                borderColor: '#d1d5db', // Tailwind border-gray-300
+                                                padding: '2px',
+                                                fontSize: '0.875rem', // text-sm
+                                            }),
+                                            menu: (base) => ({
+                                                ...base,
+                                                zIndex: 50,
+                                            }),
+                                            option: (provided, state) => ({
+                                                ...provided,
+                                                backgroundColor: state.isFocused ? "#3BA0AC" : "white",
+                                                color: "#1e293b", // slate-900
+                                            }),
+                                        }}
+                                    />
+
                                 </div>
 
                                 {quote.source === 'Partner' && (
                                     <div>
-                                        <label className="block text-sm font-medium text-white">Partner</label>
+                                        <label className="block text-sm font-medium text-slate-800">Partner</label>
                                         <select
-                                            className="w-full mt-1 p-2 border border-gray-300 rounded"
+                                            className="w-full mt-1 p-2 bg-white text-slate-900 border border-slate-300 rounded"
                                             value={quote.partnerId || ''}
                                             onChange={(e) =>
                                                 setQuote((prev) => ({
@@ -1171,9 +1192,9 @@ export default function NewQuote() {
                                                 }))
                                             }
                                         >
-                                            <option value="" className='text-blue-950'>Select a partner</option>
+                                            <option value="" className='text-slate-900'>Select a partner</option>
                                             {partners.map((partner) => (
-                                                <option key={partner._id} value={partner._id} className='text-blue-950'>
+                                                <option key={partner._id} value={partner._id} className='text-slate-900'>
                                                     {partner.name}
                                                 </option>
                                             ))}
@@ -1183,10 +1204,10 @@ export default function NewQuote() {
 
                                 {quote.source === 'Other' && (
                                     <div>
-                                        <label className="block text-sm font-medium text-white">Specify Source</label>
+                                        <label className="block text-sm font-medium text-slate-800">Specify Source</label>
                                         <input
                                             type="text"
-                                            className="w-full mt-1 p-2 border border-gray-300 rounded"
+                                            className="w-full mt-1 p-2 bg-white text-slate-900 border border-slate-300 rounded"
                                             placeholder="Custom source"
                                             value={quote.customSource || ''}
                                             onChange={(e) =>
@@ -1207,14 +1228,14 @@ export default function NewQuote() {
                                     <input
                                         type="text"
                                         placeholder="Name"
-                                        className="w-full sm:w-1/2 p-2 border border-gray-300 rounded"
+                                        className="w-full sm:w-1/2 p-2 bg-white text-slate-900 border border-slate-300 rounded"
                                         value={newTag.name}
                                         onChange={(e) => setNewTag((prev) => ({ ...prev, name: e.target.value }))}
                                     />
                                     <input
                                         type="text"
                                         placeholder="Code"
-                                        className="w-full sm:w-1/2 p-2 border border-gray-300 rounded"
+                                        className="w-full sm:w-1/2 p-2 bg-white text-slate-900 border border-slate-300 rounded"
                                         value={newTag.code}
                                         onChange={(e) => setNewTag((prev) => ({ ...prev, code: e.target.value }))}
                                     />
@@ -1230,7 +1251,7 @@ export default function NewQuote() {
                                             }
                                         }}
                                     >
-                                        <CirclePlus className="hover:bg-green-500 rounded-4xl" />
+                                        <CirclePlus className="hover:bg-cyan-800 hover:text-cyan-50 text-slate-800 rounded-4xl" />
                                     </button>
                                 </div>
 
@@ -1238,18 +1259,18 @@ export default function NewQuote() {
                                     {(quote.tag || []).map((tag, index) => (
                                         <li
                                             key={index}
-                                            className="flex justify-between items-center bg-blue-700 rounded px-3 py-2"
+                                            className="flex justify-between items-center bg-cyan-50 rounded px-3 py-2"
                                         >
                                             <span>{tag.name} - {tag.code}</span>
                                             <button
                                                 type="button"
-                                                className="text-red-500 hover:text-red-700"
+                                                className="text-red-400 hover:text-red-500"
                                                 onClick={() => {
                                                     const updatedTags = quote.tag.filter((_, i) => i !== index);
                                                     setQuote((prev) => ({ ...prev, tag: updatedTags }));
                                                 }}
                                             >
-                                                Delete
+                                                <Trash2/>
                                             </button>
                                         </li>
                                     ))}
@@ -1276,7 +1297,7 @@ export default function NewQuote() {
                                 id: "sendEmail"
                             }].map(({ label, value, onChange, id }) => (
                                 <div key={id} className="flex flex-col items-center border rounded-2xl px-4 py-2 w-full md:w-1/3">
-                                    <label className="text-sm font-medium text-white">{label}</label>
+                                    <label className="text-sm font-medium text-slate-800">{label}</label>
                                     <label className="relative inline-flex items-center cursor-pointer mt-2 mb-1">
                                         <input
                                             type="checkbox"
@@ -1294,15 +1315,15 @@ export default function NewQuote() {
 
                         {/* Botones */}
                         <div className="flex flex-col sm:flex-row gap-4 mt-6 justify-center">
-                            <button type="submit" className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
+                            <button type="submit" className="bg-[#118290] hover:bg-[#0d6c77] text-cyan-50 px-4 py-2 rounded">
                                 Send Quote
                             </button>
                             <button
                                 type="button"
-                                className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-700"
+                                className="bg-slate-600 hover:bg-slate-700 text-cyan-50 px-4 py-2 rounded"
                                 onClick={handleReset}
                             >
-                                Reset Quote
+                                Reset Quote 
                             </button>
                         </div>
                     </fieldset>

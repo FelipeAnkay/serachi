@@ -30,16 +30,16 @@ export default function ProductSelect({ products, value = [], onChange }) {
   );
 
   return (
-    <div className="mt-2 space-y-2">
+    <div className="space-y-2">
       <select
-        className="px-2 py-1 rounded text-white ml-2 mr-2 w-1/2"
+        className="px-2 py-1 rounded text-slate-800 ml-2 mr-2 w-1/2"
         onChange={(e) => {
           if (e.target.value) handleSelect(e.target.value);
         }}
       >
-        <option value="" className="text-blue-950">-- Select Product --</option>
+        <option value="" className="text-slate-900">-- Select Product --</option>
         {availableOptions.map((p) => (
-          <option key={p._id} value={p._id} className="text-blue-950">
+          <option key={p._id} value={p._id} className="text-slate-900">
             {p.name} (${p.price})
           </option>
         ))}
@@ -50,12 +50,12 @@ export default function ProductSelect({ products, value = [], onChange }) {
         return (
           <div
             key={item.productId}
-            className="flex items-center gap-2 bg-blue-800 p-2 rounded shadow ml-2 mr-2 mb-2"
+            className="flex items-center gap-2 bg-sky-50 p-2 rounded shadow ml-2 mr-2 mb-2"
           >
             <span className="flex-1 font-medium">{product?.name}</span>
             <input
               type="number"
-              className="w-16 border rounded px-1 text-white"
+              className="w-16 border rounded px-1 text-slate-800"
               min={1}
               value={item.quantity}
               onChange={(e) => updateField(index, "quantity", e.target.value)}

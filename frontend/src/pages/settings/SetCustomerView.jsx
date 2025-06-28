@@ -83,19 +83,19 @@ const SetCustomerView = () => {
                     <LoadingSpinner />
                 )
             }
-            <div className="flex flex-col min-h-screen w-full bg-blue-950 text-white px-4 py-6 sm:px-8 sm:py-10">
+            <div className="flex flex-col min-h-screen w-full bg-[#18394C] text-slate-800 px-4 py-6 sm:px-8 sm:py-10">
                 <motion.div
                     initial={{ opacity: 0, scale: 2 }}
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0, scale: 0.9 }}
                     transition={{ duration: 0.5 }}
-                    className="flex flex-col w-full max-w-9/12 mx-auto bg-blue-900 bg-opacity-80 backdrop-filter backdrop-blur-lg rounded-2xl shadow-2xl border border-gray-800 overflow-hidden min-h-screen items-center p-4"
+                    className="flex flex-col w-full max-w-9/12 mx-auto bg-sky-50 backdrop-filter backdrop-blur-lg rounded-2xl shadow-2xl border border-gray-800 overflow-hidden min-h-screen items-center p-4"
                 >
-                    <h2 className="text-3xl font-bold mb-6 text-center text-white bg-clip-text">
+                    <h2 className="text-3xl font-bold mb-6 text-center text-[#00C49F] bg-clip-text">
                         Customer Detail
                     </h2>
                     <motion.div
-                        className="bg-gray-900 text-white rounded-2xl shadow-2xl p-8 w-[90%] relative max-h-[90vh] overflow-y-auto scrollbar-thin scrollbar-thumb-blue-600 scrollbar-track-gray-800 scrollbar-thumb-rounded-full"
+                        className="bg-sky-50 text-slate-800 rounded-2xl shadow-2xl p-8 w-[90%] relative max-h-[90vh] overflow-y-auto scrollbar-thin scrollbar-thumb-blue-600 scrollbar-track-gray-800 scrollbar-thumb-rounded-full"
                         initial={{ scale: 0.8 }}
                         animate={{ scale: 1 }}
                         exit={{ scale: 0.8 }}
@@ -106,7 +106,7 @@ const SetCustomerView = () => {
                                 <label className="block text-sm font-medium">Name</label>
                                 <input
                                     type="text"
-                                    className="w-full border border-gray-300 rounded px-3 py-2 mt-1 bg-white text-blue-950"
+                                    className="w-full bg-white text-slate-900 border border-slate-300 rounded px-3 py-2 mt-1"
                                     value={customer.name || ''}
                                     onChange={(e) => setCustomer({ ...customer, name: e.target.value })}
                                 />
@@ -115,7 +115,7 @@ const SetCustomerView = () => {
                                 <label className="block text-sm font-medium">Last Name</label>
                                 <input
                                     type="text"
-                                    className="w-full border border-gray-300 rounded px-3 py-2 mt-1 bg-white text-blue-950"
+                                    className="w-full bg-white text-slate-900 border border-slate-300 rounded px-3 py-2 mt-1"
                                     value={customer.lastName || ''}
                                     onChange={(e) => setCustomer({ ...customer, lastName: e.target.value })}
                                 />
@@ -124,7 +124,7 @@ const SetCustomerView = () => {
                                 <label className="block text-sm font-medium">Email</label>
                                 <input
                                     type="text"
-                                    className="w-full border border-gray-300 rounded px-3 py-2 mt-1 bg-white text-blue-950"
+                                    className="w-full bg-white text-slate-900 border border-slate-300 rounded px-3 py-2 mt-1"
                                     value={customer.email || ''}
                                     onChange={(e) => setCustomer({ ...customer, email: e.target.value })}
                                 />
@@ -133,13 +133,13 @@ const SetCustomerView = () => {
                                 <label className="block text-sm font-medium">Gender</label>
                                 <select
                                     type="text"
-                                    className="w-full border border-gray-300 rounded px-3 py-2 mt-1 bg-white text-blue-950"
+                                    className="w-full bg-white text-slate-900 border border-slate-300 rounded px-3 py-2 mt-1"
                                     value={customer.gender || ''}
                                     onChange={(e) => setCustomer({ ...customer, gender: e.target.value })}
                                 >
-                                    <option value="" className="text-blue-950">Select Gender</option>
-                                    <option key="FEM" value="Female" className='text-blue-950'>Female</option>
-                                    <option key="MAL" value="Male" className='text-blue-950'>Male</option>
+                                    <option value="" className="text-slate-900">Select Gender</option>
+                                    <option key="FEM" value="Female" className='text-slate-900'>Female</option>
+                                    <option key="MAL" value="Male" className='text-slate-900'>Male</option>
                                 </select>
 
                             </div>
@@ -147,7 +147,7 @@ const SetCustomerView = () => {
                                 <label className="block text-sm font-medium">Phone</label>
                                 <input
                                     type="text"
-                                    className="w-full border border-gray-300 rounded px-3 py-2 mt-1 bg-white text-blue-950"
+                                    className="w-full bg-white text-slate-900 border border-slate-300 rounded px-3 py-2 mt-1"
                                     value={customer.phone || ''}
                                     onChange={(e) => setCustomer({ ...customer, phone: e.target.value })}
                                 />
@@ -156,7 +156,7 @@ const SetCustomerView = () => {
                                 <label className="block text-sm font-medium">Birthdate</label>
                                 <input
                                     type="date"
-                                    className="w-full border border-gray-300 rounded px-3 py-2 mt-1 bg-white text-blue-950"
+                                    className="w-full bg-white text-slate-900 border border-slate-300 rounded px-3 py-2 mt-1"
                                     value={customer.birthdate?.slice(0, 10) || ''}
                                     onChange={(e) => setCustomer({ ...customer, birthdate: e.target.value })}
                                 />
@@ -165,7 +165,7 @@ const SetCustomerView = () => {
                                 <label className="block text-sm font-medium">National Id or Passport</label>
                                 <input
                                     type="text"
-                                    className="w-full border border-gray-300 rounded px-3 py-2 mt-1 bg-white text-blue-950"
+                                    className="w-full bg-white text-slate-900 border border-slate-300 rounded px-3 py-2 mt-1"
                                     value={customer.nationalId || ''}
                                     onChange={(e) => setCustomer({ ...customer, nationalId: e.target.value })}
                                 />
@@ -173,7 +173,7 @@ const SetCustomerView = () => {
                             <div>
                                 <label className="block text-sm font-medium">Country</label>
                                 <select
-                                    className="w-full border border-gray-300 rounded px-3 py-2 mt-1 bg-white text-blue-950"
+                                    className="w-full bg-white text-slate-900 border border-slate-300 rounded px-3 py-2 mt-1"
                                     value={countrySelectValue}
                                     onChange={(e) => {
                                         const selected = e.target.value;
@@ -186,9 +186,9 @@ const SetCustomerView = () => {
                                         }
                                     }}
                                 >
-                                    <option value="" className="bg-white text-blue-950">Select Country</option>
+                                    <option value="" className="bg-white text-slate-900">Select Country</option>
                                     {countries.map((c) => (
-                                        <option key={c.code} value={c.name} className='bg-white text-blue-950'>{c.name}</option>
+                                        <option key={c.code} value={c.name} className='bg-white text-slate-900'>{c.name}</option>
                                     ))}
                                 </select>
 
@@ -196,7 +196,7 @@ const SetCustomerView = () => {
                                     <input
                                         type="text"
                                         placeholder="Enter your country"
-                                        className="w-full mt-2 border border-gray-300 rounded px-3 py-2 bg-white text-blue-950"
+                                        className="w-full mt-2 bg-white text-slate-900 border border-slate-300 rounded px-3 py-2"
                                         value={customCountry}
                                         onChange={(e) => {
                                             setCustomCountry(e.target.value);
@@ -208,13 +208,13 @@ const SetCustomerView = () => {
                             <div>
                                 <label className="block text-sm font-medium">Dietary Restriction</label>
                                 <select
-                                    className="w-full border border-gray-300 rounded px-3 py-2 mt-1 bg-white text-blue-950"
+                                    className="w-full bg-white text-slate-900 border border-slate-300 rounded px-3 py-2 mt-1"
                                     value={customer.diet || ''}
                                     onChange={(e) => setCustomer({ ...customer, diet: e.target.value })}
                                 >
-                                    <option value="" className='bg-white text-blue-950'>Select Diet</option>
+                                    <option value="" className='bg-white text-slate-900'>Select Diet</option>
                                     {dietaryList.map((item, index) => (
-                                        <option key={index} value={item.name} className='bg-white text-blue-950'>
+                                        <option key={index} value={item.name} className='bg-white text-slate-900'>
                                             {item.name}
                                         </option>
                                     ))}
@@ -224,7 +224,7 @@ const SetCustomerView = () => {
                                 <label className="block text-sm font-medium">Allergies</label>
                                 <input
                                     type="text"
-                                    className="w-full border border-gray-300 rounded px-3 py-2 mt-1 bg-white text-blue-950"
+                                    className="w-full bg-white text-slate-900 border border-slate-300 rounded px-3 py-2 mt-1"
                                     value={customer.allergies || ''}
                                     onChange={(e) => setCustomer({ ...customer, allergies: e.target.value })}
                                 />
@@ -253,15 +253,15 @@ const SetCustomerView = () => {
                                 </div>
                             </div>
                             <div className="space-y-4 mt-6">
-                                <h3 className="text-lg font-semibold  text-white">
+                                <h3 className="text-lg font-semibold  text-slate-800">
                                     Emergency Contact:
                                 </h3>
 
                                 <div>
-                                    <label className="block text-sm font-medium  text-white">Name:</label>
+                                    <label className="block text-sm font-medium  text-slate-800">Name:</label>
                                     <input
                                         type="text"
-                                        className="w-full border border-gray-300 rounded px-3 py-2 mt-1 bg-white text-blue-950"
+                                        className="w-full bg-white text-slate-900 border border-slate-300 rounded px-3 py-2 mt-1"
                                         value={customer.emergencyContactName || ''}
                                         onChange={(e) =>
                                             setCustomer({
@@ -274,10 +274,10 @@ const SetCustomerView = () => {
                                 </div>
 
                                 <div>
-                                    <label className="block text-sm font-medium  text-white">Phone</label>
+                                    <label className="block text-sm font-medium  text-slate-800">Phone</label>
                                     <input
                                         type="text"
-                                        className="w-full border border-gray-300 rounded px-3 py-2 mt-1 bg-white text-blue-950"
+                                        className="w-full bg-white text-slate-900 border border-slate-300 rounded px-3 py-2 mt-1"
                                         value={customer.emergencyContactPhone || ''}
                                         onChange={(e) =>
                                             setCustomer({
@@ -306,7 +306,7 @@ const SetCustomerView = () => {
                                             <label className="">Certifying Organization:</label>
                                             <input
                                                 type="text"
-                                                className="w-full p-2 mt-1 rounded bg-white text-blue-950"
+                                                className="w-full p-2 mt-1 rounded bg-white text-slate-900"
                                                 value={cert["organization"] || ''}
                                                 onChange={(e) => {
                                                     const updated = [...customer.divingCertificates];
@@ -319,7 +319,7 @@ const SetCustomerView = () => {
                                             <label>Certification Level:</label>
                                             <input
                                                 type="text"
-                                                className="w-full p-2 mt-1 rounded bg-white text-blue-950"
+                                                className="w-full p-2 mt-1 rounded bg-white text-slate-900"
                                                 value={cert["certificateName"] || ''}
                                                 onChange={(e) => {
                                                     const updated = [...customer.divingCertificates];
@@ -332,7 +332,7 @@ const SetCustomerView = () => {
                                             <label>ID Number:</label>
                                             <input
                                                 type="text"
-                                                className="w-full p-2 mt-1 rounded bg-white text-blue-950"
+                                                className="w-full p-2 mt-1 rounded bg-white text-slate-900"
                                                 value={cert["certificateId"] || ''}
                                                 onChange={(e) => {
                                                     const updated = [...customer.divingCertificates];
@@ -345,7 +345,7 @@ const SetCustomerView = () => {
                                 ))}
                                 <button
                                     type="button"
-                                    className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded mt-4"
+                                    className="bg-[#3BA0AC] hover:bg-[#6BBCC5] text-cyan-50 px-4 py-2 rounded mt-4"
                                     onClick={() => {
                                         const updated = [...(customer.divingCertificates || [])];
                                         updated.push({ organization: '', certificateName: '', certificateId: '' });
@@ -357,7 +357,7 @@ const SetCustomerView = () => {
                             </div>
 
                             <button
-                                className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded w-full mt-4"
+                                className="bg-[#118290] hover:bg-[#0d6c77] text-cyan-50 px-4 py-2 rounded w-full mt-4"
                                 type="button"
                                 onClick={handleSave}
                             >

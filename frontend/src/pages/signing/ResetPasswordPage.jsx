@@ -37,7 +37,7 @@ const ResetPasswordPage = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
-            className='max-w-md w-full bg-blue-950 bg-opacity-50 backdrop-filter backdrop-blur-xl rounded-2xl shadow-xl 
+            className='max-w-md w-full bg-[#18394C] bg-opacity-50 backdrop-filter backdrop-blur-xl rounded-2xl shadow-xl 
             overflow-hidden'
         >
             <div className="p-8">
@@ -66,7 +66,7 @@ const ResetPasswordPage = () => {
                         required
                     />
                     <motion.button
-                        className='mt-5 w-full py-3 px-4 bg-gradient-to-r from-blue-500 to-blue-700 text-white 
+                        className='mt-5 w-full py-3 px-4 bg-gradient-to-r from-blue-500 to-blue-700 text-slate-800 
                       font-bold rounded-lg shadow-lg hover:from-blue-600
                       hover:to-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2
                        focus:ring-offset-gray-900 transition duration-200'
