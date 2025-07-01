@@ -55,6 +55,7 @@ import SetCustomerView from './pages/settings/SetCustomerView';
 import UserAddressBookModal from './components/UserAddressBookModal';
 import CashflowReports from './pages/reports/CashflowReports';
 import SetFacilities from './pages/settings/SetFacilities';
+import ServicesByStaffReport from './pages/reports/ServicesByStaffReport';
 
 const ProtectedRoute = ({ children, requiredPermission, storePermission }) => {
   const { isAuthenticated, user, logout } = useAuthStore();
@@ -497,6 +498,13 @@ function App() {
           element={
             <ProtectedRoute requiredPermission="VIEW_REPORTS" storePermission={["BAS","MED","PRO"]}>
               <CashflowReports />
+            </ProtectedRoute>}
+        />
+        <Route
+          path="/report-services-staff"
+          element={
+            <ProtectedRoute requiredPermission="VIEW_REPORTS" storePermission={["BAS","MED","PRO"]}>
+              <ServicesByStaffReport />
             </ProtectedRoute>}
         />
         {/*catch all not determined above routes*/}
