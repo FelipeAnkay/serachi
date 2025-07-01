@@ -156,40 +156,6 @@ export default function SetStore() {
                                 />
                             </div>  
                         )}
-                        <div>
-                            <label className="block text-sm font-medium text-slate-800">Authorized Emails</label>
-                            {(store.userList || []).map((email, index) => (
-                                <div key={index} className="flex items-center mt-2 gap-2">
-                                    <input
-                                        type="email"
-                                        className="w-full bg-white text-slate-900 border border-slate-300 rounded px-3 py-2"
-                                        value={email}
-                                        onChange={(e) => handleEditEmail(index, e.target.value)}
-                                    />
-                                    <button
-                                        onClick={() => handleRemoveEmail(index)}
-                                        className="text-red-400"
-                                    >
-                                        <Trash2 />
-                                    </button>
-                                </div>
-                            ))}
-                            <div className="flex gap-2 mt-2">
-                                <input
-                                    type="email"
-                                    placeholder="Add new email"
-                                    className="w-full bg-white text-slate-900  border border-slate-300 rounded px-3 py-2"
-                                    value={newEmail}
-                                    onChange={(e) => setNewEmail(e.target.value)}
-                                />
-                                <button
-                                    onClick={handleAddEmail}
-                                    className="bg-[#3BA0AC] hover:bg-[#6BBCC5] text-cyan-50 px-3 py-2 rounded-lg"
-                                >
-                                    Add
-                                </button>
-                            </div>
-                        </div>
                         <div key="taxDefault">
                             <label className="block text-sm font-medium text-slate-800">Default Tax %:</label>
                             <input

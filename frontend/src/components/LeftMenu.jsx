@@ -5,7 +5,8 @@ import {
     TicketCheck, Truck, Wallet, Menu,
     Trash2,
     TrendingUp,
-    Coins
+    Coins,
+    Sheet
 } from "lucide-react";
 
 import logo from "../../public/Serachi_logo-nobg.png";
@@ -39,6 +40,7 @@ const menuItems = [
             { to: "/experience-add-items", label: "Add Items", icon: <ShoppingBasket /> },
             { to: "/experience-open-tabs", label: "Open Tabs", icon: <BookOpenCheck /> },
             { to: "/delete-services", label: "Delete Services", icon: <Trash2 /> },
+            { to: "/report-services-staff", label: "Services by Staff", icon: <Sheet /> }, 
         ]
     },
     {
@@ -58,7 +60,7 @@ const menuItems = [
         children: [
             { to: "/set-users", label: "Users", icon: <ShieldUser /> },
             { to: "/set-staff", label: "Staff", icon: <Contact /> },
-            { to: "/set-staff-rates", label: "Staff Fees", icon: <Banknote /> },
+            { to: "/set-staff-rates", label: "Staff Rates", icon: <Banknote /> },
             { to: "/set-roles", label: "Roles", icon: <ShieldCheck /> },
             { to: "/set-customer", label: "Customers", icon: <CircleUser /> },
             { to: "/set-rooms", label: "Rooms", icon: <Bed /> },
@@ -132,6 +134,7 @@ const menuItemsMed = [
             { to: "/report-incomes", label: "Report", icon: <ChartColumnIncreasing /> },
             { to: "/report-cashflow", label: "Monthly Cash Flow", icon: <TrendingUp /> },
             { to: "/report-cashflow-detail", label: "Income & Expenses", icon: <Coins /> },
+            { to: "/report-services-staff", label: "Services by Staff", icon: <Sheet /> }, 
             
         ]
     },
@@ -142,7 +145,7 @@ const menuItemsMed = [
         children: [
             { to: "/set-users", label: "Users", icon: <ShieldUser /> },
             { to: "/set-staff", label: "Staff", icon: <Contact /> },
-            { to: "/set-staff-rates", label: "Staff Fees", icon: <Banknote /> },
+            { to: "/set-staff-rates", label: "Staff Rates", icon: <Banknote /> },
             { to: "/set-roles", label: "Roles", icon: <ShieldCheck /> },
             { to: "/set-customer", label: "Customers", icon: <CircleUser /> },
             { to: "/set-rooms", label: "Rooms", icon: <Bed /> },
@@ -216,6 +219,7 @@ const menuItemsPro = [
             { to: "/report-incomes", label: "Report", icon: <ChartColumnIncreasing /> },
             { to: "/report-cashflow", label: "Monthly Cash Flow", icon: <TrendingUp /> },
             { to: "/report-cashflow-detail", label: "Income & Expenses", icon: <Coins /> },
+            { to: "/report-services-staff", label: "Services by Staff", icon: <Sheet /> }, 
         ]
     },
     {
@@ -225,7 +229,7 @@ const menuItemsPro = [
         children: [
             { to: "/set-users", label: "Users", icon: <ShieldUser /> },
             { to: "/set-staff", label: "Staff", icon: <Contact /> },
-            { to: "/set-staff-rates", label: "Staff Fees", icon: <Banknote /> },
+            { to: "/set-staff-rates", label: "Staff Rates", icon: <Banknote /> },
             { to: "/set-roles", label: "Roles", icon: <ShieldCheck /> },
             { to: "/set-customer", label: "Customers", icon: <CircleUser /> },
             { to: "/set-rooms", label: "Rooms", icon: <Bed /> },

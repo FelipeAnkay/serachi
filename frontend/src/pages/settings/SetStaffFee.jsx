@@ -117,7 +117,7 @@ const SetStaffFee = () => {
         });
         setIsEditing(false);
         setEditingId("")
-        toast.success("Staff Fee added successfully")
+        toast.success("Staff Rate added successfully")
     };
 
     const handleEdit = (payrate) => {
@@ -181,7 +181,7 @@ const SetStaffFee = () => {
             await removePayrate(id);
             const rateRes = await getPayrateList(storeId);
             setPayrates(rateRes?.payrateList || []);
-            toast.success("Staff Fee deleted");
+            toast.success("Staff Rate deleted");
         }
     };
 
@@ -203,7 +203,7 @@ const SetStaffFee = () => {
                 transition={{ duration: 0.5 }}
                 className="flex flex-col w-full max-w-9/12 mx-auto bg-sky-50 backdrop-filter backdrop-blur-lg rounded-2xl shadow-2xl border border-gray-800 overflow-hidden min-h-screen items-center p-4"
             >
-                <h2 className="text-3xl font-semibold text-[#00C49F] text-center mb-5">Staff Fee Configuration</h2>
+                <h2 className="text-3xl font-semibold text-[#00C49F] text-center mb-5">Staff Rates Configuration</h2>
                 <AnimatePresence>
                     <motion.form
                         onSubmit={handleCreate}
@@ -376,7 +376,7 @@ const SetStaffFee = () => {
                 </AnimatePresence>
 
                 <div className="w-full mt-10">
-                    <h3 className="text-2xl font-medium mb-2 text-[#00C49F] text-center">Created Staff Fees</h3>
+                    <h3 className="text-2xl font-medium mb-2 text-[#00C49F] text-center">Created Staff Rates</h3>
                     <div className="flex flex-col gap-2 mb-4 border rounded-2xl px-4 py-4 bg-white">
                         <span className="text-slate-800 font-semibold text-lg">Search Terms:</span>
 

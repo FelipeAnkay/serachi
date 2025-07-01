@@ -121,7 +121,7 @@ export const useServiceServices = create((set) => ({
         try {
             //console.log("FB: Entre a getAvailableRooms: ", start, " - ", end, " - ", storeId)
             const formattedDateIn = formatDateISO(start);
-            const formattedDateOut = formatDateISO(end);
+            const formattedDateOut = formatEndOfDayDateISO(end);
             //console.log("FB: Entre a getAvailableRooms formated: ", formattedDateIn, " - ", formattedDateOut, " - ", storeId)
             const response = await axios.get(`${URL_API}/dates/${storeId}/${formattedDateIn}/${formattedDateOut}`);
             //console.log("response: ", response)
@@ -156,7 +156,7 @@ export const useServiceServices = create((set) => ({
         try {
             //console.log("FB: Entre a getAvailableRooms: ", start, " - ", end, " - ", storeId)
             const formattedDateIn = formatDateISO(start);
-            const formattedDateOut = formatDateISO(end);
+            const formattedDateOut = formatEndOfDayDateISO(end);
             //console.log("FB: Entre a getAvailableRooms formated: ", formattedDateIn, " - ", formattedDateOut, " - ", storeId)
             const response = await axios.get(`${URL_API}/calendar/${storeId}/${formattedDateIn}/${formattedDateOut}`);
             //console.log("response: ", response)
