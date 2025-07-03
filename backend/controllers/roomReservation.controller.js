@@ -63,6 +63,32 @@ export const updateRoomReservation = async (req, res) => {
     }
 }
 
+export const cancelRoomReservation = async (req, res) => {
+    const { id } = req.params;
+    try {
+        if (!id) {
+            throw new Error("Id field is required");
+        }
+
+        const roomReservation = await RoomReservation.findById(id);
+        if (!roomReservation) {
+            return res.status(404).json({ success: false, message: "Reservation not found" });
+        }
+        await roomReservation.deleteOne();
+
+        res.status(200).json({
+            success: true,
+            message: "Room cancelled succesfully",
+            roomReservation: {
+                ...roomReservation._doc
+            }
+        })
+
+    } catch (error) {
+        res.status(400).json({ success: false, message: error.message });
+    }
+}
+
 export const roomReservationList = async (req, res) => {
     try {
         console.log("Entre a roomReservationList")

@@ -160,10 +160,10 @@ export default function ExperienceList() {
                                 mx-auto
                             "
                 >
-                    <h1 className="text-3xl font-bold mt-6 mb-6 text-center text-[#00C49F] bg-clip-text">Active Experiences</h1>
+                    <h1 className="text-3xl font-bold mt-6 mb-6 text-center text-[#00C49F] bg-clip-text">Profile & Forms</h1>
                     <div className='w-full'>
                         <fieldset className="flex-grow space-y-2 rounded-2xl p-4">
-                            <legend className="text-2xl font-bold">Experience List</legend>
+                            <legend className="text-2xl font-bold">Experiences</legend>
                             <div className='flex flex-row items-center justify-center'>
                                 <button
                                     className="bg-[#118290] hover:bg-[#0d6c77] text-cyan-50 px-4 py-2 rounded w-max flex flex-row gap-2"

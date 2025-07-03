@@ -1,17 +1,17 @@
 // roomServices.js
 import { create } from 'zustand';
 import axios from 'axios';
-import { formatDateISOShort } from '../components/formatDateDisplay'
+import { formatDateISOShort, formatEndOfDayDateISO } from '../components/formatDateDisplay'
 
 const URL_API = import.meta.env.MODE === 'development'
-    ? 'http://localhost:5000/api/reservations'
-    : '/api/reservations';
+    ? 'http://localhost:5000/api/facilityReservations'
+    : '/api/facilityReservations';
 
 axios.defaults.withCredentials = true;
 
-export const useRoomReservationServices = create((set) => ({
+export const useFacilityReservationServices = create((set) => ({
 
-    createRoomReservation: async (reservationData) => {
+    createFacilityReservation: async (reservationData) => {
         try {
             const response = await axios.post(`${URL_API}/create`, reservationData);
             return response.data;
@@ -21,12 +21,12 @@ export const useRoomReservationServices = create((set) => ({
         }
     },
 
-    updateRoomReservation: async (id, updatedVars) => {
+    updateFacilityReservation: async (id, updatedVars) => {
         set({ isLoading: true, error: null });
         try {
             delete updatedVars._id;;
             delete updatedVars.__v;
-            /*console.log("Payload enviado a updateroomReservation:", {
+            /*console.log("Payload enviado a updateFacilityReservation:", {
                 id: id,
                 ...updatedVars
             });
@@ -36,27 +36,14 @@ export const useRoomReservationServices = create((set) => ({
                 ...updatedVars
             });
             //console.log("F: Respueste de updateStaff: ", response);
-            set({ roomReservationList: response.data.service, isLoading: false });
             return response.data;
         } catch (error) {
-            set({ error: error || "Error updating roomReservation", isLoading: false });
+            set({ error: error || "Error updating facilityReservation", isLoading: false });
             throw error;
         }
     },
 
-    cancelRoomReservation: async (id) => {
-        set({ isLoading: true, error: null });
-        try {
-            const response = await axios.delete(`${URL_API}/cancel/${id}`);
-            //console.log("F: Respueste de updateStaff: ", response);
-            return response.data;
-        } catch (error) {
-            set({ error: error || "Error updating roomReservation", isLoading: false });
-            throw error;
-        }
-    },
-
-    getReservations: async (storeId) => {
+    getFacilityReservations: async (storeId) => {
         try {
             const response = await axios.get(`${URL_API}/list/${storeId}`);
             return response.data;
@@ -66,44 +53,30 @@ export const useRoomReservationServices = create((set) => ({
         }
     },
 
-    getAvailableRooms: async ({ dateIn, dateOut, bedsRequired, storeId }) => {
+    getAvailableSpaces: async (dateIn, dateOut, spaceRequired, storeId) => {
         try {
-            //console.log("FB: Entre a getAvailableRooms: ", dateIn, " - ", dateOut, " - ", bedsRequired, " - ", storeId)
+            //console.log("FB: Entre a getAvailableSpaces: ", dateIn, " - ", dateOut, " - ", spaceRequired, " - ", storeId)
             const formatedDateStart = formatDateISOShort(dateIn)
-            const formatedDateEnd = formatDateISOShort(dateOut)
-            //console.log("FB: Entre a getAvailableRooms formated: ", formatedDateStart, " - ", formatedDateEnd, " - ", bedsRequired, " - ", storeId)
+            const formatedDateEnd = formatEndOfDayDateISO(dateOut)
+            //console.log("FB: Entre a getAvailableSpaces formated: ", formatedDateStart, " - ", formatedDateEnd, " - ", spaceRequired, " - ", storeId)
             const response = await axios.post(`${URL_API}/available`, {
                 dateIn: formatedDateStart,
                 dateOut: formatedDateEnd,
-                bedsRequired,
+                spaceRequired,
                 storeId,
             });
-            return response.data; // { availableRooms: [...] }
+            return response.data;
         } catch (error) {
-            console.error("Error getting available rooms:", error);
+            console.error("Error getting available spaces:", error);
             throw error;
         }
     },
 
-    splitReservationAcrossRooms: async ({ dateIn, dateOut, bedsRequired = 1, storeId }) => {
-        try {
-            const response = await axios.post(`${URL_API}/split`, {
-                dateIn,
-                dateOut,
-                bedsRequired,
-                storeId,
-            });
-            return response.data; // { segments: [{roomId, dateIn, dateOut, beds}], suggestionText }
-        } catch (error) {
-            console.error("Error splitting room reservation:", error);
-            throw error;
-        }
-    },
-    getReservationsByDate: async (storeId, dateIn, dateOut) => {
+    getFacilityReservationsByDate: async (storeId, dateIn, dateOut) => {
         set({ isLoading: true, error: null });
         try {
             const formattedDateIn = formatDateISOShort(dateIn);
-            const formattedDateOut = formatDateISOShort(dateOut);
+            const formattedDateOut = formatEndOfDayDateISO(dateOut);
 
             const response = await axios.get(`${URL_API}/dates/${storeId}/${formattedDateIn}/${formattedDateOut}`);
 
@@ -114,7 +87,7 @@ export const useRoomReservationServices = create((set) => ({
         }
     },
 
-    getReservationsByEmail: async (storeId, customerEmail) => {
+    getFacilityReservationsByEmail: async (storeId, customerEmail) => {
         set({ isLoading: true, error: null });
         try {
             //console.log("F: Llamado a getExperienceByEmail");
@@ -122,11 +95,11 @@ export const useRoomReservationServices = create((set) => ({
             //console.log("F: Respueste de getExperienceByEmail: ", response);
             return response.data;
         } catch (error) {
-            set({ error: error.response.data.message || "Error getting experiences", isLoading: false });
+            set({ error: error.response.data.message || "Error getting reservations", isLoading: false });
             throw error;
         }
     },
-    getReservationsById: async (id) => {
+    getFacilityReservationsById: async (id) => {
         set({ isLoading: true, error: null });
         try {
             //console.log("F: Llamado a getExperienceByEmail");
@@ -134,11 +107,11 @@ export const useRoomReservationServices = create((set) => ({
             //console.log("F: Respueste de getExperienceByEmail: ", response);
             return response.data;
         } catch (error) {
-            set({ error: error.response.data.message || "Error getting experiences", isLoading: false });
+            set({ error: error.response.data.message || "Error getting reservations", isLoading: false });
             throw error;
         }
     },
-    getReservationsByIds: async (ids) => {
+    getFacilityReservationsByIds: async (ids) => {
         set({ isLoading: true, error: null });
         try {
             //console.log("F: Llamado a getExperienceByEmail");
@@ -146,7 +119,7 @@ export const useRoomReservationServices = create((set) => ({
             //console.log("F: Respueste de getExperienceByEmail: ", response);
             return response.data;
         } catch (error) {
-            set({ error: error.response.data.message || "Error getting experiences", isLoading: false });
+            set({ error: error.response.data.message || "Error getting reservations", isLoading: false });
             throw error;
         }
     },

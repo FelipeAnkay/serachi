@@ -23,12 +23,12 @@ export function formatDateDisplay(dateInput) {
   const date = new Date(dateInput);
   return date
     ? date.toLocaleDateString('en-US', {
-        weekday: 'long',
-        year: 'numeric',
-        month: 'long',
-        day: '2-digit',
-        timeZone: 'UTC', 
-      })
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: '2-digit',
+      timeZone: 'UTC',
+    })
     : '';
 }
 
@@ -87,6 +87,12 @@ export function formatEndOfDayDateISO(dateInput) {
   const date = toDate(dateInput);
   date.setHours(23, 59, 59, 999);
   return date ? format(date, "yyyy-MM-dd'T'HH:mm") : "";
+}
+
+export function endOfDayUTC(dateInput) {
+  const date = new Date(dateInput);
+  date.setUTCHours(23, 59, 59, 999); // <- UTC en vez de local time
+  return date;
 }
 
 /**

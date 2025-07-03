@@ -4,7 +4,7 @@ import Cookies from 'js-cookie';
 import { Calendar, momentLocalizer, Views } from 'react-big-calendar';
 import moment from 'moment';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
-import { CircleX, Save, Ban } from 'lucide-react';
+import { CircleX, Save, Ban, Share2 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { useStaffServices } from '../../store/staffServices';
 import { useServiceServices } from '../../store/serviceServices';
@@ -25,6 +25,7 @@ const Experiences = () => {
     const [selectedDate, setSelectedDate] = useState(new Date());
     const [selectedService, setSelectedService] = useState(null);
     const [modalOpen, setModalOpen] = useState(false);
+    const [modalShareOpen, setModalShareOpen] = useState(false);
     const [editData, setEditData] = useState({});
     const [loadedRange, setLoadedRange] = useState({ start: null, end: null });
     const [staffList, setStaffList] = useState([]);
@@ -238,6 +239,10 @@ const Experiences = () => {
         }
     };
 
+    const handleShareSchedule = () => {
+
+    }
+
     const handleNavigate = (newDate) => {
         console.log("Entre a handleNavigate: ", newDate)
         setSelectedDate(newDate);
@@ -291,19 +296,27 @@ const Experiences = () => {
                         Experiences Calendar
                     </h2>
                     <div className="flex-grow p-4 overflow-visible w-full">
-                        <div className="flex items-center gap-4 px-4 mb-4">
-                            <label className="text-slate-800 font-semibold">Filter Events by Type:</label>
-                            <select
-                                value={selectedType}
-                                onChange={(e) => setSelectedType(e.target.value)}
-                                className="bg-white text-slate-900 border border-gray-600 rounded-md px-2 py-1"
-                            >
-                                {serviceTypes.map((type) => (
-                                    <option key={type} value={type}>
-                                        {type}
-                                    </option>
-                                ))}
-                            </select>
+                        <div className='flex flex-row justify-between'>
+                            <div className="flex items-center gap-4 px-4 mb-4">
+                                <label className="text-slate-800 font-semibold">Filter Events by Type:</label>
+                                <select
+                                    value={selectedType}
+                                    onChange={(e) => setSelectedType(e.target.value)}
+                                    className="bg-white text-slate-900 border border-gray-600 rounded-md px-2 py-1"
+                                >
+                                    {serviceTypes.map((type) => (
+                                        <option key={type} value={type}>
+                                            {type}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
+                            <div className='flex flex-row' onClick={handleShareSchedule}>
+                                <p className='text-[#118290] font-semibold'>Share</p>
+                                <Share2
+                                className='hover:text-[#0d6c77] text-[#118290]'
+                                />
+                            </div>
                         </div>
                         <div className="h-full w-full bg-white text-black rounded-xl shadow-xl">
                             <Calendar

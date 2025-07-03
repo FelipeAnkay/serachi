@@ -42,14 +42,14 @@ export const useFacilityServices = create((set) => ({
         try {
             delete updatedVars._id;;
             delete updatedVars.__v;
-           
+
             //console.log("Entre a updateFacility: ", {auxId, updatedVars})
-            
+
             const response = await axios.post(`${URL_API}/update`, {
                 id: auxId,
                 ...updatedVars
             });
-            
+
             //console.log("F: Respueste de updateStaff: ", response);
             return response.data;
             //return;
@@ -62,6 +62,18 @@ export const useFacilityServices = create((set) => ({
         try {
             //console.log("F: Llamado a getServiceById: ", id);
             const response = await axios.get(`${URL_API}/get/${id}`);
+            //console.log("F: Respueste de getServiceById: ", response);
+            return response.data;
+        } catch (error) {
+            set({ error: error.response.data.message || "Error getting facility", isLoading: false });
+            throw error;
+        }
+    },
+    getFacilityByStore: async (id) => {
+        set({ isLoading: true, error: null });
+        try {
+            console.log("F: Llamado a getFacilityByStore: ", id);
+            const response = await axios.get(`${URL_API}/list/${id}`);
             //console.log("F: Respueste de getServiceById: ", response);
             return response.data;
         } catch (error) {

@@ -202,4 +202,20 @@ export const useServiceServices = create((set) => ({
             throw error;
         }
     },
+    getServicesFacility: async (date, storeId, withFacility) => {
+        set({ isLoading: true, error: null });
+
+        try {
+            //console.log("FB: Entre a getAvailableRooms: ", start, " - ", end, " - ", storeId)
+            const formattedDate = formatDateISO(date);
+            //console.log("FB: Entre a getAvailableRooms formated: ", formattedDateIn, " - ", formattedDateOut, " - ", storeId)
+            const response = await axios.get(`${URL_API}/facility/${storeId}/${formattedDate}/${withFacility}`);
+            //console.log("response: ", response)
+            set({ serviceList: response.data.serviceList, isLoading: false });
+            return response.data;
+        } catch (error) {
+            set({ error: error.response?.data?.message || "Error getting services", isLoading: false });
+            throw error;
+        }
+    },
 }))
