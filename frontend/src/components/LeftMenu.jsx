@@ -6,7 +6,9 @@ import {
     Trash2,
     TrendingUp,
     Coins,
-    Sheet
+    Sheet,
+    ShipWheel,
+    CalendarClock
 } from "lucide-react";
 
 import logo from "../../public/Serachi_logo-nobg.png";
@@ -37,10 +39,11 @@ const menuItems = [
             { to: "/experience-list", label: "Exp List", icon: <CalendarCheck /> },
             { to: "/set-service-dates", label: "Set Missing Data", icon: <CalendarPlus2 /> },
             { to: "/experience-create-service", label: "Create Service", icon: <BookMarked /> },
+            { to: "/service-facility", label: "Assign Facility", icon: <ShipWheel /> },
+            { to: "/facility-schedule ", label: "Facility Schedule", icon: <CalendarClock /> }, 
             { to: "/experience-add-items", label: "Add Items", icon: <ShoppingBasket /> },
             { to: "/experience-open-tabs", label: "Open Tabs", icon: <BookOpenCheck /> },
             { to: "/delete-services", label: "Delete Services", icon: <Trash2 /> },
-            { to: "/report-services-staff", label: "Services by Staff", icon: <Sheet /> }, 
         ]
     },
     {
@@ -51,6 +54,14 @@ const menuItems = [
             { to: "/cashflow-summary", label: "Summary", icon: <Scale /> },
             { to: "/new-income", label: "New Income", icon: <HandCoins /> },
             { to: "/new-expense", label: "New Expense", icon: <BanknoteArrowDown /> },
+        ]
+    },
+        {
+        label: "PayRoll",
+        icon: <Wallet />,
+        key: "payroll",
+        children: [
+            { to: "/report-services-staff", label: "Services by Staff", icon: <Sheet /> }, 
         ]
     },
     {
@@ -91,9 +102,11 @@ const menuItemsMed = [
         key: "experience",
         children: [
             { to: "/experience-calendar", label: "Exp Calendar", icon: <CalendarHeart /> },
-            { to: "/experience-list", label: "Exp List", icon: <CalendarCheck /> },
+            { to: "/experience-list", label: "Profile & Forms", icon: <CalendarCheck /> },
             { to: "/set-service-dates", label: "Set Missing Data", icon: <CalendarPlus2 /> },
             { to: "/experience-create-service", label: "Create Service", icon: <BookMarked /> },
+            { to: "/service-facility", label: "Assign Facility", icon: <ShipWheel /> },
+            { to: "/facility-schedule ", label: "Facility Schedule", icon: <CalendarClock /> }, 
             { to: "/experience-add-items", label: "Add Items", icon: <ShoppingBasket /> },
             { to: "/experience-open-tabs", label: "Open Tabs", icon: <BookOpenCheck /> },
             { to: "/delete-services", label: "Delete Services", icon: <Trash2 /> },
@@ -176,9 +189,11 @@ const menuItemsPro = [
         key: "experience",
         children: [
             { to: "/experience-calendar", label: "Exp Calendar", icon: <CalendarHeart /> },
-            { to: "/experience-list", label: "Exp List", icon: <CalendarCheck /> },
+            { to: "/experience-list", label: "Profile & Forms", icon: <CalendarCheck /> },
             { to: "/set-service-dates", label: "Set Missing Data", icon: <CalendarPlus2 /> },
             { to: "/experience-create-service", label: "Create Service", icon: <BookMarked /> },
+            { to: "/service-facility", label: "Assign Facility", icon: <ShipWheel /> },
+            { to: "/facility-schedule ", label: "Facility Schedule", icon: <CalendarClock /> },
             { to: "/experience-add-items", label: "Add Items", icon: <ShoppingBasket /> },
             { to: "/experience-open-tabs", label: "Open Tabs", icon: <BookOpenCheck /> },
             { to: "/delete-services", label: "Delete Services", icon: <Trash2 /> },

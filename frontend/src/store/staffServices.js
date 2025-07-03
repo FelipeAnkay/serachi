@@ -104,7 +104,7 @@ export const useStaffServices = create((set) => ({
             throw error;
         }
     },
-    getStaffByType: async (storeId,type) => {
+    getStaffByType: async (storeId, type) => {
         set({ isLoading: true, error: null });
         try {
             //console.log("F: Llamado a getStaffEmail");
@@ -116,6 +116,17 @@ export const useStaffServices = create((set) => ({
             set({ error: error.response.data.message || "Error getting staff", isLoading: false });
             throw error;
         }
-    }
+    },
+    sendScheduleEmail: async (formData) => {
+        set({ isLoading: true, error: null });
+        try {
+            //console.log("Los datos a enviar en createrole son: ", roleData)
+            const response = await axios.post(`${URL_API}/send-schedule`, formData);
+            return response.data;
+        } catch (error) {
+            set({ error: error.response.data.message || "Error sending schedule", isLoading: false });
+            throw error;
+        }
+    },
 
 }))

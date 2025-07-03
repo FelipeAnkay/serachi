@@ -185,10 +185,11 @@ export default function ConfirmedQuote() {
                 await createExperience(experiencePayload);
             }
             window.scrollTo({ top: 0, behavior: 'smooth' });
-            toast.success("Experience & Services created/updated");
+            toast.success("Experience & Services created");
 
             const expResp = await getExperienceByCheckout(storeId);
             setExistingExperiences(expResp.experienceList || []);
+            navigate(`/set-service-dates`);
 
         } catch (error) {
             toast.error("Error creating or updating experience");

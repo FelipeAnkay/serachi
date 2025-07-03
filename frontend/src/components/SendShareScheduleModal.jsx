@@ -6,10 +6,11 @@ import toast from 'react-hot-toast';
 import { useCustomerServices } from '../store/customerServices';
 import { useAuthStore } from '../store/authStore';
 import { useStoreServices } from '../store/storeServices';
+import { useStaffServices } from '../store/staffServices';
 
-export default function SendProfileModal({ isOpen, onClose, customerEmail }) {
+export default function SendShareScheduleModal({ isOpen, onClose }) {
     const { generateToken } = useFormServices();
-    const { getCustomerEmail, sendProfileEmail } = useCustomerServices();
+    const {} = useStaffServices();
     const { user } = useAuthStore();
     const { store } = useStoreServices();
     const [customer, setCustomer] = useState([]);

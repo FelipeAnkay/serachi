@@ -5,18 +5,18 @@ import { FacilityReservation } from "../models/FacilityReservation.model.js";
 export const createFacilityReservation = async (req, res) => {
     const { facilityId, serviceId, customerEmail, staffEmail, storeId, dateIn, dateOut, spaceReserved, userEmail } = req.body;
     try {
-        if (!facilityId || !customerEmail || serviceId || !storeId || !dateIn || !dateOut || !userEmail) {
+        if (!facilityId || !customerEmail || !serviceId || !storeId || !dateIn || !dateOut || !userEmail) {
             throw new Error("All fields are required");
         }
 
         const facilityReservation = new FacilityReservation({
-            facilityId, 
-            serviceId, 
-            customerEmail, 
-            staffEmail, 
-            dateIn, 
-            dateOut, 
-            spaceReserved, 
+            facilityId,
+            serviceId,
+            customerEmail,
+            staffEmail,
+            dateIn,
+            dateOut,
+            spaceReserved,
             userEmail,
             storeId: storeId?.toUpperCase()
         })
@@ -110,21 +110,25 @@ export const facilityReservationByDates = async (req, res) => {
 export const getAvailableSpaces = async (req, res) => {
     try {
         const { dateIn, dateOut, spaceRequired, storeId } = req.body;
-        //console.log("Entre a getAvailableRooms: ", dateIn, " - ", dateOut, " - ", bedsRequired, " - ", storeId)
+        //console.log("Entre a getAvailableRooms: ", dateIn, " - ", dateOut, " - ", spaceRequired, " - ", storeId)
         const normalizedStoreId = storeId?.toUpperCase();
         const facilities = await Facility.find({ storeId: normalizedStoreId });
         const reservations = await FacilityReservation.find({
             storeId: normalizedStoreId,
-            $or: [
-                { dateIn: { $lt: dateOut }, dateOut: { $gt: dateIn } }
-            ]
+            dateIn: { $lt: new Date(dateOut) },
+            dateOut: { $gt: new Date(dateIn) }
         });
+
+        //console.log("reservations: ", {reservations});
 
         // Construir rango de fechas
         const range = [];
         let d = new Date(dateIn);
         const end = new Date(dateOut);
+        end.setHours(0, 0, 0, 0);
+        //console.log("End es: ", end)
         while (d < end) {
+            //console.log("D es: ", d)
             range.push(d.toISOString().split('T')[0]);
             d.setDate(d.getDate() + 1);
         }
@@ -158,11 +162,11 @@ export const getAvailableSpaces = async (req, res) => {
 
         // Construir respuesta de facilities con su disponibilidad por fecha
         const detailedFacilities = facilities.map(room => {
-            const availableEveryNight = range.every(date => (facilityAvailabilityMap[room._id.toString()][date] || 0) > 0);
+            const availableEveryDay = range.every(date => (facilityAvailabilityMap[room._id.toString()][date] || 0) > 0);
             return {
                 ...room.toObject(),
                 dailyAvailability: facilityAvailabilityMap[room._id.toString()],
-                availableEveryNight
+                availableEveryDay
             };
         });
 

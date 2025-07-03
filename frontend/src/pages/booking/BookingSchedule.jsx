@@ -18,7 +18,7 @@ export default function BookingSchedule() {
     const [events, setEvents] = useState([]);
     const [selectedCustomer, setSelectedCustomer] = useState(null);
     const [showModal, setShowModal] = useState(false);
-    const { getReservations, getReservationsByDate, updateRoomReservation } = useRoomReservationServices();
+    const { getReservationsByDate, updateRoomReservation, cancelRoomReservation } = useRoomReservationServices();
     const { getCustomerEmail } = useCustomerServices();
     const { getRoomById } = useRoomServices();
     const storeId = Cookies.get('storeId');
@@ -55,25 +55,26 @@ export default function BookingSchedule() {
             );
             setEvents(eventData);
         } catch (error) {
-            console.error("Error loading reservations:", error);
+            //console.error("Error loading reservations:", error);
+            toast.error("Theres no reservations for this period")
         } finally {
             setLoading(false)
         }
     }
 
-useEffect(() => {
-    const now = new Date();
+    useEffect(() => {
+        const now = new Date();
 
-    // 20 días antes
-    const firstDay = new Date();
-    firstDay.setDate(now.getDate() - 20);
+        // 20 días antes
+        const firstDay = new Date();
+        firstDay.setDate(now.getDate() - 20);
 
-    // 20 días después
-    const lastDay = new Date();
-    lastDay.setDate(now.getDate() + 20);
+        // 20 días después
+        const lastDay = new Date();
+        lastDay.setDate(now.getDate() + 20);
 
-    loadReservations(firstDay, lastDay);
-}, []);
+        loadReservations(firstDay, lastDay);
+    }, []);
 
     const handleSelectEvent = async (event) => {
         setLoading(true)
@@ -113,6 +114,28 @@ useEffect(() => {
             setLoading(false)
         }
     };
+    const handleCancelReservation = async () => {
+        setLoading(true)
+        try {
+            const updated = {
+                dateIn: new Date(editDateIn),
+                dateOut: new Date(editDateOut),
+            };
+            await cancelRoomReservation(selectedReservation.id);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            toast.success("Reservation Cancelled")
+            setShowModal(false);
+            // Refrescar calendario si es necesario
+            const monthStart = new Date(selectedDate.getFullYear(), selectedDate.getMonth(), 1);
+            const monthEnd = new Date(selectedDate.getFullYear(), selectedDate.getMonth() + 1, 0);
+            loadReservations(monthStart, monthEnd);
+            window.location.reload();
+        } catch (err) {
+            console.error("Error cancelling reservation:", err);
+        } finally {
+            setLoading(false)
+        }
+    };
 
     const calculateAge = (birthdate) => {
         if (!birthdate) return "";
@@ -133,7 +156,7 @@ useEffect(() => {
 
     const handleNavigate = (newDate) => {
 
-        console.log("Entre a handleNavigate: ", newDate)
+        //console.log("Entre a handleNavigate: ", newDate)
         setSelectedDate(newDate);
 
         const newMonthStart = new Date(newDate.getFullYear(), newDate.getMonth(), -20);
@@ -145,10 +168,10 @@ useEffect(() => {
             loadedRange.start.getFullYear() === newMonthStart.getFullYear() &&
             loadedRange.start.getMonth() === newMonthStart.getMonth();
 
-        console.log("isSameMonth: ", isSameMonth)
+        //console.log("isSameMonth: ", isSameMonth)
         if (!isSameMonth) {
-            console.log("newMonthStart: ", newMonthStart)
-            console.log("newMonthEnd: ", newMonthEnd)
+            //console.log("newMonthStart: ", newMonthStart)
+            //console.log("newMonthEnd: ", newMonthEnd)
             loadReservations(newMonthStart, newMonthEnd);
         }
     };
@@ -255,12 +278,20 @@ useEffect(() => {
                                                 setSelectedReservation({ ...selectedReservation, end: new Date(e.target.value) })
                                             }
                                         />
-                                        <button
-                                            onClick={handleUpdateReservation}
-                                            className="bg-[#118290] hover:bg-[#0d6c77] text-cyan-50 px-4 py-2 rounded"
-                                        >
-                                            Save Changes
-                                        </button>
+                                        <div className="flex flex-row justify-around">
+                                            <button
+                                                onClick={handleUpdateReservation}
+                                                className="bg-[#118290] hover:bg-[#0d6c77] text-cyan-50 px-4 py-2 rounded"
+                                            >
+                                                Save Changes
+                                            </button>
+                                            <button
+                                                onClick={handleCancelReservation}
+                                                className="bg-red-400 hover:bg-red-500 text-cyan-50 px-4 py-2 rounded"
+                                            >
+                                                Cancel Reservation
+                                            </button>
+                                        </div>
                                     </div>
                                 </motion.div>
                             </motion.div>

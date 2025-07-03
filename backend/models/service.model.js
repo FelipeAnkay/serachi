@@ -11,9 +11,9 @@ const serviceSchema = new mongoose.Schema({
     quoteId:{
         type: String
     },
-    facilityId:{
+    facilityId:[{
         type: String,
-    },
+    }],
     staffEmail:{
         type: String,
     },

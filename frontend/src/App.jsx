@@ -56,6 +56,8 @@ import UserAddressBookModal from './components/UserAddressBookModal';
 import CashflowReports from './pages/reports/CashflowReports';
 import SetFacilities from './pages/settings/SetFacilities';
 import ServicesByStaffReport from './pages/reports/ServicesByStaffReport';
+import ServicesFacility from './pages/experience/ServicesFacility';
+import FacilitySchedule from './pages/experience/FacilitySchedule';
 
 const ProtectedRoute = ({ children, requiredPermission, storePermission }) => {
   const { isAuthenticated, user, logout } = useAuthStore();
@@ -257,6 +259,20 @@ function App() {
           element={
             <ProtectedRoute requiredPermission="VIEW_EXPERIENCES" storePermission={["BAS","MED","PRO"]}>
               <PendingServices />
+            </ProtectedRoute>}
+        />
+        <Route
+          path="/service-facility"
+          element={
+            <ProtectedRoute requiredPermission="VIEW_EXPERIENCES" storePermission={["BAS","MED","PRO"]}>
+              <ServicesFacility />
+            </ProtectedRoute>}
+        />
+        <Route
+          path="/facility-schedule"
+          element={
+            <ProtectedRoute requiredPermission="VIEW_EXPERIENCES" storePermission={["BAS","MED","PRO"]}>
+              <FacilitySchedule />
             </ProtectedRoute>}
         />
         <Route

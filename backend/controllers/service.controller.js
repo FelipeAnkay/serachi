@@ -266,7 +266,7 @@ export const getServicesForCommissions = async (req, res) => {
                 $gte: new Date(dateIn),
                 $lte: new Date(dateOut)
             },
-            isActive:true
+            isActive: true
         });
 
         //console.log("Respuesta de Service.find: ", serviceList);
@@ -446,3 +446,36 @@ export const fixRemoveDuplicated = async (req, res) => {
     }
 };
 
+export const getServicesFacility = async (req, res) => {
+    try {
+        const { storeId, date, withFacility } = req.params;
+        const normalizedStoreId = storeId?.toUpperCase();
+        const dateFilter = {
+            dateOut: { $gte: new Date(date) },
+        };
+
+        let filter = {
+            storeId: normalizedStoreId,
+            ...dateFilter,
+        };
+
+        if (withFacility === 'true') {
+            // Servicios que tienen facilityId (no null ni undefined)
+            filter.facilityId = { $ne: null };
+        } else if (withFacility === 'false') {
+            // Servicios sin facilityId (null o no definido)
+            filter.facilityId = { $in: [null, undefined] };
+        }
+
+        //console.log("filter: ", filter)
+        const serviceList = await Service.find(filter);
+
+        if (!serviceList || serviceList.length === 0) {
+            return res.status(200).json({ success: false, message: "No services found in date range" });
+        }
+
+        res.status(200).json({ success: true, serviceList });
+    } catch (error) {
+        return res.status(400).json({ success: false, message: error.message });
+    }
+};

@@ -190,7 +190,7 @@ export default function SendFormModal({ isOpen, onClose, experience }) {
                                         endDate: selected.toISOString().split('T')[0], // formato YYYY-MM-DD
                                     }));
                                 }}
-                                className="w-full bg-white text-slate-900 border border-slate-300 rounded px-3 py-2 bg-white text-black"
+                                className="w-full bg-white text-slate-900 border border-slate-300 rounded px-3 py-2"
                             />
                         </div>
                         <div>
