@@ -23,9 +23,9 @@ export const useServiceServices = create((set) => ({
     createService: async (serviceData) => {
         set({ isLoading: true, error: null });
         try {
-            console.log("Payload de createService", serviceData);
+            //console.log("Payload de createService", serviceData);
             const response = await axios.post(`${URL_API}/create`, serviceData);
-            console.log("Respuesta de createService:", response);
+            //console.log("Respuesta de createService:", response);
             set({ service: response.data.service, isLoading: false });
             return response.data.service;
         } catch (error) {

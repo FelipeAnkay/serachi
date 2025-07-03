@@ -33,11 +33,11 @@ export const useExperienceServices = create((set) => ({
     },
     updateExperience: async (experienceId, updatedVars) => {
         set({ isLoading: true, error: null });
+        console.log("F: Llamado a updateExperience - ID: ", experienceId);
+        console.log("F: Llamado a updateExperience - vars: ", updatedVars);
         try {
             delete updatedVars._id;;
             delete updatedVars.__v;
-            console.log("F: Llamado a updateExperience - ID: ", experienceId);
-            console.log("F: Llamado a updateExperience - vars: ", updatedVars);
             const response = await axios.post(`${URL_API}/update`, {
                 id: experienceId,
                 ...updatedVars
@@ -113,6 +113,19 @@ export const useExperienceServices = create((set) => ({
                 error: error.response?.data?.message || "Error Removing Services from Experience",
                 isLoading: false
             });
+            throw error;
+        }
+    },
+    getValidExperienceByEmail: async (userEmail, storeId) => {
+        set({ isLoading: true, error: null });
+        try {
+            //console.log("F: Llamado a getExperienceByEmail:",userEmail,"-",storeId );
+            const response = await axios.get(`${URL_API}/email-valid/${userEmail}/${storeId}`);
+            //console.log("F: Respueste de getExperienceByEmail: ", response);
+            set({ experienceList: response.data.experienceList, isLoading: false });
+            return response.data;
+        } catch (error) {
+            set({ error: error.response.data.message || "Error getting experiences", isLoading: false });
             throw error;
         }
     },

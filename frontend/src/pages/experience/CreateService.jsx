@@ -13,6 +13,8 @@ import CustomerDetails from '../../components/CustomerDetail'
 import { Contact2, Search, Trash2 } from 'lucide-react';
 import { createCustomServices } from '../../components/createCustomService'
 import LoadingSpinner from '../../components/LoadingSpinner';
+import { useExperienceServices } from '../../store/experienceServices';
+import Select from 'react-select';
 
 export default function CreateService() {
     const { getProductByStoreId } = useProductServices();
@@ -35,7 +37,10 @@ export default function CreateService() {
     const [customer, setCustomer] = useState({});
     const { getCustomerEmail, createCustomer, updateCustomer } = useCustomerServices();
     const customerEmailRef = useRef(null);
-    const [selectedType, setSelectedType] = useState("")
+    const [selectedType, setSelectedType] = useState("");
+    const [existingExperiences, setExistingExperiences] = useState([]);
+    const [selectedExperience, setSelectedExperience] = useState({});
+    const { getValidExperienceByEmail, updateExperience } = useExperienceServices();
 
     const formatDateInput = (dateStr) => {
         if (!dateStr) return "";
@@ -134,9 +139,9 @@ export default function CreateService() {
         //console.log("El email en handleCustomerEmailSearch es: ", customerEmail);
         try {
             const response = await getCustomerEmail(customerEmail, storeId);
-            console.log("F: getCustomerEmail es:", response);
+            //console.log("F: getCustomerEmail es:", response);
             const found = response.customerList;
-            console.log("F: el found es:", found);
+            //console.log("F: el found es:", found);
             if (found) {
                 toast.success('Customer Found');
                 //console.log("El cliente encontrdo es:", found)
@@ -163,6 +168,12 @@ export default function CreateService() {
                 }));
                 setIsNew(false);
                 setIsCustomerModalOpen(false);
+                const auxExpList = await getValidExperienceByEmail(found[0].email, storeId)
+                //console.log("Lista de experiencias", auxExpList)
+                if (auxExpList.experienceList.length > 0) {
+                    //console.log("Entre al if de asignar experiencia")
+                    setExistingExperiences(auxExpList.experienceList)
+                }
             } else {
                 toast.success('Customer not found, please create one');
                 setCustomer({
@@ -250,7 +261,7 @@ export default function CreateService() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        if (selectedType==="Customer" && !isCustomerFilled) {
+        if (selectedType === "Customer" && !isCustomerFilled) {
             toast.error("Search the customer email is mandatory");
             return;
         }
@@ -261,6 +272,9 @@ export default function CreateService() {
         setLoading(true);
         //console.log("En  handleSubmit: ", customServiceList);
         try {
+            let actualServiceList = [...(selectedExperience.experience.serviceList || [])];
+            //console.log("El listado actual de servicios es: ", actualServiceList)
+            //console.log("La experiencia seleccionada es: ", selectedExperience)
             for (const auxService of customServiceList) {
                 //console.log("El service es:", auxService);
                 const servicePayload = {
@@ -278,7 +292,16 @@ export default function CreateService() {
                 //console.log("El servicePayload es:", servicePayload);
                 const service = await createService(servicePayload);
                 //console.log("Respuesta de createService es:", service);
-            };
+                actualServiceList.push(service._id)
+
+            }
+            //console.log("El listado actualizado de servicios es: ", actualServiceList)
+            if (selectedExperience?.value != "") {
+                const payload = {
+                    serviceList: actualServiceList,
+                }
+                await updateExperience(selectedExperience.value, payload)
+            }
             window.scrollTo({ top: 0, behavior: 'smooth' });
             handleResetCustomService();
             toast.success("Services created");
@@ -312,6 +335,17 @@ export default function CreateService() {
         setCustomServiceList(prevList => prevList.filter((_, i) => i !== indexToDelete));
     };
 
+    const handleChange = (selected) => {
+        if (selected) {
+            setSelectedExperience(selected);
+        }
+    };
+
+    const options = existingExperiences.map(experience => ({
+        value: experience._id,
+        label: `${experience.name}`,
+        experience,
+    }));
 
     return (
         <>
@@ -391,6 +425,36 @@ export default function CreateService() {
                                         />
                                     )}
                                 </div>
+                                {existingExperiences?.length > 0 && (
+                                    <div className='mt-1'>
+                                        <p className='font-semibold'>Assign service(s) to customer experience:</p>
+                                        <Select
+                                            options={options}
+                                            value={options.find(opt => opt.value === selectedExperience.value) || null} // ← aquí lo haces controlado
+                                            onChange={handleChange}
+                                            placeholder="Select or search a experience..."
+                                            className="text-slate-900"
+                                            classNamePrefix="react-select"
+                                            styles={{
+                                                control: (base) => ({
+                                                    ...base,
+                                                    borderColor: '#d1d5db', // Tailwind border-gray-300
+                                                    padding: '2px',
+                                                    fontSize: '0.875rem', // text-sm
+                                                }),
+                                                menu: (base) => ({
+                                                    ...base,
+                                                    zIndex: 50,
+                                                }),
+                                                option: (provided, state) => ({
+                                                    ...provided,
+                                                    backgroundColor: state.isFocused ? "#3BA0AC" : "white",
+                                                    color: "#1e293b", // slate-900
+                                                }),
+                                            }}
+                                        />
+                                    </div>
+                                )}
                             </div>
                             {/* Product Selection */}
                             <div className="mt-4">
@@ -440,7 +504,7 @@ export default function CreateService() {
                                         value={customService.type || ''}
                                         onChange={(e) => {
                                             setCustomService({ ...customService, type: e.target.value }),
-                                            setSelectedType(e.target.value)
+                                                setSelectedType(e.target.value)
                                         }}
                                     >
                                         <option value="">Select a Type</option>
@@ -534,7 +598,7 @@ export default function CreateService() {
                                         <legend className='ml-2 text-lg font-bold'>Services to create: {customServiceList.length}</legend>
                                         <div className='grid grid-cols-1 sm:grid-cols-2 gap-2 ml-2'>
                                             {(customServiceList || []).map((service, index) => (
-                                                <div className='flex flex-row items-center justify-center border rounded-2xl mr-2 mb-2 bg-blue-700'>
+                                                <div className='flex flex-row items-center justify-center border rounded-2xl mr-2 mb-2 bg-sky-50'>
                                                     <div className='ml-2 flex-1 text-left'>
                                                         <label>
                                                             {index + 1}.- {service.name} - {formatDateDisplay(service.dateIn)} to {formatDateDisplay(service.dateOut)}
