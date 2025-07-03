@@ -1,5 +1,5 @@
 import { Facility } from "../models/facility.model.js";
-import { FacilityReservation } from "../models/FacilityReservation.model.js";
+import { FacilityReservation } from "../models/fReservation.model.js";
 
 /*Facility Reservation FUNCTIONS */
 export const createFacilityReservation = async (req, res) => {
