@@ -1,5 +1,5 @@
 import { mailtrapClient, sender } from "./mailtrap.js"
-import { VERIFICATION_EMAIL_TEMPLATE, VERIFY_USER, PASSWORD_RESET_REQUEST_TEMPLATE, PASSWORD_RESET_SUCCESS_TEMPLATE, SEND_QUOTE, SEND_FORMS, SEND_PROFILE, SEND_QUOTE_BAS } from "./emailTemplates.js"
+import { VERIFICATION_EMAIL_TEMPLATE, VERIFY_USER, PASSWORD_RESET_REQUEST_TEMPLATE, PASSWORD_RESET_SUCCESS_TEMPLATE, SEND_QUOTE, SEND_FORMS, SEND_PROFILE, SEND_QUOTE_BAS, SEND_SCHEDULE } from "./emailTemplates.js"
 
 export const sendVerificationEmail = async (email, verificationToken) => {
     const recipient = [{ email }];
@@ -287,5 +287,68 @@ export const sendFormEmail = async (email, customerName, formList, userEmail, us
     } catch (error) {
         console.error(error.message);
         throw new Error("Error sending the quote email", error.message);
+    }
+}
+
+export const sendScheduleEmail = async (email, staffName, userEmail, userName, storeName, webUrl, urlToken) => {
+    /*
+    console.log("Entre a sendFormEmail", {
+            email,
+            customerName,
+            userEmail,
+            userName,
+            storeName,
+            webUrl,
+            urlToken
+        })
+    */
+    const recipient = [{ email }];
+
+    const customSender = {
+        email: userEmail,
+        name: userName
+    };
+
+    const actualMonth = new Intl.DateTimeFormat('es-ES', { month: 'long' }).format(new Date());
+    const capitalizedMonth = actualMonth.charAt(0).toUpperCase() + actualMonth.slice(1);
+
+    const formRows = () => {
+        const fullUrl = `${webUrl}?token=${urlToken}`;
+        return `
+      <tr>
+        <td>${capitalizedMonth}</td>
+        <td><a href="${fullUrl}" target="_blank">Link</a></td>
+      </tr>
+    `;
+    };
+
+
+    const html = SEND_SCHEDULE
+        .replace('{{staffName}}', staffName)
+        .replace('{{formList}}', formRows // reemplaza el bloque con las filas generadas
+        );
+
+    const customSubject = storeName + " Monthly Schedule"
+    /*
+        console.log("Variables a enviar: ", {
+                customSender,
+                recipient,
+                customSubject,
+                html,
+            })
+    */
+    try {
+        //console.log("Entré al TRY de sendQuoteEmail:", customSender, " - ", recipient, " - ", customSubject, " - ", html);
+        const response = await mailtrapClient.send({
+            from: customSender,
+            to: recipient,
+            subject: customSubject,
+            html,
+            category: "Schedule",
+        });
+        //console.log("Form Sent", response);
+    } catch (error) {
+        console.error(error.message);
+        throw new Error("Error sending the schedule email", error.message);
     }
 }

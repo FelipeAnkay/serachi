@@ -11,6 +11,7 @@ import { useServiceServices } from '../../store/serviceServices';
 import LoadingSpinner from '../../components/LoadingSpinner';
 import CustomCalendarToolbar from '../../components/CustomCalendarToolbar';
 import AgendaEventRenderer from '../../components/AgendaEventRenderer';
+import SendShareScheduleModal from '../../components/SendShareScheduleModal';
 
 const localizer = momentLocalizer(moment);
 
@@ -240,7 +241,7 @@ const Experiences = () => {
     };
 
     const handleShareSchedule = () => {
-
+        setModalShareOpen(true);
     }
 
     const handleNavigate = (newDate) => {
@@ -297,7 +298,7 @@ const Experiences = () => {
                     </h2>
                     <div className="flex-grow p-4 overflow-visible w-full">
                         <div className='flex flex-row justify-between'>
-                            <div className="flex items-center gap-4 px-4 mb-4">
+                            <div className="flex items-center gap-4 px-4">
                                 <label className="text-slate-800 font-semibold">Filter Events by Type:</label>
                                 <select
                                     value={selectedType}
@@ -311,11 +312,9 @@ const Experiences = () => {
                                     ))}
                                 </select>
                             </div>
-                            <div className='flex flex-row' onClick={handleShareSchedule}>
-                                <p className='text-[#118290] font-semibold'>Share</p>
-                                <Share2
-                                className='hover:text-[#0d6c77] text-[#118290]'
-                                />
+                            <div className='flex flex-row text-[#118290] hover:text-cyan-50 hover:bg-[#118290] rounded-2xl px-2 py-1 mb-2' onClick={handleShareSchedule}>
+                                <p className=' font-semibold'>Share</p>
+                                <Share2/>
                             </div>
                         </div>
                         <div className="h-full w-full bg-white text-black rounded-xl shadow-xl">
@@ -441,6 +440,12 @@ const Experiences = () => {
                                 </div>
                             </motion.div>
                         </motion.div>
+                    )}
+                    {modalShareOpen && (
+                        <SendShareScheduleModal
+                            isOpen={modalShareOpen}
+                            onClose={() => setModalShareOpen(false)}
+                        />
                     )}
                 </AnimatePresence>
             </div>

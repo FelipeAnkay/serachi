@@ -1,4 +1,5 @@
 import { Staff } from "../models/staff.model.js";
+import { sendScheduleEmail } from "../mailtrap/emails.js";
 
 /*Staff FUNCTIONS */
 export const createStaff = async (req, res) => {
@@ -187,4 +188,24 @@ export const createIndex = async (req,res) => {
         return res.status(400).json({ success: false, message: error.message });
     }
     
+}
+
+export const postScheduleEmail = async (req, res) => {
+    try {
+        const { staff, user, store, urlToken } = req.body;
+        /*
+        console.log("postProfileEmail variables:", {
+            customer,
+            user,
+            store,
+            urlToken
+        });
+        */
+        const webUrl = 'https://serachi.net/view-experience'
+        const mailSent = await sendScheduleEmail(staff.email, staff.name, user.email, user.name, store.name, webUrl,urlToken);
+        //console.log("Respuesta de sendProfileEmail: ", mailSent)
+        res.status(200).json({ success: true, mailSent});
+    } catch (error) {
+        res.status(400).json({ success: false, message: error.message });
+    }
 }
