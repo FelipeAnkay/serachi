@@ -165,7 +165,7 @@ export default function AddItemsExperience() {
         };
         setLoading(true)
         try {
-            console.log("updateExperience Payload: ", updatedExperience)
+            //console.log("updateExperience Payload: ", updatedExperience)
 
             await updateExperience(updatedExperience._id, updatedExperience);
             window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -219,7 +219,7 @@ export default function AddItemsExperience() {
                                 mx-auto
                             "
                 >
-                    <h1 className="text-2xl font-bold mb-6 text-center">Add Items to Experience</h1>
+                    <h1 className="text-2xl font-bold mb-6 text-center">Assign Products to experience</h1>
                     <form onSubmit={handleSubmit} className='space-y-4 p-4 rounded-2xl shadow bg-sky-50 w-full box-border'>
                         <div className='flex flex-row'>
                             <CircleHelp className='text-slate-800 mr-2 hover:text-cyan-600' onClick={() => setGuideOpen(!guideOpen)} />
@@ -234,48 +234,41 @@ export default function AddItemsExperience() {
                             )}
                         </div>
                         <div className="flex flex-col lg:flex-row gap-4 justify-center items-center">
-                            <div className="gap-2 w-full items-center justify-center">
-                                <label className='font-semibold'>Customer Email:</label>
-                                <input
-                                    type="email"
-                                    ref={customerEmailRef}
-                                    className="px-2 py-1 rounded bg-white text-slate-900 border border-slate-300 ml-2"
-                                    placeholder="Customer email"
-                                    onKeyDown={(e) => {
-                                        if (e.key === 'Enter') {
-                                            e.preventDefault();
-                                            handleCustomerEmailSearch(customerEmailRef.current.value);
-                                        }
-                                    }}
-                                />
-                                <button
-                                    type="button"
-                                    onClick={() => handleCustomerEmailSearch(customerEmailRef.current.value)}
-                                    className="bg-[#118290] hover:bg-[#0d6c77] text-cyan-50 py-1 px-2 rounded ml-2"
-                                >
-                                    <Search />
-                                </button>
-
-                                {!isNew && (
+                            <div className="w-full flex flex-col">
+                                <label className="font-semibold mb-1">Customer Email:</label>
+                                <div className="flex items-center gap-2">
+                                    <input
+                                        type="email"
+                                        ref={customerEmailRef}
+                                        className="px-2 py-1 rounded bg-white text-slate-900 border border-slate-300 w-full"
+                                        placeholder="Customer email"
+                                        onKeyDown={(e) => {
+                                            if (e.key === 'Enter') {
+                                                e.preventDefault();
+                                                handleCustomerEmailSearch(customerEmailRef.current.value);
+                                            }
+                                        }}
+                                    />
                                     <button
                                         type="button"
-                                        variant="outline"
-                                        className="bg-slate-600 hover:bg-slate-700 text-cyan-50 px-2 py-1 rounded ml-2"
-                                        onClick={() => setIsCustomerModalOpen(true)}
+                                        onClick={() => handleCustomerEmailSearch(customerEmailRef.current.value)}
+                                        className="bg-[#118290] hover:bg-[#0d6c77] text-cyan-50 py-1 px-2 rounded"
                                     >
-                                        <Contact2 />
+                                        <Search />
                                     </button>
-                                )}
-                                {isCustomerModalOpen && (
-                                    <CustomerDetails
-                                        isOpen={isCustomerModalOpen}
-                                        onClose={() => setIsCustomerModalOpen(false)}
-                                        customer={customer}
-                                        setCustomer={setCustomer}
-                                        onSave={handleSaveClient}
-                                    />
-                                )}
+
+                                    {!isNew && (
+                                        <button
+                                            type="button"
+                                            className="bg-slate-600 hover:bg-slate-700 text-cyan-50 px-2 py-1 rounded"
+                                            onClick={() => setIsCustomerModalOpen(true)}
+                                        >
+                                            <Contact2 />
+                                        </button>
+                                    )}
+                                </div>
                             </div>
+
                             {isCustomerModalOpen && (
                                 <CustomerDetails
                                     isOpen={isCustomerModalOpen}
@@ -302,6 +295,7 @@ export default function AddItemsExperience() {
                                     </select>
                                 </div>
                             )}
+                            {experienceList.length > 0 && (
                             <fieldset className='border rounded-2xl gap-2 p-2'>
                                 <legend className='ml-4 font-semibold'>New Items:</legend>
                                 {selectedExperience && (
@@ -328,7 +322,7 @@ export default function AddItemsExperience() {
                                                 ))}
                                             </select>
                                         </fieldset>
-                                        <fieldset className="border rounded-2xl w-full lg:w-1/3 p-4 bg-white">
+                                        <fieldset className="border rounded-2xl w-full lg:w-1/3 bg-white">
                                             <legend className="block font-semibold mb-1 ml-2">Add Products</legend>
                                             <ProductSelect
                                                 products={productList}
@@ -339,6 +333,7 @@ export default function AddItemsExperience() {
                                     </div>
                                 )}
                             </fieldset>
+                            )}
                         </div>
                         <div className="text-center">
                             <button type="submit" className="bg-[#118290] hover:bg-[#0d6c77] text-cyan-50 px-4 py-2 rounded  mt-2">

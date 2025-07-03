@@ -128,7 +128,7 @@ const DescriptionSelect = ({
                             <input
                                 ref={inputRef}
                                 type="text"
-                                className="w-full bg-white text-slate-900 border border-slate-300 rounded px-2 py-1 text-slate-900 bg-white"
+                                className="w-full bg-white text-slate-900 border border-slate-300 rounded px-2 py-1"
                                 placeholder="You can modify or extend description here"
                                 value={value}
                                 onChange={(e) => onChange(e.target.value)}

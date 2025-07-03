@@ -32,7 +32,7 @@ export default function ProductSelect({ products, value = [], onChange }) {
   return (
     <div className="space-y-2">
       <select
-        className="px-2 py-1 rounded text-slate-800 ml-2 mr-2 w-1/2"
+        className="px-2 py-1 rounded text-slate-800 ml-2 mr-2 w-20/21 border"
         onChange={(e) => {
           if (e.target.value) handleSelect(e.target.value);
         }}

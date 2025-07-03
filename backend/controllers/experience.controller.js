@@ -53,10 +53,10 @@ export const updateExperience = async (req, res) => {
 
         //console.log("B: Experience encontrada: ", experience)
 
-        res.status(201).json({
+        res.status(200).json({
             success: true,
             message: "Experience updated succesfully",
-            service: {
+            experience: {
                 ...experience._doc
             }
         })
@@ -89,6 +89,23 @@ export const getExperienceByEmail = async (req, res) => {
         //console.log(" getExperienceByEmail las variables son: ", email, " - ", storeId)
         const normalizedStoreId = storeId?.toUpperCase();
         const experienceList = await Experience.find({ customerEmail: email, storeId: normalizedStoreId });
+        //console.log(" Respuesta de Experience.find: ", experienceList)
+        if (!experienceList) {
+            return res.status(400).json({ success: false, message: "Experience not found" });
+        }
+        res.status(200).json({ success: true, experienceList });
+    } catch (error) {
+        return res.status(400).json({ success: false, message: error.message });
+    }
+}
+
+export const getValidExperienceByEmail = async (req, res) => {
+    try {
+        const { email, storeId } = req.params;
+        const today = new Date();
+        //console.log(" getExperienceByEmail las variables son: ", email, " - ", storeId)
+        const normalizedStoreId = storeId?.toUpperCase();
+        const experienceList = await Experience.find({ customerEmail: email, storeId: normalizedStoreId, dateOut:{$gte: today }});
         //console.log(" Respuesta de Experience.find: ", experienceList)
         if (!experienceList) {
             return res.status(400).json({ success: false, message: "Experience not found" });

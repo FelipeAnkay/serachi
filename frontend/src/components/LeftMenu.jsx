@@ -41,7 +41,7 @@ const menuItems = [
             { to: "/experience-create-service", label: "Create Service", icon: <BookMarked /> },
             { to: "/service-facility", label: "Assign Facility", icon: <ShipWheel /> },
             { to: "/facility-schedule ", label: "Facility Schedule", icon: <CalendarClock /> }, 
-            { to: "/experience-add-items", label: "Add Items", icon: <ShoppingBasket /> },
+            { to: "/experience-add-items", label: "Add Products", icon: <ShoppingBasket /> },
             { to: "/experience-open-tabs", label: "Open Tabs", icon: <BookOpenCheck /> },
             { to: "/delete-services", label: "Delete Services", icon: <Trash2 /> },
         ]
@@ -107,7 +107,7 @@ const menuItemsMed = [
             { to: "/experience-create-service", label: "Create Service", icon: <BookMarked /> },
             { to: "/service-facility", label: "Assign Facility", icon: <ShipWheel /> },
             { to: "/facility-schedule ", label: "Facility Schedule", icon: <CalendarClock /> }, 
-            { to: "/experience-add-items", label: "Add Items", icon: <ShoppingBasket /> },
+            { to: "/experience-add-items", label: "Add Products", icon: <ShoppingBasket /> },
             { to: "/experience-open-tabs", label: "Open Tabs", icon: <BookOpenCheck /> },
             { to: "/delete-services", label: "Delete Services", icon: <Trash2 /> },
         ]
@@ -194,7 +194,7 @@ const menuItemsPro = [
             { to: "/experience-create-service", label: "Create Service", icon: <BookMarked /> },
             { to: "/service-facility", label: "Assign Facility", icon: <ShipWheel /> },
             { to: "/facility-schedule ", label: "Facility Schedule", icon: <CalendarClock /> },
-            { to: "/experience-add-items", label: "Add Items", icon: <ShoppingBasket /> },
+            { to: "/experience-add-items", label: "Add Products", icon: <ShoppingBasket /> },
             { to: "/experience-open-tabs", label: "Open Tabs", icon: <BookOpenCheck /> },
             { to: "/delete-services", label: "Delete Services", icon: <Trash2 /> },
         ]

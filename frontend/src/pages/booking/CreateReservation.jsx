@@ -11,10 +11,12 @@ import CustomerDetails from '../../components/CustomerDetail'
 import { useRoomReservationServices } from '../../store/roomReservationServices';
 import DateRangePicker from "../../components/DateRangePicker"
 import LoadingSpinner from '../../components/LoadingSpinner';
+import { useExperienceServices } from '../../store/experienceServices';
+import Select from 'react-select';
 
 
 export default function CreateReservation() {
-    const { getAvailableRooms, createRoomReservation, updateRoomReservation } = useRoomReservationServices();
+    const { getAvailableRooms, createRoomReservation } = useRoomReservationServices();
     const storeId = Cookies.get('storeId');
     const { user } = useAuthStore();
     const { getCustomerEmail, createCustomer, updateCustomer } = useCustomerServices();
@@ -22,7 +24,7 @@ export default function CreateReservation() {
     const [isNew, setIsNew] = useState(true);
     const [customer, setCustomer] = useState({});
     const [loading, setLoading] = useState(false);
-    const [finalPrice, setFinalPrice] = useState();
+    const [finalPrice, setFinalPrice] = useState(0);
     const customerEmailRef = useRef(null);
     const [rooms, setRooms] = useState([]);
     const [reservation, setReservation] = useState({});
@@ -40,6 +42,9 @@ export default function CreateReservation() {
     const [numberOfPeople, setNumberOfPeople] = useState(1);
     const [isPeopleLock, setIsPeopleLock] = useState(false);
     const hasInteractedWithToggle = useRef(false);
+    const [existingExperiences, setExistingExperiences] = useState([]);
+    const [selectedExperience, setSelectedExperience] = useState({});
+    const { getValidExperienceByEmail, updateExperience } = useExperienceServices();
 
     const roomFill = (roomList) => {
         setSelectedRooms(roomList);
@@ -157,6 +162,10 @@ export default function CreateReservation() {
         //console.log("Entre a UE Create")
         reservationFill();
     }, [])
+
+    useEffect(() => {
+        console.log("Selected Experience", selectedExperience)
+    }, [selectedExperience])
     /*
         useEffect(() => {
             //console.log("Entre a UE 5");
@@ -279,6 +288,12 @@ export default function CreateReservation() {
                 }));
                 setIsNew(false);
                 setIsCustomerModalOpen(false);
+                const auxExpList = await getValidExperienceByEmail(found[0].email, storeId)
+                //console.log("Lista de experiencias", auxExpList)
+                if (auxExpList.experienceList.length > 0) {
+                    //console.log("Entre al if de asignar experiencia")
+                    setExistingExperiences(auxExpList.experienceList)
+                }
             } else {
                 toast.success('Customer not found, please create one');
                 setCustomer({
@@ -343,9 +358,20 @@ export default function CreateReservation() {
                 isPaid: reservation.isPaid,
             }));
             //console.log("El payload es: ", reservationPayloadList)
+            let actualReservationList = [...(selectedExperience.experience.bookList || [])];
             for (const res of reservationPayloadList) {
-                await createRoomReservation(res);
+                const auxRes = await createRoomReservation(res);
+                actualReservationList.push(auxRes.service._id)
             }
+            //console.log("Listado de reservas: ", actualReservationList)
+            //console.log("selectedExperience: ", selectedExperience)
+            if (selectedExperience?.value != "") {
+                const payload = {
+                    bookList: actualReservationList,
+                }
+                await updateExperience(selectedExperience.value,payload)
+            }
+
             window.scrollTo({ top: 0, behavior: 'smooth' });
             toast.success('Reservation(s) created successfully');
 
@@ -375,12 +401,16 @@ export default function CreateReservation() {
             emergencyContactPhone: '',
             professionalCertificates: [],
         });
-        setNumberOfPeople("1")
+        setNumberOfPeople(1)
         setIsPeopleLock(false)
         setIsRoomPrivate({})
-        setFinalPrice("0");
+        setFinalPrice(0);
         setSelectedRooms({})
         setIsNew(true);
+        setReservation({});
+        setExistingExperiences([]);
+        setIsRoomVisible(false);
+        setSelectedExperience([]);
     }
     const handleSaveClient = async (e) => {
         setLoading(true)
@@ -443,6 +473,18 @@ export default function CreateReservation() {
         const dias = Math.floor(msDiff / (1000 * 60 * 60 * 24));
         return dias;
     };
+
+    const handleChange = (selected) => {
+        if (selected) {
+            setSelectedExperience(selected);
+        }
+    };
+
+    const options = existingExperiences.map(experience => ({
+        value: experience._id,
+        label: `${experience.name}`,
+        experience,
+    }));
 
     return (
         <>
@@ -517,27 +559,59 @@ export default function CreateReservation() {
                                         />
                                     )}
                                 </div>
-                                <div className='flex flex-row justify-center text-center mt-2'>
-                                    Number of people:
-                                    <div className="top-2 right-2 gap-2 items-center">
-                                        <button
-                                            type="button"
-                                            onClick={() => setNumberOfPeople(prev => Math.max(1, prev - 1))}
-                                            className={`${isPeopleLock ? 'bg-gray-500' : 'bg-red-400 hover:bg-red-500'} text-cyan-50 px-2 rounded`}
-                                            disabled={isPeopleLock || numberOfPeople <= 1}
-                                        >
-                                            -
-                                        </button>
-                                        <span className="text-sm font-bold text-slate-800 ml-2 mr-2">{numberOfPeople}</span>
-                                        <button
-                                            type="button"
-                                            onClick={() => setNumberOfPeople(prev => prev + 1)}
-                                            className={`${isPeopleLock ? 'bg-gray-500' : 'bg-[#118290] hover:bg-[#0d6c77]'} text-cyan-50 px-2 rounded`}
-                                            disabled={isPeopleLock}
-                                        >
-                                            +
-                                        </button>
+                                <div className='flex flex-col'>
+                                    <div className='flex flex-row justify-center text-center mt-2'>
+                                        Number of people:
+                                        <div className="top-2 right-2 gap-2 items-center">
+                                            <button
+                                                type="button"
+                                                onClick={() => setNumberOfPeople(prev => Math.max(1, prev - 1))}
+                                                className={`${isPeopleLock ? 'bg-gray-500' : 'bg-red-400 hover:bg-red-500'} text-cyan-50 px-2 rounded`}
+                                                disabled={isPeopleLock || numberOfPeople <= 1}
+                                            >
+                                                -
+                                            </button>
+                                            <span className="text-sm font-bold text-slate-800 ml-2 mr-2">{numberOfPeople}</span>
+                                            <button
+                                                type="button"
+                                                onClick={() => setNumberOfPeople(prev => prev + 1)}
+                                                className={`${isPeopleLock ? 'bg-gray-500' : 'bg-[#118290] hover:bg-[#0d6c77]'} text-cyan-50 px-2 rounded`}
+                                                disabled={isPeopleLock}
+                                            >
+                                                +
+                                            </button>
+                                        </div>
                                     </div>
+                                    {existingExperiences?.length > 0 && (
+                                        <div className='mt-1'>
+                                            <p className='font-semibold'>Assign reservation to customer experience:</p>
+                                            <Select
+                                                options={options}
+                                                value={options.find(opt => opt.value === selectedExperience.value) || null} // ← aquí lo haces controlado
+                                                onChange={handleChange}
+                                                placeholder="Select or search a experience..."
+                                                className="text-slate-900"
+                                                classNamePrefix="react-select"
+                                                styles={{
+                                                    control: (base) => ({
+                                                        ...base,
+                                                        borderColor: '#d1d5db', // Tailwind border-gray-300
+                                                        padding: '2px',
+                                                        fontSize: '0.875rem', // text-sm
+                                                    }),
+                                                    menu: (base) => ({
+                                                        ...base,
+                                                        zIndex: 50,
+                                                    }),
+                                                    option: (provided, state) => ({
+                                                        ...provided,
+                                                        backgroundColor: state.isFocused ? "#3BA0AC" : "white",
+                                                        color: "#1e293b", // slate-900
+                                                    }),
+                                                }}
+                                            />
+                                        </div>
+                                    )}
                                 </div>
                             </fieldset>
                             {/* DATOS DE COTIZACION*/}
@@ -715,7 +789,7 @@ export default function CreateReservation() {
                                                                                     return;
                                                                                 }
                                                                                 roomType = room.type,
-                                                                                incrementRoom(room._id);
+                                                                                    incrementRoom(room._id);
                                                                             }}
                                                                         >
                                                                             +
