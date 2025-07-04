@@ -13,13 +13,16 @@ import { useCloseTabServices } from '../../store/closeTabServices';
 import { formatDateDisplay, formatDateShort, formatDateInput, formatDateISO } from '../../components/formatDateDisplay'
 import { useProductServices } from '../../store/productServices';
 import LoadingSpinner from '../../components/LoadingSpinner';
+import { useIncomeServices } from '../../store/incomeServices';
+import paymentMethods from '../../components/paymentMethods.json'
 
 export default function OpenTabs() {
-    const { getExperienceList, updateExperience, getExperienceById, getExperienceByCheckout } = useExperienceServices();
+    const { updateExperience, getExperienceById, getExperienceByCheckout } = useExperienceServices();
     const { getServiceByIds, getServiceById } = useServiceServices();
     const { getReservationsByIds, updateRoomReservation } = useRoomReservationServices();
+    const { createIncome } = useIncomeServices();
     const { getCustomerEmail } = useCustomerServices();
-    const { getProductById } = useProductServices();
+    const { getProductById, getProductByIds } = useProductServices();
     const { createCloseTab } = useCloseTabServices();
     const [loading, setLoading] = useState(false);
     const storeId = Cookies.get('storeId');
@@ -44,6 +47,7 @@ export default function OpenTabs() {
     const [productTotal, setProductTotal] = useState(0);
     const [reservationTotal, setReservationTotal] = useState(0);
     const [grandTotal, setGrandTotal] = useState(0);
+    const [selectedPayment, setSelectedPayment] = useState("");
 
     const location = useLocation();
     const navigate = useNavigate();
@@ -104,8 +108,8 @@ export default function OpenTabs() {
 
                 // Total de productos
                 const pTotal = productList.reduce((acc, p) => {
-                    if (isPaid('product', p._id, p.isPaid) && isCheckedNow('product', p._id)) {
-                        return acc + (p.price || 0) * (p.quantity || 1);
+                    if (isPaid('product', p.productId, p.isPaid) && isCheckedNow('product', p.productId)) {
+                        return acc + (p.price || 0) * (p.Qty || 1);
                     }
                     return acc;
                 }, 0);
@@ -138,14 +142,38 @@ export default function OpenTabs() {
     const handleOpenModal = async (experience) => {
         try {
             //console.log("En handleOpenModal: ", experience);
-            if (experience.serviceList && experience.serviceList.lenght > 0) {
+            if (experience.serviceList && experience.serviceList.length > 0) {
                 const response = await getServiceByIds(experience.serviceList);
-                console.log("El getServiceByIds es: ", response);
+                //console.log("El getServiceByIds es: ", response);
                 setServiceList(response.serviceList);
             }
-            setProductList(experience.productList);
-            if (experience.bookList && experience.bookList.lenght > 0) {
-                console.log("If booklist:  ", experience.bookList);
+
+            //console.log("Listado de Ids: ", experience.productList)
+            let productsIds = []
+            for (const prod of experience.productList) {
+                productsIds.push(prod.productId);
+            }
+            //console.log("productsIds: ", productsIds)
+            if (productsIds.length > 0) {
+                //console.log("Entre al IF")
+                const auxProductList = await getProductByIds(productsIds)
+                //console.log("auxProductList: ", auxProductList)
+                const newProductList = experience.productList
+                    .map((product) => {
+                        const prod = auxProductList.productList.find(s => s._id === product.productId);
+                        const productName = prod?.name;
+
+                        return {
+                            ...product,
+                            productName: productName,
+                        };
+                    })
+                //console.log("newProductList: ", newProductList)
+                setProductList(newProductList);
+            }
+
+            if (experience.bookList && experience.bookList.length > 0) {
+                //console.log("If booklist:  ", experience.bookList);
                 const reservations = await getReservationsByIds(experience.bookList);
                 //console.log("El getReservationsByIds es: ", reservations);
                 setReservationList(reservations.roomReservationList)
@@ -170,7 +198,7 @@ export default function OpenTabs() {
             } else if (type === 'product') {
                 // Actualizar la experiencia modificando solo el producto correspondiente
                 const updatedProductList = selectedExperience.productList.map(p =>
-                    p.productID === id ? { ...p, isPaid } : p
+                    p.productId === id ? { ...p, isPaid } : p
                 );
 
                 await updateExperience(selectedExperience._id, {
@@ -190,7 +218,39 @@ export default function OpenTabs() {
             setLoading(false)
         }
     };
+    /*
+        useEffect(() => {
+            console.log("ProductList es: ", productList)
+        }, [productList])
+        
+    */
+    const handleSelectAll = (list, setList, key) => (e) => {
+        const isChecked = e.target.checked;
 
+        const updatedList = list.map(item => ({ ...item, isPaid: isChecked }));
+        setList(updatedList);
+
+        const updatedPending = {};
+        updatedList.forEach(item => {
+            if (!item.isPaid || isChecked) {
+                updatedPending[item._id] = isChecked;
+            }
+        });
+
+        setPendingUpdates(prev => ({
+            ...prev,
+            [key]: {
+                ...prev[key],
+                ...updatedPending,
+            },
+        }));
+    };
+    /*
+        useEffect(() => {
+          console.log("pendingUpdates es: ", pendingUpdates)
+        }, [pendingUpdates])
+        
+    */
     return (
         <>
             {
@@ -329,10 +389,7 @@ export default function OpenTabs() {
                                                                 <input
                                                                     type="checkbox"
                                                                     checked={serviceList.every(s => s.isPaid)}
-                                                                    onChange={(e) =>
-                                                                        setServiceList(serviceList.map(s => ({ ...s, isPaid: e.target.checked })))
-                                                                    }
-                                                                    disabled={serviceList.every(s => s.isPaid)}
+                                                                    onChange={handleSelectAll(serviceList, setServiceList, 'service')}
                                                                 />
                                                                 Select All
                                                             </label>
@@ -380,10 +437,7 @@ export default function OpenTabs() {
                                                                 <input
                                                                     type="checkbox"
                                                                     checked={productList.every(p => p.isPaid)}
-                                                                    onChange={(e) =>
-                                                                        setProductList(productList.map(p => ({ ...p, isPaid: e.target.checked })))
-                                                                    }
-                                                                    disabled={productList.every(p => p.isPaid)}
+                                                                    onChange={handleSelectAll(productList, setProductList, 'product')}
                                                                 />
                                                                 Select All
                                                             </label>
@@ -396,22 +450,24 @@ export default function OpenTabs() {
                                                                             !p.isPaid
                                                                 )
                                                                 .map((p, i) => (
-                                                                    <div key={i} className="flex items-center justify-between border border-zinc-300 dark:border-zinc-700 rounded-lg p-3 mb-2">
+                                                                    <div key={i} className="flex items-center justify-between border border-zinc-300 dark:border-zinc-700 rounded-lg p-3 mb-2 bg-white">
                                                                         <div>
-                                                                            <p className="font-medium">{p.name}</p>
-                                                                            <p className="text-sm">Quantity: {p.quantity}</p>
+                                                                            <p className="font-medium">{p.productName}</p>
+                                                                            <p className="text-sm">Quantity: {p.Qty}</p>
+                                                                            <p className="text-sm">Price: ${p.price}</p>
+                                                                            <p className="text-sm">Total: ${p.Qty * p.price}</p>
                                                                         </div>
                                                                         <label className="flex items-center gap-2 text-sm ml-2 border rounded-2xl">
                                                                             <input
                                                                                 type="checkbox"
-                                                                                checked={pendingUpdates.product[p._id] ?? p.isPaid}
+                                                                                checked={pendingUpdates.product[p.productId] ?? p.isPaid}
                                                                                 className="ml-2 mt-4 mb-4"
                                                                                 onChange={(e) => {
                                                                                     setPendingUpdates(prev => ({
                                                                                         ...prev,
                                                                                         product: {
                                                                                             ...prev.product,
-                                                                                            [p._id]: e.target.checked,
+                                                                                            [p.productId]: e.target.checked,
                                                                                         },
                                                                                     }));
                                                                                 }}
@@ -431,10 +487,7 @@ export default function OpenTabs() {
                                                                 <input
                                                                     type="checkbox"
                                                                     checked={reservationList.every(r => r.isPaid)}
-                                                                    onChange={(e) =>
-                                                                        setReservationList(reservationList.map(r => ({ ...r, isPaid: e.target.checked })))
-                                                                    }
-                                                                    disabled={reservationList.every(r => r.isPaid)}
+                                                                    onChange={handleSelectAll(reservationList, setReservationList, 'reservation')}
                                                                 />
                                                                 Select All
                                                             </label>
@@ -489,6 +542,20 @@ export default function OpenTabs() {
                                                             <span className="font-bold text-green-400">${grandTotal.toFixed(2)}</span>
                                                         </div>
                                                     </div>
+                                                    <div className="mt-6">
+                                                        <label className="block font-medium mb-1">Payment Method</label>
+                                                        <select
+                                                            name="paymentMethod"
+                                                            value={selectedPayment || ''}
+                                                            onChange={(e) => setSelectedPayment(e.target.value)}
+                                                            className="w-full bg-white text-slate-900 border border-slate-300 rounded py-2"
+                                                        >
+                                                            <option value="">Select Payment Method</option>
+                                                            {paymentMethods.map((method, index) => (
+                                                                <option key={index} value={method.name}>{method.name}</option>
+                                                            ))}
+                                                        </select>
+                                                    </div>
 
                                                     {/* Botón final */}
                                                     <div className="mt-8 text-right">
@@ -501,6 +568,8 @@ export default function OpenTabs() {
                                                                 const paidProducts = [];
                                                                 const paidServices = [];
                                                                 const paidReservations = [];
+
+                                                                //console.log("pendingUpdates es: ", pendingUpdates)
 
                                                                 // Servicios actualizados
                                                                 for (const [id, isPaid] of Object.entries(pendingUpdates.service || {})) {
@@ -515,17 +584,19 @@ export default function OpenTabs() {
 
                                                                 // Productos actualizados
                                                                 for (const [id, isPaid] of Object.entries(pendingUpdates.product || {})) {
-                                                                    const producto = productList.find(p => p._id === id);
+                                                                    const producto = productList.find(p => p.productId === id);
+                                                                    //console.log("Producto a actualizar es: ", { producto, id, isPaid })
                                                                     updates.push(handleUpdatePaidStatus('product', id, isPaid));
                                                                     paidProducts.push({
                                                                         productId: id,
-                                                                        Qty: producto?.quantity || 1,
-                                                                        amount: (producto?.price || 0) * (producto?.quantity || 1),
+                                                                        Qty: producto?.Qty || 1,
+                                                                        amount: (producto?.price || 0) * (producto?.Qty || 1),
                                                                     });
                                                                 }
 
                                                                 // Reservas actualizadas
                                                                 for (const [id, isPaid] of Object.entries(pendingUpdates.reservation || {})) {
+                                                                    //console.log("Entre a actualizar reserva: ", { id, isPaid })
                                                                     const reserva = reservationList.find(r => r._id === id);
                                                                     updates.push(handleUpdatePaidStatus('reservation', id, isPaid));
                                                                     paidReservations.push({
@@ -534,14 +605,14 @@ export default function OpenTabs() {
                                                                         amount: reserva?.roomFinalPrice || 0,
                                                                     });
                                                                 }
-                                                                console.log("Llamar a promise: ", updates);
-                                                                //await Promise.all(updates);
-
+                                                                await Promise.all(updates);
+                                                                //console.log("Respuesta de promise: ", updates);
                                                                 // Calcular monto total cerrado
                                                                 const totalAmount =
                                                                     paidServices.reduce((acc, s) => acc + s.amount, 0) +
                                                                     paidProducts.reduce((acc, p) => acc + p.amount, 0) +
                                                                     paidReservations.reduce((acc, r) => acc + r.amount, 0);
+
 
                                                                 const closeTabPayload = {
                                                                     date: new Date(),
@@ -555,17 +626,36 @@ export default function OpenTabs() {
                                                                 }
                                                                 // Crear registro CloseTab
                                                                 //console.log("Creare el siguiente CloseTab: ", closeTabPayload)
-                                                                await createCloseTab(closeTabPayload);
+                                                                const auxCloseTab = await createCloseTab(closeTabPayload);
+                                                                const now = formatDateISO(new Date());
+                                                                const tagPayload = [
+                                                                    {
+                                                                        name: "CloseTab Payment",
+                                                                        code: auxCloseTab._id
+                                                                    }
+                                                                ];
+                                                                const incomePayload = {
+                                                                    date: now,
+                                                                    customerEmail: selectedExperience.customerEmail,
+                                                                    amount: totalAmount,
+                                                                    paymentMethod: selectedPayment || "",
+                                                                    tag: tagPayload,
+                                                                    userEmail: user.email,
+                                                                    storeId: selectedExperience.storeId,
+                                                                }
+                                                                const auxIncome = await createIncome(incomePayload)
 
                                                                 // Cierre visual del modal
                                                                 setLoading(false);
                                                                 setIsModalOpen(false);
                                                                 setModalTab(null);
                                                                 setSelectedExperience(null);
+                                                                setSelectedPayment("");
+
                                                             }}
                                                             className="bg-[#118290] hover:bg-[#0d6c77] text-cyan-50 px-6 py-2 rounded-xl transition"
                                                         >
-                                                            Close Tab
+                                                            Update Tab
                                                         </button>
                                                     </div>
                                                 </motion.div>

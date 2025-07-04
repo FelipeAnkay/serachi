@@ -147,7 +147,7 @@ export default function ConfirmedQuote() {
                 //console.log("serviceName: ", serviceName);
                 const servicePayload = {
                     name: serviceName,
-                    productId: product.productID,
+                    productId: product.productId,
                     quoteId: quote._id,
                     customerEmail: quote.customerEmail,
                     storeId: quote.storeId,
@@ -262,7 +262,7 @@ export default function ConfirmedQuote() {
         } catch (error) {
             toast.error("Error creating reservation or updating experience");
             console.error(error);
-        }finally{
+        } finally {
             setLoading(false);
         }
     };
@@ -386,7 +386,7 @@ export default function ConfirmedQuote() {
                             <legend className="text-2xl font-bold">Quote List</legend>
                             <input
                                 type="text"
-                                placeholder="Search quote by email..."
+                                placeholder="Search quote by email or name..."
                                 className="w-full p-2 bg-white text-slate-900 border border-slate-300"
                                 value={quoteSearch}
                                 onChange={(e) => setQuoteSearch(e.target.value)}
@@ -413,7 +413,8 @@ export default function ConfirmedQuote() {
                                 ) : (
                                     quotes
                                         .filter(quote =>
-                                            quote.customerEmail.toLowerCase().includes(quoteSearch.toLowerCase()) &&
+                                            quote.customerEmail.toLowerCase().includes(quoteSearch.toLowerCase()) ||
+                                            quote.customerName.toLowerCase().includes(quoteSearch.toLowerCase()) &&
                                             (!showOnlyUnprocessed || !existingExperiences.some(exp => exp.quoteId === quote._id) || !existingReservations.some(res => res.quoteId === quote._id))
                                         )
                                         .map((quote) => {

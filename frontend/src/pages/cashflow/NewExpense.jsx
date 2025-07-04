@@ -265,7 +265,7 @@ export default function NewExpense() {
                                 {(formData.tag || []).map((tag, index) => (
                                     <li
                                         key={index}
-                                        className="flex justify-between items-center bg-blue-700 rounded px-3 py-2"
+                                        className="flex justify-between items-center bg-sky-50 rounded px-3 py-2"
                                     >
                                         <span>{tag.name} - {tag.code}</span>
                                         <button

@@ -251,7 +251,7 @@ export default function NewQuote() {
                 if (response.productList && response.productList.length > 0) {
                     const initialSelectedProducts = {};
                     response.productList.forEach((p) => {
-                        initialSelectedProducts[p.productID] = p.Qty;
+                        initialSelectedProducts[p.productId] = p.Qty;
                     });
                     setSelectedProducts(initialSelectedProducts);
                 }
@@ -308,7 +308,7 @@ export default function NewQuote() {
         const structuredList = Object.entries(selected).map(([id, qty]) => {
             const product = products.find((p) => p._id === id);
             return {
-                productID: id,
+                productId: id,
                 productName: product?.name || '',
                 Qty: qty,
                 productUnitaryPrice: (product?.finalPrice || 0),
@@ -1047,7 +1047,7 @@ export default function NewQuote() {
 
                                                 return (
                                                     <div
-                                                        key={product.productID}
+                                                        key={product.productId}
                                                         className='mt-5 mb-5 ml-5 flex flex-row text-sm text-slate-800'
                                                     >
                                                         <div className="w-3/4">
@@ -1316,7 +1316,7 @@ export default function NewQuote() {
                         {/* Botones */}
                         <div className="flex flex-col sm:flex-row gap-4 mt-6 justify-center">
                             <button type="submit" className="bg-[#118290] hover:bg-[#0d6c77] text-cyan-50 px-4 py-2 rounded">
-                                Send Quote
+                                Create Quote
                             </button>
                             <button
                                 type="button"

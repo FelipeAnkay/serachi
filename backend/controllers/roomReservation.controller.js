@@ -312,3 +312,23 @@ export const getReservationsByIds = async (req, res) => {
         return res.status(400).json({ success: false, message: error.message });
     }
 }
+
+export const getReservationById = async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        if (!id) {
+            return res.status(400).json({ success: false, message: "Reservation ID is required" });
+        }
+
+        const reservation = await RoomReservation.findById(id);
+
+        if (!reservation) {
+            return res.status(404).json({ success: false, message: "Reservation not found" });
+        }
+
+        return res.status(200).json({ success: true, reservation });
+    } catch (error) {
+        return res.status(500).json({ success: false, message: error.message });
+    }
+};

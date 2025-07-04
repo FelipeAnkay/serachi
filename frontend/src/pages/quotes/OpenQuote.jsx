@@ -104,7 +104,7 @@ export default function OpenQuote() {
                         <legend className="text-2xl font-bold">Quote List</legend>
                         <input
                             type="text"
-                            placeholder="Search quote by email..."
+                            placeholder="Search quote by email or name..."
                             className="w-full p-2  bg-white text-slate-900 border border-slate-300"
                             value={quoteSearch}
                             onChange={(e) => setQuoteSearch(e.target.value)}
@@ -121,7 +121,8 @@ export default function OpenQuote() {
                             ) : (
                                 quotes
                                     .filter(quote =>
-                                        quote.customerEmail.toLowerCase().includes(quoteSearch.toLowerCase())
+                                        quote.customerEmail.toLowerCase().includes(quoteSearch.toLowerCase()) ||
+                                        quote.customerName.toLowerCase().includes(quoteSearch.toLowerCase())
                                     )
                                     .map((quote) => {
                                         return (

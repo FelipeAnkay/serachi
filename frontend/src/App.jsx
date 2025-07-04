@@ -194,7 +194,7 @@ function App() {
 
   return (
     <div
-      className='bg-blue-950 flex overflow-hidden'
+      className='bg-[#18394C] flex overflow-hidden'
     >
       <MenuAvailable />
       <Routes>

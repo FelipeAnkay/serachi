@@ -5,12 +5,12 @@ const ProductSelectForm = ({ products, value = [], onChange }) => {
   const handleSelect = (selectedOption) => {
     if (!selectedOption) return;
 
-    const already = value.find((item) => item.productID === selectedOption.value);
+    const already = value.find((item) => item.productId === selectedOption.value);
     if (already) return;
 
     const product = selectedOption.product;
     const newItem = {
-      productID: product._id,
+      productId: product._id,
       productName: product.name,
       Qty: 1,
       productUnitaryPrice: product.finalPrice || 0,
@@ -27,9 +27,9 @@ const ProductSelectForm = ({ products, value = [], onChange }) => {
       [field]: field === "Qty" || field.includes("Price") ? parseFloat(val) : val,
     };
     if (field === "Qty" || field === "productUnitaryPrice") {
-      updated[index].productFinalPrice =
-        updated[index].Qty * updated[index].productUnitaryPrice;
+      updated[index].productFinalPrice = updated[index].Qty * updated[index].productUnitaryPrice;
     }
+    console.log("El producto actualizado es: ", updated)
     onChange(updated);
   };
 
@@ -40,7 +40,7 @@ const ProductSelectForm = ({ products, value = [], onChange }) => {
   };
 
   const availableOptions = products
-    .filter((p) => !value.find((v) => v.productID === p._id))
+    .filter((p) => !value.find((v) => v.productId === p._id))
     .map((p) => ({
       value: p._id,
       label: `${p.name} ($${p.finalPrice})`,

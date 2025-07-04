@@ -11,7 +11,7 @@ const experienceSchema = new mongoose.Schema({
     productList: [
         {
             _id: false,
-            productID: { type: String },
+            productId: { type: String },
             Qty: { type: Number },
             price: {type: Number},
             isPaid: { type: Boolean }
