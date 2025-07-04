@@ -87,7 +87,7 @@ const Experiences = () => {
         const getColorForStaff = async (email) => {
             //console.log("Entre a getColorForStaff ", email);
             //console.log("El staffColorMap es: ", staffColorMap);
-            if (!email) return "gray-500";
+            if (!email) return "#9E9E9E";
             if (staffColorMap[email]) return staffColorMap[email];
 
             try {
@@ -96,12 +96,12 @@ const Experiences = () => {
                 //console.log("El res es: ", res)
                 const staff = res?.staffList;
                 //console.log("El staff es: ", staff)
-                const color = staff?.color || "gray-500";
+                const color = staff?.color || "#EF9A9A";
                 //console.log("El color es: ", color)
                 staffColorMap[email] = color;
                 return color;
             } catch {
-                return "gray-500";
+                return "#9E9E9E";
             } finally {
                 setLoading(false)
             }
@@ -121,10 +121,11 @@ const Experiences = () => {
                     if (serviceRef && serviceRef.isActive) {
                         const staffEmail = serviceRef.staffEmail;
                         const color = await getColorForStaff(staffEmail);
+                        console.log("El color para la calendar es: ", {staffEmail, color})
                         const serviceType = serviceRef.type || "Unknown";
                         typesSet.add(serviceType);
                         allServiceEvents.push({
-                            title: `${serviceRef.name} - ${serviceRef.staffEmail}`,
+                            title: `${serviceRef.name} - ${serviceRef.staffEmail || "NO STAFF ASSIGNED"}`,
                             start: parseDate(serviceRef.dateIn),
                             end: parseDate(serviceRef.dateOut),
                             allDay: false,
