@@ -429,7 +429,7 @@ const SetStaffFee = () => {
                     {duplicateModal && (
 
                         <div className="fixed inset-0 bg-black/95 z-50 flex justify-center items-center">
-                            <div className="bg-blue-900 p-6 rounded-xl max-w-3xl w-full space-y-4 max-h-[90vh] overflow-y-auto">
+                            <div className="bg-[#18394C] p-6 rounded-xl max-w-3xl w-full space-y-4 max-h-[90vh] overflow-y-auto">
                                 <h2 className="text-slate-800 text-2xl font-semibold text-center">Duplicate Staff Rules</h2>
 
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -503,7 +503,7 @@ const SetStaffFee = () => {
                                                     <select
                                                         value={rule.timeframe}
                                                         onChange={(e) => updateGroupedRule(productId, idx, "timeframe", e.target.value)}
-                                                        className="bg-blue-700 text-slate-800 px-2 py-1 rounded"
+                                                        className="bg-white text-slate-800 px-2 py-1 rounded"
                                                     >
                                                         {timeframes.map(tf => (
                                                             <option key={tf.code} value={tf.code}>{tf.name}</option>
@@ -512,7 +512,7 @@ const SetStaffFee = () => {
                                                     <select
                                                         value={rule.operator}
                                                         onChange={(e) => updateGroupedRule(productId, idx, "operator", e.target.value)}
-                                                        className="bg-blue-700 text-slate-800 px-2 py-1 rounded"
+                                                        className="bg-white text-slate-800 px-2 py-1 rounded"
                                                     >
                                                         {operators.map(op => (
                                                             <option key={op.name} value={op.name}>{op.name}</option>

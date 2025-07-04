@@ -4,8 +4,9 @@ export default function ProductSelect({ products, value = [], onChange }) {
   const handleSelect = (productId) => {
     const already = value.find((item) => item.productId === productId);
     if (already) return;
-
-    const newItem = { productId, quantity: 1, isPaid: false };
+    const auxProduct = availableOptions.find((item) => item._id === productId);
+    console.log("auxProduct: ", auxProduct)
+    const newItem = { productId, Qty: 1, price: auxProduct.finalPrice, isPaid: false };
     const newList = [...value, newItem];
     onChange(newList);
   };
@@ -14,7 +15,7 @@ export default function ProductSelect({ products, value = [], onChange }) {
     const updated = [...value];
     updated[index] = {
       ...updated[index],
-      [field]: field === "quantity" ? parseInt(val) : val,
+      [field]: field === "Qty" ? parseInt(val) : val,
     };
     onChange(updated);
   };
@@ -40,7 +41,7 @@ export default function ProductSelect({ products, value = [], onChange }) {
         <option value="" className="text-slate-900">-- Select Product --</option>
         {availableOptions.map((p) => (
           <option key={p._id} value={p._id} className="text-slate-900">
-            {p.name} (${p.price})
+            {p.name} (${p.finalPrice})
           </option>
         ))}
       </select>
@@ -52,14 +53,15 @@ export default function ProductSelect({ products, value = [], onChange }) {
             key={item.productId}
             className="flex items-center gap-2 bg-sky-50 p-2 rounded shadow ml-2 mr-2 mb-2"
           >
-            <span className="flex-1 font-medium">{product?.name}</span>
+            <span className="flex-1 font-medium">{product?.name} (${product?.finalPrice})</span>
             <input
               type="number"
               className="w-16 border rounded px-1 text-slate-800"
               min={1}
-              value={item.quantity}
-              onChange={(e) => updateField(index, "quantity", e.target.value)}
+              value={item.Qty}
+              onChange={(e) => updateField(index, "Qty", e.target.value)}
             />
+            <span className="flex-1 font-medium">Total: ${product?.finalPrice * item.Qty}</span>
             <label className="flex items-center gap-1">
               <input
                 type="checkbox"

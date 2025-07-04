@@ -28,7 +28,7 @@ const incomeSchema = new mongoose.Schema({
     productList: [
         {
             _id: false,
-            productID: { type: String },
+            productId: { type: String },
             productName: { type: String },
             Qty: { type: Number },
             productUnitaryPrice: { type: Number },

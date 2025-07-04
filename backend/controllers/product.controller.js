@@ -2,7 +2,7 @@ import { Product } from "../models/product.model.js";
 
 /*Product FUNCTIONS */
 export const createProduct = async (req, res) => {
-    const { name, price, tax, finalPrice,currency, type, userId, storeId, durationDays } = req.body;
+    const { name, price, tax, finalPrice,currency, type, userId, storeId, durationDays, isTangible } = req.body;
     try {
         if (!name || !price || !type || !storeId || !currency) {
             throw new Error("All fields are required");
@@ -19,6 +19,7 @@ export const createProduct = async (req, res) => {
             type,
             userId,
             durationDays,
+            isTangible,
             storeId: normalizeStoreID
         })
 
@@ -72,6 +73,7 @@ export const getProductByIds = async (req, res) => {
     try {
         const { ids } = req.params;
         const arrayIds = ids.split(",");
+        console.log("arrayIds: ", arrayIds)
         const productList = await Product.find({ _id: { $in: arrayIds } });
         if (!productList) {
             return res.status(400).json({ success: false, message: "productList not found" });

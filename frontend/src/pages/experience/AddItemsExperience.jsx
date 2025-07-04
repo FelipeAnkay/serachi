@@ -16,12 +16,11 @@ import LoadingSpinner from '../../components/LoadingSpinner';
 
 export default function AddItemsExperience() {
     const { getProductByStoreId } = useProductServices();
-    const { getExperienceByEmail, updateExperience } = useExperienceServices();
+    const { getValidExperienceByEmail, updateExperience } = useExperienceServices();
     const { getReservationsByEmail } = useRoomReservationServices();
     const { getServicesByEmail } = useServiceServices();
     const storeId = Cookies.get('storeId');
     const { user } = useAuthStore();
-
     const [productList, setProductList] = useState([]);
     const [reservationList, setReservationList] = useState([]);
     const [serviceList, setServiceList] = useState([]);
@@ -56,7 +55,7 @@ export default function AddItemsExperience() {
             //console.log("Entre a fetchProducts")
             const products = await getProductByStoreId(storeId);
             //console.log("Resp de getProductByStoreId: ", products)
-            const filtered = products.productList.filter(p => ['FOOD', 'HOSPITALITY'].includes(p.type));
+            const filtered = products.productList.filter(p => p.isTangible);
             //console.log("filtered:", filtered)
             setProductList(filtered);
         } catch (error) {
@@ -70,7 +69,7 @@ export default function AddItemsExperience() {
         try {
             setLoading(true)
             //console.log("Entre a fetchExperiences: ", customer.email)
-            const res = await getExperienceByEmail(customer.email, storeId);
+            const res = await getValidExperienceByEmail(customer.email, storeId);
             //console.log("Resp de getExperienceByEmail: ", res)
             setExperienceList(res.experienceList);
         } catch (error) {
@@ -156,7 +155,9 @@ export default function AddItemsExperience() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (!selectedExperience) return toast.error('Select an experience');
-
+        console.log("Selected Experience: ", selectedExperience)
+        console.log("Selected Products: ", selectedProducts)
+        
         const updatedExperience = {
             ...selectedExperience,
             productList: [...selectedExperience.productList, ...selectedProducts],
@@ -165,17 +166,11 @@ export default function AddItemsExperience() {
         };
         setLoading(true)
         try {
-            //console.log("updateExperience Payload: ", updatedExperience)
-
+            console.log("updateExperience Payload: ", updatedExperience)
             await updateExperience(updatedExperience._id, updatedExperience);
             window.scrollTo({ top: 0, behavior: 'smooth' });
             toast.success('Experience updated');
-            setSelectedExperience(null);
-            setSelectedProducts([]);
-            setSelectedServices([]);
-            setSelectedBookings([]);
-            setCustomer({});
-            setExperienceList({});
+            handleReset();
 
         } catch (err) {
             toast.error('Error updating experience');

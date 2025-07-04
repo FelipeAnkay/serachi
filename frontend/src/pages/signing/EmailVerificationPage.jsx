@@ -71,7 +71,7 @@ const EmailVerificationPage = () => {
                 transition={{ duration: 0.5 }}
                 className="bg-[#18394C] bg-opacity-50 backdrop-filter backdrop-blur-xl rounded-2xl shadow-2xl p-8 w-full max-w-md text-center"
             >
-                <h2 className="text-3xl font-bold mb-6 text-center bg-gradient-to-r from-blue-400 to-blue-700 text-transparent bg-clip-text">
+                <h2 className="text-3xl font-bold mb-6 text-center text-[#00C49F] bg-clip-text">
                     Verify Your Email
                 </h2>
                 <p className="text-center text-gray-300 mb-6">

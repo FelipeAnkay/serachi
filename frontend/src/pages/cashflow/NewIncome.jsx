@@ -109,7 +109,7 @@ export default function NewIncome() {
                 productList: [
                     ...prev.productList,
                     {
-                        productID: selectedProduct._id,
+                        productId: selectedProduct._id,
                         productName: selectedProduct.name,
                         Qty: 1,
                         productUnitaryPrice: selectedProduct.price || 0,

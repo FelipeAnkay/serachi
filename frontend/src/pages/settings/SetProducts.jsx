@@ -83,7 +83,7 @@ const SetProduct = () => {
             const payload = {
                 ...productData,
             };
-
+            console.log("Payload: ", payload)
             if (isEditing) {
                 await updateProduct(productData._id, payload);
                 toast.success('Product updated successfully');
@@ -232,7 +232,7 @@ const SetProduct = () => {
                                                 title="Duplicate Product"
                                             >
                                                 <Copy />
-                                                
+
                                             </button>
                                         </div>
                                     ) : (
@@ -432,6 +432,18 @@ const SetProduct = () => {
                                                 </option>
                                             ))}
                                         </select>
+                                    </div>
+                                    <div className='mt-2 flex flex-row ml-2'>
+                                        <label className="block text-sm font-medium">Is it a tangible product?*</label>
+                                        <input
+                                            type="checkbox"
+                                            checked={productData.isTangible}
+                                            onChange={(e) => {
+                                                setProductData({ ...productData, isTangible: e.target.checked })
+                                            }
+                                            }
+                                            className="ml-2"
+                                        />
                                     </div>
                                     <div>
                                         <p>Fields with * are mandatory</p>

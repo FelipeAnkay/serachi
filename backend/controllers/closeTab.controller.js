@@ -26,7 +26,7 @@ export const createCloseTab = async (req, res) => {
         res.status(201).json({
             success: true,
             message: "service created succesfully",
-            service: {
+            closeTab: {
                 ...closetab._doc
             }
         })

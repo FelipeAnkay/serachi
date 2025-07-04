@@ -144,9 +144,9 @@ const menuItemsMed = [
         icon: <ChartNoAxesCombined />,
         key: "insights",
         children: [
-            { to: "/report-incomes", label: "Report", icon: <ChartColumnIncreasing /> },
+            { to: "/report-incomes", label: "Reports", icon: <ChartColumnIncreasing /> },
             { to: "/report-cashflow", label: "Monthly Cash Flow", icon: <TrendingUp /> },
-            { to: "/report-cashflow-detail", label: "Income & Expenses", icon: <Coins /> },
+            { to: "/report-cashflow-detail", label: "Incomes & Expenses", icon: <Coins /> },
             { to: "/report-services-staff", label: "Services by Staff", icon: <Sheet /> }, 
             
         ]
@@ -231,9 +231,9 @@ const menuItemsPro = [
         icon: <ChartNoAxesCombined />,
         key: "insights",
         children: [
-            { to: "/report-incomes", label: "Report", icon: <ChartColumnIncreasing /> },
+            { to: "/report-incomes", label: "Reports", icon: <ChartColumnIncreasing /> },
             { to: "/report-cashflow", label: "Monthly Cash Flow", icon: <TrendingUp /> },
-            { to: "/report-cashflow-detail", label: "Income & Expenses", icon: <Coins /> },
+            { to: "/report-cashflow-detail", label: "Incomes & Expenses", icon: <Coins /> },
             { to: "/report-services-staff", label: "Services by Staff", icon: <Sheet /> }, 
         ]
     },

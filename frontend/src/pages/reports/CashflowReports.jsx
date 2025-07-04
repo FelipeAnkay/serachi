@@ -11,6 +11,7 @@ import { useSupplierServices } from "../../store/supplierServices"
 import { useStaffServices } from "../../store/staffServices"
 import { ChartPie, Copy } from "lucide-react"
 import PieChartComponent from "../../components/PieChartComponent"
+import { useCustomerServices } from "../../store/customerServices"
 
 const COLORS = ["#6366F1", "#10B981", "#F59E0B", "#EF4444", "#3B82F6"]
 
@@ -23,6 +24,8 @@ const CashflowReports = () => {
     const [supplierList, setSupplierList] = useState([]);
     const { getStaffList } = useStaffServices();
     const [staffList, setStaffList] = useState([]);
+    const [customerList, setCustomerList] = useState([]);
+    const { getCustomerList } = useCustomerServices();
     const { getIncomeByDates } = useIncomeServices();
     const storeId = Cookies.get('storeId');
     const [incomeTerm, setIncomeTerm] = useState('');
@@ -46,9 +49,12 @@ const CashflowReports = () => {
             getIncomeByDates(dateRange.start, dateRange.end, storeId),
             getExpenseByDates(dateRange.start, dateRange.end, storeId)
         ])
+        console.log("Incomes: ", incomes)
+        const auxCustomer = await getCustomerList(storeId);
         const auxSupp = await getSupplierList(storeId);
         const auxStaff = await getStaffList(storeId);
-        //console.log("auxSupp y auxStaff", {auxSupp,auxStaff})
+        console.log("auxSupp, auxStaff, auxCustomer", {auxSupp,auxStaff,auxCustomer})
+        setCustomerList(auxCustomer.customerList)
         setSupplierList(auxSupp.supplierList);
         setStaffList(auxStaff.staffList);
         //console.log("incomes: ", incomes);
@@ -83,9 +89,26 @@ const CashflowReports = () => {
         setOpenModal(true);
     };
 
-    const filteredIncomes = incomeData.filter((income) =>
-        income.customerEmail.toLowerCase().includes(incomeTerm.toLowerCase())
-    );
+    const filteredIncomes = incomeData
+        .map((income) => {
+            const customer = customerList.find(s => s.email === income.customerEmail);
+            const responsible = [
+                customer?.name?.trim(),
+                customer?.lastName?.trim()
+            ].filter(Boolean).join(" ");
+            return {
+                ...income,
+                responsibleName: responsible,
+            };
+        })
+        .filter((income) => {
+            if (!incomeTerm) return true;
+            const term = incomeTerm.toLowerCase();
+            return (
+                income.responsibleName.toLowerCase().includes(term) ||
+                income.customerEmail.toLowerCase().includes(term)
+            );
+        });
 
     const totalIncomeAmount = filteredIncomes.reduce((sum, income) => sum + income.amount, 0);
     const avgIncomeAmount = filteredIncomes.length > 0 ? totalIncomeAmount / filteredIncomes.length : 0;
@@ -99,7 +122,7 @@ const CashflowReports = () => {
 
             return {
                 ...expense,
-                responsibleName: responsible.toLowerCase(),
+                responsibleName: responsible,
                 descriptionLower: expense.description?.toLowerCase() || "",
                 typeLower: expense.type?.toLowerCase() || "",
             };
@@ -108,9 +131,9 @@ const CashflowReports = () => {
             if (!expenseTerm) return true;
             const term = expenseTerm.toLowerCase();
             return (
-                expense.responsibleName.includes(term) ||
-                expense.descriptionLower.includes(term) ||
-                expense.typeLower.includes(term)
+                expense.responsibleName.toLowerCase().includes(term) ||
+                expense.descriptionLower.toLowerCase().includes(term) ||
+                expense.typeLower.toLowerCase().includes(term)
             );
         });
 
@@ -158,6 +181,7 @@ const CashflowReports = () => {
                                                     <tr className="text-center">
                                                         <th>Date</th>
                                                         <th>Customer Email</th>
+                                                        <th>Customer Name</th>
                                                         <th>Amount</th>
                                                         <th>Payment Method</th>
                                                     </tr>
@@ -167,6 +191,7 @@ const CashflowReports = () => {
                                                         <tr className="text-center">
                                                             <td>{formatDateShort(income.date)}</td>
                                                             <td>{income.customerEmail}</td>
+                                                            <td>{income.responsibleName}</td>
                                                             <td>{income.amount}</td>
                                                             <td>{income.paymentMethod}</td>
                                                         </tr>
