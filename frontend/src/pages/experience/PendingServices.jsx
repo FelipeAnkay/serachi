@@ -9,10 +9,13 @@ import { CalendarPlus } from 'lucide-react';
 import ServiceDetails from '../../components/ServiceDetails';
 import DeleteService from '../../components/DeleteService';
 import LoadingSpinner from '../../components/LoadingSpinner';
+import { useQuoteServices } from '../../store/quoteServices';
+import {formatDateShort} from '../../components/formatDateDisplay'
 
 
 export default function PendingServices() {
     const { createService, getServicesNoData, updateService } = useServiceServices()
+    const { getConfirmedQuoteList } = useQuoteServices();
     const [services, setServices] = useState([]);
     const [loading, setLoading] = useState(true);
     const storeId = Cookies.get('storeId');
@@ -33,8 +36,25 @@ export default function PendingServices() {
     const fetchServices = async () => {
         try {
             const response = await getServicesNoData(storeId);
-            //console.log("Service Response: ", response);
-            setServices(response.service);
+            console.log("Service Response: ", response);
+            const auxQuote = await getConfirmedQuoteList(storeId);
+            console.log("getConfirmedQuoteList Response: ", auxQuote);
+            const complementedServices = response.service
+                .map((service) => {
+                    //console.log("Mapeo de servicio: ",service)
+                    const quote = auxQuote.quoteList.find(q => q._id === service.quoteId);
+                    console.log("Quote encontrada es: ", quote)
+                    const dateIn = quote.dateIn || "";
+                    const dateOut = quote.dateOut || "";
+
+                    return {
+                        ...service,
+                        qDateIn: formatDateShort(dateIn),
+                        qDateOut: formatDateShort(dateOut),
+                    };
+                })
+            
+            setServices(complementedServices);
         } catch (error) {
             //console.error('Error fetching Services:', error);
             toast.error("Error fetching Services")
@@ -42,6 +62,11 @@ export default function PendingServices() {
             setLoading(false);
         }
     };
+
+    useEffect(() => {
+        console.log("Los servicios a listar son:", services)
+    }, [services])
+    
 
     useEffect(() => {
         //console.log("Entre a useEffect [storeId, location.key]", timezone)
@@ -137,9 +162,9 @@ export default function PendingServices() {
                                                     className="border rounded-lg p-4 hover:shadow transition relative bg-white border-slate-300 flex flex-col sm:flex-row sm:justify-between sm:items-center space-y-4 sm:space-y-0"
                                                 >
                                                     <h3 className="text-lg font-semibold text-gray-800">
-                                                        {service.name}
+                                                        {service.name} - Dates Quoted: {service.qDateIn} to {service.qDateOut}
                                                     </h3>
-                                                    <div className='justify-between items-center flex flex-col sm:flex-row gap-2 w-full sm:justify-end sm:w-1/2'>
+                                                    <div className='justify-between items-center flex flex-col sm:flex-row gap-2 w-full sm:justify-end sm:w-1/3'>
                                                         <div className="flex flex-col items-center mr-2">
                                                             <motion.button
                                                                 type='button'
