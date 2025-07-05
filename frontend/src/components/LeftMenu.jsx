@@ -8,7 +8,8 @@ import {
     Coins,
     Sheet,
     ShipWheel,
-    CalendarClock
+    CalendarClock,
+    Gauge
 } from "lucide-react";
 
 import logo from "../../public/Serachi_logo-nobg.png";
@@ -25,6 +26,7 @@ const menuItems = [
         icon: <PiggyBank />,
         key: "quotes",
         children: [
+            { to: "/quote-dashboard", label: "Dashboard", icon: <Gauge /> },
             { to: "/new-quote", label: "New", icon: <Receipt /> },
             { to: "/past-quote", label: "Created", icon: <BanknoteArrowDown /> },
             { to: "/confirmed-quote", label: "Confirmed", icon: <TicketCheck /> },
@@ -91,6 +93,7 @@ const menuItemsMed = [
         icon: <PiggyBank />,
         key: "quotes",
         children: [
+            { to: "/quote-dashboard", label: "Dashboard", icon: <Gauge /> },
             { to: "/new-quote", label: "New", icon: <Receipt /> },
             { to: "/past-quote", label: "Created", icon: <BanknoteArrowDown /> },
             { to: "/confirmed-quote", label: "Confirmed", icon: <TicketCheck /> },
@@ -178,6 +181,7 @@ const menuItemsPro = [
         icon: <PiggyBank />,
         key: "quotes",
         children: [
+            { to: "/quote-dashboard", label: "Dashboard", icon: <Gauge /> },
             { to: "/new-quote", label: "New", icon: <Receipt /> },
             { to: "/past-quote", label: "Created", icon: <BanknoteArrowDown /> },
             { to: "/confirmed-quote", label: "Confirmed", icon: <TicketCheck /> },

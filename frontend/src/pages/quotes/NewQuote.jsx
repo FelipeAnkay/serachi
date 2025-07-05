@@ -577,6 +577,7 @@ export default function NewQuote() {
                 _id: customer._id,
                 email: customer.email,
                 name: customer.name,
+                lastName: customer.lastName,
                 phone: customer.phone,
                 country: customer.country,
                 languages: customer.languages,
