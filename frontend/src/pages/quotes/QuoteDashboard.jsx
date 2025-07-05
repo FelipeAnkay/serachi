@@ -169,7 +169,7 @@ const QuoteDashboard = () => {
                                                             <td>{quote.customerName}</td>
                                                             <td>{quote.finalPrice}</td>
                                                             <td>{quote.payed}</td>
-                                                            <td>{quote.porcentagePayed.toFixed(2)}%</td>
+                                                            <td className={`${quote.porcentagePayed.toFixed(2) > 50 ? (quote.porcentagePayed.toFixed(2) > 99 ? 'text-green-500 font-bold' : 'text-green-300 font-semibold') : 'text-red-400 font-semibold text-lg'}`}>{quote.porcentagePayed.toFixed(2)}%</td>
                                                         </tr>
                                                     </tbody>
                                                 ))}
