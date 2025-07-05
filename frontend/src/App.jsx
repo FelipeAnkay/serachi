@@ -58,6 +58,7 @@ import SetFacilities from './pages/settings/SetFacilities';
 import ServicesByStaffReport from './pages/reports/ServicesByStaffReport';
 import ServicesFacility from './pages/experience/ServicesFacility';
 import FacilitySchedule from './pages/experience/FacilitySchedule';
+import QuoteDashboard from './pages/quotes/QuoteDashboard';
 
 const ProtectedRoute = ({ children, requiredPermission, storePermission }) => {
   const { isAuthenticated, user, logout } = useAuthStore();
@@ -208,70 +209,70 @@ function App() {
         <Route
           path="/experience-calendar"
           element={
-            <ProtectedRoute requiredPermission="VIEW_EXPERIENCES" storePermission={["BAS","MED","PRO"]}>
+            <ProtectedRoute requiredPermission="VIEW_EXPERIENCES" storePermission={["BAS", "MED", "PRO"]}>
               <Experiences />
             </ProtectedRoute>}
         />
         <Route
           path="/experience-create-service"
           element={
-            <ProtectedRoute requiredPermission="VIEW_EXPERIENCES" storePermission={["BAS","MED","PRO"]}>
+            <ProtectedRoute requiredPermission="VIEW_EXPERIENCES" storePermission={["BAS", "MED", "PRO"]}>
               <CreateService />
             </ProtectedRoute>}
         />
         <Route
           path="/experience-add-items"
           element={
-            <ProtectedRoute requiredPermission="VIEW_EXPERIENCES" storePermission={["BAS","MED","PRO"]}>
+            <ProtectedRoute requiredPermission="VIEW_EXPERIENCES" storePermission={["BAS", "MED", "PRO"]}>
               <AddItemsExperience />
             </ProtectedRoute>}
         />
         <Route
           path="/experience-open-tabs"
           element={
-            <ProtectedRoute requiredPermission="VIEW_EXPERIENCES" storePermission={["BAS","MED","PRO"]}>
+            <ProtectedRoute requiredPermission="VIEW_EXPERIENCES" storePermission={["BAS", "MED", "PRO"]}>
               <OpenTabs />
             </ProtectedRoute>}
         />
         <Route
           path="/delete-services"
           element={
-            <ProtectedRoute requiredPermission="VIEW_EXPERIENCES" storePermission={["BAS","MED","PRO"]}>
+            <ProtectedRoute requiredPermission="VIEW_EXPERIENCES" storePermission={["BAS", "MED", "PRO"]}>
               <DeleteServices />
             </ProtectedRoute>}
         />
         <Route
           path="/experience-list"
           element={
-            <ProtectedRoute requiredPermission="VIEW_EXPERIENCES" storePermission={["MED","PRO"]}>
+            <ProtectedRoute requiredPermission="VIEW_EXPERIENCES" storePermission={["MED", "PRO"]}>
               <ExperienceList />
             </ProtectedRoute>}
         />
         <Route
           path="/set-service-staff"
           element={
-            <ProtectedRoute requiredPermission="VIEW_EXPERIENCES" storePermission={["BAS","MED","PRO"]}>
+            <ProtectedRoute requiredPermission="VIEW_EXPERIENCES" storePermission={["BAS", "MED", "PRO"]}>
               <AssignStaff />
             </ProtectedRoute>}
         />
         <Route
           path="/set-service-dates"
           element={
-            <ProtectedRoute requiredPermission="VIEW_EXPERIENCES" storePermission={["BAS","MED","PRO"]}>
+            <ProtectedRoute requiredPermission="VIEW_EXPERIENCES" storePermission={["BAS", "MED", "PRO"]}>
               <PendingServices />
             </ProtectedRoute>}
         />
         <Route
           path="/service-facility"
           element={
-            <ProtectedRoute requiredPermission="VIEW_EXPERIENCES" storePermission={["BAS","MED","PRO"]}>
+            <ProtectedRoute requiredPermission="VIEW_EXPERIENCES" storePermission={["BAS", "MED", "PRO"]}>
               <ServicesFacility />
             </ProtectedRoute>}
         />
         <Route
           path="/facility-schedule"
           element={
-            <ProtectedRoute requiredPermission="VIEW_EXPERIENCES" storePermission={["BAS","MED","PRO"]}>
+            <ProtectedRoute requiredPermission="VIEW_EXPERIENCES" storePermission={["BAS", "MED", "PRO"]}>
               <FacilitySchedule />
             </ProtectedRoute>}
         />
@@ -283,154 +284,161 @@ function App() {
         <Route
           path="/bookings"
           element={
-            <ProtectedRoute requiredPermission="VIEW_BOOKINGS" storePermission={["MED","PRO"]}>
+            <ProtectedRoute requiredPermission="VIEW_BOOKINGS" storePermission={["MED", "PRO"]}>
               <Booking />
             </ProtectedRoute>}
         />
         <Route
           path="/booking-calendar"
           element={
-            <ProtectedRoute requiredPermission="VIEW_BOOKINGS" storePermission={["MED","PRO"]}>
+            <ProtectedRoute requiredPermission="VIEW_BOOKINGS" storePermission={["MED", "PRO"]}>
               <BookingSchedule />
             </ProtectedRoute>}
         />
         <Route
           path="/create-reservation"
           element={
-            <ProtectedRoute requiredPermission="VIEW_BOOKINGS" storePermission={["MED","PRO"]}>
+            <ProtectedRoute requiredPermission="VIEW_BOOKINGS" storePermission={["MED", "PRO"]}>
               <CreateReservation />
+            </ProtectedRoute>}
+        />
+        <Route
+          path="/quote-dashboard"
+          element={
+            <ProtectedRoute requiredPermission="VIEW_QUOTES" storePermission={["BAS", "MED", "PRO"]}>
+              <QuoteDashboard />
             </ProtectedRoute>}
         />
         <Route
           path="/new-quote"
           element={
-            <ProtectedRoute requiredPermission="VIEW_QUOTES" storePermission={["BAS","MED","PRO"]}>
+            <ProtectedRoute requiredPermission="VIEW_QUOTES" storePermission={["BAS", "MED", "PRO"]}>
               <NewQuote />
             </ProtectedRoute>}
         />
         <Route
           path="/new-quote/:quoteId"
           element={
-            <ProtectedRoute requiredPermission="VIEW_QUOTES" storePermission={["BAS","MED","PRO"]}>
+            <ProtectedRoute requiredPermission="VIEW_QUOTES" storePermission={["BAS", "MED", "PRO"]}>
               <NewQuote />
             </ProtectedRoute>}
         />
         <Route
           path="/past-quote"
           element={
-            <ProtectedRoute requiredPermission="VIEW_QUOTES" storePermission={["BAS","MED","PRO"]}>
+            <ProtectedRoute requiredPermission="VIEW_QUOTES" storePermission={["BAS", "MED", "PRO"]}>
               <OpenQuote />
             </ProtectedRoute>}
         />
         <Route
           path="/confirmed-quote"
           element={
-            <ProtectedRoute requiredPermission="VIEW_QUOTES" storePermission={["BAS","MED","PRO"]}>
+            <ProtectedRoute requiredPermission="VIEW_QUOTES" storePermission={["BAS", "MED", "PRO"]}>
               <ConfirmedQuote />
             </ProtectedRoute>}
         />
         <Route
           path="/cashflow"
           element={
-            <ProtectedRoute requiredPermission="VIEW_CASHFLOW" storePermission={["BAS","MED","PRO"]}>
+            <ProtectedRoute requiredPermission="VIEW_CASHFLOW" storePermission={["BAS", "MED", "PRO"]}>
               <CashFlow />
             </ProtectedRoute>}
         />
         <Route
           path="/cashflow-summary"
           element={
-            <ProtectedRoute requiredPermission="VIEW_CASHFLOW" storePermission={["BAS","MED","PRO"]}>
+            <ProtectedRoute requiredPermission="VIEW_CASHFLOW" storePermission={["BAS", "MED", "PRO"]}>
               <CashFlowSummary />
             </ProtectedRoute>}
         />
         <Route
           path="/new-income"
           element={
-            <ProtectedRoute requiredPermission="VIEW_CASHFLOW" storePermission={["BAS","MED","PRO"]}>
+            <ProtectedRoute requiredPermission="VIEW_CASHFLOW" storePermission={["BAS", "MED", "PRO"]}>
               <NewIncome />
             </ProtectedRoute>}
         />
         <Route
           path="/new-expense"
           element={
-            <ProtectedRoute requiredPermission="VIEW_CASHFLOW" storePermission={["BAS","MED","PRO"]}>
+            <ProtectedRoute requiredPermission="VIEW_CASHFLOW" storePermission={["BAS", "MED", "PRO"]}>
               <NewExpense />
             </ProtectedRoute>}
         />
         <Route
           path="/payroll-calculator"
           element={
-            <ProtectedRoute requiredPermission="VIEW_PAYROLL" storePermission={["MED","PRO"]}>
+            <ProtectedRoute requiredPermission="VIEW_PAYROLL" storePermission={["MED", "PRO"]}>
               <PRCalculator />
             </ProtectedRoute>}
         />
         <Route
           path="/set-products"
           element={
-            <ProtectedRoute requiredPermission="VIEW_SETTINGS" storePermission={["BAS","MED","PRO"]}>
+            <ProtectedRoute requiredPermission="VIEW_SETTINGS" storePermission={["BAS", "MED", "PRO"]}>
               <SetProducts />
             </ProtectedRoute>}
         />
         <Route
           path="/set-rooms"
           element={
-            <ProtectedRoute requiredPermission="VIEW_SETTINGS" storePermission={["BAS","MED","PRO"]}>
+            <ProtectedRoute requiredPermission="VIEW_SETTINGS" storePermission={["BAS", "MED", "PRO"]}>
               <SetRooms />
             </ProtectedRoute>}
         />
         <Route
           path="/set-staff-rates"
           element={
-            <ProtectedRoute requiredPermission="VIEW_SETTINGS" storePermission={["BAS","MED","PRO"]}>
+            <ProtectedRoute requiredPermission="VIEW_SETTINGS" storePermission={["BAS", "MED", "PRO"]}>
               <SetStaffFee />
             </ProtectedRoute>}
         />
         <Route
           path="/set-roles"
           element={
-            <ProtectedRoute requiredPermission="VIEW_SETTINGS" storePermission={["BAS","MED","PRO"]}>
+            <ProtectedRoute requiredPermission="VIEW_SETTINGS" storePermission={["BAS", "MED", "PRO"]}>
               <SetRoles />
             </ProtectedRoute>}
         />
         <Route
           path="/set-supplier"
           element={
-            <ProtectedRoute requiredPermission="VIEW_SETTINGS" storePermission={["BAS","MED","PRO"]}>
+            <ProtectedRoute requiredPermission="VIEW_SETTINGS" storePermission={["BAS", "MED", "PRO"]}>
               <SetSupplier />
             </ProtectedRoute>}
         />
         <Route
           path="/set-store"
           element={
-            <ProtectedRoute requiredPermission="VIEW_SETTINGS" storePermission={["BAS","MED","PRO"]}>
+            <ProtectedRoute requiredPermission="VIEW_SETTINGS" storePermission={["BAS", "MED", "PRO"]}>
               <SetStore />
             </ProtectedRoute>}
         />
         <Route
           path="/set-users"
           element={
-            <ProtectedRoute requiredPermission="VIEW_SETTINGS" storePermission={["BAS","MED","PRO"]}>
+            <ProtectedRoute requiredPermission="VIEW_SETTINGS" storePermission={["BAS", "MED", "PRO"]}>
               <SetUsers2 />
             </ProtectedRoute>}
         />
         <Route
           path="/set-customer"
           element={
-            <ProtectedRoute requiredPermission="VIEW_SETTINGS" storePermission={["BAS","MED","PRO"]}>
+            <ProtectedRoute requiredPermission="VIEW_SETTINGS" storePermission={["BAS", "MED", "PRO"]}>
               <SetCustomer />
             </ProtectedRoute>}
         />
         <Route
           path="/set-partner"
           element={
-            <ProtectedRoute requiredPermission="VIEW_SETTINGS" storePermission={["BAS","MED","PRO"]}>
+            <ProtectedRoute requiredPermission="VIEW_SETTINGS" storePermission={["BAS", "MED", "PRO"]}>
               <SetPartner />
             </ProtectedRoute>}
         />
         <Route
           path="/set-staff"
           element={
-            <ProtectedRoute requiredPermission="VIEW_SETTINGS" storePermission={["BAS","MED","PRO"]}>
+            <ProtectedRoute requiredPermission="VIEW_SETTINGS" storePermission={["BAS", "MED", "PRO"]}>
               <SetStaff />
             </ProtectedRoute>}
         />
@@ -442,14 +450,14 @@ function App() {
         <Route
           path="/set-types"
           element={
-            <ProtectedRoute requiredPermission="VIEW_SETTINGS" storePermission={["BAS","MED","PRO"]}>
+            <ProtectedRoute requiredPermission="VIEW_SETTINGS" storePermission={["BAS", "MED", "PRO"]}>
               <SetTypes />
             </ProtectedRoute>}
         />
         <Route
           path="/set-facility"
           element={
-            <ProtectedRoute requiredPermission="VIEW_SETTINGS" storePermission={["BAS","MED","PRO"]}>
+            <ProtectedRoute requiredPermission="VIEW_SETTINGS" storePermission={["BAS", "MED", "PRO"]}>
               <SetFacilities />
             </ProtectedRoute>}
         />
@@ -498,28 +506,28 @@ function App() {
         <Route
           path="/report-incomes"
           element={
-            <ProtectedRoute requiredPermission="VIEW_REPORTS" storePermission={["BAS","MED","PRO"]}>
+            <ProtectedRoute requiredPermission="VIEW_REPORTS" storePermission={["BAS", "MED", "PRO"]}>
               <Reports />
             </ProtectedRoute>}
         />
         <Route
           path="/report-cashflow"
           element={
-            <ProtectedRoute requiredPermission="VIEW_REPORTS" storePermission={["BAS","MED","PRO"]}>
+            <ProtectedRoute requiredPermission="VIEW_REPORTS" storePermission={["BAS", "MED", "PRO"]}>
               <MonthlyCashFlow />
             </ProtectedRoute>}
         />
         <Route
           path="/report-cashflow-detail"
           element={
-            <ProtectedRoute requiredPermission="VIEW_REPORTS" storePermission={["BAS","MED","PRO"]}>
+            <ProtectedRoute requiredPermission="VIEW_REPORTS" storePermission={["BAS", "MED", "PRO"]}>
               <CashflowReports />
             </ProtectedRoute>}
         />
         <Route
           path="/report-services-staff"
           element={
-            <ProtectedRoute requiredPermission="VIEW_REPORTS" storePermission={["BAS","MED","PRO"]}>
+            <ProtectedRoute requiredPermission="VIEW_REPORTS" storePermission={["BAS", "MED", "PRO"]}>
               <ServicesByStaffReport />
             </ProtectedRoute>}
         />
