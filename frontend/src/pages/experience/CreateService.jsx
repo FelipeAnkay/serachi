@@ -272,7 +272,12 @@ export default function CreateService() {
         setLoading(true);
         //console.log("En  handleSubmit: ", customServiceList);
         try {
-            let actualServiceList = [...(selectedExperience.experience.serviceList || [])];
+            console.log("selectedExperience es: ", selectedExperience)
+            let actualServiceList = []
+            if (selectedExperience?.experience?.serviceList?.length > 0) {
+                console.log("Entre a IF selectedExperience");
+                actualServiceList = [...selectedExperience.experience.serviceList];
+            }
             //console.log("El listado actual de servicios es: ", actualServiceList)
             //console.log("La experiencia seleccionada es: ", selectedExperience)
             for (const auxService of customServiceList) {
@@ -296,7 +301,7 @@ export default function CreateService() {
 
             }
             //console.log("El listado actualizado de servicios es: ", actualServiceList)
-            if (selectedExperience?.value != "") {
+            if (selectedExperience?.experience?.serviceList?.length > 0) {
                 const payload = {
                     serviceList: actualServiceList,
                 }
@@ -306,7 +311,7 @@ export default function CreateService() {
             handleResetCustomService();
             toast.success("Services created");
         } catch (error) {
-            //console.log("Error en handleSubmit:", error);
+            console.log("Error en handleSubmit:", error);
             toast.error("Error creating Services")
         } finally {
             setLoading(false);
