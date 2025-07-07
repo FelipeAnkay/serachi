@@ -116,7 +116,7 @@ const QuoteDashboard = () => {
                 <h1 className="text-3xl font-bold mb-6 text-[#00C49F] text-center">Quote Dashboard</h1>
 
                 <div className="w-full">
-                    <div width="100%" height={300}>
+                    <div className="flex justify-center">
                         <PieChartPayed
                             totalPayedFiltered={totalPayedFiltered}
                             notPayed={totalQuotedFiltered - totalPayedFiltered}

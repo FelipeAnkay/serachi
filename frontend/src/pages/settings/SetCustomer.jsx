@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { CircleX, Copy, Send, Trash2, UsersRound } from 'lucide-react';
+import { CircleX, Copy, Send, Signature, Trash2, UsersRound } from 'lucide-react';
 import Cookies from 'js-cookie';
 import toast from 'react-hot-toast';
 import { useCustomerServices } from '../../store/customerServices';
@@ -9,6 +9,8 @@ import { useStoreServices } from '../../store/storeServices';
 import { useAuthStore } from '../../store/authStore';
 import SendProfileModal from '../../components/SendProfileModal';
 import LoadingSpinner from '../../components/LoadingSpinner';
+import { useFormRecordServices } from '../../store/formRecordServices';
+import ViewSignedForms from '../../components/ViewSignedForm';
 
 const SetCustomer = () => {
     const { getCustomerList, createCustomer, getCustomerEmail, removeCustomer, updateCustomer } = useCustomerServices();
@@ -27,6 +29,9 @@ const SetCustomer = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const [modalProfileOpen, setModalProfileOpen] = useState(false);
     const [sendProfile, setSendProfile] = useState(false);
+    const { getFormRecordByEmail } = useFormRecordServices();
+    const [modalFormOpen, setModalFormOpen] = useState(false);
+    const [records, setRecords] = useState([]);
 
     useEffect(() => {
         const fetchCustomer = async () => {
@@ -61,6 +66,29 @@ const SetCustomer = () => {
             //console.log("La lista de partner es: ", partnerList)
         }
     }, []);
+
+    const fetchRecords = async (customer) => {
+        setLoading(true)
+        let formList = [];
+        //console.log("Entré a fetchRecords: ", experiences)
+        try {
+            const auxForm = await getFormRecordByEmail(customer.email, storeId);
+            //console.log("Resultado de getFormRecordByEmail: ", auxForm)
+            if (auxForm.formRecordList.length > 0) {
+                auxForm.formRecordList.forEach(record => {
+                    formList.push(record);
+                });
+            }else{
+                return false;
+            }
+            setRecords(formList);
+            return true;
+        } catch (error) {
+            toast.error("Error getting forms")
+        } finally {
+            setLoading(false)
+        }
+    }
 
     useEffect(() => {
         if (!modalOpen) return; // solo activa listener si el modal está abierto
@@ -109,6 +137,18 @@ const SetCustomer = () => {
         setModalOpen(true);
     };
 
+    const handleOpenFormModal = async (customer) => {
+        //console.log("El customer es: ", customer)
+        const auxRecords = await fetchRecords(customer);
+        //console.log("Records: ", auxRecords)
+        if (auxRecords) {
+            setModalFormOpen(true);
+        }else{
+            toast.error("No forms signed")
+        }
+
+    };
+
     const closeModal = () => {
         setModalOpen(false);
         setConfirmDelete(null);
@@ -125,6 +165,11 @@ const SetCustomer = () => {
             urlToken: ''
         })
     };
+
+    const closeFormModal = () => {
+        setRecords([]);
+        setModalFormOpen(false);
+    }
     const handleEmailCheck = async () => {
         if (!customerData.email) return;
 
@@ -251,7 +296,7 @@ const SetCustomer = () => {
                                         key={customer._id}
                                         className="relative text-slate-800 rounded-lg shadow p-4 bg-white border border-slate-300  hover:bg-blue-100 transition-all"
                                     >
-                                        <div className='flex flex-row'>
+                                        <div className='flex flex-col'>
                                             <div className="flex flex-col w-7/8" onClick={() => openEditCustomerModal(customer)}>
                                                 <p><strong>Name:</strong> {customer.name}</p>
                                                 <p><strong>Last Name:</strong> {customer.lastName || ''}</p>
@@ -260,7 +305,7 @@ const SetCustomer = () => {
                                                 </p>
                                                 <p><strong>Phone:</strong> {customer.phone || '-'}</p>
                                             </div>
-                                            <div className='w-1/8 flex flex-col items-center ml-2'>
+                                            <div className='w-full flex flex-row justify-between mt-2'>
                                                 {sendProfile && (
                                                     <button
                                                         onClick={() => openSendProfileModal(customer)}
@@ -279,6 +324,15 @@ const SetCustomer = () => {
                                                                 .catch(() => toast.error("Failed to copy"));
                                                         }}
                                                         className="text-blue-500 hover:text-blue-900"
+                                                    />
+                                                </button>
+                                                <button className='mt-2' title="View Signed Forms">
+                                                    <Signature
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            handleOpenFormModal(customer);
+                                                        }}
+                                                        className="text-slate-700 hover:text-slate-900"
                                                     />
                                                 </button>
                                                 <button
@@ -391,6 +445,13 @@ const SetCustomer = () => {
                             isOpen={modalProfileOpen}
                             onClose={() => setModalProfileOpen(false)}
                             customerEmail={customerData.email}
+                        />
+                    )}
+                    {modalFormOpen && (
+                        <ViewSignedForms
+                            forms={records}
+                            isOpen={modalFormOpen}
+                            onClose={() => closeFormModal()}
                         />
                     )}
                 </AnimatePresence>

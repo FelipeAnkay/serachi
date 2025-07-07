@@ -9,7 +9,7 @@ const PieChartPayed = ({ totalPayedFiltered, notPayed }) => {
   const COLORS = ['#00C49F', '#FF8042'];
 
   return (
-    <div className="w-full md:w-1/2 mx-auto mt-8 bg-sky-50 dark:bg-slate-800 p-4 rounded">
+    <div className="w-fit mx-auto mt-8 bg-sky-50 dark:bg-slate-800 p-4 rounded">
       <h3 className="text-lg font-semibold text-center mb-4 text-slate-900 dark:text-slate-100">
         Payed vs Not payed
       </h3>

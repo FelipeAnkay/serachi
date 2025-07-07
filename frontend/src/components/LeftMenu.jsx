@@ -79,10 +79,10 @@ const menuItems = [
             { to: "/set-rooms", label: "Rooms", icon: <Bed /> },
             { to: "/set-products", label: "Products", icon: <Boxes /> },
             { to: "/set-partner", label: "Partners", icon: <Handshake /> },
-            { to: "/set-supplier", label: "Supplier", icon: <Truck /> },
+            { to: "/set-supplier", label: "Suppliers", icon: <Truck /> },
             { to: "/set-types", label: "Types", icon: <Boxes /> },
             { to: "/set-store", label: "Store", icon: <Store /> },
-            { to: "/set-facility", label: "Facility", icon: <Ship /> },
+            { to: "/set-facility", label: "Facilities", icon: <Ship /> },
         ]
     }
 ];

@@ -8,6 +8,7 @@ import { useFacilityReservationServices } from '../store/facilityReservationServ
 import { endOfDayUTC, formatDateShort, formatEndOfDayDateISO } from './formatDateDisplay';
 import { differenceInCalendarDays } from 'date-fns';
 import { useServiceServices } from '../store/serviceServices';
+import { useRef } from 'react';
 
 
 export default function AssignFacilityModal({ isOpen, onClose, service }) {
@@ -19,7 +20,7 @@ export default function AssignFacilityModal({ isOpen, onClose, service }) {
     const [facilityList, setFacilityList] = useState([])
     const [selectedDates, setSelectedDates] = useState({})
     const serviceDays = differenceInCalendarDays(new Date(service.dateOut), new Date(service.dateIn)) + 1;
-
+    const modalRef = useRef(null);
     useEffect(() => {
         const handleKeyDown = (e) => {
             if (e.key === 'Escape') onClose()
@@ -28,6 +29,12 @@ export default function AssignFacilityModal({ isOpen, onClose, service }) {
         document.addEventListener('keydown', handleKeyDown)
         return () => document.removeEventListener('keydown', handleKeyDown)
     }, [onClose])
+
+    useEffect(() => {
+        if (isOpen && modalRef.current) {
+            modalRef.current.focus();
+        }
+    }, [isOpen]);
 
 
     const handleSelectFacility = async (facility) => {
@@ -146,7 +153,7 @@ export default function AssignFacilityModal({ isOpen, onClose, service }) {
                 exit={{ opacity: 0 }}
             >
                 <motion.div
-                    className="bg-sky-50 rounded-2xl p-6 max-w-lg w-[90%] h-[90%] overflow-y-auto relative"
+                    className="relative bg-sky-50 rounded-2xl p-6 max-w-lg w-[90%] max-h-[90vh] overflow-y-auto"
                     initial={{ scale: 0.8 }}
                     animate={{ scale: 1 }}
                     exit={{ scale: 0.8 }}
@@ -154,14 +161,14 @@ export default function AssignFacilityModal({ isOpen, onClose, service }) {
                 >
                     <button
                         type="button"
-                        className="absolute top-3 right-3 text-gray-300 hover:text-slate-800"
+                        className="absolute  top-3 right-3 text-slate-800 hover:text-gray-500"
                         onClick={onClose}
                     >
                         <CircleX />
                     </button>
 
                     <h2 className="text-xl font-bold mb-4 text-center text-slate-800">Assign Facility</h2>
-                    <div>
+                    <div ref={modalRef} tabIndex={-1}>
                         <p className='font-semibold'>Dates: <span>{formatDateShort(service.dateIn)}</span> to <span>{formatDateShort(service.dateOut)}</span></p>
                         <label>You need to assign {serviceDays} days</label>
                     </div>

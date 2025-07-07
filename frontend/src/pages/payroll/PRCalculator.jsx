@@ -488,7 +488,7 @@ const PRCalculator = () => {
                                         ).map(([staffEmail, total], index) => (
                                             <tr key={staffEmail || index} className='border-t border-white/20'>
                                                 <td className='px-4 py-2 text-left'>{staffEmail}</td>
-                                                <td className='px-4 py-2 text-center font-bold text-green-400'>
+                                                <td className='px-4 py-2 text-center font-bold text-[#0d6c77]'>
                                                     ${total.toFixed(2)}
                                                 </td>
                                             </tr>
@@ -582,7 +582,7 @@ const PRCalculator = () => {
                             <button
                                 onClick={handleRegisterPayroll}
                                 disabled={isSubmitting}
-                                className={`mt-4 px-4 py-2 rounded text-slate-800 font-semibold ${isSubmitting ? 'bg-gray-500 cursor-not-allowed' : 'bg-green-600 hover:bg-green-700'}
+                                className={`mt-4 px-4 py-2 rounded text-sky-50 font-semibold ${isSubmitting ? 'bg-slate-600 text-cyan-50 cursor-not-allowed' : 'bg-[#118290] hover:bg-[#0d6c77] text-cyan-50'}
   `}
                             >
                                 {isSubmitting ? 'Processing...' : 'Register Payroll'}
