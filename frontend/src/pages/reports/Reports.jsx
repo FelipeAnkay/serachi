@@ -109,7 +109,7 @@ const Reports = () => {
     const CustomTooltip = ({ active, payload, label }) => {
         if (active && payload && payload.length) {
             return (
-                <div className="bg-gray-800 text-slate-800 rounded-lg p-3 shadow-lg text-sm">
+                <div className="bg-sky-50 text-slate-800 rounded-lg p-3 shadow-lg text-sm">
                     <p className="font-semibold mb-2">{label}</p>
                     {payload.map((entry, index) => (
                         <p key={index} className="flex items-center space-x-2">
@@ -118,7 +118,7 @@ const Reports = () => {
                                 style={{ backgroundColor: entry.color }}
                             />
                             <span>{entry.name}:</span>
-                            <span className="font-bold">{entry.value}</span>
+                            <span className="font-bold">{entry.value.toFixed(2)}</span>
                         </p>
                     ))}
                 </div>
@@ -251,7 +251,7 @@ const Reports = () => {
                                     exit={{ opacity: 0 }}
                                     className="bg-sky-50 p-4 rounded-2xl shadow-md min-w-[400px] max-w-xl mx-auto"
                                 >
-                                    <h2 className="text-xl font-semibold mb-2">Backoffice Services [ {auxBackServices.length || 0} ]</h2>
+                                    <h2 className="text-xl font-semibold mb-2">Back Office Services [ {auxBackServices.length || 0} ]</h2>
                                     <ResponsiveContainer width="100%" height={350}>
                                         <PieChart>
                                             <Pie

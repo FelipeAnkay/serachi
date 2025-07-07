@@ -150,18 +150,18 @@ export default function CashFlowSummary() {
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 bg-white">
                             {/* Incomes List */}
                             <div className="ml-2">
-                                <h3 className="text-lg font-semibold mb-2 border-b pb-1">Incomes</h3>
+                                <h3 className="text-lg font-semibold mb-2 border-b pb-1 text-center">Incomes</h3>
                                 <div className="space-y-2 max-h-200 overflow-auto">
                                     {formData.incomeList.map((item, index) => (
-                                        <div key={index} className="bg-green-800 p-3 rounded" onClick={() => handleItemClick("income", item)}>
+                                        <div key={index} className="bg-green-300 p-3 rounded" onClick={() => handleItemClick("income", item)}>
                                             <div className="flex justify-between">
                                                 <span>{formatDateDisplay(item.date)}</span>
-                                                <span className="font-bold text-green-300">${item.amount.toFixed(2)}</span>
+                                                <span className="font-bold text-green-900">${item.amount.toFixed(2)}</span>
                                             </div>
-                                            <div className="text-sm text-gray-300">
+                                            <div className="text-sm text-slate-700">
                                                 {item.customerEmail || "Without Customer Data"}
                                             </div>
-                                            <div className="text-xs text-gray-400">
+                                            <div className="text-xs text-gray-500">
                                                 {item.paymentMethod}
                                             </div>
                                         </div>
@@ -171,18 +171,18 @@ export default function CashFlowSummary() {
 
                             {/* Expenses List */}
                             <div className="mr-2">
-                                <h3 className="text-lg font-semibold mb-2 border-b pb-1">Expenses</h3>
+                                <h3 className="text-lg font-semibold mb-2 border-b pb-1 text-center">Expenses</h3>
                                 <div className="space-y-2 max-h-200 overflow-auto">
                                     {formData.expenseList.map((item, index) => (
-                                        <div key={index} className="bg-red-800 p-3 rounded" onClick={() => handleItemClick("expense", item)}>
+                                        <div key={index} className="bg-red-400 p-3 rounded" onClick={() => handleItemClick("expense", item)}>
                                             <div className="flex justify-between" >
                                                 <span>{formatDateDisplay(item.date)}</span>
-                                                <span className="font-bold text-red-200">${item.amount.toFixed(2)}</span>
+                                                <span className="font-bold text-red-900">${item.amount.toFixed(2)}</span>
                                             </div>
-                                            <div className="text-sm text-gray-300">
+                                            <div className="text-sm text-slate-700">
                                                 {item.description || "Sin descripción"}
                                             </div>
-                                            <div className="text-xs text-gray-400">
+                                            <div className="text-xs text-gray-500">
                                                 {item.paymentMethod}
                                             </div>
                                         </div>
@@ -194,35 +194,35 @@ export default function CashFlowSummary() {
                     {/* MODAL EDICIÓN */}
                     {selectedItem && (
                         <div className="fixed inset-0 bg-black/90 flex items-center justify-center z-50">
-                            <div className="bg-[#18394C] text-slate-800 p-6 rounded-xl w-full max-w-md space-y-4">
+                            <div className="bg-sky-50 text-slate-800 p-6 rounded-xl w-full max-w-md space-y-4">
                                 <h3 className="text-xl font-bold text-center">Edit {selectedItem.type}</h3>
-                                <label className="block text-sm">Date:</label>
+                                <label className="block text-sm font-semibold">Date:</label>
                                 <input
                                     type="date"
                                     name="date"
                                     value={formatDateInput(selectedItem.data.date)}
                                     onChange={(e) => handleEditChange({ target: { name: "date", value: e.target.value } })}
-                                    className="w-full border rounded p-2"
+                                    className="w-full border rounded p-2 bg-white"
                                 />
 
-                                <label className="block text-sm">Amount:</label>
+                                <label className="block text-sm font-semibold">Amount:</label>
                                 <input
                                     type="number"
                                     name="amount"
                                     value={selectedItem.data.amount}
                                     onChange={handleEditChange}
-                                    className="w-full border rounded p-2"
+                                    className="w-full border rounded p-2 bg-white"
                                 />
-                                <label className="block text-sm">Description:</label>
+                                <label className="block text-sm font-semibold">Description:</label>
                                 <input
                                     type="text"
                                     name="description"
                                     value={selectedItem.data.description}
                                     onChange={handleEditChange}
-                                    className="w-full border rounded p-2"
+                                    className="w-full border rounded p-2 bg-white"
                                 />
                                 {(selectedItem.type === "expense") && (
-                                    <div className="mt-6">
+                                    <div className="">
 
                                         <label className="block font-medium mb-1">Type:</label>
                                         <select
@@ -241,7 +241,7 @@ export default function CashFlowSummary() {
                                     </div>
                                 )}
 
-                                <label className="block text-sm">Payment Method:</label>
+                                <label className="block text-sm font-semibold">Payment Method:</label>
 
                                 <select
                                     name="paymentMethod"
@@ -258,11 +258,11 @@ export default function CashFlowSummary() {
                                 </select>
 
                                 <div className="flex justify-between mt-4">
-                                    <button onClick={() => setSelectedItem(null)} className="bg-red-800 px-4 py-2 rounded">
-                                        Cancel
-                                    </button>
-                                    <button onClick={handleSave} className="bg-green-800 text-slate-800 px-4 py-2 rounded">
+                                    <button onClick={handleSave} className="bg-[#118290] hover:bg-[#0d6c77] text-cyan-50 px-4 py-2 rounded">
                                         Save
+                                    </button>
+                                    <button onClick={() => setSelectedItem(null)} className="bg-slate-600 hover:bg-slate-700 text-cyan-50 px-4 py-2 rounded">
+                                        Close
                                     </button>
                                 </div>
                             </div>

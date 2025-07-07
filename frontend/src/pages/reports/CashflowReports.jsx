@@ -49,11 +49,11 @@ const CashflowReports = () => {
             getIncomeByDates(dateRange.start, dateRange.end, storeId),
             getExpenseByDates(dateRange.start, dateRange.end, storeId)
         ])
-        console.log("Incomes: ", incomes)
+        //console.log("Incomes: ", incomes)
         const auxCustomer = await getCustomerList(storeId);
         const auxSupp = await getSupplierList(storeId);
         const auxStaff = await getStaffList(storeId);
-        console.log("auxSupp, auxStaff, auxCustomer", {auxSupp,auxStaff,auxCustomer})
+        //console.log("auxSupp, auxStaff, auxCustomer", {auxSupp,auxStaff,auxCustomer})
         setCustomerList(auxCustomer.customerList)
         setSupplierList(auxSupp.supplierList);
         setStaffList(auxStaff.staffList);
@@ -163,7 +163,7 @@ const CashflowReports = () => {
                                 className="bg-sky-50 p-4 rounded-2xl shadow-md text-slate-800"
                             >
                                 <h2 className="text-xl font-semibold mb-2">
-                                    Income List - Qty: {filteredIncomes.length} | Total Amount: <span className="text-green-300">${totalIncomeAmount.toFixed(2)}</span> | Avg: <span className="text-blue-300">${avgIncomeAmount.toFixed(2)}</span>
+                                    Income List - Qty: {filteredIncomes.length} | Total: <span className="text-[#0d6c77]">${totalIncomeAmount.toFixed(2)}</span> | Avg: <span className="text-cyan-500">${avgIncomeAmount.toFixed(2)}</span>
                                 </h2>
 
                                 {incomeData?.length > 0 && (
@@ -232,7 +232,7 @@ const CashflowReports = () => {
                             className="bg-sky-50 p-4 rounded-2xl shadow-md text-slate-800"
                         >
                             <h2 className="text-xl font-semibold mb-2">
-                                Expense List - Qty: {filteredExpenses.length} | Total: <span className="text-red-300">${totalExpensesFiltered.toFixed(2)}</span> | Avg: <span className="text-orange-300">${avgExpensesFiltered.toFixed(2)}</span>
+                                Expense List - Qty: {filteredExpenses.length} | Total: <span className="text-[#0d6c77]">${totalExpensesFiltered.toFixed(2)}</span> | Avg: <span className="text-cyan-500">${avgExpensesFiltered.toFixed(2)}</span>
                             </h2>
 
                             <div className="w-full">

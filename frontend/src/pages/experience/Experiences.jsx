@@ -121,7 +121,7 @@ const Experiences = () => {
                     if (serviceRef && serviceRef.isActive) {
                         const staffEmail = serviceRef.staffEmail;
                         const color = await getColorForStaff(staffEmail);
-                        console.log("El color para la calendar es: ", {staffEmail, color})
+                        //console.log("El color para la calendar es: ", {staffEmail, color})
                         const serviceType = serviceRef.type || "Unknown";
                         typesSet.add(serviceType);
                         allServiceEvents.push({
@@ -389,7 +389,7 @@ const Experiences = () => {
                                     <div className='mt-2 flex flex-row'>
                                         <label className="block text-sm font-medium">Staff Email:</label>
                                         <select
-                                            className="w-full border border-gray-300 bg-gray-800 text-slate-800 rounded px-3 py-2"
+                                            className="w-full border border-gray-300 bg-white text-slate-800 rounded px-3 py-2"
                                             value={editData.staffEmail || ''}
                                             onChange={(e) => setEditData({ ...editData, staffEmail: e.target.value })}
                                         >

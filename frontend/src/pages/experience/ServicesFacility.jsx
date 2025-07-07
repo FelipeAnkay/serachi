@@ -137,7 +137,6 @@ export default function ServicesFacility() {
                                                             title='Send profile to complete'
                                                             onClick={() => {
                                                                 handleOpenModal(service);
-                                                                window.scrollTo({ top: 0, behavior: 'smooth' });
                                                             }}
                                                             className='w-full py-3 px-4 bg-[#118290] hover:bg-[#0d6c77] text-cyan-50 font-bold rounded-lg shadow-lg
                                                          focus:ring-offset-1 focus:ring-offset-cyan-900'

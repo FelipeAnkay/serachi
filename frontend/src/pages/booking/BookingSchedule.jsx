@@ -225,6 +225,20 @@ export default function BookingSchedule() {
                             views={['month', 'week', 'day']}
                             date={selectedDate}
                             className="rounded-md"
+                            eventPropGetter={(event) => {
+                                    const color = '#118290'
+                                    const id = event.resource?._id || event.title;
+                                    return {
+                                        'data-id': `event-${id}`,
+                                        style: {
+                                            backgroundColor: color,
+                                            color: "white",
+                                            borderRadius: "0.375rem", // equivalente a rounded-md
+                                            paddingLeft: "0.5rem",    // equivalente a px-2
+                                            paddingRight: "0.5rem",
+                                        },
+                                    };
+                                }}
                         />
                     </div>
 
@@ -238,7 +252,7 @@ export default function BookingSchedule() {
                                 onClick={() => setShowModal(false)}
                             >
                                 <motion.div
-                                    className="bg-card rounded-2xl shadow-lg p-6 w-full max-w-md relative text-foreground"
+                                    className="rounded-2xl shadow-lg p-6 w-full max-w-md relative text-foreground bg-sky-50"
                                     initial={{ scale: 0.95, opacity: 0 }}
                                     animate={{ scale: 1, opacity: 1 }}
                                     exit={{ scale: 0.95, opacity: 0 }}
@@ -264,7 +278,7 @@ export default function BookingSchedule() {
                                         <input
                                             type="date"
                                             defaultValue={new Date(selectedReservation.start).toISOString().split('T')[0]}
-                                            className="w-full p-2 rounded-md border bg-background"
+                                            className="w-full p-2 rounded-md border bg-white"
                                             onChange={(e) =>
                                                 setSelectedReservation({ ...selectedReservation, start: new Date(e.target.value) })
                                             }
@@ -273,7 +287,7 @@ export default function BookingSchedule() {
                                         <input
                                             type="date"
                                             defaultValue={new Date(selectedReservation.end).toISOString().split('T')[0]}
-                                            className="w-full p-2 rounded-md border bg-background"
+                                            className="w-full p-2 rounded-md border  bg-white"
                                             onChange={(e) =>
                                                 setSelectedReservation({ ...selectedReservation, end: new Date(e.target.value) })
                                             }
