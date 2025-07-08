@@ -97,9 +97,10 @@ export default function BookingSchedule() {
         setLoading(true)
         try {
             const updated = {
-                dateIn: new Date(editDateIn),
-                dateOut: new Date(editDateOut),
+                dateIn: selectedReservation.start,
+                dateOut: selectedReservation.end,
             };
+            console.log("Update Room: ", {selectedReservation, updated})
             await updateRoomReservation(selectedReservation.id, updated);
             window.scrollTo({ top: 0, behavior: 'smooth' });
             toast.success("Reservation updated")
