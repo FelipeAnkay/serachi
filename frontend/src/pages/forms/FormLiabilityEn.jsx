@@ -8,6 +8,8 @@ import { trimCanvas } from '../../components/trimCanvas'
 import { useFormRecordServices } from '../../store/formRecordServices';
 import toast from 'react-hot-toast';
 import LoadingSpinner from '../../components/LoadingSpinner';
+import liabilityFields from '../../components/FormLiabilityFields.json'
+import Select from 'react-select';
 
 
 const LiabilityEn = () => {
@@ -21,11 +23,12 @@ const LiabilityEn = () => {
     const [store, setStore] = useState({});
     const [customer, setCustomer] = useState({})
     const [loading, setLoading] = useState(true);
+    const [selectedLang, setSelectedLang] = useState(false);
 
     const [formData, setFormData] = useState({
         participantName: '',
         customerEmail: '',
-        formName: 'Liability EN',
+        formName: 'Liability',
         date: '',
         age: 18,
         signature: '',
@@ -36,6 +39,23 @@ const LiabilityEn = () => {
         policyNumber: '',
         storeName: '',
         storeId: ''
+    });
+
+    const [fieldData, setFieldData] = useState({
+        title: '',
+        agreementText: '',
+        field1: '',
+        field2: '',
+        field3: '',
+        field4: '',
+        field5: '',
+        field6: '',
+        field7: '',
+        field8: '',
+        field9: '',
+        field10: '',
+        field11: '',
+        field12: ''
     });
 
     const calculateAge = (birthdate) => {
@@ -65,7 +85,7 @@ const LiabilityEn = () => {
                 const { customerEmail, endDate, storeId } = res.urlData;
                 //console.log("endDate es: ", endDate)
                 //console.log("today es: ", today)
-                if (!customerEmail || !storeId || !(endDate>=today)) {
+                if (!customerEmail || !storeId || !(endDate >= today)) {
                     window.location.href = '/unauthorized';
                 }
                 const auxCustomer = await getCustomerEmail(customerEmail, storeId)
@@ -153,37 +173,40 @@ const LiabilityEn = () => {
         }
     };
 
-    const agreementText = `NON-AGENCY DISCLOSURE AND ACKNOWLEDGMENT AGREEMENT
+    const availableOptions = liabilityFields
+        .map((l) => ({
+            value: l.lang,
+            label: l.name,
+            language: l,
+        }));
 
-I understand and agree that PADI Members (\"Members\"), including ${store.name}, and/or any individual PADI Instructors and Divemasters associated with the program in which I am participating, are licensed to use various PADI Trademarks and to conduct PADI training, but are not agents, employees or franchisees of PADI Americas, Inc., or its parent, subsidiary and affiliated corporations (\"PADI\"). I further understand that Member business activities are independent, and are neither owned nor operated by PADI, and that while PADI establishes the standards for PADI diver training programs, it is not responsible for, nor does it have the right to control, the operation of the Members' business activities and the day-to-day conduct of PADI programs and supervision of divers by the Members or their associated staff. I further understand and agree on behalf of myself, my heirs and my estate that in the event of an injury or death during this activity, neither I nor my estate shall seek to hold PADI liable for the actions, inactions or negligence of the entities listed above and/or the instructors and divemasters associated with the activity.
+    const handleSelect = (selectedOption) => {
+        if (!selectedOption) return;
+        console.log("Selected Option: ", selectedOption)
+        setFieldData(prev => ({
+            ...prev,
+            title: selectedOption.language.title,
+            agreementText: selectedOption.language.text,
+            field1: selectedOption.language.field1,
+            field2: selectedOption.language.field2,
+            field3: selectedOption.language.field3,
+            field4: selectedOption.language.field4,
+            field5: selectedOption.language.field5,
+            field6: selectedOption.language.field6,
+            field7: selectedOption.language.field7,
+            field8: selectedOption.language.field8,
+            field9: selectedOption.language.field9,
+            field10: selectedOption.language.field10,
+            field11: selectedOption.language.field11,
+            field12: selectedOption.language.field12,
+        }))
+        setSelectedLang(true)
+    };
 
-I, ${customer.name} ${customer.lastName}, hereby affirm that I am a certified scuba diver trained in safe dive practices, or a student diver under the control and supervision of a certified scuba instructor. I know that skin diving, freediving and scuba diving have inherent risks including those risks associated with boat travel to and from the dive site (hereinafter \"Excursion\"), which may result in serious injury or death. I understand that scuba diving with compressed air involves certain inherent risks; including but not limited to decompression sickness, embolism or other hyperbaric/air expansion injury that require treatment in a recompression chamber. If I am scuba diving with oxygen enriched air (\"Enriched Air\") or other gas blends including oxygen, I also understand that it involves inherent risks of oxygen toxicity and/or improper mixtures of breathing gas. I acknowledge this Excursion includes risks of slipping or falling while on board the boat, being cut or struck by a boat while in the water, injuries occurring while getting on or off a boat, and other perils of the sea. I further understand that the Excursion will be conducted at a site that is remote, either by time or distance or both, from a recompression chamber. I still choose to proceed with the Excursion in spite of the absence of a recompression chamber in proximity to the dive site(s).
-
-I understand and agree that neither ${store.name}; nor the dive professional(s) who may be present at the dive site, nor PADI Americas, Inc., nor any of their affiliate and subsidiary corporations, nor any of their respective employees, officers, agents, contractors and assigns (hereinafter \"Released Parties\") may be held liable or responsible in any way for any injury, death or other damages to me, my family, estate, heirs or assigns that may occur during the Excursion as a result of my participation in the Excursion or as a result of the negligence of any party, including the Released Parties, whether passive or active.
-
-I affirm I am in good mental and physical fitness for the Excursion. I further state that I will not participate in the Excursion if I am under the influence of alcohol or any drugs that are contraindicated to diving. If I am taking medication, I affirm that I have seen a physician and have approval to dive while under the influence of the medication/drugs. I understand that diving is a physically strenuous activity and that I will be exerting myself during the Excursion and that if I am injured as a result of heart attack, panic, hyperventilation, drowning or any other cause, that I expressly assume the risk of said injuries and that I will not hold the Released Parties responsible for the same.
-
-I am aware that safe dive practices suggest diving with a buddy unless trained as a self-reliant diver. I am aware it is my responsibility to plan my dive allowing for my diving experience and limitations, and the prevailing water conditions and environment. I will not hold the Released Parties responsible for my failure to safely plan my dive, dive my plan, and follow the instructions and dive briefing of the dive professional(s).
-
-If diving from a boat, I will be present at and attentive to the briefing given by the boat crew. If there is anything I do not understand I will notify the boat crew or captain immediately. I acknowledge it is my responsibility to plan my dives as no-decompression dives, and within parameters that allow me to make a safety stop before ascending to the surface, arriving on board the vessel with gas remaining in my cylinder as a measure of safety. If I become distressed on the surface I will immediately drop my weights and inflate my BCD (orally or with low pressure inflator) to establish buoyancy on the surface.
-
-I am aware safe dive practices recommend a refresher or guided orientation dive following a period of diving inactivity. I understand such refresher/guided dive is available for an additional fee. If I choose not to follow this recommendation I will not hold the Released Parties responsible for my decision.
-
-I acknowledge Released Parties may provide an in-water guide (hereinafter \"Guide\") during the Excursion. The Guide is present to assist in navigation during the dive and identifying local flora and fauna. If I choose to dive with the Guide I acknowledge it is my responsibility to stay in proximity to the Guide during the dive. I assume all risks associated with my choice whether to dive in proximity to the Guide or to dive independent of the Guide. I acknowledge my participation in diving is at my own risk and peril.
-
-I affirm it is my responsibility to inspect all of the equipment I will be using prior to the leaving the dock for the Excursion and that I should not dive if the equipment is not functioning properly. I will not hold the Released Parties responsible for my failure to inspect the equipment prior to diving or if I choose to dive with equipment that may not be functioning properly.
-
-I acknowledge Released Parties have made no representation to me, implied or otherwise, that they or their crew can or will perform affective rescues or render first aid. In the event I show signs of distress or call for aid I would like assistance and will not hold the Released Parties, their crew, dive boats or passengers responsible for their actions in attempting the performance of rescue or first aid.
-
-I hereby state and agree that this Agreement will be effective for all Excursions in which I participate for one (1) year from the date on which I sign this Agreement.
-
-I further state that I am of lawful age and legally competent to sign this liability release, or that I have acquired the written consent of my parent or guardian. I understand the terms herein are contractual and not a mere recital, and that I have signed this Agreement of my own free act and with the knowledge that I hereby agree to waive my legal rights. I further agree that if any provision of this Agreement is found to be unenforceable or invalid, that provision shall be severed from this Agreement. The remainder of this Agreement will then be construed as though the unenforceable provision had never been contained herein. I understand and agree that I am not only giving up my right to sue the Released Parties but also any rights my heirs, assigns, or beneficiaries may have to sue the Released Parties resulting from my death. I further represent that I have the authority to do so and that my heirs, assigns, and beneficiaries will be estopped from claiming otherwise because of my representations to the Released Parties.
-
-I, ${customer.name} ${customer.lastName}, BY THIS INSTRUMENT, AGREE TO EXEMPT AND RELEASE THE RELEASED PARTIES DEFINED ABOVE FROM ALL LIABILITY OR RESPONSIBILITY WHATSOEVER FOR PERSONAL INJURY, PROPERTY DAMAGE OR WRONGFUL DEATH HOWEVER CAUSED, INCLUDING BUT NOT LIMITED TO THE NEGLIGENCE OF THE RELEASED PARTIES, WHETHER PASSIVE OR ACTIVE.
-
-I HAVE FULLY INFORMED MYSELF AND MY HEIRS OF THE CONTENTS OF THIS NON-AGENCY DISCLOSURE AND ACKNOWLEDGMENT AGREEMENT, AND LIABILITY RELEASE AND ASSUMPTION OF RISK AGREEMENT BY READING BOTH BEFORE SIGNING BELOW ON BEHALF OF MYSELF AND MY HEIRS.`;
-
-
+    const renderedText = fieldData.agreementText
+        .replace(/\${store.name}/g, store.name)
+        .replace(/\${customer.name}/g, customer.name)
+        .replace(/\${customer.lastName}/g, customer.lastName);
     return (
         <>
             {
@@ -191,71 +214,102 @@ I HAVE FULLY INFORMED MYSELF AND MY HEIRS OF THE CONTENTS OF THIS NON-AGENCY DIS
                     <LoadingSpinner />
                 )
             }
-            <div className="max-w-3xl mx-auto p-6 bg-white rounded shadow">
-                <h1 className="text-2xl font-bold mb-4">Liability Release - Diver Activities</h1>
-                <div className="whitespace-pre-wrap bg-gray-100 p-4 border rounded text-sm max-h-[400px] overflow-auto mb-6">
-                    {agreementText}
-                </div>
-
-                <form onSubmit={handleSubmit} className="space-y-4">
-                    <div>
-                        <label className="block font-medium">Participant Name *</label>
-                        <input type="text" name="participantName" value={formData.participantName} required onChange={handleChange} className="w-full border p-2 rounded" />
-                    </div>
-                    <div>
-                        <label className="block font-medium">Age *</label>
-                        <input type="text" name="age" value={formData.age} required onChange={handleChange} className="w-full border p-2 rounded" />
-                    </div>
-
-                    <div>
-                        <label className="block font-medium">Date (Day/Month/Year) *</label>
-                        <input type="date" name="date" value={formData.date} required onChange={handleChange} className="w-full border p-2 rounded" />
-                    </div>
-
-                    <div>
-                        <label className="block font-medium">Signature *</label>
-                        <SignatureCanvas
-                            penColor="black"
-                            canvasProps={{ width: 500, height: 150, className: 'border rounded' }}
-                            ref={sigPadRef}
-                        />
-                        <button type="button" onClick={() => handleClear(sigPadRef)} className="text-sm text-red-600 mt-1">Clear Signature</button>
-                    </div>
-                    {formData.age < 18 && (
-                        <>
-                            <div>
-                                <label className="block font-medium">Signature of Parent or Guardian (if applicable)</label>
-                                <SignatureCanvas
-                                    penColor="black"
-                                    canvasProps={{ width: 500, height: 150, className: 'border rounded' }}
-                                    ref={guardianSigPadRef}
-                                />
-                                <button type="button" onClick={() => handleClear(guardianSigPadRef)} className="text-sm text-red-600 mt-1">Clear Guardian Signature</button>
-                            </div>
-
-                            <div>
-                                <label className="block font-medium">Parent/Guardian Birthdate</label>
-                                <input type="date" name="guardianDate" onChange={handleChange} className="w-full border p-2 rounded" />
-                            </div>
-                        </>
-                    )}
-
-
-                    <div>
-                        <label className="block font-medium">Diver Accident Insurance *</label>
-                        <div className="flex items-center gap-4 mt-1">
-                            <label><input type="radio" name="insurance" value="Yes" required onChange={handleChange} /> Yes</label>
-                            <label><input type="radio" name="insurance" value="No" required onChange={handleChange} /> No</label>
-                        </div>
-                    </div>
-                    {formData.insurance === "Yes" && (
+            <div className="flex flex-col min-h-screen w-full bg-[#18394C] text-slate-800 px-4 py-6 sm:px-8 sm:py-10">
+                <div className="max-w-3xl mx-auto p-6 bg-white rounded shadow">
+                    <h1 className="text-2xl font-bold mb-4">{fieldData.title || "Liability Release - Diver Activities"}</h1>
+                    <Select
+                        options={availableOptions}
+                        onChange={handleSelect}
+                        placeholder="Select your language..."
+                        isClearable
+                        className="text-slate-900"
+                        classNamePrefix="react-select"
+                        styles={{
+                            control: (base) => ({
+                                ...base,
+                                borderColor: '#d1d5db', // Tailwind border-gray-300
+                                padding: '2px',
+                                fontSize: '0.875rem', // text-sm
+                            }),
+                            menu: (base) => ({
+                                ...base,
+                                zIndex: 50,
+                            }),
+                            option: (provided, state) => ({
+                                ...provided,
+                                backgroundColor: state.isFocused ? "#3BA0AC" : "white",
+                                color: "#1e293b", // slate-900
+                            }),
+                        }}
+                    />
+                    {selectedLang != "" && (
                         <div>
-                            <label className="block font-medium">Insurance Company - Policy Number</label>
-                            <input type="text" name="policyNumber" onChange={handleChange} className="w-full border p-2 rounded" />
+                            <div className="whitespace-pre-wrap bg-gray-100 p-4 border rounded text-sm max-h-[400px] overflow-auto mb-6 mt-2">
+                                {renderedText || "No Text"}
+                            </div>
+
+                            <form onSubmit={handleSubmit} className="space-y-4">
+                                <div>
+                                    <label className="block font-medium">{fieldData.field1 || "Participant Name *"}</label>
+                                    <input type="text" name="participantName" value={formData.participantName} required onChange={handleChange} className="w-full border p-2 rounded" />
+                                </div>
+                                <div>
+                                    <label className="block font-medium">{fieldData.field2 || "Age *"}</label>
+                                    <input type="text" name="age" value={formData.age} required onChange={handleChange} className="w-full border p-2 rounded" />
+                                </div>
+
+                                <div>
+                                    <label className="block font-medium">{fieldData.field3 || "Date (Day/Month/Year) *"}</label>
+                                    <input type="date" name="date" value={formData.date} required onChange={handleChange} className="w-full border p-2 rounded" />
+                                </div>
+
+                                <div>
+                                    <label className="block font-medium">{fieldData.field4 || "Signature *"}</label>
+                                    <SignatureCanvas
+                                        penColor="black"
+                                        canvasProps={{ width: 500, height: 150, className: 'border rounded' }}
+                                        ref={sigPadRef}
+                                    />
+                                    <button type="button" onClick={() => handleClear(sigPadRef)} className="text-sm text-red-600 mt-1">{fieldData.field12 || "Clear Signature"}</button>
+                                </div>
+                                {formData.age < 18 && (
+                                    <>
+                                        <div>
+                                            <label className="block font-medium">{fieldData.field5 || "Signature of Parent or Guardian (if applicable)"}</label>
+                                            <SignatureCanvas
+                                                penColor="black"
+                                                canvasProps={{ width: 500, height: 150, className: 'border rounded' }}
+                                                ref={guardianSigPadRef}
+                                            />
+                                            <button type="button" onClick={() => handleClear(guardianSigPadRef)} className="text-sm text-red-600 mt-1">{fieldData.field12 || "Clear Signature"}</button>
+                                        </div>
+
+                                        <div>
+                                            <label className="block font-medium">{fieldData.field6 || "Parent/Guardian Birthdate"}</label>
+                                            <input type="date" name="guardianDate" onChange={handleChange} className="w-full border p-2 rounded" />
+                                        </div>
+                                    </>
+                                )}
+
+
+                                <div>
+                                    <label className="block font-medium">{fieldData.field7 || "Diver Accident Insurance *"}</label>
+                                    <div className="flex items-center gap-4 mt-1">
+                                        <label><input type="radio" name="insurance" value="Yes" required onChange={handleChange} /> {fieldData.field8 || "Yes"}</label>
+                                        <label><input type="radio" name="insurance" value="No" required onChange={handleChange} /> {fieldData.field9 || "No"}</label>
+                                    </div>
+                                </div>
+                                {formData.insurance === "Yes" && (
+                                    <div>
+                                        <label className="block font-medium">{fieldData.field10 || "Insurance Company - Policy Number"}</label>
+                                        <input type="text" name="policyNumber" onChange={handleChange} className="w-full border p-2 rounded" />
+                                    </div>
+                                )}
+                                <button type="submit" className="mt-4 bg-[#118290] hover:bg-[#0d6c77] text-cyan-50 px-4 py-2 rounded">{fieldData.field11 || "Submit"}</button>
+                            </form>
                         </div>
                     )}
-                    <button type="submit" className="mt-4 bg-[#118290] hover:bg-[#0d6c77] text-cyan-50 px-4 py-2 rounded">Submit</button>
-                </form>
+                </div>
             </div>
         </>
     );
