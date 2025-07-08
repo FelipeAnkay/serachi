@@ -28,7 +28,7 @@ const SetProduct = () => {
         const fetchProducts = async () => {
             try {
                 const product = await getProductByStoreId(storeId);
-                console.log("F: Respuesta de fetch:", product);
+                //console.log("F: Respuesta de fetch:", product);
                 setProductList(product.productList || []);
             } catch (error) {
                 console.error('Error fetching product list:', error);
@@ -433,17 +433,31 @@ const SetProduct = () => {
                                             ))}
                                         </select>
                                     </div>
-                                    <div className='mt-2 flex flex-row ml-2'>
-                                        <label className="block text-sm font-medium">Is it a tangible product?*</label>
-                                        <input
-                                            type="checkbox"
-                                            checked={productData.isTangible}
-                                            onChange={(e) => {
-                                                setProductData({ ...productData, isTangible: e.target.checked })
-                                            }
-                                            }
-                                            className="ml-2"
-                                        />
+                                    <div className='flex flex-col gap-2'>
+                                        <div className='mt-2 flex flex-row ml-2'>
+                                            <label className="block text-sm font-medium">Is it a tangible product?*</label>
+                                            <input
+                                                type="checkbox"
+                                                checked={productData.isTangible}
+                                                onChange={(e) => {
+                                                    setProductData({ ...productData, isTangible: e.target.checked })
+                                                }
+                                                }
+                                                className="ml-2"
+                                            />
+                                        </div>
+                                        <div className='mt-2 flex flex-row ml-2'>
+                                            <label className="block text-sm font-medium">Is it part of a display list?*</label>
+                                            <input
+                                                type="checkbox"
+                                                checked={productData.isPartMenu}
+                                                onChange={(e) => {
+                                                    setProductData({ ...productData, isPartMenu: e.target.checked })
+                                                }
+                                                }
+                                                className="ml-2"
+                                            />
+                                        </div>
                                     </div>
                                     <div>
                                         <p>Fields with * are mandatory</p>

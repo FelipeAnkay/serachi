@@ -43,6 +43,10 @@ const productSchema = new mongoose.Schema({
     isTangible: {
         type: Boolean,
     },
+    isPartMenu: {
+        type: Boolean,
+        default: false,
+    },
     supplierId: {
         type: String
     }
