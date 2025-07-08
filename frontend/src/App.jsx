@@ -47,7 +47,6 @@ import { useRoleServices } from './store/rolesServices';
 import { useStoreServices } from './store/storeServices';
 import LiabilityEn from './pages/forms/FormLiabilityEn';
 import Unauthorized from './pages/Unauthorized';
-import LiabilityEs from './pages/forms/FormLiabilityEs';
 import ExperienceList from './pages/experience/ExperienceList';
 import ViewExperiences from './pages/experience/ViewExperiences';
 import SetTypes from './pages/settings/SetTypes';
@@ -156,7 +155,6 @@ const MenuAvailable = () => {
     '/forgot-password',
     '/reset-password',
     '/forms/liabilityEn',
-    '/forms/liabilityEs',
     '/view-experience',
     '/update-customer-view',
   ];
@@ -465,11 +463,6 @@ function App() {
           path="/forms/liabilityEn"
           element={
             <LiabilityEn />}
-        />
-        <Route
-          path="/forms/liabilityEs"
-          element={
-            <LiabilityEs />}
         />
         <Route
           path="/unauthorized"
