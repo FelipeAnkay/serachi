@@ -132,6 +132,19 @@ export const useProductServices = create((set) => ({
             set({ error: error.response.data.message || "Error getting products", isLoading: false });
             throw error;
         }
+    },
+    getProductForDisplay: async (storeId) => {
+        set({ isLoading: true, error: null });
+        try {
+            //console.log("F: Llamado a getProductList");
+            const response = await axios.get(`${URL_API}/display/${storeId}`);
+            //console.log("F: Respueste de getProductList: ", response);
+            set({ productList: response.data.productList, isLoading: false });
+            return response.data;
+        } catch (error) {
+            set({ error: error.response.data.message || "Error getting products", isLoading: false });
+            throw error;
+        }
     }
 
 }))

@@ -242,7 +242,7 @@ const LiabilityEn = () => {
                             }),
                         }}
                     />
-                    {selectedLang != "" && (
+                    {selectedLang && (
                         <div>
                             <div className="whitespace-pre-wrap bg-gray-100 p-4 border rounded text-sm max-h-[400px] overflow-auto mb-6 mt-2">
                                 {renderedText || "No Text"}

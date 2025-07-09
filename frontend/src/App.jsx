@@ -14,22 +14,21 @@ import LeftMenu from "./components/LeftMenu";
 import { BookUser, Menu } from "lucide-react";
 import Booking from './pages/booking/Booking';
 import CashFlow from './pages/CashFlow';
-import Experiences from './pages/experience/Experiences';
+import Experiences from './pages/services/Experiences';
 import SetProducts from './pages/settings/SetProducts';
 import SetRooms from './pages/settings/SetRooms';
 import SetStore from './pages/settings/SetStore';
-import SetUsers from './pages/settings/SetUsers';
-import AssignStaff from './pages/experience/AssignStaff';
+import AssignStaff from './pages/services/AssignStaff';
 import SetStaff from './pages/settings/SetStaff';
 import NewQuote from './pages/quotes/NewQuote';
 import NewIncome from './pages/cashflow/NewIncome';
 import OpenQuote from './pages/quotes/OpenQuote';
 import ConfirmedQuote from './pages/quotes/ConfirmedQuote';
-import PendingServices from './pages/experience/PendingServices';
+import PendingServices from './pages/services/PendingServices';
 import NewExpense from './pages/cashflow/NewExpense';
 import SetStaffFee from './pages/settings/SetStaffFee';
 import PRCalculator from './pages/payroll/PRCalculator';
-import CreateService from './pages/experience/CreateService';
+import CreateService from './pages/services/CreateService';
 import SetPartner from './pages/settings/SetPartner';
 import BookingSchedule from './pages/booking/BookingSchedule';
 import SetCustomer from './pages/settings/SetCustomer';
@@ -41,23 +40,24 @@ import SetSupplier from './pages/settings/SetSupplier';
 import Reports from './pages/reports/Reports';
 import SetRoles from './pages/settings/SetRoles';
 import SetUsers2 from './pages/settings/SetUsers2';
-import DeleteServices from './pages/experience/DeleteServices';
+import DeleteServices from './pages/services/DeleteServices';
 import MonthlyCashFlow from './pages/reports/MonthlyCashFlow';
 import { useRoleServices } from './store/rolesServices';
 import { useStoreServices } from './store/storeServices';
 import LiabilityEn from './pages/forms/FormLiabilityEn';
 import Unauthorized from './pages/Unauthorized';
 import ExperienceList from './pages/experience/ExperienceList';
-import ViewExperiences from './pages/experience/ViewExperiences';
+import ViewExperiences from './pages/services/ViewExperiences';
 import SetTypes from './pages/settings/SetTypes';
 import SetCustomerView from './pages/settings/SetCustomerView';
 import UserAddressBookModal from './components/UserAddressBookModal';
 import CashflowReports from './pages/reports/CashflowReports';
 import SetFacilities from './pages/settings/SetFacilities';
 import ServicesByStaffReport from './pages/reports/ServicesByStaffReport';
-import ServicesFacility from './pages/experience/ServicesFacility';
-import FacilitySchedule from './pages/experience/FacilitySchedule';
+import ServicesFacility from './pages/services/ServicesFacility';
+import FacilitySchedule from './pages/services/FacilitySchedule';
 import QuoteDashboard from './pages/quotes/QuoteDashboard';
+import ProductCartPage from './pages/experience/ProductCartPage';
 
 const ProtectedRoute = ({ children, requiredPermission, storePermission }) => {
   const { isAuthenticated, user, logout } = useAuthStore();
@@ -157,6 +157,7 @@ const MenuAvailable = () => {
     '/forms/liabilityEn',
     '/view-experience',
     '/update-customer-view',
+    "/product-display",
   ];
 
   if (hiddenRoutes.some(route => location.pathname.startsWith(route))) {
@@ -278,6 +279,11 @@ function App() {
           path="/view-experience"
           element={
             <ViewExperiences />}
+        />
+        <Route
+          path="/product-display"
+          element={
+            <ProductCartPage />}
         />
         <Route
           path="/bookings"

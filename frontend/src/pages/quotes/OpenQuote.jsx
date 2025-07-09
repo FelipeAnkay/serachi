@@ -121,8 +121,8 @@ export default function OpenQuote() {
                             ) : (
                                 quotes
                                     .filter(quote =>
-                                        quote.customerEmail.toLowerCase().includes(quoteSearch.toLowerCase()) ||
-                                        quote.customerName.toLowerCase().includes(quoteSearch.toLowerCase())
+                                        quote.customerEmail?.toLowerCase().includes(quoteSearch.toLowerCase()) ||
+                                        quote.customerName?.toLowerCase().includes(quoteSearch.toLowerCase())
                                     )
                                     .map((quote) => {
                                         return (

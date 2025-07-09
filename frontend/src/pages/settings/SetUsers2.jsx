@@ -108,7 +108,7 @@ const SetUsers2 = () => {
                 });
                 setIsEditing(true);
                 setUserNew(false);
-                toast.success('User founded');
+                toast.success('User found');
             } else {
                 setUserNew(true);
                 closeModal();
