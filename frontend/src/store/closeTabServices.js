@@ -15,9 +15,9 @@ export const useCloseTabServices = create((set) => ({
     createCloseTab: async (closeTabData) => {
         set({ isLoading: true, error: null });
         try {
-            console.log("Payload de createCloseTab", closeTabData);
+            //console.log("Payload de createCloseTab", closeTabData);
             const response = await axios.post(`${URL_API}/create`, closeTabData);
-            console.log("Respuesta de createService:", response);
+            //console.log("Respuesta de createCloseTab:", response);
             set({ closetab: response.data.closetab, isLoading: false });
             return response.data.closeTab;
         } catch (error) {

@@ -107,8 +107,10 @@ export default function OpenTabs() {
                 ).then(prices => prices.reduce((acc, price) => acc + price, 0));
 
                 // Total de productos
-                const pTotal = productList.reduce((acc, p) => {
-                    if (isPaid('product', p.productId, p.isPaid) && isCheckedNow('product', p.productId)) {
+                const pTotal = productList.reduce((acc, p, index) => {
+                    const paid = pendingUpdates.product?.[index] ?? p.isPaid;
+                    const checked = pendingUpdates.product?.[index] === true;
+                    if (paid && checked) {
                         return acc + (p.price || 0) * (p.Qty || 1);
                     }
                     return acc;
@@ -196,9 +198,8 @@ export default function OpenTabs() {
                 //console.log("Enviaré esto a updateRoomReservation", id," - ", isPaid)
                 await updateRoomReservation(id, { isPaid });
             } else if (type === 'product') {
-                // Actualizar la experiencia modificando solo el producto correspondiente
-                const updatedProductList = selectedExperience.productList.map(p =>
-                    p.productId === id ? { ...p, isPaid } : p
+                const updatedProductList = selectedExperience.productList.map((p, index) =>
+                    index === id ? { ...p, isPaid } : p
                 );
 
                 await updateExperience(selectedExperience._id, {
@@ -311,7 +312,7 @@ export default function OpenTabs() {
                                                                 month: "long",
                                                                 day: "numeric",
                                                             })}
-                                                            {" - " + experience.serviceList.length + ' Servs  - ' + experience.productList.length + ' Prods - ' + experience.bookList.length + ' Res'}
+                                                            {" - " + experience.serviceList.length + ' Servs  - ' + experience.productList.length + ' Prod Orders - ' + experience.bookList.length + ' Res'}
                                                         </h3>
                                                     </div>
 
@@ -460,14 +461,14 @@ export default function OpenTabs() {
                                                                         <label className="flex items-center gap-2 text-sm ml-2 border rounded-2xl">
                                                                             <input
                                                                                 type="checkbox"
-                                                                                checked={pendingUpdates.product[p.productId] ?? p.isPaid}
+                                                                                checked={pendingUpdates.product[i] ?? p.isPaid}
                                                                                 className="ml-2 mt-4 mb-4"
                                                                                 onChange={(e) => {
                                                                                     setPendingUpdates(prev => ({
                                                                                         ...prev,
                                                                                         product: {
                                                                                             ...prev.product,
-                                                                                            [p.productId]: e.target.checked,
+                                                                                            [i]: e.target.checked,
                                                                                         },
                                                                                     }));
                                                                                 }}
@@ -583,6 +584,7 @@ export default function OpenTabs() {
                                                                 }
 
                                                                 // Productos actualizados
+                                                                /*
                                                                 for (const [id, isPaid] of Object.entries(pendingUpdates.product || {})) {
                                                                     const producto = productList.find(p => p.productId === id);
                                                                     //console.log("Producto a actualizar es: ", { producto, id, isPaid })
@@ -591,6 +593,20 @@ export default function OpenTabs() {
                                                                         productId: id,
                                                                         Qty: producto?.Qty || 1,
                                                                         amount: (producto?.price || 0) * (producto?.Qty || 1),
+                                                                    });
+                                                                }
+*/
+                                                                for (const [indexStr, isPaid] of Object.entries(pendingUpdates.product || {})) {
+                                                                    const index = parseInt(indexStr, 10);
+                                                                    const producto = productList[index];
+
+                                                                    if (!producto) continue;
+
+                                                                    updates.push(handleUpdatePaidStatus('product', index, isPaid));
+                                                                    paidProducts.push({
+                                                                        productId: producto.productId,
+                                                                        Qty: producto.Qty || 1,
+                                                                        amount: (producto.price || 0) * (producto.Qty || 1),
                                                                     });
                                                                 }
 

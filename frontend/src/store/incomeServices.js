@@ -23,7 +23,7 @@ export const useIncomeServices = create((set) => ({
     createIncome: async (incomeData) => {
         set({ isLoading: true, error: null });
         try {
-            console.log("Los datos a enviar en createIncome son: ", incomeData)
+            //console.log("Los datos a enviar en createIncome son: ", incomeData)
             const response = await axios.post(`${URL_API}/create`, incomeData);
             set({ incomeList: response.data.incomeList, isLoading: false });
             return response.data;

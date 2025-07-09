@@ -213,18 +213,18 @@ export default function CashFlowSummary() {
                                     onChange={handleEditChange}
                                     className="w-full border rounded p-2 bg-white"
                                 />
-                                <label className="block text-sm font-semibold">Description:</label>
-                                <input
-                                    type="text"
-                                    name="description"
-                                    value={selectedItem.data.description}
-                                    onChange={handleEditChange}
-                                    className="w-full border rounded p-2 bg-white"
-                                />
                                 {(selectedItem.type === "expense") && (
-                                    <div className="">
 
-                                        <label className="block font-medium mb-1">Type:</label>
+                                    <div className="">
+                                        <label className="block text-sm font-semibold">Description:</label>
+                                        <input
+                                            type="text"
+                                            name="description"
+                                            value={selectedItem.data.description}
+                                            onChange={handleEditChange}
+                                            className="w-full border rounded p-2 bg-white"
+                                        />
+                                        <label className="block font-medium mb-1 mt-1">Type:</label>
                                         <select
                                             name="type"
                                             className="w-full px-3 py-2 bg-white text-slate-900 border border-slate-300 rounded"
