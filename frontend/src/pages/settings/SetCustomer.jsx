@@ -187,7 +187,7 @@ const SetCustomer = () => {
                     storeId: updatedStoreId,
                 });
                 setIsEditing(true);
-                toast.success('Customer founded');
+                toast.success('Customer found');
             } else {
                 toast.success("Customer not found, you can assign a new one");
                 setIsEditing(false);

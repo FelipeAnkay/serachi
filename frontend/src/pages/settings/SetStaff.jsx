@@ -105,7 +105,7 @@ const SetStaff = () => {
                 });
                 //console.log("F: Idioma del staff encontrado", staffFound.languages);
                 setIsEditing(true);
-                toast.success('Staff founded');
+                toast.success('Staff found');
             } else {
                 toast.success("Staff not found, you can assign a new staff");
                 setIsEditing(false);

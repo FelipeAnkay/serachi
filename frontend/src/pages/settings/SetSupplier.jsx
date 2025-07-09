@@ -97,7 +97,7 @@ const SetSupplier = () => {
                     storeId: updatedStoreId,
                 });
                 setIsEditing(true);
-                toast.success('supplier founded');
+                toast.success('supplier found');
             } else {
                 toast.success("supplier not found, you can assign a new supplier");
                 setIsEditing(false);

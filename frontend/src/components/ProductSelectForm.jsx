@@ -1,7 +1,7 @@
 import { Trash2 } from 'lucide-react';
 import Select from 'react-select';
 
-const ProductSelectForm = ({ products, value = [], onChange }) => {
+const ProductSelectForm = ({ products, value = [], onChange, display }) => {
   const handleSelect = (selectedOption) => {
     if (!selectedOption) return;
 
@@ -85,7 +85,7 @@ const ProductSelectForm = ({ products, value = [], onChange }) => {
           className="flex flex-col md:flex-row md:items-end md:space-x-2 space-y-2 md:space-y-0 bg-sky-50 p-2 rounded"
         >
           <div className="flex-1">
-            <p>Name: {product.productName}</p>
+            <p className='font-bold'>{product.productName}</p>
           </div>
           <div className="flex-1">
             <p>Quantity:</p>
@@ -94,7 +94,7 @@ const ProductSelectForm = ({ products, value = [], onChange }) => {
               min={0}
               value={product.Qty}
               onChange={(e) => updateField(index, "Qty", e.target.value)}
-              className="border px-2 py-1 rounded w-full bg-white"
+              className="border px-2 py-1 rounded w-full bg-white text-center "
             />
           </div>
           <div className="flex-1">
@@ -105,16 +105,17 @@ const ProductSelectForm = ({ products, value = [], onChange }) => {
               onChange={(e) =>
                 updateField(index, "productUnitaryPrice", e.target.value)
               }
-              className="border px-2 py-1 rounded w-full bg-white"
+              disabled={display}
+              className={`border px-2 py-1 rounded w-full ${display ? 'bg-gray-300' : 'bg-white'} text-center`}
             />
           </div>
           <div className="flex-1">
-            <p>Final Price:</p>
+            <p className='font-bold'>Final Price:</p>
             <input
-              type="number"
-              value={product.productFinalPrice}
+              type="text"
+              value={`$${product.productFinalPrice}`}
               disabled
-              className="bg-cyan-50 border px-2 py-1 rounded w-full"
+              className="bg-sky-50  px-2 py-1  w-full font-semibold text-center"
             />
           </div>
           <div>

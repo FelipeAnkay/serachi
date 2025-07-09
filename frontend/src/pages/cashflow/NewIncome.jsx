@@ -314,6 +314,7 @@ export default function NewIncome() {
                                     products={products}
                                     value={formData.productList}
                                     onChange={(newList) => setFormData({ ...formData, productList: newList })}
+                                    display = {false}
                                 />
                             )}
                         </div>

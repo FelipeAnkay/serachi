@@ -96,7 +96,7 @@ const SetPartner = () => {
                     storeId: updatedStoreId,
                 });
                 setIsEditing(true);
-                toast.success('Partner founded');
+                toast.success('Partner found');
             } else {
                 toast.success("Partner not found, you can assign a new partner");
                 setIsEditing(false);

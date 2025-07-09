@@ -9,7 +9,8 @@ import {
     Sheet,
     ShipWheel,
     CalendarClock,
-    Gauge
+    Gauge,
+    CalendarCog
 } from "lucide-react";
 
 import logo from "../../public/Serachi_logo-nobg.png";
@@ -37,14 +38,21 @@ const menuItems = [
         icon: <MapPinCheckInside />,
         key: "experience",
         children: [
-            { to: "/experience-calendar", label: "Exp Calendar", icon: <CalendarHeart /> },
-            { to: "/experience-list", label: "Exp List", icon: <CalendarCheck /> },
+            { to: "/experience-list", label: "Profile & Forms", icon: <CalendarCheck /> },
+            { to: "/experience-add-items", label: "Add Products", icon: <ShoppingBasket /> },
+            { to: "/experience-open-tabs", label: "Open Tabs", icon: <BookOpenCheck /> },
+        ]
+    },
+        {
+        label: "Services",
+        icon: <CalendarCog />,
+        key: "service",
+        children: [
+            { to: "/experience-calendar", label: "Schedule", icon: <CalendarHeart /> },
             { to: "/set-service-dates", label: "Set Missing Data", icon: <CalendarPlus2 /> },
             { to: "/experience-create-service", label: "Create Service", icon: <BookMarked /> },
             { to: "/service-facility", label: "Assign Facility", icon: <ShipWheel /> },
             { to: "/facility-schedule ", label: "Facility Schedule", icon: <CalendarClock /> }, 
-            { to: "/experience-add-items", label: "Add Products", icon: <ShoppingBasket /> },
-            { to: "/experience-open-tabs", label: "Open Tabs", icon: <BookOpenCheck /> },
             { to: "/delete-services", label: "Delete Services", icon: <Trash2 /> },
         ]
     },
@@ -104,14 +112,21 @@ const menuItemsMed = [
         icon: <MapPinCheckInside />,
         key: "experience",
         children: [
-            { to: "/experience-calendar", label: "Exp Calendar", icon: <CalendarHeart /> },
             { to: "/experience-list", label: "Profile & Forms", icon: <CalendarCheck /> },
+            { to: "/experience-add-items", label: "Add Products", icon: <ShoppingBasket /> },
+            { to: "/experience-open-tabs", label: "Open Tabs", icon: <BookOpenCheck /> },
+        ]
+    },
+        {
+        label: "Services",
+        icon: <CalendarCog />,
+        key: "service",
+        children: [
+            { to: "/experience-calendar", label: "Schedule", icon: <CalendarHeart /> },
             { to: "/set-service-dates", label: "Set Missing Data", icon: <CalendarPlus2 /> },
             { to: "/experience-create-service", label: "Create Service", icon: <BookMarked /> },
             { to: "/service-facility", label: "Assign Facility", icon: <ShipWheel /> },
             { to: "/facility-schedule ", label: "Facility Schedule", icon: <CalendarClock /> }, 
-            { to: "/experience-add-items", label: "Add Products", icon: <ShoppingBasket /> },
-            { to: "/experience-open-tabs", label: "Open Tabs", icon: <BookOpenCheck /> },
             { to: "/delete-services", label: "Delete Services", icon: <Trash2 /> },
         ]
     },
@@ -192,14 +207,21 @@ const menuItemsPro = [
         icon: <MapPinCheckInside />,
         key: "experience",
         children: [
-            { to: "/experience-calendar", label: "Exp Calendar", icon: <CalendarHeart /> },
             { to: "/experience-list", label: "Profile & Forms", icon: <CalendarCheck /> },
+            { to: "/experience-add-items", label: "Add Products", icon: <ShoppingBasket /> },
+            { to: "/experience-open-tabs", label: "Open Tabs", icon: <BookOpenCheck /> },
+        ]
+    },
+        {
+        label: "Services",
+        icon: <CalendarCog />,
+        key: "service",
+        children: [
+            { to: "/experience-calendar", label: "Schedule", icon: <CalendarHeart /> },
             { to: "/set-service-dates", label: "Set Missing Data", icon: <CalendarPlus2 /> },
             { to: "/experience-create-service", label: "Create Service", icon: <BookMarked /> },
             { to: "/service-facility", label: "Assign Facility", icon: <ShipWheel /> },
-            { to: "/facility-schedule ", label: "Facility Schedule", icon: <CalendarClock /> },
-            { to: "/experience-add-items", label: "Add Products", icon: <ShoppingBasket /> },
-            { to: "/experience-open-tabs", label: "Open Tabs", icon: <BookOpenCheck /> },
+            { to: "/facility-schedule ", label: "Facility Schedule", icon: <CalendarClock /> }, 
             { to: "/delete-services", label: "Delete Services", icon: <Trash2 /> },
         ]
     },

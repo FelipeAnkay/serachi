@@ -413,8 +413,8 @@ export default function ConfirmedQuote() {
                                 ) : (
                                     quotes
                                         .filter(quote =>
-                                            quote.customerEmail.toLowerCase().includes(quoteSearch.toLowerCase()) ||
-                                            quote.customerName.toLowerCase().includes(quoteSearch.toLowerCase()) &&
+                                            quote.customerEmail?.toLowerCase().includes(quoteSearch.toLowerCase()) ||
+                                            quote.customerName?.toLowerCase().includes(quoteSearch.toLowerCase()) &&
                                             (!showOnlyUnprocessed || !existingExperiences.some(exp => exp.quoteId === quote._id) || !existingReservations.some(res => res.quoteId === quote._id))
                                         )
                                         .map((quote) => {
