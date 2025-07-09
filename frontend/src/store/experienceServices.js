@@ -33,8 +33,8 @@ export const useExperienceServices = create((set) => ({
     },
     updateExperience: async (experienceId, updatedVars) => {
         set({ isLoading: true, error: null });
-        console.log("F: Llamado a updateExperience - ID: ", experienceId);
-        console.log("F: Llamado a updateExperience - vars: ", updatedVars);
+        //console.log("F: Llamado a updateExperience - ID: ", experienceId);
+        //console.log("F: Llamado a updateExperience - vars: ", updatedVars);
         try {
             delete updatedVars._id;;
             delete updatedVars.__v;
@@ -42,7 +42,7 @@ export const useExperienceServices = create((set) => ({
                 id: experienceId,
                 ...updatedVars
             });
-            console.log("F: Respueste de updateExperiences: ", response);
+            //console.log("F: Respueste de updateExperiences: ", response);
             set({ experienceList: response.data.experienceList, isLoading: false });
             return response.data;
         } catch (error) {

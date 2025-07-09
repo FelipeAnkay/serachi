@@ -23,6 +23,11 @@ const SetProduct = () => {
     const [typeList, setTypeList] = useState([]);
     const [selectedType, setSelectedType] = useState(null);
     const [searchTerm, setSearchTerm] = useState('');
+    const [priceInput, setPriceInput] = useState('');
+    const [taxInput, setTaxInput] = useState('');
+    const [finalPriceInput, setFinalPriceInput] = useState('');
+    const [taxPercentInput, setTaxPercentInput] = useState('');
+    const [isEditingInputs, setIsEditingInputs] = useState(false);
 
     useEffect(() => {
         const fetchProducts = async () => {
@@ -133,6 +138,75 @@ const SetProduct = () => {
         }
     };
 
+    useEffect(() => {
+        if (!isEditingInputs) {
+            if (productData.price !== undefined) {
+                setPriceInput(productData.price.toString().replace('.', ','));
+            }
+            if (productData.taxPercent !== undefined) {
+                setTaxPercentInput(productData.taxPercent.toString().replace('.', ','));
+            }
+            if (productData.tax !== undefined) {
+                setTaxInput(productData.tax.toString().replace('.', ','));
+            }
+            if (productData.finalPrice !== undefined) {
+                setFinalPriceInput(productData.finalPrice.toString().replace('.', ','));
+            }
+        }
+    }, [productData, isEditingInputs]);
+
+    useEffect(() => {
+        const parsedPrice = parseFloat(priceInput.replace(',', '.'));
+        const parsedTaxPercent = parseFloat(taxPercentInput.replace(',', '.'));
+
+        if (!isNaN(parsedPrice) && !isNaN(parsedTaxPercent)) {
+            const taxRaw = (parsedPrice * parsedTaxPercent) / 100;
+            const tax = Number(taxRaw.toFixed(2));
+            const finalPrice = Number((parsedPrice + tax).toFixed(2));
+
+            setProductData((prev) => ({
+                ...prev,
+                price: Number(parsedPrice.toFixed(2)),
+                taxPercent: Number(parsedTaxPercent.toFixed(2)),
+                tax,
+                finalPrice,
+            }));
+        }
+    }, [priceInput, taxPercentInput]);
+
+    useEffect(() => {
+        const parsedTax = parseFloat(taxInput.replace(',', '.'));
+        const parsedPrice = parseFloat(priceInput.replace(',', '.'));
+
+        if (!isNaN(parsedPrice) && !isNaN(parsedTax)) {
+            const taxPercent = parsedPrice ? Number(((parsedTax / parsedPrice) * 100).toFixed(2)) : 0;
+            const finalPrice = Number((parsedPrice + parsedTax).toFixed(2));
+
+            setProductData((prev) => ({
+                ...prev,
+                tax: Number(parsedTax.toFixed(2)),
+                taxPercent,
+                finalPrice,
+            }));
+        }
+    }, [taxInput]);
+
+    useEffect(() => {
+        const parsedFinal = parseFloat(finalPriceInput.replace(',', '.'));
+        const parsedPrice = parseFloat(priceInput.replace(',', '.'));
+
+        if (!isNaN(parsedFinal) && !isNaN(parsedPrice)) {
+            const tax = Number((parsedFinal - parsedPrice).toFixed(2));
+            const taxPercent = parsedPrice ? Number(((tax / parsedPrice) * 100).toFixed(2)) : 0;
+
+            setProductData((prev) => ({
+                ...prev,
+                finalPrice: Number(parsedFinal.toFixed(2)),
+                tax,
+                taxPercent,
+            }));
+        }
+    }, [finalPriceInput]);
     const productTypes = [...new Set(productList.map(p => p.type).filter(Boolean))];
     const filteredProducts = productList
         .filter(p => p.isActive === showActive)
@@ -213,7 +287,7 @@ const SetProduct = () => {
                                 <div className='flex flex-row'>
                                     <div onClick={() => openEditProductModal(product)} className="flex flex-col w-7/8">
                                         <h3 className="font-semibold text-lg mb-1">{product.name}</h3>
-                                        <p className="text-sm text-gray-700">Price: {product.price}</p>
+                                        <p className="text-sm text-gray-700">Final Price: {product.finalPrice}</p>
                                         <p className="text-sm text-gray-700">Tax: {product.tax}</p>
                                         <p className="text-sm text-gray-700">Type: {product.type || 'N/A'}</p>
                                     </div>
@@ -332,88 +406,96 @@ const SetProduct = () => {
                                             type="text"
                                             inputMode="decimal"
                                             className="w-full p-2 mt-1 rounded bg-white text-slate-900 border border-slate-300"
-                                            value={productData.price?.toString().replace('.', ',') || ''}
+                                            value={priceInput}
                                             onChange={(e) => {
-                                                const raw = e.target.value.replace(',', '.');
-                                                const price = parseFloat(raw) || 0;
-                                                const taxPercent = productData.taxPercent || 0;
-                                                const tax = (price * taxPercent) / 100;
-                                                setProductData({
-                                                    ...productData,
-                                                    price,
-                                                    tax,
-                                                    finalPrice: price + tax,
-                                                });
+                                                setIsEditingInputs(true);
+                                                const input = e.target.value.replace('.', ',');
+                                                setPriceInput(input);
+                                            }}
+                                            onBlur={() => {
+                                                setIsEditingInputs(false);
                                             }}
                                         />
                                     </div>
 
                                     {/* Tax % (editable) */}
                                     <div>
-                                        <label className="capitalize">Tax %:</label>
+                                        <label className="capitalize">Tax %: *</label>
                                         <input
                                             type="text"
                                             inputMode="decimal"
                                             className="w-full p-2 mt-1 rounded bg-white text-slate-900 border border-slate-300"
-                                            value={productData.taxPercent?.toString().replace('.', ',') || ''}
+                                            value={taxPercentInput}
                                             onChange={(e) => {
-                                                const raw = e.target.value.replace(',', '.');
-                                                const taxPercent = parseFloat(raw) || 0;
-                                                const price = productData.price || 0;
-                                                const tax = (price * taxPercent) / 100;
-                                                setProductData({
-                                                    ...productData,
-                                                    taxPercent,
-                                                    tax,
-                                                    finalPrice: price + tax,
-                                                });
+                                                setIsEditingInputs(true);
+                                                const input = e.target.value.replace('.', ',');
+                                                
+                                                setTaxPercentInput(input);
+                                            }}
+                                            onBlur={() => {
+                                                setIsEditingInputs(false);
                                             }}
                                         />
                                     </div>
-
-                                    {/* Tax (editable) */}
                                     <div>
-                                        <label className="capitalize">Tax (value):</label>
+                                        <label className="capitalize">Tax (Value): *</label>
                                         <input
                                             type="text"
                                             inputMode="decimal"
                                             className="w-full p-2 mt-1 rounded bg-white text-slate-900 border border-slate-300"
-                                            value={productData.tax?.toString().replace('.', ',') || ''}
+                                            value={taxInput}
                                             onChange={(e) => {
-                                                const raw = e.target.value.replace(',', '.');
-                                                const tax = parseFloat(raw) || 0;
-                                                const price = productData.price || 0;
-                                                const taxPercent = price ? (tax / price) * 100 : 0;
-                                                setProductData({
-                                                    ...productData,
-                                                    tax,
-                                                    taxPercent,
-                                                    finalPrice: price + tax,
-                                                });
+                                                setIsEditingInputs(true);
+                                                const input = e.target.value.replace('.', ',');
+                                                
+                                                setTaxInput(input);
+
+                                                const parsed = parseFloat(input.replace(',', '.'));
+                                                if (!isNaN(parsed)) {
+                                                    const price = productData.price || 0;
+                                                    const taxPercent = price ? (parsed / price) * 100 : 0;
+                                                    setProductData({
+                                                        ...productData,
+                                                        tax: parsed,
+                                                        taxPercent,
+                                                        finalPrice: price + parsed,
+                                                    });
+                                                }
+                                            }}
+                                            onBlur={() => {
+                                                setIsEditingInputs(false);
                                             }}
                                         />
                                     </div>
-
                                     {/* Final Price (editable) */}
                                     <div>
-                                        <label className="capitalize">Final Price:</label>
+                                        <label className="capitalize">Final Price: *</label>
                                         <input
                                             type="text"
                                             inputMode="decimal"
                                             className="w-full p-2 mt-1 rounded bg-white text-slate-900 border border-slate-300"
-                                            value={productData.finalPrice?.toString().replace('.', ',') || ''}
+                                            value={finalPriceInput}
                                             onChange={(e) => {
-                                                const raw = e.target.value.replace(',', '.');
-                                                const finalPrice = parseFloat(raw) || 0;
-                                                const price = productData.price || 0;
-                                                const tax = finalPrice - price;
-                                                const taxPercent = price ? (tax / price) * 100 : 0;
-                                                setProductData({
-                                                    ...productData,
-                                                    finalPrice,
-                                                    tax,
-                                                    taxPercent,
-                                                });
+                                                setIsEditingInputs(true);
+                                                const input = e.target.value.replace('.', ',');
+                                                
+                                                setFinalPriceInput(input);
+
+                                                const parsed = parseFloat(input.replace(',', '.'));
+                                                if (!isNaN(parsed)) {
+                                                    const price = productData.price || 0;
+                                                    const tax = parsed - price;
+                                                    const taxPercent = price ? (tax / price) * 100 : 0;
+                                                    setProductData({
+                                                        ...productData,
+                                                        finalPrice: parsed,
+                                                        tax,
+                                                        taxPercent,
+                                                    });
+                                                }
+                                            }}
+                                            onBlur={() => {
+                                                setIsEditingInputs(false);
                                             }}
                                         />
                                     </div>

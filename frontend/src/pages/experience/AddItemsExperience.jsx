@@ -155,8 +155,8 @@ export default function AddItemsExperience() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (!selectedExperience) return toast.error('Select an experience');
-        console.log("Selected Experience: ", selectedExperience)
-        console.log("Selected Products: ", selectedProducts)
+        //console.log("Selected Experience: ", selectedExperience)
+        //console.log("Selected Products: ", selectedProducts)
         
         const updatedExperience = {
             ...selectedExperience,
@@ -166,7 +166,7 @@ export default function AddItemsExperience() {
         };
         setLoading(true)
         try {
-            console.log("updateExperience Payload: ", updatedExperience)
+            //console.log("updateExperience Payload: ", updatedExperience)
             await updateExperience(updatedExperience._id, updatedExperience);
             window.scrollTo({ top: 0, behavior: 'smooth' });
             toast.success('Experience updated');
