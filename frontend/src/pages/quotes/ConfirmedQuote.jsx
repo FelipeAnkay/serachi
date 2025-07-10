@@ -166,7 +166,7 @@ export default function ConfirmedQuote() {
             const experiencePayload = {
                 name: experience
                     ? experience.name
-                    : `${quote.customerEmail} - ${formDateIn} TO ${formDateOut}`,
+                    : `${fetchedCustomer.name} + ${(fetchedCustomer.lastName ? " " + fetchedCustomer.lastName : "")}`,
                 storeId: quote.storeId,
                 userEmail: quote.userEmail,
                 customerEmail: quote.customerEmail,
@@ -234,7 +234,7 @@ export default function ConfirmedQuote() {
             const experiencePayload = {
                 name: experience
                     ? experience.name
-                    : `E: ${quote.customerEmail} - ${formDateIn} TO ${formDateOut}`,
+                    : `E: ${quote.customerEmail}`,
                 storeId: quote.storeId,
                 userEmail: quote.userEmail,
                 customerEmail: quote.customerEmail,
@@ -300,7 +300,7 @@ export default function ConfirmedQuote() {
             const experiencePayload = {
                 name: experience
                     ? experience.name
-                    : `E: ${quote.customerEmail} - ${formDateIn} TO ${formDateOut}`,
+                    : `E: ${quote.customerEmail}`,
                 storeId: quote.storeId,
                 userEmail: quote.userEmail,
                 customerEmail: quote.customerEmail,
