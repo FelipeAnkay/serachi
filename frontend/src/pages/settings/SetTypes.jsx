@@ -287,7 +287,7 @@ const SetTypes = () => {
                                             type="text"
                                             className="w-full p-2 mt-1 bg-white text-slate-900 border border-slate-300 rounded"
                                             value={typeData.name || ''}
-                                            onChange={(e) => setPartnerData({ ...typeData, name: e.target.value })}
+                                            onChange={(e) => setTypeData({ ...typeData, name: e.target.value })}
                                         />
                                     </div>
                                     <div>

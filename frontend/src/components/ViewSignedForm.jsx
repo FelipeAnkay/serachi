@@ -91,7 +91,7 @@ export default function ViewSignedForms({ forms, isOpen, onClose }) {
                         <motion.div
                             key={form._id}
                             whileHover={{ scale: 1.05 }}
-                            className="cursor-pointer flex flex-col items-center bg-white text-gray-800 rounded-xl shadow-md p-3"
+                            className="cursor-pointer flex flex-col items-center bg-white text-gray-800 rounded-xl shadow-md p-3 mt-3"
                             onClick={() => setSelectedForm(form)}
                         >
                             <FileSpreadsheet className="w-10 h-10 text-cyan-900" />

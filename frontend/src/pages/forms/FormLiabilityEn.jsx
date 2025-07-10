@@ -10,6 +10,8 @@ import toast from 'react-hot-toast';
 import LoadingSpinner from '../../components/LoadingSpinner';
 import liabilityFields from '../../components/FormLiabilityFields.json'
 import Select from 'react-select';
+import { motion, AnimatePresence } from 'framer-motion';
+import { CheckCircle, CircleX } from 'lucide-react';
 
 
 const LiabilityEn = () => {
@@ -24,6 +26,7 @@ const LiabilityEn = () => {
     const [customer, setCustomer] = useState({})
     const [loading, setLoading] = useState(true);
     const [selectedLang, setSelectedLang] = useState(false);
+    const [formSent, setFormSent] = useState(false);
 
     const [formData, setFormData] = useState({
         participantName: '',
@@ -163,8 +166,9 @@ const LiabilityEn = () => {
         setLoading(true)
         try {
             await createFormRecord(formPayload)
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+            //window.scrollTo({ top: 0, behavior: 'smooth' });
             toast.success("Form Saved Successfully")
+            setFormSent(true)
         } catch (error) {
             console.log("Error guardando el form: ", error)
             toast.error("Error saving the Form")
@@ -308,6 +312,33 @@ const LiabilityEn = () => {
                                 <button type="submit" className="mt-4 bg-[#118290] hover:bg-[#0d6c77] text-cyan-50 px-4 py-2 rounded">{fieldData.field11 || "Submit"}</button>
                             </form>
                         </div>
+                    )}
+                    {formSent && (
+                        <motion.div
+                            className="fixed inset-0 bg-black/95 flex items-center justify-center z-50 overflow-y-auto scrollbar-thin scrollbar-thumb-blue-600 scrollbar-track-gray-800 scrollbar-thumb-rounded-full"
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                        >
+                            <motion.div
+                                className="bg-sky-50 text-slate-800 rounded-2xl shadow-2xl p-8 w-[90%] max-w-md relative max-h-[90vh] overflow-y-auto scrollbar-thin scrollbar-thumb-blue-600 scrollbar-track-gray-800 scrollbar-thumb-rounded-full"
+                                initial={{ scale: 0.8 }}
+                                animate={{ scale: 1 }}
+                                exit={{ scale: 0.8 }}
+                                transition={{ duration: 0.3 }}
+                            >
+                                <button
+                                    className="absolute top-4 right-4 text-gray-400 hover:text-slate-800"
+                                    onClick={() => setFormSent(false)}
+                                >
+                                    <CircleX />
+                                </button>
+                                <h3 className="text-xl font-bold mb-6 text-center text-[#00C49F]">
+                                    Form submitted successfully
+                                </h3>
+                                <CheckCircle className="text-[#00C49F] text-xl flex justify-center text-center w-full" />
+                            </motion.div>
+                        </motion.div>
                     )}
                 </div>
             </div>

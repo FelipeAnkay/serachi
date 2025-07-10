@@ -244,7 +244,7 @@ export default function CreateReservation() {
                 roomNights: nights
             };
         });
-        console.log("structuredList", structuredList)
+        //console.log("structuredList", structuredList)
         const roomSubtotal = structuredList.reduce((sum, item) => sum + item.roomFinalPrice, 0);
         const total = roomSubtotal;
         setFinalPrice(total);
@@ -366,10 +366,21 @@ export default function CreateReservation() {
             //console.log("Listado de reservas: ", actualReservationList)
             //console.log("selectedExperience: ", selectedExperience)
             if (selectedExperience?.value != "") {
-                const payload = {
-                    bookList: actualReservationList,
+                let payload = {}
+                if (selectedExperience.experience.dateOut < reservation.dateOut) {
+                    //console.log("Entre al If")
+                    payload = {
+                        bookList: actualReservationList,
+                        dateOut: reservation.dateOut
+                    }
+
+                } else {
+                    console.log("NO Entre al If")
+                    payload = {
+                        bookList: actualReservationList,
+                    }
                 }
-                await updateExperience(selectedExperience.value,payload)
+                await updateExperience(selectedExperience.value, payload)
             }
 
             window.scrollTo({ top: 0, behavior: 'smooth' });
