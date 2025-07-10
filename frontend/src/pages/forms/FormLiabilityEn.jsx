@@ -144,7 +144,7 @@ const LiabilityEn = () => {
             customerEmail: customer.email,
             storeId: store.storeId,
             formName: "Liability EN",
-            formTxt: agreementText,
+            formTxt: renderedText,
             date: new Date(),
             answers: {
                 participantName: customer.name + " " + customer.lastName,
