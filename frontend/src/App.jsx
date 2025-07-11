@@ -207,14 +207,7 @@ function App() {
             </ProtectedRoute>}
         />
         <Route
-          path="/experience-calendar"
-          element={
-            <ProtectedRoute requiredPermission="VIEW_EXPERIENCES" storePermission={["BAS", "MED", "PRO"]}>
-              <Agenda />
-            </ProtectedRoute>}
-        />
-        <Route
-          path="/agenda"
+          path="/service-schedule"
           element={
             <ProtectedRoute requiredPermission="VIEW_EXPERIENCES" storePermission={["BAS", "MED", "PRO"]}>
               <Agenda />

@@ -110,3 +110,4 @@ export function formatYearMonth(dateInput) {
   const date = toDate(dateInput);
   return date ? format(date, "yyyy-MM") : "";
 }
+

@@ -9,6 +9,7 @@ import { useStaffServices } from '../../store/staffServices';
 import { useServiceServices } from '../../store/serviceServices';
 import LoadingSpinner from '../../components/LoadingSpinner';
 import CustomAgendaCalendar from '../../components/CustomAgendaCalendar';
+import SendShareScheduleModal from '../../components/SendShareScheduleModal';
 
 
 const Agenda = () => {
@@ -30,17 +31,23 @@ const Agenda = () => {
     let loadServices = true;
 
     useEffect(() => {
-        const now = new Date();
-        const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
-        const lastDay2 = new Date(now.getFullYear(), now.getMonth() + 1, 0);
-
         if (loadServices) {
-            setSelectedDate(firstDay); // ✅ ¡AQUÍ!
             fetchStaff();
-            fetchExperiences(firstDay, lastDay2);
             loadServices = false;
         }
     }, []);
+
+    useEffect(() => {
+        const now = new Date();
+        const firstDay = new Date(now.getFullYear(), now.getMonth(), 1, 0, 0, 0, 0);
+        const lastDay2 = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59, 999);
+        //console.log("Fechas Ini-Fin", { firstDay, lastDay2 });
+
+        if (staffList.length > 0) {
+            setSelectedDate(firstDay); // ✅ ¡AQUÍ!
+            fetchExperiences(firstDay, lastDay2);
+        }
+    }, [staffList]);
 
     useEffect(() => {
         if (selectedType === "All") {
@@ -56,7 +63,7 @@ const Agenda = () => {
         try {
             setLoading(true);
             const staff = await getStaffList(storeId);
-            //console.log("staff: ", staff)
+            //console.log("getStaffList: ", staff)
             setStaffList(staff.staffList);
         } catch (error) {
             toast.error("Error Fetching Staff")
@@ -68,48 +75,45 @@ const Agenda = () => {
 
     const fetchExperiences = async (startDate, endDate) => {
         const allServiceEvents = [];
-        const staffColorMap = {};
         const typesSet = new Set();
         //console.log("Entre a fetchExperiences", { startDate, endDate })
-        const getColorForStaff = async (email) => {
-            //console.log("Entre a getColorForStaff ", email);
-            //console.log("El staffColorMap es: ", staffColorMap);
-            if (!email) return "#9E9E9E";
-            if (staffColorMap[email]) return staffColorMap[email];
 
-            try {
-                setLoading(true)
-                const res = await getStaffEmail(email, storeId);
-                //console.log("El res es: ", res)
-                const staff = res?.staffList;
-                //console.log("El staff es: ", staff)
-                const color = staff?.color || "#EF9A9A";
-                //console.log("El color es: ", color)
-                staffColorMap[email] = color;
-                return color;
-            } catch {
-                return "#9E9E9E";
-            } finally {
-                setLoading(false)
-            }
-        };
         try {
             //setLoading(true);
             //console.log("La llamada de getServiceById ", { startDate, endDate });
             const serviceDetail = await getServicesForCalendar(startDate, endDate, storeId);
-            //console.log("La respuesta de getServicesByDate ", serviceDetail);
+            //console.log("La respuesta de getServicesForCalendar ", serviceDetail);
             let lastDay = new Date();
             let lastService = {}
-            const parseDate = (d) =>
-                typeof d === "object" && d.$date?.$numberLong
+            const parseDate = (d) => {
+                const date = typeof d === "object" && d.$date?.$numberLong
                     ? new Date(Number(d.$date.$numberLong))
                     : new Date(d);
+
+                // Fuerza a hora local sin zona horaria ambigua (00:00 del mismo día)
+                return new Date(date.getFullYear(), date.getMonth(), date.getDate(), date.getHours(), date.getMinutes(), date.getSeconds());
+            };
             if (serviceDetail.serviceList.length > 0) {
-                for (const serviceRef of serviceDetail.serviceList) {
+                //console.log("Service List", serviceDetail.serviceList)
+                //console.log("Staff List", staffList)
+                const auxServiceList = serviceDetail.serviceList
+                    .map((serv) => {
+                        const staff = staffList.find(s => s.email === serv.staffEmail);
+                        const name = staff.name || "NO STAFF ASSIGNED"
+                        const color = staff.color || "#EF9A9A"
+                        return {
+                            ...serv,
+                            staffName: name,
+                            staffColor: color
+                        };
+                    })
+                //console.log(auxServiceList)
+                for (const serviceRef of auxServiceList) {
                     //console.log("serviceRef: ", serviceRef)
                     if (serviceRef && serviceRef.isActive) {
                         const staffEmail = serviceRef.staffEmail;
-                        const color = await getColorForStaff(staffEmail);
+                        const color = serviceRef.staffColor;
+                        const staffName = serviceRef.staffName
                         if (lastDay < parseDate(serviceRef.dateOut)) {
                             lastDay = parseDate(serviceRef.dateOut)
                             lastService = serviceRef
@@ -118,12 +122,14 @@ const Agenda = () => {
                         const serviceType = serviceRef.type || "Unknown";
                         typesSet.add(serviceType);
                         allServiceEvents.push({
-                            title: `${serviceRef.name} - ${serviceRef.staffEmail || "NO STAFF ASSIGNED"}`,
+                            title: `${serviceRef.name}`,
                             start: parseDate(serviceRef.dateIn),
                             end: parseDate(serviceRef.dateOut),
                             allDay: false,
                             resource: serviceRef,
                             staffColor: color,
+                            staffName: staffName,
+                            staffEmail: staffEmail,
                             type: serviceRef.type,
                         });
                     }
@@ -209,11 +215,6 @@ const Agenda = () => {
     const handleShareSchedule = () => {
         setModalShareOpen(true);
     }
-
-    useEffect(() => {
-        console.log("Selected Date es: ", selectedDate)
-    }, [selectedDate])
-
 
     return (
         <>
