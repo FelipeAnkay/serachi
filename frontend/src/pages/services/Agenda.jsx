@@ -1,7 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import Cookies from 'js-cookie';
-import { Calendar, momentLocalizer, Views } from 'react-big-calendar';
 import moment from 'moment';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import { CircleX, Save, Ban, Share2 } from 'lucide-react';
@@ -9,20 +8,16 @@ import toast from 'react-hot-toast';
 import { useStaffServices } from '../../store/staffServices';
 import { useServiceServices } from '../../store/serviceServices';
 import LoadingSpinner from '../../components/LoadingSpinner';
-import CustomCalendarToolbar from '../../components/CustomCalendarToolbar';
-import AgendaEventRenderer from '../../components/AgendaEventRenderer';
-import SendShareScheduleModal from '../../components/SendShareScheduleModal';
+import CustomAgendaCalendar from '../../components/CustomAgendaCalendar';
 
-const localizer = momentLocalizer(moment);
 
-const Experiences = () => {
+const Agenda = () => {
     const { updateService, getServicesForCalendar } = useServiceServices();
     const { getStaffEmail, getStaffList } = useStaffServices();
     const storeId = Cookies.get("storeId");
     const [events, setEvents] = useState([]);
     const [allEvents, setAllEvents] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [view, setView] = useState(Views.AGENDA);
     const [selectedDate, setSelectedDate] = useState(new Date());
     const [selectedService, setSelectedService] = useState(null);
     const [modalOpen, setModalOpen] = useState(false);
@@ -32,8 +27,6 @@ const Experiences = () => {
     const [staffList, setStaffList] = useState([]);
     const [serviceTypes, setServiceTypes] = useState([]);
     const [selectedType, setSelectedType] = useState("All");
-    const [startDay, setStartDay] = useState(new Date());
-    const [lastDay, setLastDay] = useState(new Date());
     let loadServices = true;
 
     useEffect(() => {
@@ -42,8 +35,6 @@ const Experiences = () => {
         const lastDay2 = new Date(now.getFullYear(), now.getMonth() + 1, 0);
 
         if (loadServices) {
-            setStartDay(firstDay);
-            setLastDay(lastDay2);
             setSelectedDate(firstDay); // ✅ ¡AQUÍ!
             fetchStaff();
             fetchExperiences(firstDay, lastDay2);
@@ -76,12 +67,10 @@ const Experiences = () => {
     }
 
     const fetchExperiences = async (startDate, endDate) => {
-        setStartDay(startDate);
-        setLastDay(endDate)
         const allServiceEvents = [];
         const staffColorMap = {};
         const typesSet = new Set();
-        console.log("Entre a fetchExperiences", { startDate, endDate })
+        //console.log("Entre a fetchExperiences", { startDate, endDate })
         const getColorForStaff = async (email) => {
             //console.log("Entre a getColorForStaff ", email);
             //console.log("El staffColorMap es: ", staffColorMap);
@@ -106,9 +95,9 @@ const Experiences = () => {
         };
         try {
             //setLoading(true);
-            console.log("La llamada de getServiceById ", { startDate, endDate });
+            //console.log("La llamada de getServiceById ", { startDate, endDate });
             const serviceDetail = await getServicesForCalendar(startDate, endDate, storeId);
-            console.log("La respuesta de getServicesByDate ", serviceDetail);
+            //console.log("La respuesta de getServicesByDate ", serviceDetail);
             let lastDay = new Date();
             let lastService = {}
             const parseDate = (d) =>
@@ -139,33 +128,13 @@ const Experiences = () => {
                         });
                     }
                 }
-                console.log("La ultima fecha y servicio es: ", { lastDay, lastService })
+                //console.log("La ultima fecha y servicio es: ", { lastDay, lastService })
             }
             //console.log("allServiceEvents: ", allServiceEvents)
             setAllEvents(allServiceEvents);
             setEvents(allServiceEvents);
             setServiceTypes(["All", ...Array.from(typesSet)]);
             setLoadedRange({ start: startDate, end: endDate });
-            if (view === "agenda" && allServiceEvents.length > 0) {
-                const today = new Date();
-                const earliest = allServiceEvents.reduce((min, e) =>
-                    e.start < min.start ? e : min
-                );
-
-                setSelectedDate(earliest.start);
-
-                if (isSameMonth(earliest.start, today)) {
-                    const nextClosest = allServiceEvents.find(e => e.start >= today);
-                    //console.log("nextClosest es: ", nextClosest)
-                    if (nextClosest) {
-                        setTimeout(() => {
-                            const el = document.querySelector(`[data-id="event-${nextClosest.resource._id}"]`);
-                            //console.log("Documento encontrado: ", el)
-                            if (el) el.scrollIntoView({ behavior: "smooth", block: "center" });
-                        }, 500); // ⏱️ tiempo suficiente para que el calendario renderice
-                    }
-                }
-            }
         } catch (error) {
             toast.error("Theres no services for this month")
             //console.log("El error es: ", error)
@@ -175,13 +144,10 @@ const Experiences = () => {
         }
     };
 
-    const isSameMonth = (date1, date2) =>
-        date1.getFullYear() === date2.getFullYear() &&
-        date1.getMonth() === date2.getMonth();
-
-    const handleSelectSlot = ({ start }) => {
-        setSelectedDate(start);
-        setView(Views.DAY);
+    const closeModal = () => {
+        setModalOpen(false);
+        setSelectedService(null);
+        setEditData({});
     };
 
     const handleSelectEvent = (event) => {
@@ -192,12 +158,6 @@ const Experiences = () => {
             dateOut: moment(event.resource.dateOut).format('YYYY-MM-DDTHH:mm')
         });
         setModalOpen(true);
-    };
-
-    const closeModal = () => {
-        setModalOpen(false);
-        setSelectedService(null);
-        setEditData({});
     };
 
     const handleUpdate = async () => {
@@ -250,65 +210,10 @@ const Experiences = () => {
         setModalShareOpen(true);
     }
 
-
-    const handleNavigate = (newDate, currentView) => {
-        //console.log("Entre a handleNavigate: ", newDate)
-        const viewType = view || currentView; // usa el estado o el parámetro
-        let newMonthStart = new Date()
-        let newMonthEnd = new Date()
-        if (viewType === 'agenda' || viewType === 'month') {
-            //console.log("LLAMADA 1: newDate, lastDay and Selected: ", { newDate, lastDay, selectedDate })
-            const currentMonth = selectedDate.getMonth();
-            const currentYear = selectedDate.getFullYear();
-
-            const direction = newDate > selectedDate ? 1 : -1;
-            const targetMonth = currentMonth + direction;
-            const targetYear = currentYear + Math.floor(targetMonth / 12);
-            const normalizedMonth = (targetMonth + 12) % 12;
-
-            newMonthStart = new Date(targetYear, normalizedMonth, 1);
-            newMonthEnd = new Date(targetYear, normalizedMonth + 1, 0, 23, 59, 59, 999);
-            //console.log("Nuevo dia 1 y nuevo ultimo dia: ", { newMonthStart, newMonthEnd })
-            setSelectedDate(newMonthStart);
-            //console.log("POST LLAMADA: lastDay and Selected: ", { newMonthEnd, newMonthStart})
-        } else {
-            newMonthStart = new Date(newDate.getFullYear(), newDate.getMonth(), 1);
-            newMonthEnd = new Date(newDate.getFullYear(), newDate.getMonth() + 1, 0);
-            setSelectedDate(newDate);
-        }
-
-        //const newMonthStart = new Date(newDate.getFullYear(), newDate.getMonth(), -7);
-
-        //const newMonthEnd = new Date(newDate.getFullYear(), newDate.getMonth() + 1, +7);
-        //console.log("Nuevas fechas: ", { newMonthStart, newMonthEnd })
-        //console.log("Fechas de loadedRange: ", { loadedRange })
-        const isSameMonth =
-            loadedRange.start &&
-            loadedRange.end &&
-            loadedRange.start.getFullYear() === newMonthStart.getFullYear() &&
-            loadedRange.start.getMonth() === newMonthStart.getMonth();
-
-        console.log("isSameMonth: ", isSameMonth)
-        if (!isSameMonth) {
-            console.log("Inicio y fin de mes: ", { newMonthStart, newMonthEnd })
-            fetchExperiences(newMonthStart, newMonthEnd);
-        }
-    };
     useEffect(() => {
         console.log("Selected Date es: ", selectedDate)
     }, [selectedDate])
 
-
-    const firstDayOfMonth = new Date(selectedDate.getFullYear(), selectedDate.getMonth(), 1);
-    const lastDayOfMonth = new Date(selectedDate.getFullYear(), selectedDate.getMonth() + 1, 0);
-
-    const msInDay = 1000 * 60 * 60 * 24;
-    const agendaLength = (() => {
-        const start = new Date(selectedDate.getFullYear(), selectedDate.getMonth(), 1);
-        const end = new Date(selectedDate.getFullYear(), selectedDate.getMonth() + 1, 0);
-        const msInDay = 1000 * 60 * 60 * 24;
-        return Math.round((end - start) / msInDay) + 1;
-    })();
 
     return (
         <>
@@ -359,47 +264,12 @@ const Experiences = () => {
                             </div>
                         </div>
                         <div className="h-full w-full bg-white text-black rounded-xl shadow-xl">
-                            <Calendar
-                                localizer={localizer}
+                            <CustomAgendaCalendar
                                 events={events}
-                                startAccessor="start"
-                                endAccessor="end"
-                                selectable
-                                onSelectSlot={handleSelectSlot}
+                                selectedDate={selectedDate}
+                                setSelectedDate={setSelectedDate}
+                                onMonthChange={(start, end) => fetchExperiences(start, end)}
                                 onSelectEvent={handleSelectEvent}
-                                defaultView={Views.AGENDA}
-                                view={view}
-                                onView={setView}
-                                onNavigate={handleNavigate}
-                                date={view === 'agenda'
-                                    ? new Date(selectedDate.getFullYear(), selectedDate.getMonth(), 1)
-                                    : selectedDate}
-                                length={view === 'agenda'
-                                    ? new Date(selectedDate.getFullYear(), selectedDate.getMonth() + 1, 0).getDate()
-                                    : undefined}
-                                style={{ height: '100%', width: '100%' }}
-                                min={new Date(0, 0, 0, 5, 0)}   // ⏰ Mostrar desde las 5:00 am
-                                max={new Date(0, 0, 0, 22, 0)}  // ⏰ Hasta las 10:00 pm
-                                eventPropGetter={(event) => {
-                                    const color = event.staffColor || "#6b7280"; // valor por defecto (gray-500)
-                                    const id = event.resource?._id || event.title;
-                                    return {
-                                        'data-id': `event-${id}`,
-                                        style: {
-                                            backgroundColor: color,
-                                            color: "white",
-                                            borderRadius: "0.375rem", // equivalente a rounded-md
-                                            paddingLeft: "0.5rem",    // equivalente a px-2
-                                            paddingRight: "0.5rem",
-                                        },
-                                    };
-                                }}
-                                components={{
-                                    toolbar: (props) => <CustomCalendarToolbar {...props} startDate={startDay} endDate={lastDay} />,
-                                    agenda: {
-                                        event: AgendaEventRenderer
-                                    }
-                                }}
                             />
                         </div>
                     </div>
@@ -499,4 +369,4 @@ const Experiences = () => {
     );
 };
 
-export default Experiences;
+export default Agenda;

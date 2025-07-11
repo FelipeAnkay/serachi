@@ -58,6 +58,7 @@ import ServicesFacility from './pages/services/ServicesFacility';
 import FacilitySchedule from './pages/services/FacilitySchedule';
 import QuoteDashboard from './pages/quotes/QuoteDashboard';
 import ProductCartPage from './pages/experience/ProductCartPage';
+import Agenda from './pages/services/Agenda';
 
 const ProtectedRoute = ({ children, requiredPermission, storePermission }) => {
   const { isAuthenticated, user, logout } = useAuthStore();
@@ -209,7 +210,14 @@ function App() {
           path="/experience-calendar"
           element={
             <ProtectedRoute requiredPermission="VIEW_EXPERIENCES" storePermission={["BAS", "MED", "PRO"]}>
-              <Experiences />
+              <Agenda />
+            </ProtectedRoute>}
+        />
+        <Route
+          path="/agenda"
+          element={
+            <ProtectedRoute requiredPermission="VIEW_EXPERIENCES" storePermission={["BAS", "MED", "PRO"]}>
+              <Agenda />
             </ProtectedRoute>}
         />
         <Route

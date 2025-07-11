@@ -272,14 +272,15 @@ export default function CreateService() {
         setLoading(true);
         //console.log("En  handleSubmit: ", customServiceList);
         try {
-            console.log("selectedExperience es: ", selectedExperience)
+            //console.log("selectedExperience es: ", selectedExperience)
             let actualServiceList = []
             if (selectedExperience?.experience?.serviceList?.length > 0) {
-                console.log("Entre a IF selectedExperience");
+                //console.log("Entre a IF selectedExperience");
                 actualServiceList = [...selectedExperience.experience.serviceList];
             }
             //console.log("El listado actual de servicios es: ", actualServiceList)
             //console.log("La experiencia seleccionada es: ", selectedExperience)
+            let lastDate = new Date();
             for (const auxService of customServiceList) {
                 //console.log("El service es:", auxService);
                 const servicePayload = {
@@ -294,6 +295,9 @@ export default function CreateService() {
                     isPaid: auxService.isPaid,
                     staffEmail: auxService.staffEmail
                 }
+                if (lastDate < auxService.dateOut) {
+                    lastDate = auxService.dateOut
+                }
                 //console.log("El servicePayload es:", servicePayload);
                 const service = await createService(servicePayload);
                 //console.log("Respuesta de createService es:", service);
@@ -302,8 +306,17 @@ export default function CreateService() {
             }
             //console.log("El listado actualizado de servicios es: ", actualServiceList)
             if (selectedExperience?.experience?.serviceList?.length > 0) {
-                const payload = {
-                    serviceList: actualServiceList,
+                let payload = {}
+                if (selectedExperience?.experience?.dateOut < lastDate) {
+                    payload = {
+                        dateOut: lastDate,
+                        serviceList: actualServiceList,
+                    }
+
+                } else {
+                    payload = {
+                        serviceList: actualServiceList,
+                    }
                 }
                 await updateExperience(selectedExperience.value, payload)
             }

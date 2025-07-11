@@ -5,6 +5,7 @@ import { useAuthStore } from '../store/authStore';
 import { formatDate } from "../utils/date";
 import { useLocation } from 'react-router-dom';
 import toast from 'react-hot-toast';
+import { useStoreServices } from '../store/storeServices';
 
 const HomePage = () => {
   const { user, logout } = useAuthStore();

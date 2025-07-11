@@ -103,8 +103,12 @@ const SetTypes = () => {
 
     const confirmRemove = async () => {
         try {
-            await removeType(confirmDelete.typeId, storeId);
-            toast.success(`Type ${confirmDelete.typeId} removed from store.`);
+            console.log("confirmDelete: ", confirmDelete.type)
+            const payload = {
+                isActive: false,
+            }
+            await updateType(confirmDelete.type, payload);
+            toast.success(`Type ${confirmDelete.type} removed from store.`);
             closeModal();
             window.location.reload();
         } catch (error) {
@@ -119,6 +123,7 @@ const SetTypes = () => {
             p.category.toLowerCase().includes(searchTerm.toLowerCase())
         )
         .filter(p => p.category !== "PERMISSION" && p.category !== "ROOM")
+        .filter(p => p.isActive)
         .sort((a, b) => a.name.localeCompare(b.name));
 
     if (loading) return <div className="text-slate-800 text-center mt-10">Loading Types...</div>;
