@@ -290,9 +290,11 @@ const LeftMenu = ({ show, setShow }) => {
     const [menuList, setMenuList] = useState([]);
     const { logout } = useAuthStore();
     const storeId = Cookies.get('storeId');
-    const { store, getStoreById } = useStoreServices();
+    const { getStoreById } = useStoreServices();
     const [storePlan, setStorePlan] = useState("")
     const [storeLoaded, setStoreLoaded] = useState(false)
+    let firstTime = true;
+    let firstLoad = true;
 
     const fetchStore = async () => {
         try {
@@ -311,14 +313,11 @@ const LeftMenu = ({ show, setShow }) => {
 
     useEffect(() => {
         //console.log("Entre al menu izquierdo - Store", { store })
-        if (!storePlan) {
+        if (!storePlan && firstTime) {
             //console.log("Llamar a fetchStore")
             fetchStore();
+            firstTime = false;
 
-        }
-        if (storeLoaded) {
-            //console.log("Llamar a fetchMenu")
-            fetchMenu();
         }
     }, [])
 
@@ -326,6 +325,7 @@ const LeftMenu = ({ show, setShow }) => {
         if (storeLoaded) {
             //console.log("Llamar a fetchMenu")
             fetchMenu();
+            firstLoad = false;
         }
     }, [storeLoaded])
 

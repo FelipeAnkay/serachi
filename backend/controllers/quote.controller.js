@@ -166,7 +166,7 @@ export const getQuoteByCheckout = async (req, res) => {
     try {
         const { storeId, isConfirmed } = req.params;
         const normalizeStoreID = storeId?.toUpperCase();
-        console.log("Entre a getQuoteByCheckout: ", normalizeStoreID, " - ", isConfirmed);
+        //console.log("Entre a getQuoteByCheckout: ", normalizeStoreID, " - ", isConfirmed);
 
         const startOfToday = new Date();
         startOfToday.setHours(0, 0, 0, 0); // 00:00:00.000
@@ -176,7 +176,7 @@ export const getQuoteByCheckout = async (req, res) => {
             dateOut: {$gte: startOfToday },
             status: { $ne: "archived" }
         });
-        console.log("quoteList: ", quoteList)
+        //console.log("quoteList: ", quoteList)
         if (quoteList.length === 0) {
             return res.status(200).json({ success: false, message: "No quotes found" });
         }

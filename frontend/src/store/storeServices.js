@@ -8,25 +8,13 @@ axios.defaults.withCredentials = true;
 
 
 export const useStoreServices = create((set) => ({
-    name: null,
-    mainEmail: null,
-    storeId: null,
-    address: null,
-    phone: null,
     userList: null,
-    timezone: null,
-    isActive: null,
-    timezone: null,
-    storeList: null,
-    userList: null,
-    store:null,
-    error:null,
+    store: null,
     createStore: async (storeData) => {
         set({ isLoading: true, error: null });
         try {
             //console.log("Los datos a enviar en createstore son: ", storeData)
             const response = await axios.post(`${URL_API}/create`, storeData);
-            set({ storeList: response.data.storeList, isLoading: false });
             return response.data;
         } catch (error) {
             set({ error: error.response.data.message || "Error creating store", isLoading: false });
@@ -45,13 +33,13 @@ export const useStoreServices = create((set) => ({
                 ...updatedVars
             });
             */
-           //console.log("updateStore: ", updatedVars);
+            //console.log("updateStore: ", updatedVars);
             const response = await axios.post(`${URL_API}/update`, {
                 storeId: storeId,
                 ...updatedVars
             });
             //console.log("F: Respueste de updateStaff: ", response);
-            set({ storeList: response.data.storeList, isLoading: false });
+            set({ store: response.data.store, isLoading: false });
             return response.data;
         } catch (error) {
             set({ error: error || "Error updating store", isLoading: false });
@@ -59,15 +47,20 @@ export const useStoreServices = create((set) => ({
         }
     },
     getStoreById: async (id) => {
+        const currentState = useStoreServices.getState();
+
+        // Si ya hay una store con el mismo ID, la devolvemos sin hacer request
+        if (currentState.store && currentState.store._id === id) {
+            return { store: currentState.store };
+        }
+
         set({ isLoading: true, error: null });
         try {
-            //console.log("F: Llamado a getStoreById");
             const response = await axios.get(`${URL_API}/get/${id}`);
-            //console.log("F: Respueste de getStoreById: ", response);
             set({ store: response.data.store, isLoading: false });
             return response.data;
         } catch (error) {
-            set({ error: error || "Error getting Stores", isLoading: false });
+            set({ error: error || "Error getting store", isLoading: false });
             throw error;
         }
     },

@@ -58,7 +58,7 @@ export default function ConfirmedQuote() {
             setLoading(true)
             try {
                 const response = await getQuoteByCheckout(storeId, true);
-                //console.log("Quote Response: ", response);
+                console.log("Quote Response: ", response);
                 setQuotes(response.quoteList);
             } catch (error) {
                 //console.error('Error fetching quotes:', error);
@@ -71,7 +71,7 @@ export default function ConfirmedQuote() {
             try {
                 setLoading(true)
                 const response = await getExperienceByCheckout(storeId);
-                //console.log("getExperienceList Response: ", response);
+                console.log("getExperienceList Response: ", response);
                 setExistingExperiences(response.experienceList || []);
             } catch (error) {
                 //console.error("Error fetching experiences:", error);
@@ -84,7 +84,7 @@ export default function ConfirmedQuote() {
             try {
                 setLoading(true)
                 const response = await getReservations(storeId);
-                //console.log("getReservations Response: ", response);
+                console.log("getReservations Response: ", response);
                 setExistingReservations(response.roomReservationList);
             } catch (error) {
                 toast.error("Error fetching Reservations");
@@ -412,11 +412,31 @@ export default function ConfirmedQuote() {
                                     <p>No Quotes found for this store.</p>
                                 ) : (
                                     quotes
-                                        .filter(quote =>
-                                            quote.customerEmail?.toLowerCase().includes(quoteSearch.toLowerCase()) ||
-                                            quote.customerName?.toLowerCase().includes(quoteSearch.toLowerCase()) &&
-                                            (!showOnlyUnprocessed || !existingExperiences.some(exp => exp.quoteId === quote._id) || !existingReservations.some(res => res.quoteId === quote._id))
-                                        )
+                                        .filter((quote) => {
+                                            const matchesSearch =
+                                                quote.customerEmail?.toLowerCase().includes(quoteSearch.toLowerCase()) ||
+                                                quote.customerName?.toLowerCase().includes(quoteSearch.toLowerCase());
+
+                                            if (!matchesSearch) return false;
+
+                                            if (!showOnlyUnprocessed) return true;
+
+                                            const hasProducts = quote.productList?.length > 0;
+                                            const hasRooms = quote.roomList?.length > 0;
+
+                                            const hasExperience = existingExperiences.some(
+                                                (exp) => exp.quoteId === quote._id
+                                            );
+
+                                            const hasReservation = existingReservations.some(
+                                                (res) => res.quoteId === quote._id
+                                            );
+
+                                            const shouldShow =
+                                                (hasProducts && !hasExperience) || (hasRooms && !hasReservation);
+
+                                            return shouldShow;
+                                        })
                                         .map((quote) => {
                                             const alreadyExists = existingExperiences.some(
                                                 exp => exp.quoteId === quote._id && Array.isArray(exp.serviceList) && exp.serviceList.length > 0

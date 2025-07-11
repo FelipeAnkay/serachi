@@ -205,3 +205,20 @@ export const postProfileEmail = async (req, res) => {
         res.status(400).json({ success: false, message: error.message });
     }
 }
+
+export const getCustomerByEmails = async (req, res) => {
+    try {
+        const { emails, storeId } = req.params;
+        const normalizeStoreID = storeId?.toUpperCase();
+        const arrayEmails = emails.split(",");
+        console.log("arrayEmails: ", arrayEmails)
+        const customerList = await Customer.find({ email: { $in: arrayEmails }, storeId: normalizeStoreID });
+        console.log("customerList", customerList)
+        if (!customerList) {
+            return res.status(400).json({ success: false, message: "customerList not found" });
+        }
+        res.status(200).json({ success: true, customerList });
+    } catch (error) {
+        return res.status(400).json({ success: false, message: error.message });
+    }
+}

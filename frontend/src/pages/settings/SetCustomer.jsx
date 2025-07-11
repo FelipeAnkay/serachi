@@ -17,8 +17,7 @@ const SetCustomer = () => {
 
     const storeId = Cookies.get('storeId');
     const { user } = useAuthStore();
-    const { getStoreById } = useStoreServices();
-    const [store, setStore] = useState({});
+    const { store } = useStoreServices();
     const [customerList, setCustomerList] = useState([]);
     const [loading, setLoading] = useState(true);
     const [modalOpen, setModalOpen] = useState(false);
@@ -45,24 +44,9 @@ const SetCustomer = () => {
                 setLoading(false);
             }
         };
-        const fetchStore = async () => {
-            try {
-                const auxStore = await getStoreById(storeId);
-                //console.log("Respuesta de getCustomerList", customer);
-                setStore(auxStore.store)
-                if (auxStore.store.plan != "BAS") {
-                    setSendProfile(true);
-                }
-            } catch (error) {
-                console.error('Error fetching customer list:', error);
-            } finally {
-                setLoading(false);
-            }
-        };
 
         if (storeId) {
             fetchCustomer();
-            fetchStore();
             //console.log("La lista de partner es: ", partnerList)
         }
     }, []);

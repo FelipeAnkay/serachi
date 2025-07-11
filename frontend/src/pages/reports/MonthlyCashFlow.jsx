@@ -16,7 +16,7 @@ const MonthlyCashFlow = () => {
     const [monthlyData, setMonthlyData] = useState([])
     const { getExpenseByDates } = useExpenseServices()
     const { getIncomeByDates } = useIncomeServices();
-    const { getStoreById } = useStoreServices();
+    const { store } = useStoreServices();
     const storeId = Cookies.get('storeId');
 
     useEffect(() => {
@@ -44,7 +44,7 @@ const MonthlyCashFlow = () => {
             getIncomeByDates(start, end, storeId),
             getExpenseByDates(start, end, storeId)
         ])
-        const auxStore = await getStoreById(storeId);
+        const auxStore = store;
         //console.log("auxStore: ", auxStore);
         const openingBalanceEntry = auxStore.store?.openningBalance?.find(
             entry => parseInt(entry.year) === selectedYear

@@ -12,11 +12,14 @@ import ViewSignedForms from '../../components/ViewSignedForm';
 import SendProfileModal from '../../components/SendProfileModal';
 import ExperienceModal from '../../components/ExperienceModal';
 import { useAuthStore } from '../../store/authStore';
+import { useCustomerServices } from '../../store/customerServices';
 
 
 
 export default function ExperienceList() {
     const { getExperienceByCheckout } = useExperienceServices();
+    const { getCustomerEmails } = useCustomerServices();
+    const [customerList, setCustomerList] = useState([]);
     const { user } = useAuthStore();
     const [experiences, setExperiences] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -34,16 +37,30 @@ export default function ExperienceList() {
     const [selectedCustomer, setSelectedCustomer] = useState("");
     const [modalExperienceOpen, setModalExperienceOpen] = useState(false);
     const [experienceCreated, setExperienceCreated] = useState(false);
-
+    let firstLoad = true;
+    let firstRecordLoad = true;
     const location = useLocation();
     const navigate = useNavigate();
 
     useEffect(() => {
         //console.log("Entre a useEffect [storeId, location.key]", timezone);
         const fetchExperiences = async () => {
+            //console.log("Cargando experiencias")
             try {
                 //console.log("llamaré a getExperienceByCheckout: ", storeId);
                 const response = await getExperienceByCheckout(storeId);
+                let auxCustomers = [];
+                if (response.experienceList.length > 0) {
+                    for (let exp of response.experienceList) {
+                        auxCustomers.push(exp.customerEmail)
+                    }
+                } else {
+                    toast.error("No Experiences Found")
+                }
+                //console.log("Listado de usuarios: ", auxCustomers)
+                const auxCustomerList = await getCustomerEmails(auxCustomers, storeId);
+                //console.log("auxCustomerList: ", auxCustomerList)
+                setCustomerList(auxCustomerList.customerList)
                 //console.log("getExperienceByCheckout: ", response);
                 setExperiences(response.experienceList);
                 setLoadRecords(true);
@@ -54,14 +71,16 @@ export default function ExperienceList() {
             }
         };
 
-        if (storeId) {
+        if (storeId && firstLoad) {
             fetchExperiences();
+            firstLoad = false;
         }
     }, [storeId, location.key]);
 
     useEffect(() => {
         //console.log("Entre a UseEffect de Experience")
         const fetchRecords = async () => {
+            //console.log("Cargando Formularios")
             setLoading(true)
             let formList = [];
             //console.log("Entré a fetchRecords: ", experiences)
@@ -85,8 +104,9 @@ export default function ExperienceList() {
                 setLoading(false)
             }
         }
-        if (experiences.length > 0) {
+        if (experiences.length > 0 && firstRecordLoad) {
             fetchRecords();
+            firstRecordLoad = false;
         }
     }, [loadRecords]);
 
@@ -136,6 +156,18 @@ export default function ExperienceList() {
         setModalExperienceOpen(true);
     };
 
+    const auxExperienceList = experiences
+        .map((exp) => {
+            const customer = customerList.find(c => c.email === exp.customerEmail);
+            const customerName = customer?.name + (customer?.lastName ? " " + customer.lastName : "");
+
+            return {
+                ...exp,
+                customerName: customerName,
+            };
+        })
+        .sort((a, b) => new Date(a.dateIn) - new Date(b.dateIn)); // Orden ascendente: más próxima primero
+
     return (
         <>
             {
@@ -170,8 +202,8 @@ export default function ExperienceList() {
                                     type="button"
                                     onClick={handleNewExperience}
                                 >
-                                   New Experience
-                                   <MapPinCheckInside/>
+                                    New Experience
+                                    <MapPinCheckInside />
                                 </button>
                             </div>
                             <input
@@ -191,7 +223,7 @@ export default function ExperienceList() {
                                 {!experiences || experiences.length === 0 ? (
                                     <p>No experiences found for this store.</p>
                                 ) : (
-                                    experiences
+                                    auxExperienceList
                                         .filter(experience =>
                                             experience.name.toLowerCase().includes(experienceSearch.toLowerCase())
                                         )
@@ -203,7 +235,7 @@ export default function ExperienceList() {
 
                                                 >
                                                     < h3 className="text-lg font-semibold text-gray-800">
-                                                        {(experience.name ? experience.name : experience.customerEmail)} - From: {new Date(experience.dateIn).toLocaleDateString("en-US", {
+                                                        {(experience.customerName)} - From: {new Date(experience.dateIn).toLocaleDateString("en-US", {
                                                             timeZone: timezone || "America/Guatemala",
                                                             year: "numeric",
                                                             month: "long",
@@ -264,7 +296,7 @@ export default function ExperienceList() {
                                                                     whileTap={{ scale: 0.95 }}
                                                                     onClick={() => {
                                                                         handleSelectedForms(experience.customerEmail),
-                                                                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                                                                            window.scrollTo({ top: 0, behavior: 'smooth' });
                                                                     }}
                                                                     className='w-full py-3 px-4 bg-[#118290] hover:bg-[#0d6c77] text-cyan-50 font-bold rounded-lg shadow-lg
                                                          focus:ring-offset-1 focus:ring-offset-cyan-900'
