@@ -48,7 +48,7 @@ const menuItems = [
         icon: <CalendarCog />,
         key: "service",
         children: [
-            { to: "/experience-calendar", label: "Schedule", icon: <CalendarHeart /> },
+            { to: "/service-schedule", label: "Schedule", icon: <CalendarHeart /> },
             { to: "/set-service-dates", label: "Set Missing Data", icon: <CalendarPlus2 /> },
             { to: "/experience-create-service", label: "Create Service", icon: <BookMarked /> },
             { to: "/service-facility", label: "Assign Facility", icon: <ShipWheel /> },
@@ -122,7 +122,7 @@ const menuItemsMed = [
         icon: <CalendarCog />,
         key: "service",
         children: [
-            { to: "/experience-calendar", label: "Schedule", icon: <CalendarHeart /> },
+            { to: "/service-schedule", label: "Schedule", icon: <CalendarHeart /> },
             { to: "/set-service-dates", label: "Set Missing Data", icon: <CalendarPlus2 /> },
             { to: "/experience-create-service", label: "Create Service", icon: <BookMarked /> },
             { to: "/service-facility", label: "Assign Facility", icon: <ShipWheel /> },
@@ -217,7 +217,7 @@ const menuItemsPro = [
         icon: <CalendarCog />,
         key: "service",
         children: [
-            { to: "/experience-calendar", label: "Schedule", icon: <CalendarHeart /> },
+            { to: "/service-schedule", label: "Schedule", icon: <CalendarHeart /> },
             { to: "/set-service-dates", label: "Set Missing Data", icon: <CalendarPlus2 /> },
             { to: "/experience-create-service", label: "Create Service", icon: <BookMarked /> },
             { to: "/service-facility", label: "Assign Facility", icon: <ShipWheel /> },
