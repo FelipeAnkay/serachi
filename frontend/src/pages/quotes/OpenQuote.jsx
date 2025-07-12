@@ -5,6 +5,8 @@ import toast from 'react-hot-toast';
 import { useQuoteServices } from '../../store/quoteServices';
 import { useNavigate, useLocation } from "react-router-dom";
 import { ArchiveX, CheckCheck, Copy, Pencil } from 'lucide-react';
+import {formatDateDisplay} from '../../components/formatDateDisplay'
+
 
 
 export default function OpenQuote() {
@@ -132,18 +134,8 @@ export default function OpenQuote() {
 
                                             >
                                                 < h3 className="text-lg font-semibold text-slate-800">
-                                                    {(quote.customerName ? quote.customerName : quote.customerEmail)} - From: {new Date(quote.dateIn).toLocaleDateString("en-US", {
-                                                        timeZone: timezone || "America/Guatemala",
-                                                        year: "numeric",
-                                                        month: "long",
-                                                        day: "numeric",
-                                                    })}
-                                                    {' to ' + new Date(quote.dateOut).toLocaleDateString("en-US", {
-                                                        timeZone: timezone || "America/Guatemala",
-                                                        year: "numeric",
-                                                        month: "long",
-                                                        day: "numeric",
-                                                    })}
+                                                    {(quote.customerName ? quote.customerName : quote.customerEmail)} - From: {formatDateDisplay(quote.dateIn)}
+                                                    {' to ' + formatDateDisplay(quote.dateOut)}
                                                     {' - ' + quote.productList.length + ' Products '} -  ${quote.finalPrice}
                                                 </h3>
                                                 <div className='justify-between items-center flex flex-col sm:flex-row gap-2 w-full sm:justify-end sm:w-1/2'>

@@ -69,6 +69,10 @@ export default function NewQuote() {
         })
     };
 
+    useEffect(() => {
+        console.log("Quote: ", quote)
+    }, [quote])
+
 
     useEffect(() => {
         //console.log("Entre a UE 2");
@@ -507,6 +511,7 @@ export default function NewQuote() {
             toast.error('Please fill all the mandatory data.');
             return;
         }
+        console.l
         try {
             if (!quote._id) {
                 await createQuote(quote);
@@ -709,54 +714,60 @@ export default function NewQuote() {
                                     />
                                 )}
                             </div>
-
-                            {/* Number of people */}
-                            <div className='flex flex-col sm:flex-row items-center justify-center gap-2 mt-4'>
-                                <span className="text-sm font-bold text-slate-800">Number of people:</span>
-                                <div className="flex items-center gap-2">
-                                    <button
-                                        type="button"
-                                        onClick={() => setNumberOfPeople(prev => Math.max(1, prev - 1))}
-                                        className={`${isPeopleLock ? 'bg-gray-500' : 'bg-red-400 hover:bg-red-500'} text-cyan-50 px-2 rounded`}
-                                        disabled={isPeopleLock || numberOfPeople <= 1}
-                                    >
-                                        -
-                                    </button>
-                                    <span className="text-sm font-bold text-slate-800">{numberOfPeople}</span>
-                                    <button
-                                        type="button"
-                                        onClick={() => setNumberOfPeople(prev => prev + 1)}
-                                        className={`${isPeopleLock ? 'bg-gray-500' : 'bg-[#118290] hover:bg-[#0d6c77]'} text-cyan-50 px-2 rounded`}
-                                        disabled={isPeopleLock}
-                                    >
-                                        +
-                                    </button>
-                                </div>
-                            </div>
                         </fieldset>
 
                         {/* DATES */}
                         <fieldset className="border rounded-2xl w-full px-6 py-4">
-                            <legend className="font-semibold text-lg">Dates</legend>
-                            <div className="flex flex-col items-center text-center">
-                                <div className="w-full max-w-md mb-4">
-                                    <label className="mb-2 block font-medium text-center">
-                                        Date Range (Check-in / Check-out)
-                                    </label>
-                                    <div className="flex justify-center">
-                                        <DateRangePicker
-                                            value={{ start: quote.dateIn, end: quote.dateOut }}
-                                            onChange={({ start, end }) =>
-                                                setQuote((prev) => ({
-                                                    ...prev,
-                                                    dateIn: start,
-                                                    dateOut: end
-                                                }))
-                                            }
-                                        />
+                            <legend className="font-semibold text-lg">{store.storeBookings ? 'Beds Required & Dates' : 'Dates'}</legend>
+                            <div className='flex flex-row'>
+                                {/* Number of Beds required */}
+                                {store.storeBookings && (
+                                    <div className='flex flex-col items-center justify-center gap-2 mt-4 mr-2 w-full'>
+                                        <div className="flex flex-col sm:flex-col items-center text-center gap-2">
+                                            <span className="text-sm font-bold text-slate-800 mb-2">Number of beds</span>
+                                            <div className="flex flex-col sm:flex-row gap-2">
+                                                <button
+                                                    type="button"
+                                                    onClick={() => setNumberOfPeople(prev => Math.max(1, prev - 1))}
+                                                    className={`${isPeopleLock ? 'bg-gray-500' : 'bg-red-400 hover:bg-red-500'} text-cyan-50 px-2 rounded`}
+                                                    disabled={isPeopleLock || numberOfPeople <= 1}
+                                                >
+                                                    -
+                                                </button>
+                                                <span className="text-sm font-bold text-slate-800">{numberOfPeople}</span>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => setNumberOfPeople(prev => prev + 1)}
+                                                    className={`${isPeopleLock ? 'bg-gray-500' : 'bg-[#118290] hover:bg-[#0d6c77]'} text-cyan-50 px-2 rounded`}
+                                                    disabled={isPeopleLock}
+                                                >
+                                                    +
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <p className="text-sm mt-2">* Remember to confirm/edit this number before dates</p>
                                     </div>
+                                )}
+                                <div className="flex flex-col items-center text-center w-full">
+                                    <div className="w-full max-w-md mb-4">
+                                        <label className="mb-2 block font-medium text-center">
+                                            Check-in/out
+                                        </label>
+                                        <div className="flex justify-center">
+                                            <DateRangePicker
+                                                value={{ start: quote.dateIn, end: quote.dateOut }}
+                                                onChange={({ start, end }) =>
+                                                    setQuote((prev) => ({
+                                                        ...prev,
+                                                        dateIn: start,
+                                                        dateOut: end
+                                                    }))
+                                                }
+                                            />
+                                        </div>
+                                    </div>
+                                    <p className="text-sm mt-2">* Rooms will not be visible until you pick dates</p>
                                 </div>
-                                <p className="text-sm mt-2">* Rooms will not be visible until you pick dates</p>
                             </div>
                         </fieldset>
                     </div>
@@ -1271,7 +1282,7 @@ export default function NewQuote() {
                                                     setQuote((prev) => ({ ...prev, tag: updatedTags }));
                                                 }}
                                             >
-                                                <Trash2/>
+                                                <Trash2 />
                                             </button>
                                         </li>
                                     ))}
@@ -1324,7 +1335,7 @@ export default function NewQuote() {
                                 className="bg-slate-600 hover:bg-slate-700 text-cyan-50 px-4 py-2 rounded"
                                 onClick={handleReset}
                             >
-                                Reset Quote 
+                                Reset Quote
                             </button>
                         </div>
                     </fieldset>

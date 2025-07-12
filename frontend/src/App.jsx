@@ -59,6 +59,7 @@ import FacilitySchedule from './pages/services/FacilitySchedule';
 import QuoteDashboard from './pages/quotes/QuoteDashboard';
 import ProductCartPage from './pages/experience/ProductCartPage';
 import Agenda from './pages/services/Agenda';
+import LandingPage from './pages/Landing';
 
 const ProtectedRoute = ({ children, requiredPermission, storePermission }) => {
   const { isAuthenticated, user, logout } = useAuthStore();
@@ -159,6 +160,7 @@ const MenuAvailable = () => {
     '/view-experience',
     '/update-customer-view',
     "/product-display",
+    "/landing",
   ];
 
   if (hiddenRoutes.some(route => location.pathname.startsWith(route))) {
@@ -195,7 +197,7 @@ function App() {
 
   return (
     <div
-      className='bg-[#18394C] flex overflow-hidden'
+      className=''
     >
       <MenuAvailable />
       <Routes>
@@ -451,6 +453,11 @@ function App() {
           path="/update-customer-view"
           element={
             <SetCustomerView />}
+        />
+        <Route
+          path="/landing"
+          element={
+            <LandingPage />}
         />
         <Route
           path="/set-types"
