@@ -79,6 +79,13 @@ export function formatDateISO(dateInput) {
   const date = toDate(dateInput);
   return date ? format(date, "yyyy-MM-dd'T'HH:mm") : "";
 }
+/**
+ * Format: ISO local datetime: "2025-05-26T14:30"
+ */
+export function formatDateISONoHours(dateInput) {
+  const date = toDate(dateInput);
+  return date ? format(date, "yyyy-MM-dd") : "";
+}
 
 /**
  * Format: ISO local datetime: "2025-05-26T14:30"

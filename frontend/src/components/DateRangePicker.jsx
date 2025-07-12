@@ -1,12 +1,12 @@
 import { useState } from "react"
 import { CalendarIcon } from "lucide-react"
 import { DateRange } from "react-date-range"
-import { formatDateShort, formatDateISO } from './formatDateDisplay'
+import { formatDateShort, formatDateISONoHours } from './formatDateDisplay'
 import "react-date-range/dist/styles.css"
 import "react-date-range/dist/theme/default.css"
 import { AnimatePresence, motion } from "framer-motion"
 
-const DateRangePicker = ({ value, onChange }) => {
+const DateRangePicker = ({ value, onChange, withHour }) => {
   const [range, setRange] = useState([
     {
       startDate: value.start || new Date(),
@@ -19,7 +19,7 @@ const DateRangePicker = ({ value, onChange }) => {
   const handleSelect = (ranges) => {
     const { startDate, endDate } = ranges.selection
     setRange([ranges.selection])
-    onChange({ start: formatDateISO(startDate), end: formatDateISO(endDate) })
+    onChange({ start: formatDateISONoHours(startDate), end: formatDateISONoHours(endDate) })
     setOpen(false)
   }
 
@@ -34,7 +34,7 @@ const DateRangePicker = ({ value, onChange }) => {
         <span>
           {value.start && value.end
             ? `${formatDateShort(value.start)} - ${formatDateShort(value.end)}`
-            : "Select Date Range"}
+            : "Date Range"}
         </span>
       </button>
 
