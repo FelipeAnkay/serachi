@@ -116,7 +116,7 @@ const SetPartner = () => {
                 storeId: storeId,
             };
             //console.log("Is Editing? ", isEditing);
-            //console.log("El payload es: ", payload);
+            console.log("El payload es: ", payload);
             if (isEditing) {
                 await updatePartner(partnerData.email, storeId, payload);
                 toast.success('partner updated successfully');

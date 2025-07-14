@@ -70,11 +70,6 @@ export default function NewQuote() {
     };
 
     useEffect(() => {
-        console.log("Quote: ", quote)
-    }, [quote])
-
-
-    useEffect(() => {
         //console.log("Entre a UE 2");
         if (!quoteId) {
             setQuote({
@@ -511,7 +506,6 @@ export default function NewQuote() {
             toast.error('Please fill all the mandatory data.');
             return;
         }
-        console.l
         try {
             if (!quote._id) {
                 await createQuote(quote);
@@ -529,6 +523,7 @@ export default function NewQuote() {
             }
             handleReset()
         } catch (err) {
+            //console.log("Error: ", err)
             toast.error('Error al guardar la cotización');
         }
     };
