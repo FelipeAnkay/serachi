@@ -84,7 +84,7 @@ export const useIncomeServices = create((set) => ({
             throw error;
         }
     },
-    getIncomeByDates: async (start,end,storeId) => {
+    getIncomeByDates: async (start, end, storeId) => {
         set({ isLoading: true, error: null });
         try {
             const formattedDateIn = formatDateISO(start);
@@ -96,6 +96,16 @@ export const useIncomeServices = create((set) => ({
             return response.data;
         } catch (error) {
             set({ error: error.response.data.message || "Error getting income", isLoading: false });
+            throw error;
+        }
+    },
+    deleteAllIncomeByUEmail: async (userEmail, storeId) => {
+        set({ isLoading: true, error: null });
+        try {
+            const response = await axios.delete(`${URL_API}/delete-all/${userEmail}/${storeId}`);
+            return response.data;
+        } catch (error) {
+            set({ error: error.response.data.message || "Error deleting", isLoading: false });
             throw error;
         }
     },

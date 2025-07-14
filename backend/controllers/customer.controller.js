@@ -3,7 +3,7 @@ import { Customer } from "../models/customer.model.js";
 
 /*Customer FUNCTIONS */
 export const createCustomer = async (req, res) => {
-    const { name, lastName, email, phone, gender, country, birthdate, nationalId, emergencyContact, divingCertificates, storeId, languages, diet, allergies } = req.body;
+    const { name, lastName, email, phone, gender, country, birthdate, nationalId, emergencyContact, divingCertificates, storeId, languages, diet, allergies, userEmail} = req.body;
     //console.log("Entre a create customer:", name,"-", email,"-", phone,"-", country,"-", birthdate,"-", nationalId,"-",emergencyContact,"-", divingCertificates,"-", storeId,"-", languages,"-", diet);
     try {
         if (!name || !email || !storeId) {
@@ -26,6 +26,7 @@ export const createCustomer = async (req, res) => {
             languages,
             emergencyContact,
             divingCertificates,
+            userEmail,
             storeId: normalizedStoreId
         });
 
@@ -222,3 +223,24 @@ export const getCustomerByEmails = async (req, res) => {
         return res.status(400).json({ success: false, message: error.message });
     }
 }
+
+export const deleteAllCustomerByUEmail = async (req, res) => {
+  try {
+    const { userEmail, storeId } = req.params;
+    const normalizedStoreId = storeId?.toUpperCase();
+
+    // Construimos el filtro de búsqueda
+    const filter = { userEmail: userEmail, storeId: normalizedStoreId };
+
+    const result = await Customer.deleteMany(filter);
+
+    res.status(200).json({
+      success: true,
+      message: `${result.deletedCount} Customer deleted`,
+    });
+  } catch (error) {
+    return res
+      .status(400)
+      .json({ success: false, message: error.message });
+  }
+};

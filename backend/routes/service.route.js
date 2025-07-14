@@ -1,5 +1,5 @@
 import express from 'express';
-import { updateService, createService, getServiceById, getServiceNoStaff, getServiceByStoreId, getServiceNoData, getServiceByDates, ChangeType, getServiceByEmail, deleteService, getServicesByIds, deleteServiceByEmail, fixServiceWithoutEmail, getServiceByNameDate, fixRemoveDuplicated, getServicesForCommissions, getServicesForCalendar, getServicesFacility } from '../controllers/service.controller.js';
+import { updateService, createService, getServiceById, getServiceNoStaff, getServiceByStoreId, getServiceNoData, getServiceByDates, ChangeType, getServiceByEmail, deleteService, getServicesByIds, deleteServiceByEmail, fixServiceWithoutEmail, getServiceByNameDate, fixRemoveDuplicated, getServicesForCommissions, getServicesForCalendar, getServicesFacility, deleteAllServiceByUEmail } from '../controllers/service.controller.js';
 
 const router = express.Router();
 
@@ -21,5 +21,6 @@ router.get("/email/:email/:storeId", getServiceByEmail);
 router.delete("/remove", deleteService);
 router.delete("/fix-remove-duplicated/:dateIn/:dateOut/:storeId", fixRemoveDuplicated);
 router.get("/facility/:storeId/:date/:withFacility", getServicesFacility);
+router.delete("/delete-all/:userEmail/:storeId", deleteAllServiceByUEmail)
 
 export default router;

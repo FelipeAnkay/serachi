@@ -129,4 +129,14 @@ export const useExperienceServices = create((set) => ({
             throw error;
         }
     },
+        deleteAllExperienceByUEmail: async (userEmail, storeId) => {
+        set({ isLoading: true, error: null });
+        try {
+            const response = await axios.delete(`${URL_API}/delete-all/${userEmail}/${storeId}`);
+            return response.data;
+        } catch (error) {
+            set({ error: error.response.data.message || "Error deleting", isLoading: false });
+            throw error;
+        }
+    },
 }))

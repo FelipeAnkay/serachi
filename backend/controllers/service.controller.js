@@ -479,3 +479,24 @@ export const getServicesFacility = async (req, res) => {
         return res.status(400).json({ success: false, message: error.message });
     }
 };
+
+export const deleteAllServiceByUEmail = async (req, res) => {
+  try {
+    const { userEmail, storeId } = req.params;
+    const normalizedStoreId = storeId?.toUpperCase();
+
+    // Construimos el filtro de búsqueda
+    const filter = { userEmail: userEmail, storeId: normalizedStoreId };
+
+    const result = await Service.deleteMany(filter);
+
+    res.status(200).json({
+      success: true,
+      message: `${result.deletedCount} Service deleted`,
+    });
+  } catch (error) {
+    return res
+      .status(400)
+      .json({ success: false, message: error.message });
+  }
+};

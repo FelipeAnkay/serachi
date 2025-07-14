@@ -36,6 +36,9 @@ const productSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    userEmail: {
+        type: String,
+    },
     isActive: {
         type: Boolean,
         default: true

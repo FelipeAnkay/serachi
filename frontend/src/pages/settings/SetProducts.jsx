@@ -87,13 +87,17 @@ const SetProduct = () => {
             //console.log("F: Voy a crear el siguiente producto: ", productData)
             const payload = {
                 ...productData,
+                storeId: storeId,
+                userId: user._id,
+                userEmail: user.email
             };
             console.log("Payload: ", payload)
             if (isEditing) {
                 await updateProduct(productData._id, payload);
                 toast.success('Product updated successfully');
             } else {
-                await createProduct(payload, storeId, user._id);
+                console.log("Crearé el siguiente producto: ", payload)
+                await createProduct(payload);
                 toast.success('Product created successfully');
             }
 
@@ -129,7 +133,7 @@ const SetProduct = () => {
             delete duplicatedProduct.createdAt;
             delete duplicatedProduct.updatedAt;
 
-            await createProduct(duplicatedProduct, storeId, user._id);
+            await createProduct(duplicatedProduct);
             toast.success(`Product "${duplicatedProduct.name}" duplicated successfully.`);
             window.location.reload();
         } catch (error) {

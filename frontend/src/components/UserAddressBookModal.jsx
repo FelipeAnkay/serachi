@@ -1,4 +1,4 @@
-import { CircleX, X } from 'lucide-react';
+import { CircleX, Copy, X } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { useCustomerServices } from '../store/customerServices';
 import toast from 'react-hot-toast';
@@ -22,9 +22,9 @@ export default function UserAddressBookModal({ onClose }) {
             } catch (error) {
                 toast.error("Error filling the address book")
             }
-            
+
         }
-        if(!customerList){
+        if (!customerList) {
             //console.log("Entré a cargar clientes")
             fetchCustomers();
         }
@@ -86,11 +86,28 @@ export default function UserAddressBookModal({ onClose }) {
                     {filteredUsers?.map((customer, i) => (
                         <li
                             key={i}
-                            className="border px-3 py-2 rounded hover:bg-blue-100 cursor-pointer"
+                            className="border px-3 py-2 rounded hover:bg-blue-100 cursor-pointer w-full"
                             onClick={() => openEditCustomerModal(customer)}
                         >
-                            <p className="font-medium">{customer.name}</p>
-                            <p className="text-sm text-gray-600">{customer.email}</p>
+                            <div className='flex flex-row justify-between'>
+                                <div>
+                                    <p className="font-medium">{customer.name}</p>
+                                    <p className="text-sm text-gray-600">{customer.email}</p>
+                                </div>
+                                <div className='flex justify-items-end'>
+                                    <button className='mt-2' title="Copy Email">
+                                        <Copy
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                navigator.clipboard.writeText(customer.email)
+                                                    .then(() => toast.success("Email copied!"))
+                                                    .catch(() => toast.error("Failed to copy"));
+                                            }}
+                                            className="text-blue-500 hover:text-blue-900"
+                                        />
+                                    </button>
+                                </div>
+                            </div>
                         </li>
                     ))}
                 </ul>
