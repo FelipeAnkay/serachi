@@ -529,6 +529,7 @@ export default function NewQuote() {
             }
             handleReset()
         } catch (err) {
+            console.log("Error: ", err)
             toast.error('Error al guardar la cotización');
         }
     };
