@@ -652,7 +652,7 @@ export default function NewQuote() {
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.9 }}
                 transition={{ duration: 0.5 }}
-                className="flex flex-col w-full max-w-9/12 mx-auto bg-sky-50 backdrop-filter backdrop-blur-lg rounded-2xl shadow-2xl overflow-hidden min-h-screen items-center p-4"
+                className="flex flex-col w-full max-w-10/12 mx-auto bg-sky-50 backdrop-filter backdrop-blur-lg rounded-2xl shadow-2xl overflow-hidden min-h-screen items-center p-4"
             >
                 <h1 className="text-3xl font-bold mt-6 mb-6 text-center text-[#00C49F]">New Quote</h1>
 
@@ -748,7 +748,7 @@ export default function NewQuote() {
                                         <p className="text-sm mt-2">* Remember to confirm/edit this number before dates</p>
                                     </div>
                                 )}
-                                <div className="flex flex-col items-center text-center w-full">
+                                <div className="relative w-full max-w-md mb-4">
                                     <div className="w-full max-w-md mb-4">
                                         <label className="mb-2 block font-medium text-center">
                                             Check-in/out
