@@ -91,7 +91,7 @@ export default function CreateService() {
         dateOut: "",
         type: "Customer",
         storeId: Cookies.get("storeId") || "",
-        userEmail: "", // Deberías obtener el userEmail (ej. de auth)
+        userEmail: "",
     });
 
     const fetchProducts = async () => {

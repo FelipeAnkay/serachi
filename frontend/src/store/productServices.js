@@ -20,18 +20,11 @@ export const useProductServices = create((set) => ({
     productList: null,
     product: null,
     error: null,
-    createProduct: async (productData, storeId, userId) => {
+    createProduct: async (productData) => {
         set({ isLoading: true, error: null });
         try {
-            const payload = {
-                ...productData,
-                storeId: storeId,
-                currency: "USD",
-                isActive: true,
-                userId: userId
-            }
-            console.log("F: El producto que voy a crear es: ", payload);
-            const response = await axios.post(`${URL_API}/create`, payload);
+            //console.log("F: El producto que voy a crear es: ", productData);
+            const response = await axios.post(`${URL_API}/create`, productData);
             set({ productList: response.data.product, isLoading: false });
             return response.data;
         } catch (error) {
@@ -145,6 +138,16 @@ export const useProductServices = create((set) => ({
             set({ error: error.response.data.message || "Error getting products", isLoading: false });
             throw error;
         }
-    }
+    },
+    deleteAllProductByUEmail: async (userEmail, storeId) => {
+        set({ isLoading: true, error: null });
+        try {
+            const response = await axios.delete(`${URL_API}/delete-all/${userEmail}/${storeId}`);
+            return response.data;
+        } catch (error) {
+            set({ error: error.response.data.message || "Error deleting", isLoading: false });
+            throw error;
+        }
+    },
 
 }))

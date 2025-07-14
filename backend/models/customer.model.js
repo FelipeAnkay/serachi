@@ -62,7 +62,10 @@ const customerSchema = new mongoose.Schema({
     storeId: {
         type:String,
         required: true
-    }
+    },
+    userEmail:{
+        type:String,
+    },
 
 },{timestamps : true}); //fields created and updated AT by default with timestamp true
 

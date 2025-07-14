@@ -331,4 +331,24 @@ export const getReservationById = async (req, res) => {
     } catch (error) {
         return res.status(500).json({ success: false, message: error.message });
     }
+}
+export const deleteAllRResByUEmail = async (req, res) => {
+  try {
+    const { userEmail, storeId } = req.params;
+    const normalizedStoreId = storeId?.toUpperCase();
+
+    // Construimos el filtro de búsqueda
+    const filter = { userEmail: userEmail, storeId: normalizedStoreId };
+
+    const result = await RoomReservation.deleteMany(filter);
+
+    res.status(200).json({
+      success: true,
+      message: `${result.deletedCount} RoomReservation deleted`,
+    });
+  } catch (error) {
+    return res
+      .status(400)
+      .json({ success: false, message: error.message });
+  }
 };

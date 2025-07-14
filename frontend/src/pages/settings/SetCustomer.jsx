@@ -160,7 +160,7 @@ const SetCustomer = () => {
         try {
             const res = await getCustomerEmail(customerData.email, storeId);
             const customerFound = res.customerList?.[0];
-            console.log("handleEmailCheck customerFound:", customerFound);
+            //console.log("handleEmailCheck customerFound:", customerFound);
             if (customerFound) {
                 const alreadyAssigned = customerFound.storeId?.includes(storeId.toUpperCase());
                 const updatedStoreId = alreadyAssigned
@@ -189,6 +189,7 @@ const SetCustomer = () => {
             const payload = {
                 ...customerData,
                 storeId: storeId,
+                userEmail: user.email,
             };
             //console.log("Is Editing? ", isEditing);
             //console.log("El payload es: ", payload);

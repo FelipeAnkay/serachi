@@ -169,7 +169,7 @@ export const removeServicesFromExperiences = async (req, res) => {
     } catch (error) {
         return res.status(500).json({ success: false, message: error.message });
     }
-};
+}
 
 export const getExperiencesByCheckout = async (req, res) => {
     try {
@@ -191,3 +191,24 @@ export const getExperiencesByCheckout = async (req, res) => {
         return res.status(400).json({ success: false, message: error.message });
     }
 }
+
+export const deleteAllExperienceByUEmail = async (req, res) => {
+  try {
+    const { userEmail, storeId } = req.params;
+    const normalizedStoreId = storeId?.toUpperCase();
+
+    // Construimos el filtro de búsqueda
+    const filter = { userEmail: userEmail, storeId: normalizedStoreId };
+
+    const result = await Experience.deleteMany(filter);
+
+    res.status(200).json({
+      success: true,
+      message: `${result.deletedCount} Experience deleted`,
+    });
+  } catch (error) {
+    return res
+      .status(400)
+      .json({ success: false, message: error.message });
+  }
+};

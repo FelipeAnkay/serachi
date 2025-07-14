@@ -2,9 +2,9 @@ import { Product } from "../models/product.model.js";
 
 /*Product FUNCTIONS */
 export const createProduct = async (req, res) => {
-    const { name, price, tax, finalPrice,currency, type, userId, storeId, durationDays, isTangible } = req.body;
+    const { name, price, tax, finalPrice,currency, type, userId, userEmail,storeId, durationDays, isTangible, isPartMenu } = req.body;
     try {
-        if (!name || !price || !type || !storeId || !currency) {
+        if (!name || !price || !type || !storeId) {
             throw new Error("All fields are required");
         }
 
@@ -18,8 +18,10 @@ export const createProduct = async (req, res) => {
             currency,
             type,
             userId,
+            userEmail,
             durationDays,
             isTangible,
+            isPartMenu,
             storeId: normalizeStoreID
         })
 
@@ -171,3 +173,24 @@ export const getProductForDisplay = async (req, res) => {
         return res.status(400).json({ success: false, message: error.message });
     }
 }
+
+export const deleteAllProductByUEmail = async (req, res) => {
+  try {
+    const { userEmail, storeId } = req.params;
+    const normalizedStoreId = storeId?.toUpperCase();
+
+    // Construimos el filtro de búsqueda
+    const filter = { userEmail: userEmail, storeId: normalizedStoreId };
+
+    const result = await Product.deleteMany(filter);
+
+    res.status(200).json({
+      success: true,
+      message: `${result.deletedCount} Product deleted`,
+    });
+  } catch (error) {
+    return res
+      .status(400)
+      .json({ success: false, message: error.message });
+  }
+};

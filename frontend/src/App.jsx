@@ -60,6 +60,7 @@ import QuoteDashboard from './pages/quotes/QuoteDashboard';
 import ProductCartPage from './pages/experience/ProductCartPage';
 import Agenda from './pages/services/Agenda';
 import LandingPage from './pages/Landing';
+import MainTest from './test/MainCreateTest';
 
 const ProtectedRoute = ({ children, requiredPermission, storePermission }) => {
   const { isAuthenticated, user, logout } = useAuthStore();
@@ -538,6 +539,16 @@ function App() {
               <ServicesByStaffReport />
             </ProtectedRoute>}
         />
+
+        {/*Routes to test */}
+        <Route
+          path="/test-create"
+          element={
+            <ProtectedRoute requiredPermission="VIEW_REPORTS" storePermission={["BAS", "MED", "PRO"]}>
+              <MainTest />
+            </ProtectedRoute>}
+        />
+
         {/*catch all not determined above routes*/}
         <Route path="*" element={
           <Navigate to="/" replace />
