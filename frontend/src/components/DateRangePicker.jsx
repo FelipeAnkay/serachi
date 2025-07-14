@@ -45,7 +45,7 @@ const DateRangePicker = ({ value, onChange, withHour }) => {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 10 }}
             transition={{ duration: 0.2 }}
-            className="absolute z-50 mt-2 shadow-xl rounded-2xl overflow-hidden"
+            className="absolute top-full right-0 mt-2 w-max max-w-[calc(100vw-2rem)] z-40 shadow-xl rounded-2xl overflow-visible"
           >
             <DateRange
               editableDateInputs
