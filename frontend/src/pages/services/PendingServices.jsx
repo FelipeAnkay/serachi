@@ -36,14 +36,14 @@ export default function PendingServices() {
     const fetchServices = async () => {
         try {
             const response = await getServicesNoData(storeId);
-            console.log("Service Response: ", response);
+            //console.log("Service Response: ", response);
             const auxQuote = await getConfirmedQuoteList(storeId);
-            console.log("getConfirmedQuoteList Response: ", auxQuote);
+            //console.log("getConfirmedQuoteList Response: ", auxQuote);
             const complementedServices = response.service
                 .map((service) => {
                     //console.log("Mapeo de servicio: ",service)
                     const quote = auxQuote.quoteList.find(q => q._id === service.quoteId);
-                    console.log("Quote encontrada es: ", quote)
+                    //console.log("Quote encontrada es: ", quote)
                     const dateIn = quote.dateIn || "";
                     const dateOut = quote.dateOut || "";
 

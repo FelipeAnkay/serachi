@@ -186,6 +186,97 @@ export const getQuoteByCheckout = async (req, res) => {
     }
 }
 
+export const getMonthCreatedQuotes = async (req, res) => {
+    try {
+        const { storeId } = req.params;
+        const normalizeStoreID = storeId?.toUpperCase();
+
+        const startOfToday = new Date();
+        startOfToday.setHours(23, 59, 59, 999);
+
+        const monthAgo = new Date();
+        monthAgo.setDate(monthAgo.getDate() - 31);
+        monthAgo.setHours(0, 0, 0, 0);
+
+        const quoteList = await Quote.find({
+            storeId: normalizeStoreID,
+            createdAt: { $gte: monthAgo, $lte: startOfToday },
+        });
+
+        if (quoteList.length === 0) {
+            return res.status(200).json({ success: false, message: "No quotes found" });
+        }
+
+        res.status(200).json({ success: true, quoteList });
+    } catch (error) {
+        return res.status(400).json({ success: false, message: error.message });
+    }
+};
+
+export const getMonthConfirmedQuotes = async (req, res) => {
+    try {
+        const { storeId } = req.params;
+        const normalizedStoreId = storeId?.toUpperCase();
+
+        // Definir rango de fechas: desde hace 31 días hasta hoy
+        const endOfToday = new Date();
+        endOfToday.setHours(23, 59, 59, 999);
+
+        const monthAgo = new Date();
+        monthAgo.setDate(monthAgo.getDate() - 31);
+        monthAgo.setHours(0, 0, 0, 0);
+
+        // Buscar cotizaciones confirmadas en ese rango de fechas
+        const quoteList = await Quote.find({
+            storeId: normalizedStoreId,
+            isConfirmed: true,
+            updatedAt: { $gte: monthAgo, $lte: endOfToday },
+            status: { $ne: "archived" }
+        });
+
+        if (quoteList.length === 0) {
+            return res.status(200).json({ success: false, message: "No confirmed quotes found in this range" });
+        }
+
+        res.status(200).json({ success: true, quoteList });
+    } catch (error) {
+        return res.status(400).json({ success: false, message: error.message });
+    }
+};
+
+export const getAnnualClosingRate = async (req, res) => {
+  try {
+    const { storeId } = req.params;
+    const normalizedStoreId = storeId?.toUpperCase();
+
+    const startOfYear = new Date(new Date().getFullYear(), 0, 1); // 1 de enero 00:00
+    const endOfToday = new Date();
+    endOfToday.setHours(23, 59, 59, 999); // hasta hoy
+
+    // Total de quotes creadas este año
+    const totalQuotes = await Quote.countDocuments({
+      storeId: normalizedStoreId,
+      createdAt: { $gte: startOfYear, $lte: endOfToday },
+    });
+
+    // Quotes confirmadas este año
+    const confirmedQuotes = await Quote.countDocuments({
+      storeId: normalizedStoreId,
+      isConfirmed: true,
+      createdAt: { $gte: startOfYear, $lte: endOfToday },
+    });
+
+    const closingRate = totalQuotes > 0 ? confirmedQuotes / totalQuotes : 0;
+
+    return res.status(200).json({
+      success: true,
+      closingRate: closingRate.toFixed(4), // por ejemplo: 0.3548
+    });
+  } catch (error) {
+    return res.status(400).json({ success: false, message: error.message });
+  }
+};
+
 export const deleteAllQuoteByUEmail = async (req, res) => {
   try {
     const { userEmail, storeId } = req.params;

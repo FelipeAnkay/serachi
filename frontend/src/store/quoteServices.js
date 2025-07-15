@@ -149,5 +149,42 @@ export const useQuoteServices = create((set) => ({
             throw error;
         }
     },
-
+    getMonthQuoteList: async (storeId) => {
+        set({ isLoading: true, error: null });
+        try {
+            //console.log("F: Llamado a getStaffList");
+            const response = await axios.get(`${URL_API}/month/${storeId}`);
+            //console.log("F: Respueste de getStaffList: ", response);
+            set({ quoteList: response.data.quoteList, isLoading: false });
+            return response.data;
+        } catch (error) {
+            set({ error: error.response.data.message || "Error getting quotes", isLoading: false });
+            throw error;
+        }
+    },
+    getMonthConfirmedQuoteList: async (storeId) => {
+        set({ isLoading: true, error: null });
+        try {
+            //console.log("F: Llamado a getStaffList");
+            const response = await axios.get(`${URL_API}/month-confirmed/${storeId}`);
+            //console.log("F: Respueste de getStaffList: ", response);
+            set({ quoteList: response.data.quoteList, isLoading: false });
+            return response.data;
+        } catch (error) {
+            set({ error: error.response.data.message || "Error getting quotes", isLoading: false });
+            throw error;
+        }
+    },
+    getQuoteAnnualRate: async (storeId) => {
+        set({ isLoading: true, error: null });
+        try {
+            //console.log("F: Llamado a getStaffList");
+            const response = await axios.get(`${URL_API}/annual-rate/${storeId}`);
+            //console.log("F: Respueste de getStaffList: ", response);
+            return response.data;
+        } catch (error) {
+            set({ error: error.response.data.message || "Error getting quotes", isLoading: false });
+            throw error;
+        }
+    },
 }))
