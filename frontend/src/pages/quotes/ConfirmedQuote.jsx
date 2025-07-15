@@ -58,7 +58,7 @@ export default function ConfirmedQuote() {
             setLoading(true)
             try {
                 const response = await getQuoteByCheckout(storeId, true);
-                console.log("Quote Response: ", response);
+                //console.log("Quote Response: ", response);
                 setQuotes(response.quoteList);
             } catch (error) {
                 //console.error('Error fetching quotes:', error);
@@ -71,7 +71,7 @@ export default function ConfirmedQuote() {
             try {
                 setLoading(true)
                 const response = await getExperienceByCheckout(storeId);
-                console.log("getExperienceList Response: ", response);
+                //console.log("getExperienceList Response: ", response);
                 setExistingExperiences(response.experienceList || []);
             } catch (error) {
                 //console.error("Error fetching experiences:", error);
@@ -84,7 +84,7 @@ export default function ConfirmedQuote() {
             try {
                 setLoading(true)
                 const response = await getReservations(storeId);
-                console.log("getReservations Response: ", response);
+                //console.log("getReservations Response: ", response);
                 setExistingReservations(response.roomReservationList);
             } catch (error) {
                 toast.error("Error fetching Reservations");

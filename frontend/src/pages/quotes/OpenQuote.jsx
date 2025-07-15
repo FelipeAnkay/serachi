@@ -48,7 +48,7 @@ export default function OpenQuote() {
     }
 
     const handleArchive = async (quote) => {
-        console.log("handleArchive: ", quote)
+        //console.log("handleArchive: ", quote)
         try {
             const auxId = quote._id;
             const auxStatus = "archived"
