@@ -10,7 +10,8 @@ import {
     ShipWheel,
     CalendarClock,
     Gauge,
-    CalendarCog
+    CalendarCog,
+    Cake
 } from "lucide-react";
 
 import logo from "../../public/Serachi_logo-nobg.png";
@@ -41,6 +42,7 @@ const menuItems = [
             { to: "/experience-list", label: "Profile & Forms", icon: <CalendarCheck /> },
             { to: "/experience-add-items", label: "Add Products", icon: <ShoppingBasket /> },
             { to: "/experience-open-tabs", label: "Open Tabs", icon: <BookOpenCheck /> },
+            
         ]
     },
         {
