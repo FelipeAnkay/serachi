@@ -1,7 +1,7 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useRef, useEffect } from 'react';
 import { format, parseISO, addWeeks, subWeeks, startOfWeek, endOfWeek, isSameDay, isWithinInterval } from 'date-fns';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-import { toZonedTime  } from 'date-fns-tz';
+import { toZonedTime } from 'date-fns-tz';
 
 export default function CustomAgendaCalendar({
   events = [],
@@ -10,12 +10,21 @@ export default function CustomAgendaCalendar({
   onMonthChange,
   onSelectEvent,
 }) {
+  const timeZone = 'America/Panama';
   const [viewMode, setViewMode] = useState('month'); // 'month' or 'week'
+  const todayRef = useRef(null);
+  const todayKey = format(toZonedTime(new Date(), timeZone), 'yyyy-MM-dd');
 
-  const toLocalDate = (date) => {
-    const d = typeof date === 'string' ? new Date(date) : date;
-    return new Date(d.getFullYear(), d.getMonth(), d.getDate());
-  };
+
+  useEffect(() => {
+    const isSameMonth = selectedDate.getMonth() === new Date().getMonth()
+      && selectedDate.getFullYear() === new Date().getFullYear();
+    const aux = todayRef.current
+    //console.log("Viewmode, isSameMonth, todaysRef: ", { viewMode, isSameMonth, aux })
+    if (viewMode === 'month' && isSameMonth && todayRef.current) {
+      todayRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }, [viewMode, selectedDate]);
 
   const startDate = viewMode === 'month'
     ? new Date(selectedDate.getFullYear(), selectedDate.getMonth(), 1)
@@ -25,7 +34,6 @@ export default function CustomAgendaCalendar({
     ? new Date(selectedDate.getFullYear(), selectedDate.getMonth() + 1, 0, 23, 59, 59, 999)
     : endOfWeek(selectedDate, { weekStartsOn: 1 });
 
-  const timeZone = 'America/Panama';
   const groupedEvents = useMemo(() => {
     const filtered = events.filter((e) => {
       const start = typeof e.start === 'string' ? parseISO(e.start) : e.start;
@@ -38,8 +46,8 @@ export default function CustomAgendaCalendar({
       const originalEndUTC = typeof event.end === 'string' ? parseISO(event.end) : event.end;
       //console.log("originalStartUTC", originalStartUTC)
       // Convertir fechas UTC a zona horaria local
-      const originalStart = toZonedTime (originalStartUTC, timeZone);
-      const originalEnd = toZonedTime (originalEndUTC, timeZone);
+      const originalStart = toZonedTime(originalStartUTC, timeZone);
+      const originalEnd = toZonedTime(originalEndUTC, timeZone);
       //console.log("originalStart", originalStart)
       const dateOnly = new Date(
         originalStart.getFullYear(),
@@ -90,6 +98,24 @@ export default function CustomAgendaCalendar({
     day.setDate(startDate.getDate() + i);
     return day;
   });
+
+  useEffect(() => {
+    //console.log("Selected date: ", selectedDate)
+    const now = new Date();
+    const isSameMonth = selectedDate.getMonth() === now.getMonth() &&
+      selectedDate.getFullYear() === now.getFullYear();
+    const aux = todayRef.current
+    //console.log("Viewmode, isSameMonth, todaysRef: ", { viewMode, isSameMonth, aux })
+
+    if (viewMode === 'month') {
+      setTimeout(() => {
+        if (todayRef.current) {
+          //console.log("Ejecutando movimiento")
+          todayRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      }, 1200);
+    }
+  }, []);
 
   return (
     <div className="bg-white dark:bg-zinc-900 rounded-lg border border-slate-300 dark:border-zinc-700 p-4 w-full">
@@ -154,7 +180,7 @@ export default function CustomAgendaCalendar({
         ) : (
           <div className="space-y-6 max-h-[75vh] overflow-y-auto pr-2">
             {Object.entries(groupedEvents).sort().map(([date, hours]) => (
-              <div key={date}>
+              <div key={date} ref={date === todayKey ? todayRef : null}>
                 <h3 className="text-md font-semibold text-[#00C49F] border-b mb-2">
                   {format(toZonedTime(new Date(date + 'T00:00:00'), 'America/Panama'), 'EEEE dd MMMM yyyy')}
                 </h3>

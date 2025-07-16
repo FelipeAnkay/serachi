@@ -7,6 +7,9 @@ import Cookies from 'js-cookie';
 import { useQuoteServices } from '../store/quoteServices';
 import { useServiceServices } from '../store/serviceServices';
 import { useStaffServices } from '../store/staffServices';
+import { useCustomerServices } from '../store/customerServices';
+import { formatDateDisplay, formatDayMonth } from '../components/formatDateDisplay';
+import { Cake } from 'lucide-react';
 
 const HomePage = () => {
   const storeId = Cookies.get('storeId');
@@ -25,6 +28,8 @@ const HomePage = () => {
   let loading = false;
   let firstLoad = true;
   const navigate = useNavigate();
+  const { getCustomerEmails } = useCustomerServices();
+  const [customerList, setCustomerList] = useState([]);
 
   useEffect(() => {
     if (location.state?.unauthorized) {
@@ -112,6 +117,33 @@ const HomePage = () => {
     }
   }, [])
 
+  const fetchCustomers = async () => {
+    try {
+      let emailList = []
+      for (let serv of futureServiceList) {
+        if (serv.customerEmail && serv.customerEmail != '') {
+          emailList.push(serv.customerEmail)
+        }
+      }
+      const uniqueCustomerEmails = [...new Set(emailList)];
+      //console.log("uniqueCustomerEmails: ", uniqueCustomerEmails);
+      const auxCustomerFullList = await getCustomerEmails(uniqueCustomerEmails, storeId)
+      //console.log("getCustomerEmails: ", auxCustomerFullList)
+      setCustomerList(auxCustomerFullList.customerList)
+    } catch (error) {
+      console.log("Error fetching the customers: ", error)
+      toast.error("Error fetching the customers")
+    }
+  }
+
+  useEffect(() => {
+    if (futureServiceList.length > 0) {
+      fetchCustomers();
+    }
+
+  }, [futureServiceList])
+
+
   const handleConfirmed = () => {
     navigate(`/past-quote/`);
   }
@@ -151,6 +183,53 @@ const HomePage = () => {
   }));
 
   const total = staffDist.reduce((sum, item) => sum + item.count, 0);
+
+  const auxCustomerList = customerList
+    .map((cust) => {
+      const customerName = cust?.name + (cust?.lastName ? " " + cust.lastName : "");
+      const birthdateStr = cust?.birthdate;
+      let isBirthday = false;
+      let birthdate;
+
+      if (birthdateStr) {
+        birthdate = new Date(birthdateStr);
+        const today = new Date();
+        const todayDate = today.getDate();
+
+        // Revisamos los próximos 7 días
+        for (let i = 0; i <= 7; i++) {
+          const check = new Date(today);
+          check.setDate(todayDate + i);
+          if (
+            check.getMonth() === birthdate.getMonth() &&
+            check.getDate() === birthdate.getDate()
+          ) {
+            isBirthday = true;
+            break;
+          }
+        }
+      }
+
+      return {
+        ...cust,
+        customerName,
+        isBirthday,
+      };
+    })
+    .filter((s) => s.isBirthday)
+    .sort((a, b) => new Date(a.birthdate) - new Date(b.birthdate));
+
+  const calculateAge = (birthdate) => {
+    if (!birthdate) return "";
+    const birth = new Date(birthdate);
+    const today = new Date();
+    let age = today.getFullYear() - birth.getFullYear();
+    const m = today.getMonth() - birth.getMonth();
+    if (m < 0 || (m === 0 && today.getDate() < birth.getDate())) {
+      age--;
+    }
+    return age;
+  };
 
   return (
     <>
@@ -255,6 +334,31 @@ const HomePage = () => {
                   </div>
                 )}
               </fieldset>
+            )}
+          </div>
+          <div>
+            {!auxCustomerList || auxCustomerList.length === 0 ? (
+              <p className='font-semibold text-lg text-[#00C49F] mb-2'>No birthdays this week.</p>
+            ) : (
+              auxCustomerList
+                .map((customer) => {
+                  return (
+                    <>
+                      <h3 className='font-semibold text-lg text-[#00C49F] mb-2'>Birthdays this week</h3>
+                      <div
+                        key={customer._id}
+                        className="border rounded-lg p-4 hover:shadow transition relative bg-white border-slate-300 flex flex-col sm:flex-row sm:justify-between sm:items-center space-y-4 sm:space-y-0"
+                      >
+                        <div className='flex flex-row'>
+                          <Cake className='text-cyan-500 mr-2'></Cake>
+                          < h3 className="text-lg font-semibold text-gray-800">
+                            {(customer.customerName)} - Birthday: {formatDayMonth(customer.birthdate)} - Turning age: {calculateAge(customer.birthdate)+1}
+                          </h3>
+                        </div>
+                      </div>
+                    </>
+                  );
+                })
             )}
           </div>
         </motion.div>

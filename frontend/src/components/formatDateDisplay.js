@@ -118,3 +118,18 @@ export function formatYearMonth(dateInput) {
   return date ? format(date, "yyyy-MM") : "";
 }
 
+/**
+ * Format: "2025-05"
+ */
+export function formatDayMonth(dateInput) {
+  const date = new Date(dateInput);
+  return date
+    ? date.toLocaleDateString('en-US', {
+      weekday: 'long',
+      month: 'long',
+      day: '2-digit',
+      timeZone: 'UTC',
+    })
+    : '';
+}
+
