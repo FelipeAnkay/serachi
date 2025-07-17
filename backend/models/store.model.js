@@ -52,6 +52,10 @@ const storeSchema = new mongoose.Schema({
         type: Boolean,
         default:false
     },
+    shortCustomerProfile:{
+        type: Boolean,
+        default:false
+    },
     tcLink:{
         type: String,
     },

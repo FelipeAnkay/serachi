@@ -136,6 +136,21 @@ export default function SetStore() {
                                 onChange={(e) => setStore({ ...store, storeBookings: e.target.checked })}
                             />
                         </div>
+                        <div>
+                            <div className='flex flex-col'>
+                                <label className="block text-sm font-medium mb-1">
+                                    Do you want to display a short profile to your customer?
+                                </label>
+                                <p className='text-sm text-slate-500 mb-1'>Short: name, last name, email, phone, gender, birthdate, languages, Id or Passport, emergency contact, diving certificates</p>
+                                <p className='text-sm text-slate-500 mb-1'>Full: name, last name, email, phone, gender, country, birthdate, languages, diet, allergies, Id or Passport, emergency contact, diving certificates</p>
+                            </div>
+                            <input
+                                type="checkbox"
+                                className="h-5 w-5 text-cyan-600 border-gray-300 rounded"
+                                checked={store.shortCustomerProfile || false}
+                                onChange={(e) => setStore({ ...store, shortCustomerProfile: e.target.checked })}
+                            />
+                        </div>
                         <div key="mainEmail">
                             <label className="block text-sm font-medium text-slate-800">Main Contact (Email)</label>
                             <input
@@ -154,7 +169,7 @@ export default function SetStore() {
                                     value={store.tcLink || ''}
                                     onChange={(e) => setStore({ ...store, tcLink: e.target.value })}
                                 />
-                            </div>  
+                            </div>
                         )}
                         <div key="taxDefault">
                             <label className="block text-sm font-medium text-slate-800">Default Tax %:</label>

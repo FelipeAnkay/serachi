@@ -212,9 +212,9 @@ export const getCustomerByEmails = async (req, res) => {
         const { emails, storeId } = req.params;
         const normalizeStoreID = storeId?.toUpperCase();
         const arrayEmails = emails.split(",");
-        console.log("arrayEmails: ", {arrayEmails, storeId})
+        //console.log("arrayEmails: ", {arrayEmails, storeId})
         const customerList = await Customer.find({ email: { $in: arrayEmails }, storeId: normalizeStoreID });
-        console.log("customerList", customerList)
+        //console.log("customerList", customerList)
         if (!customerList) {
             return res.status(400).json({ success: false, message: "customerList not found" });
         }
