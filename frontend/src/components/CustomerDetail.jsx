@@ -4,11 +4,13 @@ import dietaryList from './dietaryList.json';
 import languagesList from './languages.json';
 import countries from './contries.json'
 import { useEffect, useState } from 'react';
+import { useStoreServices } from '../store/storeServices';
 
 export default function CustomerDetails({ isOpen, onClose, customer, setCustomer, onSave }) {
     const [customCountry, setCustomCountry] = useState('');
     const [countrySelectValue, setCountrySelectValue] = useState(customer.country || '');
     const [genderSelectValue, setGenderSelectValue] = useState(customer.gender || '');
+    const { store } = useStoreServices();
 
     useEffect(() => {
         const handleKeyDown = (e) => {
@@ -115,65 +117,70 @@ export default function CustomerDetails({ isOpen, onClose, customer, setCustomer
                                 onChange={(e) => setCustomer({ ...customer, nationalId: e.target.value })}
                             />
                         </div>
-                        <div>
-                            <label className="block text-sm font-medium">Country</label>
-                            <select
-                                className="w-full bg-white text-slate-900 border border-slate-300 rounded px-3 py-2 mt-1"
-                                value={countrySelectValue}
-                                onChange={(e) => {
-                                    const selected = e.target.value;
-                                    setCountrySelectValue(selected);
-                                    if (selected !== "Others") {
-                                        setCustomer({ ...customer, country: selected });
-                                        setCustomCountry('');
-                                    } else {
-                                        setCustomer({ ...customer, country: '' });
-                                    }
-                                }}
-                            >
-                                <option value="" className="text-slate-900">Select Country</option>
-                                {countries.map((c) => (
-                                    <option key={c.code} value={c.name} className='text-slate-900'>{c.name}</option>
-                                ))}
-                            </select>
+                        {!store?.shortCustomerProfile && (
+                            <>
+                                <div>
+                                    <label className="block text-sm font-medium">Country</label>
+                                    <select
+                                        className="w-full bg-white text-slate-900 border border-slate-300 rounded px-3 py-2 mt-1"
+                                        value={countrySelectValue}
+                                        onChange={(e) => {
+                                            const selected = e.target.value;
+                                            setCountrySelectValue(selected);
+                                            if (selected !== "Others") {
+                                                setCustomer({ ...customer, country: selected });
+                                                setCustomCountry('');
+                                            } else {
+                                                setCustomer({ ...customer, country: '' });
+                                            }
+                                        }}
+                                    >
+                                        <option value="" className="text-slate-900">Select Country</option>
+                                        {countries.map((c) => (
+                                            <option key={c.code} value={c.name} className='text-slate-900'>{c.name}</option>
+                                        ))}
+                                    </select>
 
-                            {countrySelectValue === "Others" && (
-                                <input
-                                    type="text"
-                                    placeholder="Enter your country"
-                                    className="w-full mt-2 bg-white text-slate-900 border border-slate-300 rounded px-3 py-2"
-                                    value={customCountry}
-                                    onChange={(e) => {
-                                        setCustomCountry(e.target.value);
-                                        setCustomer({ ...customer, country: e.target.value });
-                                    }}
-                                />
-                            )}
-                        </div>
-                        <div>
-                            <label className="block text-sm font-medium">Dietary Restriction</label>
-                            <select
-                                className="w-full bg-white text-slate-900 border border-slate-300 rounded px-3 py-2 mt-1"
-                                value={customer.diet || ''}
-                                onChange={(e) => setCustomer({ ...customer, diet: e.target.value })}
-                            >
-                                <option value="" className='text-slate-900'>Select Diet</option>
-                                {dietaryList.map((item, index) => (
-                                    <option key={index} value={item.name} className='text-slate-900'>
-                                        {item.name}
-                                    </option>
-                                ))}
-                            </select>
-                        </div>
-                        <div>
-                            <label className="block text-sm font-medium">Allergies</label>
-                            <input
-                                type="text"
-                                className="w-full bg-white text-slate-900 border border-slate-300 rounded px-3 py-2 mt-1"
-                                value={customer.allergies || ''}
-                                onChange={(e) => setCustomer({ ...customer, allergies: e.target.value })}
-                            />
-                        </div>
+                                    {countrySelectValue === "Others" && (
+                                        <input
+                                            type="text"
+                                            placeholder="Enter your country"
+                                            className="w-full mt-2 bg-white text-slate-900 border border-slate-300 rounded px-3 py-2"
+                                            value={customCountry}
+                                            onChange={(e) => {
+                                                setCustomCountry(e.target.value);
+                                                setCustomer({ ...customer, country: e.target.value });
+                                            }}
+                                        />
+                                    )}
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-medium">Dietary Restriction</label>
+                                    <select
+                                        className="w-full bg-white text-slate-900 border border-slate-300 rounded px-3 py-2 mt-1"
+                                        value={customer.diet || ''}
+                                        onChange={(e) => setCustomer({ ...customer, diet: e.target.value })}
+                                    >
+                                        <option value="" className='text-slate-900'>Select Diet</option>
+                                        {dietaryList.map((item, index) => (
+                                            <option key={index} value={item.name} className='text-slate-900'>
+                                                {item.name}
+                                            </option>
+                                        ))}
+                                    </select>
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium">Allergies</label>
+                                    <input
+                                        type="text"
+                                        className="w-full bg-white text-slate-900 border border-slate-300 rounded px-3 py-2 mt-1"
+                                        value={customer.allergies || ''}
+                                        onChange={(e) => setCustomer({ ...customer, allergies: e.target.value })}
+                                    />
+                                </div>
+                            </>
+                        )}
                         <div>
                             <label className="block text-sm font-medium mb-2">Languages:</label>
                             <div className="space-y-2">

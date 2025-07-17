@@ -8,14 +8,16 @@ import toast from 'react-hot-toast';
 import { useCustomerServices } from '../../store/customerServices';
 import { useFormServices } from '../../store/formServices';
 import LoadingSpinner from '../../components/LoadingSpinner';
+import { useStoreServices } from '../../store/storeServices';
 
 
 const SetCustomerView = () => {
     const { getDataToken } = useFormServices();
     const { getCustomerEmail, updateCustomer } = useCustomerServices();
+    const { getStoreById } = useStoreServices();
     const [loading, setLoading] = useState(true);
     const [customer, setCustomer] = useState({});
-    const [store, setStore] = useState('');
+    const [auxStore, setAuxStore] = useState({});
     const [searchParams] = useSearchParams();
     const [customCountry, setCustomCountry] = useState('');
     const [countrySelectValue, setCountrySelectValue] = useState(customer.country || '');
@@ -37,9 +39,11 @@ const SetCustomerView = () => {
                 //console.log("endDate es: ", endDate)
                 //console.log("today es: ", today)
                 if (!customerEmail || !storeId || !(endDate >= today)) {
-                    //window.location.href = '/unauthorized';
+                    window.location.href = '/unauthorized';
                 }
-                setStore(storeId);
+                const xStore = await getStoreById(storeId)
+                //console.log("xStore: ", xStore)
+                setAuxStore(xStore.store);
                 const auxCustomer = await getCustomerEmail(customerEmail, storeId)
                 //console.log("auxCustomer: ", auxCustomer)
                 setCustomer(auxCustomer.customerList[0])
@@ -54,9 +58,6 @@ const SetCustomerView = () => {
         fetchTokenData();
     }, [searchParams]);
 
-    useEffect(() => {
-        //console.log("El partnerData es: ", partnerData)
-    }, [customer]);
 
     const handleSave = async () => {
         //console.log('Saving store:', store)
@@ -67,7 +68,7 @@ const SetCustomerView = () => {
                     store
                 })
             */
-            await updateCustomer(customer.email, store, customer)
+            await updateCustomer(customer.email, auxStore.storeId, customer)
             window.scrollTo({ top: 0, behavior: 'smooth' });
             toast.success("Customer updated successfully")
         } catch (error) {
@@ -170,65 +171,69 @@ const SetCustomerView = () => {
                                     onChange={(e) => setCustomer({ ...customer, nationalId: e.target.value })}
                                 />
                             </div>
-                            <div>
-                                <label className="block text-sm font-medium">Country</label>
-                                <select
-                                    className="w-full bg-white text-slate-900 border border-slate-300 rounded px-3 py-2 mt-1"
-                                    value={countrySelectValue}
-                                    onChange={(e) => {
-                                        const selected = e.target.value;
-                                        setCountrySelectValue(selected);
-                                        if (selected !== "Others") {
-                                            setCustomer({ ...customer, country: selected });
-                                            setCustomCountry('');
-                                        } else {
-                                            setCustomer({ ...customer, country: '' });
-                                        }
-                                    }}
-                                >
-                                    <option value="" className="bg-white text-slate-900">Select Country</option>
-                                    {countries.map((c) => (
-                                        <option key={c.code} value={c.name} className='bg-white text-slate-900'>{c.name}</option>
-                                    ))}
-                                </select>
+                            {!auxStore?.shortCustomerProfile && (
+                                <>
+                                    <div>
+                                        <label className="block text-sm font-medium">Country</label>
+                                        <select
+                                            className="w-full bg-white text-slate-900 border border-slate-300 rounded px-3 py-2 mt-1"
+                                            value={countrySelectValue}
+                                            onChange={(e) => {
+                                                const selected = e.target.value;
+                                                setCountrySelectValue(selected);
+                                                if (selected !== "Others") {
+                                                    setCustomer({ ...customer, country: selected });
+                                                    setCustomCountry('');
+                                                } else {
+                                                    setCustomer({ ...customer, country: '' });
+                                                }
+                                            }}
+                                        >
+                                            <option value="" className="bg-white text-slate-900">Select Country</option>
+                                            {countries.map((c) => (
+                                                <option key={c.code} value={c.name} className='bg-white text-slate-900'>{c.name}</option>
+                                            ))}
+                                        </select>
 
-                                {countrySelectValue === "Others" && (
-                                    <input
-                                        type="text"
-                                        placeholder="Enter your country"
-                                        className="w-full mt-2 bg-white text-slate-900 border border-slate-300 rounded px-3 py-2"
-                                        value={customCountry}
-                                        onChange={(e) => {
-                                            setCustomCountry(e.target.value);
-                                            setCustomer({ ...customer, country: e.target.value });
-                                        }}
-                                    />
-                                )}
-                            </div>
-                            <div>
-                                <label className="block text-sm font-medium">Dietary Restriction</label>
-                                <select
-                                    className="w-full bg-white text-slate-900 border border-slate-300 rounded px-3 py-2 mt-1"
-                                    value={customer.diet || ''}
-                                    onChange={(e) => setCustomer({ ...customer, diet: e.target.value })}
-                                >
-                                    <option value="" className='bg-white text-slate-900'>Select Diet</option>
-                                    {dietaryList.map((item, index) => (
-                                        <option key={index} value={item.name} className='bg-white text-slate-900'>
-                                            {item.name}
-                                        </option>
-                                    ))}
-                                </select>
-                            </div>
-                            <div>
-                                <label className="block text-sm font-medium">Allergies</label>
-                                <input
-                                    type="text"
-                                    className="w-full bg-white text-slate-900 border border-slate-300 rounded px-3 py-2 mt-1"
-                                    value={customer.allergies || ''}
-                                    onChange={(e) => setCustomer({ ...customer, allergies: e.target.value })}
-                                />
-                            </div>
+                                        {countrySelectValue === "Others" && (
+                                            <input
+                                                type="text"
+                                                placeholder="Enter your country"
+                                                className="w-full mt-2 bg-white text-slate-900 border border-slate-300 rounded px-3 py-2"
+                                                value={customCountry}
+                                                onChange={(e) => {
+                                                    setCustomCountry(e.target.value);
+                                                    setCustomer({ ...customer, country: e.target.value });
+                                                }}
+                                            />
+                                        )}
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium">Dietary Restriction</label>
+                                        <select
+                                            className="w-full bg-white text-slate-900 border border-slate-300 rounded px-3 py-2 mt-1"
+                                            value={customer.diet || ''}
+                                            onChange={(e) => setCustomer({ ...customer, diet: e.target.value })}
+                                        >
+                                            <option value="" className='bg-white text-slate-900'>Select Diet</option>
+                                            {dietaryList.map((item, index) => (
+                                                <option key={index} value={item.name} className='bg-white text-slate-900'>
+                                                    {item.name}
+                                                </option>
+                                            ))}
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium">Allergies</label>
+                                        <input
+                                            type="text"
+                                            className="w-full bg-white text-slate-900 border border-slate-300 rounded px-3 py-2 mt-1"
+                                            value={customer.allergies || ''}
+                                            onChange={(e) => setCustomer({ ...customer, allergies: e.target.value })}
+                                        />
+                                    </div>
+                                </>
+                            )}
                             <div>
                                 <label className="block text-sm font-medium mb-2">Languages:</label>
                                 <div className="space-y-2">
