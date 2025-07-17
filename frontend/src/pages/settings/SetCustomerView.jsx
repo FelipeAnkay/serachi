@@ -17,10 +17,12 @@ const SetCustomerView = () => {
     const { getStoreById } = useStoreServices();
     const [loading, setLoading] = useState(true);
     const [customer, setCustomer] = useState({});
+    const [originalEmail, setOriginalEmail] = useState('')
     const [auxStore, setAuxStore] = useState({});
     const [searchParams] = useSearchParams();
     const [customCountry, setCustomCountry] = useState('');
     const [countrySelectValue, setCountrySelectValue] = useState(customer.country || '');
+    const [isRegistered, setIsRegistered] = useState(false)
 
 
     useEffect(() => {
@@ -41,12 +43,17 @@ const SetCustomerView = () => {
                 if (!customerEmail || !storeId || !(endDate >= today)) {
                     window.location.href = '/unauthorized';
                 }
+                setOriginalEmail(customerEmail)
                 const xStore = await getStoreById(storeId)
                 //console.log("xStore: ", xStore)
                 setAuxStore(xStore.store);
                 const auxCustomer = await getCustomerEmail(customerEmail, storeId)
                 //console.log("auxCustomer: ", auxCustomer)
-                setCustomer(auxCustomer.customerList[0])
+                if (auxCustomer.success) {
+                    setIsRegistered(true)
+                    setCustomer(auxCustomer.customerList[0])
+                }
+
             } catch (error) {
                 console.error('Error getting token data:', error);
                 //window.location.href = '/unauthorized';
@@ -63,11 +70,19 @@ const SetCustomerView = () => {
         //console.log('Saving store:', store)
         try {
             /*
-                console.log("Los datos del cliente son: ",{
-                    customer,
-                    store
-                })
+                        console.log("Los datos del cliente son: ", {
+                            customer,
+                            auxStore
+                        })
             */
+            if (!isRegistered) {
+                toast.error('Customer not registered');
+                return;
+            }
+            if (customer.email.toLowerCase() !== originalEmail.toLowerCase()) {
+                toast.error('The email needs to match with the registered one');
+                return;
+            }
             await updateCustomer(customer.email, auxStore.storeId, customer)
             window.scrollTo({ top: 0, behavior: 'smooth' });
             toast.success("Customer updated successfully")
