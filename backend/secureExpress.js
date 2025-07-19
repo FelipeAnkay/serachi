@@ -33,6 +33,7 @@ import formRecordsRoutes from './routes/formRecord.route.js'
 import favoriteDescriptionRoutes from './routes/favoriteDescription.route.js'
 import facilityRoutes from './routes/facility.route.js'
 import facilityReservationRoutes from './routes/facilityReservation.route.js';
+import staffDaysOffRoutes from './routes/staffDaysOff.route.js'
 
 dotenv.config();
 
@@ -84,6 +85,7 @@ app.use("/api/formrecords", formRecordsRoutes);
 app.use("/api/favoriteDescriptions", favoriteDescriptionRoutes);
 app.use("/api/facilities", facilityRoutes);
 app.use("/api/facilityReservations", facilityReservationRoutes);
+app.use("/api/daysOff", staffDaysOffRoutes);
 
 
 // === 4. Servir frontend en producción ===

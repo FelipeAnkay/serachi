@@ -47,7 +47,7 @@ export const updateFacilityReservation = async (req, res) => {
             new: true
         });
 
-        //await service.save();
+        await service.save();
 
         res.status(201).json({
             success: true,

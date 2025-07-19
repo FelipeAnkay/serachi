@@ -116,8 +116,8 @@ const SetSupplier = () => {
                 ...supplierData,
                 storeId: storeId,
             };
-            //console.log("Is Editing? ", isEditing);
-            //console.log("El payload es: ", payload);
+            console.log("Is Editing? ", isEditing);
+            console.log("El payload es: ", payload);
             if (isEditing) {
                 await updateSupplier(supplierData.email, storeId, payload);
                 toast.success('Supplier updated successfully');
