@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { CircleX, Delete, Save, Trash2, UserPlus } from 'lucide-react';
+import { CalendarX, CircleX, Delete, Save, Trash2, UserPlus } from 'lucide-react';
 import Cookies from 'js-cookie';
 import toast from 'react-hot-toast';
 import { useStaffServices } from '../../store/staffServices';
@@ -19,6 +19,7 @@ const SetStaff = () => {
     const [emailCheckPhase, setEmailCheckPhase] = useState(false);
     const [confirmDelete, setConfirmDelete] = useState(null);
     const [searchTerm, setSearchTerm] = useState('');
+    const [daysOffModal, setDaysOffModal] = useState(false);
 
     useEffect(() => {
         const fetchStaff = async () => {
@@ -160,14 +161,14 @@ const SetStaff = () => {
     if (loading) return <div className="text-slate-800 text-center mt-10">Loading staff...</div>;
 
     return (
-            <div className="flex flex-col min-h-screen w-full bg-[#18394C] text-slate-800 px-4 py-6 sm:px-8 sm:py-10">
-                <motion.div
-                    initial={{ opacity: 0, scale: 2 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.9 }}
-                    transition={{ duration: 0.5 }}
-                    className="flex flex-col w-full max-w-9/12 mx-auto bg-sky-50 backdrop-filter backdrop-blur-lg rounded-2xl shadow-2xl border border-gray-800 overflow-hidden min-h-screen items-center p-4"
-                >
+        <div className="flex flex-col min-h-screen w-full bg-[#18394C] text-slate-800 px-4 py-6 sm:px-8 sm:py-10">
+            <motion.div
+                initial={{ opacity: 0, scale: 2 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.9 }}
+                transition={{ duration: 0.5 }}
+                className="flex flex-col w-full max-w-9/12 mx-auto bg-sky-50 backdrop-filter backdrop-blur-lg rounded-2xl shadow-2xl border border-gray-800 overflow-hidden min-h-screen items-center p-4"
+            >
                 <h2 className="text-3xl font-bold mb-6 text-center text-[#00C49F] bg-clip-text">
                     Staff List
                 </h2>
@@ -208,28 +209,38 @@ const SetStaff = () => {
                                     className="relative text-black rounded-lg shadow p-4 hover:bg-blue-100 transition-all"
                                     style={{ backgroundColor: staff.color || '#6b7280' }}
                                 >
-                                    <div onClick={() => openEditStaffModal(staff)}>
-                                        <p><strong>Name:</strong> {staff.name}</p>
-                                        <p><strong>Email:</strong> {staff.email}</p>
-                                        <p><strong>Phone:</strong> {staff.phone || 'N/A'}</p>
-                                        <p><strong>Languages:</strong> {staff.languages.join(', ')}</p>
+                                    <div className='flex flex-col'>
+                                        <div onClick={() => openEditStaffModal(staff)}>
+                                            <p><strong>Name:</strong> {staff.name}</p>
+                                            <p><strong>Email:</strong> {staff.email}</p>
+                                            <p><strong>Phone:</strong> {staff.phone || 'N/A'}</p>
+                                            <p><strong>Languages:</strong> {staff.languages.join(', ')}</p>
+                                        </div>
+                                        <div className='w-full flex flex-row justify-between mt-2' >
+                                            <button
+                                                onClick={() => setDaysOff({ email: staff.email })}
+                                                className=" text-white hover:text-slate-900"
+                                                title="Set days off"
+                                            >
+                                                <CalendarX />
+                                            </button>
+                                            <button
+                                                onClick={() => setConfirmDelete({ email: staff.email })}
+                                                className=" text-red-400 hover:text-red-600"
+                                                title="Remove from Store"
+                                            >
+                                                <Trash2 />
+                                            </button>
+                                        </div>
                                     </div>
-                                    <button
-                                        onClick={() => setConfirmDelete({ email: staff.email })}
-                                        className="absolute top-2 right-2 text-red-400 hover:text-red-600"
-                                        title="Remove from Store"
-                                    >
-                                        <Trash2 />
-                                    </button>
                                 </div>
                             ))
                     )}
                 </div>
             </motion.div>
 
-            {/* Modal */}
+            {/* Modal Create/Edit Staff*/}
             <AnimatePresence>
-
                 {(modalOpen || confirmDelete) && (
                     <motion.div
                         className="fixed inset-0 bg-black/95 flex items-center justify-center z-50 overflow-y-auto scrollbar-thin scrollbar-thumb-blue-600 scrollbar-track-gray-800 scrollbar-thumb-rounded-full"
@@ -461,6 +472,10 @@ const SetStaff = () => {
                             </motion.div>
                         )}
                     </motion.div>
+                )}
+                {daysOffModal && (
+                    <>
+                    </>
                 )}
             </AnimatePresence>
         </div>

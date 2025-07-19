@@ -4,7 +4,7 @@ import { Supplier } from "../models/supplier.model.js";
 export const createSupplier = async (req, res) => {
     const { email, name, phone, country, nationalId, storeId } = req.body;
     try {
-        if (!name || !email || !phone || !country || !nationalId || !storeId) {
+        if (!name || !email || !country  || !storeId) {
             throw new Error("All fields are required");
         }
 
