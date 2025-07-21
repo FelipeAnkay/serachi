@@ -223,6 +223,13 @@ function App() {
               <CreateService />
             </ProtectedRoute>}
         />
+                <Route
+          path="/experience-create-service/:customerEmail"
+          element={
+            <ProtectedRoute requiredPermission="VIEW_EXPERIENCES" storePermission={["BAS", "MED", "PRO"]}>
+              <CreateService />
+            </ProtectedRoute>}
+        />
         <Route
           path="/experience-add-items"
           element={

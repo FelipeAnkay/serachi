@@ -3,7 +3,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { useState, useEffect, useRef } from 'react';
 import { useQuoteServices } from '../../store/quoteServices';
 import { useNavigate, useLocation } from "react-router-dom";
-import { Bed, CircleX, ConeIcon, Copy, MapPinCheckInside, MapPinPlus, Trash2 } from 'lucide-react';
+import { Bed, BookMarked, CircleX, ConeIcon, Copy, MapPinCheckInside, MapPinPlus, Trash2 } from 'lucide-react';
 import { useAuthStore } from '../../store/authStore';
 import { useExperienceServices } from '../../store/experienceServices';
 import toast from 'react-hot-toast';
@@ -51,6 +51,11 @@ export default function ConfirmedQuote() {
         Cookies.set('clone', true)
         navigate(`/new-quote/${quoteId}`);
     };
+
+    const handleServiceRedirect = (quote) => {
+        const customerEmail = quote.customerEmail
+        navigate(`/experience-create-service/${customerEmail}`);
+    }
 
     useEffect(() => {
         //console.log("Entre a useEffect [storeId, location.key]", timezone);
@@ -166,7 +171,7 @@ export default function ConfirmedQuote() {
             const experiencePayload = {
                 name: experience
                     ? experience.name
-                    : `${fetchedCustomer.name} + ${(fetchedCustomer.lastName ? " " + fetchedCustomer.lastName : "")}`,
+                    : `${fetchedCustomer.name} + ${(fetchedCustomer.lastName ? " " + fetchedCustomer.lastName : "")} + From: ${formatDateDisplay(quote.dateIn)} to ${formatDateDisplay(quote.dateOut)}`,
                 storeId: quote.storeId,
                 userEmail: quote.userEmail,
                 customerEmail: quote.customerEmail,
@@ -203,6 +208,7 @@ export default function ConfirmedQuote() {
         setLoading(true)
         try {
             const reservationIds = [];
+            const fetchedCustomer = await fetchCustomer(quote);
 
             if (quote.roomList && quote.roomList.length > 0) {
                 for (const room of quote.roomList) {
@@ -228,13 +234,10 @@ export default function ConfirmedQuote() {
             // Verificar si ya existe una experiencia
             let experience = existingExperiences.find(exp => exp.quoteId === quote._id);
             //console.log("experience es: ", experience)
-            const formDateIn = new Date(quote.dateIn).toISOString().split("T")[0];
-            const formDateOut = new Date(quote.dateOut).toISOString().split("T")[0];
-
             const experiencePayload = {
                 name: experience
                     ? experience.name
-                    : `E: ${quote.customerEmail}`,
+                    : `${fetchedCustomer.name} + ${(fetchedCustomer.lastName ? " " + fetchedCustomer.lastName : "")} + From: ${formatDateDisplay(quote.dateIn)} to ${formatDateDisplay(quote.dateOut)}`,
                 storeId: quote.storeId,
                 userEmail: quote.userEmail,
                 customerEmail: quote.customerEmail,
@@ -277,6 +280,7 @@ export default function ConfirmedQuote() {
             const serviceIds = [];
             const formDateIn = new Date(quote.dateIn).toISOString().split("T")[0];
             const formDateOut = new Date(quote.dateOut).toISOString().split("T")[0];
+            const fetchedCustomer = await fetchCustomer(quote);
 
             for (const auxService of customServiceList) {
                 const servicePayload = {
@@ -300,7 +304,7 @@ export default function ConfirmedQuote() {
             const experiencePayload = {
                 name: experience
                     ? experience.name
-                    : `E: ${quote.customerEmail}`,
+                    : `${fetchedCustomer.name} + ${(fetchedCustomer.lastName ? " " + fetchedCustomer.lastName : "")} + From: ${formatDateDisplay(quote.dateIn)} to ${formatDateDisplay(quote.dateOut)}`,
                 storeId: quote.storeId,
                 userEmail: quote.userEmail,
                 customerEmail: quote.customerEmail,
@@ -438,8 +442,12 @@ export default function ConfirmedQuote() {
                                             return shouldShow;
                                         })
                                         .map((quote) => {
+                                            //  console.log("quoteId: ", quote._id)
                                             const alreadyExists = existingExperiences.some(
-                                                exp => exp.quoteId === quote._id && Array.isArray(exp.serviceList) && exp.serviceList.length > 0
+                                                exp => exp.quoteId === quote._id
+                                            );
+                                            const createCustom = existingExperiences.some(
+                                                exp => exp.quoteId === quote._id && Array.isArray(exp.serviceList) && exp.serviceList.length === 0
                                             );
                                             const reservationAlreadyExists = existingReservations.some(exp => exp.quoteId === quote._id);
                                             //console.log("El valor de existingExperiences:", alreadyExists," - ", existingExperiences, " - ", quote._id);
@@ -526,6 +534,21 @@ export default function ConfirmedQuote() {
                                                                     </div>
                                                                 </motion.button>
                                                             </>
+                                                        )}
+                                                        {createCustom && (
+                                                            <motion.button
+                                                                type='button'
+                                                                whileHover={{ scale: 1.05 }}
+                                                                whileTap={{ scale: 0.95 }}
+                                                                onClick={() => handleServiceRedirect(quote)}
+                                                                className='w-1/4 py-3 px-4 bg-[#118290] hover:bg-[#0d6c77] text-cyan-50 font-bold rounded-lg shadow-lg
+                                                         focus:ring-offset-1 focus:ring-offset-cyan-900'
+                                                            >
+                                                                <div className='flex flex-col justify-center items-center text-sm sm:text-base'>
+                                                                    <BookMarked />
+                                                                    <span>Assign Services</span>
+                                                                </div>
+                                                            </motion.button>
                                                         )}
                                                     </div>
                                                 </div>
