@@ -424,7 +424,7 @@ export default function OpenTabs() {
                                                                                 disabled={s.isPaid}
                                                                                 className="ml-2 mt-4 mb-4"
                                                                             />
-                                                                            <p className="mr-2 mt-4 mb-4">Paid?</p>
+                                                                            <p className="mr-2 mt-4 mb-4">{(pendingUpdates.service[s._id] ?? s.isPaid) ? "To not pay" : "To pay"}</p>
                                                                         </label>
                                                                     </div>
                                                                 ))}
@@ -474,7 +474,7 @@ export default function OpenTabs() {
                                                                                 }}
                                                                                 disabled={p.isPaid}
                                                                             />
-                                                                            <p className="mr-2 mt-4 mb-4">Paid?</p>
+                                                                            <p className="mr-2 mt-4 mb-4">{(pendingUpdates.product[i] ?? p.isPaid) ? "To not pay" : "To pay"}</p>
                                                                         </label>
                                                                     </div>
                                                                 ))}
@@ -520,7 +520,7 @@ export default function OpenTabs() {
                                                                             }}
                                                                             disabled={r.isPaid}
                                                                         />
-                                                                        <p className="mr-2 mt-4 mb-4">Paid?</p>
+                                                                        <p className="mr-2 mt-4 mb-4">{(pendingUpdates.reservation[r._id] ?? r.isPaid) ? "To not pay" : "To pay"}</p>
                                                                     </label>
                                                                 </div>
                                                             ))}

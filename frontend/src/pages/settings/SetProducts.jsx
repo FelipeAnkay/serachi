@@ -11,7 +11,7 @@ import { useTypeServices } from '../../store/typeServices'
 const SetProduct = () => {
     const { getProductByStoreId, getProductById, removeProduct, updateProduct, createProduct } = useProductServices();
     const { getTypeByCategory } = useTypeServices();
-    const storeId = Cookies.get('storeId');
+    const storeId = Cookies.get('storeId')?.toUpperCase();
     const [productList, setProductList] = useState([]);
     const [loading, setLoading] = useState(true);
     const [modalOpen, setModalOpen] = useState(false);

@@ -52,11 +52,6 @@ export default function ConfirmedQuote() {
         navigate(`/new-quote/${quoteId}`);
     };
 
-    const handleServiceRedirect = (quote) => {
-        const customerEmail = quote.customerEmail
-        navigate(`/experience-create-service/${customerEmail}`);
-    }
-
     useEffect(() => {
         //console.log("Entre a useEffect [storeId, location.key]", timezone);
         const fetchQuotes = async () => {
@@ -444,10 +439,7 @@ export default function ConfirmedQuote() {
                                         .map((quote) => {
                                             //  console.log("quoteId: ", quote._id)
                                             const alreadyExists = existingExperiences.some(
-                                                exp => exp.quoteId === quote._id
-                                            );
-                                            const createCustom = existingExperiences.some(
-                                                exp => exp.quoteId === quote._id && Array.isArray(exp.serviceList) && exp.serviceList.length === 0
+                                                exp => exp.quoteId === quote._id && Array.isArray(exp.serviceList) && exp.serviceList.length > 0
                                             );
                                             const reservationAlreadyExists = existingReservations.some(exp => exp.quoteId === quote._id);
                                             //console.log("El valor de existingExperiences:", alreadyExists," - ", existingExperiences, " - ", quote._id);
@@ -534,21 +526,6 @@ export default function ConfirmedQuote() {
                                                                     </div>
                                                                 </motion.button>
                                                             </>
-                                                        )}
-                                                        {createCustom && (
-                                                            <motion.button
-                                                                type='button'
-                                                                whileHover={{ scale: 1.05 }}
-                                                                whileTap={{ scale: 0.95 }}
-                                                                onClick={() => handleServiceRedirect(quote)}
-                                                                className='w-1/4 py-3 px-4 bg-[#118290] hover:bg-[#0d6c77] text-cyan-50 font-bold rounded-lg shadow-lg
-                                                         focus:ring-offset-1 focus:ring-offset-cyan-900'
-                                                            >
-                                                                <div className='flex flex-col justify-center items-center text-sm sm:text-base'>
-                                                                    <BookMarked />
-                                                                    <span>Assign Services</span>
-                                                                </div>
-                                                            </motion.button>
                                                         )}
                                                     </div>
                                                 </div>

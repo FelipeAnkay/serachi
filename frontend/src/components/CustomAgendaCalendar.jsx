@@ -1,5 +1,5 @@
 import React, { useMemo, useState, useRef, useEffect } from 'react';
-import { format, parseISO, addWeeks, subWeeks, startOfWeek, endOfWeek, isSameDay, isWithinInterval } from 'date-fns';
+import { format, parseISO, addWeeks, subWeeks, startOfWeek, endOfWeek, isSameDay, isWithinInterval, differenceInCalendarDays, addDays, endOfDay, set, startOfDay } from 'date-fns';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { toZonedTime } from 'date-fns-tz';
 
@@ -35,42 +35,90 @@ export default function CustomAgendaCalendar({
     : endOfWeek(selectedDate, { weekStartsOn: 1 });
 
   const groupedEvents = useMemo(() => {
-    const filtered = events.filter((e) => {
-      const start = typeof e.start === 'string' ? parseISO(e.start) : e.start;
-      return isWithinInterval(start, { start: startDate, end: endDate });
-    });
-
     const groups = {};
-    filtered.forEach((event) => {
-      const originalStartUTC = typeof event.start === 'string' ? parseISO(event.start) : event.start;
-      const originalEndUTC = typeof event.end === 'string' ? parseISO(event.end) : event.end;
-      //console.log("originalStartUTC", originalStartUTC)
-      // Convertir fechas UTC a zona horaria local
-      const originalStart = toZonedTime(originalStartUTC, timeZone);
-      const originalEnd = toZonedTime(originalEndUTC, timeZone);
-      //console.log("originalStart", originalStart)
-      const dateOnly = new Date(
-        originalStart.getFullYear(),
-        originalStart.getMonth(),
-        originalStart.getDate()
-      );
 
-      //console.log("dateOnly", dateOnly)
+    events.forEach((event) => {
+      const startUTC = typeof event.start === 'string' ? parseISO(event.start) : event.start;
+      const endUTC = typeof event.end === 'string' ? parseISO(event.end) : event.end;
 
-      const dateKey = format(dateOnly, 'yyyy-MM-dd');
-      const hourKey = format(originalStart, 'HH:mm');
-      const staffKey = event.staffName || event.staffEmail || 'NO STAFF';
+      const start = toZonedTime(startUTC, timeZone);
+      const end = toZonedTime(endUTC, timeZone);
 
-      if (!groups[dateKey]) groups[dateKey] = {};
-      if (!groups[dateKey][hourKey]) groups[dateKey][hourKey] = {};
-      if (!groups[dateKey][hourKey][staffKey]) groups[dateKey][hourKey][staffKey] = [];
+      const totalDays = differenceInCalendarDays(end, start) + 1;
 
-      groups[dateKey][hourKey][staffKey].push({ ...event, start: originalStart, end: originalEnd });
+      const startHour = start.getHours();
+      const startMinute = start.getMinutes();
+
+      for (let i = 0; i < totalDays; i++) {
+        const currentDate = addDays(start, i);
+        const dateKey = format(currentDate, 'yyyy-MM-dd');
+
+        if (!isWithinInterval(currentDate, { start: startDate, end: endDate })) continue;
+
+        const eventStartTime = set(currentDate, { hours: startHour, minutes: startMinute });
+
+        const hourKey = format(eventStartTime, 'HH:mm');
+        const staffKey = event.staffName || event.staffEmail || 'NO STAFF';
+
+        if (!groups[dateKey]) groups[dateKey] = {};
+        if (!groups[dateKey][hourKey]) groups[dateKey][hourKey] = {};
+        if (!groups[dateKey][hourKey][staffKey]) groups[dateKey][hourKey][staffKey] = [];
+
+        const clonedEvent = {
+          ...event,
+          start: i === 0 ? start : eventStartTime,
+          end: i === totalDays - 1 ? end : endOfDay(currentDate),
+          multiDayPart: `${i + 1} of ${totalDays}`,
+        };
+
+        groups[dateKey][hourKey][staffKey].push(clonedEvent);
+      }
     });
 
     return groups;
-  }, [events, selectedDate, viewMode]);
+  }, [events, selectedDate, viewMode, startDate, endDate]);
+  /*
 
+const groupedEvents = useMemo(() => {
+  //console.log("Llamado a groupedEvents:")
+  console.log("Intervalo visible:", { startDate, endDate });
+  console.log("Eventos raw:", events.map(e => ({ start: e.start, end: e.end,title: e.title })));
+  const filtered = events.filter((e) => {
+    const start = typeof e.start === 'string' ? parseISO(e.start) : e.start;
+    return isWithinInterval(start, { start: startDate, end: endDate });
+  });
+  console.log("Eventos dentro del intervalo:", filtered.map(e => ({ start: e.start, title: e.title })));
+  const groups = {};
+  filtered.forEach((event) => {
+    const originalStartUTC = typeof event.start === 'string' ? parseISO(event.start) : event.start;
+    const originalEndUTC = typeof event.end === 'string' ? parseISO(event.end) : event.end;
+    //console.log("originalStartUTC", originalStartUTC)
+    // Convertir fechas UTC a zona horaria local
+    const originalStart = toZonedTime(originalStartUTC, timeZone);
+    const originalEnd = toZonedTime(originalEndUTC, timeZone);
+    //console.log("originalStart", originalStart)
+    const dateOnly = new Date(
+      originalStart.getFullYear(),
+      originalStart.getMonth(),
+      originalStart.getDate()
+    );
+
+    //console.log("dateOnly", dateOnly)
+
+    const dateKey = format(dateOnly, 'yyyy-MM-dd');
+    const hourKey = format(originalStart, 'HH:mm');
+    const staffKey = event.staffName || event.staffEmail || 'NO STAFF';
+
+    if (!groups[dateKey]) groups[dateKey] = {};
+    if (!groups[dateKey][hourKey]) groups[dateKey][hourKey] = {};
+    if (!groups[dateKey][hourKey][staffKey]) groups[dateKey][hourKey][staffKey] = [];
+
+    groups[dateKey][hourKey][staffKey].push({ ...event, start: originalStart, end: originalEnd });
+  });
+
+  return groups;
+}, [events, selectedDate, viewMode]);
+*/
   const handlePrev = () => {
     const newDate = viewMode === 'month'
       ? new Date(selectedDate.getFullYear(), selectedDate.getMonth() - 1, 1)
@@ -166,7 +214,17 @@ export default function CustomAgendaCalendar({
                               style={{ backgroundColor: e.staffColor || '#6b7280' }}
                               onClick={() => onSelectEvent && onSelectEvent(e)}
                             >
-                              {e.title}
+                              <div className="text-sm font-medium">
+                                {e.title}
+                                {e.multiDayPart && (() => {
+                                  const totalDays = parseInt(e.multiDayPart.split(' of ')[1], 10);
+                                  return totalDays > 1 ? (
+                                    <span className="ml-2 text-xs text-gray-400">
+                                      ({e.multiDayPart})
+                                    </span>
+                                  ) : null;
+                                })()}
+                              </div>
                             </div>
                           ))}
                         </div>
@@ -178,6 +236,7 @@ export default function CustomAgendaCalendar({
             })}
           </div>
         ) : (
+          //VISTA MENSUAL
           <div className="space-y-6 max-h-[75vh] overflow-y-auto pr-2">
             {Object.entries(groupedEvents).sort().map(([date, hours]) => (
               <div key={date} ref={date === todayKey ? todayRef : null}>
@@ -198,7 +257,17 @@ export default function CustomAgendaCalendar({
                               style={{ backgroundColor: e.staffColor || '#6b7280' }}
                               onClick={() => onSelectEvent && onSelectEvent(e)}
                             >
-                              {e.title}
+                              <div className="text-sm font-medium">
+                                {e.title}
+                                {e.multiDayPart && (() => {
+                                  const totalDays = parseInt(e.multiDayPart.split(' of ')[1], 10);
+                                  return totalDays > 1 ? (
+                                    <span className="ml-2 text-xs text-gray-400">
+                                      ({e.multiDayPart})
+                                    </span>
+                                  ) : null;
+                                })()}
+                              </div>
                             </div>
                           ))}
                         </div>
