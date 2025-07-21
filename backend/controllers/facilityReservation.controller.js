@@ -64,7 +64,7 @@ export const updateFacilityReservation = async (req, res) => {
 
 export const FacilityReservationList = async (req, res) => {
     try {
-        console.log("Entre a facilityReservationList")
+       //console.log("Entre a facilityReservationList")
         const { storeId } = req.params
         //console.log("B: el storeID para facilityReservation es: ", storeId)
         if (!storeId) {

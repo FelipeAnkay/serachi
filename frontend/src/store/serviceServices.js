@@ -42,7 +42,7 @@ export const useServiceServices = create((set) => ({
                 id: serviceId,
                 ...updatedVars
             });
-            console.log("F: Respueste de updateService: ", response);
+            //console.log("F: Respueste de updateService: ", response);
             set({ serviceList: response.data.serviceList, isLoading: false });
             return response.data;
         } catch (error) {

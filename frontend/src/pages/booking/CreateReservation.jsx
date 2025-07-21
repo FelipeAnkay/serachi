@@ -50,6 +50,9 @@ export default function CreateReservation() {
         setSelectedRooms(roomList);
     }
     const reservationFill = () => {
+        //const auxStore = storeId;
+        //const auxUser = user.email;
+        //console.log("datos fill: ", {auxStore, auxUser});
         setReservation({
             dateIn: '',
             roomList: [],
@@ -81,10 +84,10 @@ export default function CreateReservation() {
                     bedsRequired: numberOfPeople,
                     storeId,
                 }
-                console.log("availablePayload: ", availablePayload)
+                //console.log("availablePayload: ", availablePayload)
                 const response = await getAvailableRooms(availablePayload);
                 const availableRooms = response.availableRooms || [];
-                console.log("availableRooms: ", availableRooms)
+                //console.log("availableRooms: ", availableRooms)
                 setRooms(availableRooms);
 
                 const range = [];
@@ -164,7 +167,7 @@ export default function CreateReservation() {
     }, [])
 
     useEffect(() => {
-        console.log("Selected Experience", selectedExperience)
+        //console.log("Selected Experience", selectedExperience)
     }, [selectedExperience])
     /*
         useEffect(() => {
@@ -338,7 +341,14 @@ export default function CreateReservation() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        const auxDateIn = reservation.dateIn;
+         const auxDateOut = reservation.dateOut;
+         const auxEmail = reservation.customerEmail;
+         const auxStore = reservation.storeId;
+         const userEmail = reservation.userEmail;
+        console.log("Datos submit: ", {auxDateIn,auxDateOut ,auxEmail, auxStore, userEmail})
         if (!reservation.dateIn || !reservation.dateOut || !reservation.customerEmail || !reservation.storeId || !reservation.userEmail) {
+            
             toast.error('Please fill all the mandatory data.');
             return;
         }
@@ -358,14 +368,19 @@ export default function CreateReservation() {
                 isPaid: reservation.isPaid,
             }));
             //console.log("El payload es: ", reservationPayloadList)
-            let actualReservationList = [...(selectedExperience.experience.bookList || [])];
+            
+            //console.log("selectedExperience: ", selectedExperience)
+            let actualReservationList = []
+            if (selectedExperience?.value) {
+                actualReservationList = [...(selectedExperience.experience.bookList || [])]
+            }
             for (const res of reservationPayloadList) {
                 const auxRes = await createRoomReservation(res);
                 actualReservationList.push(auxRes.service._id)
             }
             //console.log("Listado de reservas: ", actualReservationList)
             //console.log("selectedExperience: ", selectedExperience)
-            if (selectedExperience?.value != "") {
+            if (selectedExperience?.value) {
                 let payload = {}
                 if (selectedExperience.experience.dateOut < reservation.dateOut) {
                     //console.log("Entre al If")
@@ -375,7 +390,7 @@ export default function CreateReservation() {
                     }
 
                 } else {
-                    console.log("NO Entre al If")
+                    //console.log("NO Entre al If")
                     payload = {
                         bookList: actualReservationList,
                     }
@@ -390,6 +405,7 @@ export default function CreateReservation() {
             handleReset();
 
         } catch (err) {
+            console.log("Error creating reservation: ", err)
             toast.error('Error saving the reservation');
         } finally {
             setLoading(false)
@@ -418,7 +434,6 @@ export default function CreateReservation() {
         setFinalPrice(0);
         setSelectedRooms({})
         setIsNew(true);
-        setReservation({});
         setExistingExperiences([]);
         setIsRoomVisible(false);
         setSelectedExperience([]);

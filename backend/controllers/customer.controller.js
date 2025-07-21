@@ -112,7 +112,7 @@ export const createCustomerMasiveBatch = async (req, res) => {
 
 export const updateCustomer = async (req, res) => {
     const { email, storeId, ...updateFields } = req.body;
-    console.log("B: Entre a updateCustomer", email, " - ", storeId, " - ", updateFields)
+    //console.log("B: Entre a updateCustomer", email, " - ", storeId, " - ", updateFields)
     try {
         if (!email) {
             throw new Error("Id field is required");
@@ -141,13 +141,13 @@ export const updateCustomer = async (req, res) => {
 export const customerList = async (req, res) => {
     try {
         const { storeId } = req.params
-        console.log("Entre a customerList ", storeId)
+        //console.log("Entre a customerList ", storeId)
         if (!storeId) {
             throw new Error("StoreID is required");
         }
         const normalizeStoreID = storeId?.toUpperCase();
         const customerList = await Customer.find({ storeId: normalizeStoreID });
-        console.log("El listado de clientes es:", customerList);
+        //console.log("El listado de clientes es:", customerList);
         if (!customerList) {
             return res.status(400).json({ success: false, message: "Customer not found" });
         }

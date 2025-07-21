@@ -24,7 +24,7 @@ export default function ServiceDetails({ isOpen, onClose, service, setService, o
         const fetchStaff = async () => {
             try {
                 const response = await getStaffList(storeId);
-                console.log("Service staffList Response: ", response);
+                //console.log("Service staffList Response: ", response);
                 setStaffList(response.staffList);
             } catch (error) {
                 console.error('Error fetching quotes:', error);

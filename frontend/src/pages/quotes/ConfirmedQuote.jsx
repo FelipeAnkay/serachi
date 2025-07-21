@@ -3,7 +3,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { useState, useEffect, useRef } from 'react';
 import { useQuoteServices } from '../../store/quoteServices';
 import { useNavigate, useLocation } from "react-router-dom";
-import { Bed, CircleX, ConeIcon, Copy, MapPinCheckInside, MapPinPlus, Trash2 } from 'lucide-react';
+import { Bed, BookMarked, CircleX, ConeIcon, Copy, MapPinCheckInside, MapPinPlus, Trash2 } from 'lucide-react';
 import { useAuthStore } from '../../store/authStore';
 import { useExperienceServices } from '../../store/experienceServices';
 import toast from 'react-hot-toast';
@@ -166,7 +166,7 @@ export default function ConfirmedQuote() {
             const experiencePayload = {
                 name: experience
                     ? experience.name
-                    : `${fetchedCustomer.name} + ${(fetchedCustomer.lastName ? " " + fetchedCustomer.lastName : "")}`,
+                    : `${fetchedCustomer.name} + ${(fetchedCustomer.lastName ? " " + fetchedCustomer.lastName : "")} + From: ${formatDateDisplay(quote.dateIn)} to ${formatDateDisplay(quote.dateOut)}`,
                 storeId: quote.storeId,
                 userEmail: quote.userEmail,
                 customerEmail: quote.customerEmail,
@@ -203,6 +203,7 @@ export default function ConfirmedQuote() {
         setLoading(true)
         try {
             const reservationIds = [];
+            const fetchedCustomer = await fetchCustomer(quote);
 
             if (quote.roomList && quote.roomList.length > 0) {
                 for (const room of quote.roomList) {
@@ -228,13 +229,10 @@ export default function ConfirmedQuote() {
             // Verificar si ya existe una experiencia
             let experience = existingExperiences.find(exp => exp.quoteId === quote._id);
             //console.log("experience es: ", experience)
-            const formDateIn = new Date(quote.dateIn).toISOString().split("T")[0];
-            const formDateOut = new Date(quote.dateOut).toISOString().split("T")[0];
-
             const experiencePayload = {
                 name: experience
                     ? experience.name
-                    : `E: ${quote.customerEmail}`,
+                    : `${fetchedCustomer.name} + ${(fetchedCustomer.lastName ? " " + fetchedCustomer.lastName : "")} + From: ${formatDateDisplay(quote.dateIn)} to ${formatDateDisplay(quote.dateOut)}`,
                 storeId: quote.storeId,
                 userEmail: quote.userEmail,
                 customerEmail: quote.customerEmail,
@@ -277,6 +275,7 @@ export default function ConfirmedQuote() {
             const serviceIds = [];
             const formDateIn = new Date(quote.dateIn).toISOString().split("T")[0];
             const formDateOut = new Date(quote.dateOut).toISOString().split("T")[0];
+            const fetchedCustomer = await fetchCustomer(quote);
 
             for (const auxService of customServiceList) {
                 const servicePayload = {
@@ -300,7 +299,7 @@ export default function ConfirmedQuote() {
             const experiencePayload = {
                 name: experience
                     ? experience.name
-                    : `E: ${quote.customerEmail}`,
+                    : `${fetchedCustomer.name} + ${(fetchedCustomer.lastName ? " " + fetchedCustomer.lastName : "")} + From: ${formatDateDisplay(quote.dateIn)} to ${formatDateDisplay(quote.dateOut)}`,
                 storeId: quote.storeId,
                 userEmail: quote.userEmail,
                 customerEmail: quote.customerEmail,
@@ -438,6 +437,7 @@ export default function ConfirmedQuote() {
                                             return shouldShow;
                                         })
                                         .map((quote) => {
+                                            //  console.log("quoteId: ", quote._id)
                                             const alreadyExists = existingExperiences.some(
                                                 exp => exp.quoteId === quote._id && Array.isArray(exp.serviceList) && exp.serviceList.length > 0
                                             );

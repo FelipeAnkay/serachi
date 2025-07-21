@@ -66,7 +66,7 @@ export const verifyEmail = async (req, res) => {
         user.verificationToken = undefined;
         user.verificationTokenexpiresAt = undefined;
         await user.save();
-        console.log("User verified: ", user.email);
+        //console.log("User verified: ", user.email);
         const urlWelcome = process.env.CLIENT_URL + "/dashboard/";
         await sendWelcomeEmail(user.email, urlWelcome);
         res.status(200).json({
@@ -94,8 +94,8 @@ export const login = async (req, res) => {
         const user = await User.findOne({ email });
         const store = await Store.findOne({ storeId });
 
-        console.log("Usuario:", user);
-        console.log("Store:", store);
+        //console.log("Usuario:", user);
+        //console.log("Store:", store);
 
         if (!user || !store) {
             return res.status(400).json({ success: false, message: "Invalid credentials" });
@@ -151,10 +151,10 @@ export const forgotPassword = async (req, res) => {
         user.resetPasswordExpiresAt = resetTokenExpiresAt;
 
         await user.save();
-        console.log("usuario actualizado, accediendo al envío de mail");
+        //console.log("usuario actualizado, accediendo al envío de mail");
         const urlBase = process.env.CLIENT_URL + "/reset-password/" + resetToken;
         await sendForgotPasswordEmail(user.email, urlBase);
-        console.log("mail de reseteo enviado");
+        //console.log("mail de reseteo enviado");
 
         res.status(200).json({
             success: true,
@@ -234,7 +234,7 @@ export const checkAuth = async (req, res) => {
 }
 export const updateUser = async (req, res) => {
     const { email, ...updateFields } = req.body;
-    console.log("B: Entre a updateUser", email, " - ", updateFields)
+    //console.log("B: Entre a updateUser", email, " - ", updateFields)
     try {
         if (!email) {
             throw new Error("Id field is required");
@@ -282,14 +282,14 @@ export const getUserByEmail = async (req, res) => {
     try {
         //console.log("Entre a staffByEmail")
         const { email } = req.params
-        console.log("B: el storeID para staffByEmail es: ", email)
+        //console.log("B: el storeID para staffByEmail es: ", email)
         if (!email) {
             throw new Error("Email is required");
         }
         const userFound = await User.findOne({
             email: email,
         }).select('-password');
-        console.log("El listado de userList es:", userFound);
+        //console.log("El listado de userList es:", userFound);
         if (!userFound) {
             return res.status(200).json({ success: false, message: "userList not found" });
         }

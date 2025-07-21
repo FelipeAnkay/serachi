@@ -38,7 +38,7 @@ export const createCloseTab = async (req, res) => {
 
 export const updateCloseTab = async (req, res) => {
     const { id, ...updateFields } = req.body;
-    console.log("B: Llamado recibido con los siguientes parametros: ", req.body);
+    //console.log("B: Llamado recibido con los siguientes parametros: ", req.body);
     try {
         if (!id) {
             throw new Error("Id field is required");
@@ -48,7 +48,7 @@ export const updateCloseTab = async (req, res) => {
             new: true
         });
 
-        console.log("B: service encontrado ", closetab)
+        //console.log("B: service encontrado ", closetab)
 
         res.status(201).json({
             success: true,
@@ -110,14 +110,14 @@ export const getCloseTabByDates = async (req, res) => {
         const { storeId, date } = req.params;
         const normalizedStoreId = storeId?.toUpperCase();
 
-        console.log("Entre a getServiceByDates: ", normalizedStoreId, " - ", date);
+        //console.log("Entre a getServiceByDates: ", normalizedStoreId, " - ", date);
 
         const closetab = await closeTab.find({
             storeId: normalizedStoreId,
             date: { $lte: new Date(dateOut) },
         });
 
-        console.log("Respuesta de Service.find: ", closetab);
+        //console.log("Respuesta de Service.find: ", closetab);
 
         if (!closetab || closetab.length === 0) {
             return res.status(200).json({ success: false, message: "No services found in date range" });
