@@ -26,9 +26,10 @@ const SetCustomerView = () => {
 
 
     useEffect(() => {
+        //console.log("Entre al UseEffect")
         const token = searchParams.get('token');
         if (!token) {
-            //window.location.href = '/unauthorized';
+            window.location.href = '/unauthorized';
             return;
         }
 
@@ -38,6 +39,7 @@ const SetCustomerView = () => {
                 const today = new Date().toISOString().split('T')[0];
                 const res = await getDataToken(token);
                 const { customerEmail, endDate, storeId } = res.urlData;
+                //console.log("Info del token: ", customerEmail, endDate, storeId)
                 //console.log("endDate es: ", endDate)
                 //console.log("today es: ", today)
                 if (!customerEmail || !storeId || !(endDate >= today)) {
@@ -61,8 +63,10 @@ const SetCustomerView = () => {
                 setLoading(false)
             }
         };
-
-        fetchTokenData();
+        if (token) {
+            //console.log("Llamaré a Fetch")
+            fetchTokenData();
+        }
     }, [searchParams]);
 
 
