@@ -8,7 +8,7 @@ import { useAuthStore } from '../store/authStore';
 import { useStoreServices } from '../store/storeServices';
 
 export default function SendProfileModal({ isOpen, onClose, customerEmail }) {
-    const { generateToken } = useFormServices();
+    const { generateToken, getDataToken} = useFormServices();
     const { getCustomerEmail, sendProfileEmail } = useCustomerServices();
     const { user } = useAuthStore();
     const { store } = useStoreServices();
@@ -34,13 +34,18 @@ export default function SendProfileModal({ isOpen, onClose, customerEmail }) {
     }, [onClose])
 
 
-    const handleProfileSelectDate = async (endDate) => {
+    const handleProfileSelectDate = async (auxDate) => {
         try {
-            //console.log("Entre a handleSelectDate")
+            //console.log("Entre a handleSelectDate", auxDate)
             //console.log("fetchToken: ", experience.customerEmail)
             if (genToken) {
-                const auxToken = await generateToken(customer.customerEmail, endDate, store.storeId);
-                console.log("generateToken: ", auxToken);
+                //console.log("Entre a handleSelectDate - IF", {auxDate, customer})
+                const auxToken = await generateToken(customer.email, auxDate, store.storeId);
+                //console.log("generateToken: ", auxToken);
+                //const res = await getDataToken(auxToken.token);
+                //console.log("Res:", res)
+                //const { customerEmail, endDate, storeId } = res.urlData;
+                //console.log("Info del token: ", customerEmail, endDate, storeId)
                 setFormProfileData(prev => ({
                     ...prev,
                     urlToken: auxToken.token,
@@ -49,13 +54,14 @@ export default function SendProfileModal({ isOpen, onClose, customerEmail }) {
             }
 
         } catch (error) {
-            //console.log("Error fetching the token: ", error)
+            console.log("Error fetching the token: ", error)
             toast.error("Error fetching the token")
         }
     }
 
     useEffect(() => {
         const auxDay = selectedDate.toISOString().split('T')[0]
+        //console.log("Selected Date: ", auxDay)
         setFormProfileData(prev => ({
             ...prev,
             endDate: auxDay,
