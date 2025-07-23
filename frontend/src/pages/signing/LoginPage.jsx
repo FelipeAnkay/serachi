@@ -25,7 +25,7 @@ const LoginPage = () => {
       const normalizedStore = storeId.toUpperCase();
       await login(normalizedStore, email, password);
       //console.log("almacenando cookie", storeId);
-      Cookies.set('storeId', storeId);
+      Cookies.set('storeId', normalizedStore);
       const store = await getStoreById(storeId)
       //console.log ("La store encontrada es:", store)
       Cookies.set('timezone', store.store.timezone);
