@@ -85,9 +85,10 @@ const SetProduct = () => {
     const handleSave = async () => {
         try {
             //console.log("F: Voy a crear el siguiente producto: ", productData)
+            const storeUpper = storeId.toUpperCase();
             const payload = {
                 ...productData,
-                storeId: storeId,
+                storeId: storeUpper,
                 userId: user._id,
                 userEmail: user.email
             };
