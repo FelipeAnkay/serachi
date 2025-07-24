@@ -91,7 +91,7 @@ const HomePage = () => {
       setExcecutedServices(filterExcecuted)
     } catch (error) {
       console.log("Error fetching the services: ", error)
-      toast.error("Error fetching the services")
+      //toast.error("Error fetching the services")
     }
   }
 
@@ -103,7 +103,7 @@ const HomePage = () => {
 
     } catch (error) {
       console.log("Error fetching the staff: ", error)
-      toast.error("Error fetching the staff")
+      //toast.error("Error fetching the staff")
     }
   }
 
@@ -132,7 +132,7 @@ const HomePage = () => {
       setCustomerList(auxCustomerFullList.customerList)
     } catch (error) {
       console.log("Error fetching the customers: ", error)
-      toast.error("Error fetching the customers")
+      //toast.error("Error fetching the customers")
     }
   }
 
