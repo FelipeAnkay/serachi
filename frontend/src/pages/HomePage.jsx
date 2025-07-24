@@ -91,7 +91,7 @@ const HomePage = () => {
       setExcecutedServices(filterExcecuted)
     } catch (error) {
       console.log("Error fetching the services: ", error)
-      toast.error("Error fetching the services")
+      //toast.error("Error fetching the services")
     }
   }
 
@@ -103,7 +103,7 @@ const HomePage = () => {
 
     } catch (error) {
       console.log("Error fetching the staff: ", error)
-      toast.error("Error fetching the staff")
+      //toast.error("Error fetching the staff")
     }
   }
 
@@ -132,7 +132,7 @@ const HomePage = () => {
       setCustomerList(auxCustomerFullList.customerList)
     } catch (error) {
       console.log("Error fetching the customers: ", error)
-      toast.error("Error fetching the customers")
+      //toast.error("Error fetching the customers")
     }
   }
 
@@ -249,7 +249,7 @@ const HomePage = () => {
 
           <div className="grid md:grid-cols-2 gap-6">
             {/* QUOTES */}
-            {quoteList.length > 0 && (
+            {quoteList?.length > 0 && (
               <fieldset className="rounded-2xl border border-slate-500 p-4 shadow-inner">
                 <legend className="text-xl font-semibold text-[#00C49F] px-2">Quotes</legend>
                 <table className="w-full text-center mt-4">
@@ -278,7 +278,7 @@ const HomePage = () => {
             )}
 
             {/* SERVICES */}
-            {serviceList.length > 0 && (
+            {serviceList?.length > 0 && (
               <fieldset className="rounded-2xl border border-slate-500 p-4 shadow-inner">
                 <legend className="text-xl font-semibold text-[#00C49F] px-2">Services</legend>
                 <table className="w-full text-center mt-4">
@@ -303,7 +303,7 @@ const HomePage = () => {
                 </table>
 
                 {/* STAFF DIST */}
-                {staffDist.length > 0 && (
+                {staffDist?.length > 0 && (
                   <div className="mt-6">
                     <fieldset className="rounded-xl border border-slate-500 px-4 py-2">
                       <legend className="text-lg font-semibold text-[#00C49F] px-1">Executed by</legend>
