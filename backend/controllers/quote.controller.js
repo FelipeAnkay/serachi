@@ -7,7 +7,7 @@ export const createQuote = async (req, res) => {
     const { dateIn, dateOut, customerEmail, customerName, storeId, roomList, partnerId, productList, discount, finalPrice, taxes, grossPrice, currency, isConfirmed, isReturningCustomer, userEmail, userName, tag, source, customSource, sendEmail } = req.body;
     //console.log("B: createQuote data: ", dateIn ," - ", dateOut," - ",customerEmail," - ",customerName," - ",storeId," - ",roomId," - ",partnerId," - ",productList," - ",discount," - ",finalPrice," - ",currency," - ",isConfirmed," - ",isReturningCustomer," - ",userEmail," - ",userName," - "," - ",tag)
     try {
-        if (!dateIn || !dateOut || !customerEmail || !productList || !finalPrice || !storeId || !userEmail || !customerName || !userName) {
+        if (!dateIn || !dateOut || !customerEmail || ((!Array.isArray(productList) || productList.length === 0) && (!Array.isArray(roomList) || roomList.length === 0)) || !finalPrice || !storeId || !userEmail || !customerName || !userName) {
             throw new Error("All fields are required");
         }
 
@@ -59,7 +59,7 @@ export const createQuote = async (req, res) => {
 }
 
 export const updateQuote = async (req, res) => {
-    const { id, ...updateFields } = req.body;
+    const { id, sendEmail, ...updateFields } = req.body;
     try {
         if (!id) {
             throw new Error("Id field is required");
@@ -68,6 +68,17 @@ export const updateQuote = async (req, res) => {
         const quote = await Quote.findByIdAndUpdate(id, updateFields, {
             new: true
         });
+        console.log("sendEmail: ", {sendEmail})
+        const shouldSendEmail = sendEmail === true || sendEmail === 'true';
+        console.log("shouldSendEmail: ", {shouldSendEmail})
+        if (shouldSendEmail) {
+            
+            const { customerEmail, customerName, dateIn, dateOut, productList, roomList, discount, finalPrice, userEmail, userName, storeId } = req.body;
+            const normalizedStoreId = storeId?.toUpperCase();
+            const store = await Store.findOne({ storeId: normalizedStoreId })
+            console.log("B: Los datos para el envío de mail son: ", customerEmail," - ",customerName," - ",dateIn," - ",dateOut," - ",productList," - ",discount," - ",finalPrice," - ",userEmail," - ", userName," - ",store.name," - ",store.tcLink," - ",store.plan);
+            await sendQuoteEmail(customerEmail, customerName, dateIn, dateOut, productList, roomList, discount, finalPrice, userEmail, userName, store.name, store.tcLink, store.plan);
+        }
 
         res.status(201).json({
             success: true,
@@ -173,7 +184,7 @@ export const getQuoteByCheckout = async (req, res) => {
         const quoteList = await Quote.find({
             storeId: normalizeStoreID,
             isConfirmed: isConfirmed,
-            dateOut: {$gte: startOfToday },
+            dateOut: { $gte: startOfToday },
             status: { $ne: "archived" }
         });
         //console.log("quoteList: ", quoteList)
@@ -245,55 +256,55 @@ export const getMonthConfirmedQuotes = async (req, res) => {
 };
 
 export const getAnnualClosingRate = async (req, res) => {
-  try {
-    const { storeId } = req.params;
-    const normalizedStoreId = storeId?.toUpperCase();
+    try {
+        const { storeId } = req.params;
+        const normalizedStoreId = storeId?.toUpperCase();
 
-    const startOfYear = new Date(new Date().getFullYear(), 0, 1); // 1 de enero 00:00
-    const endOfToday = new Date();
-    endOfToday.setHours(23, 59, 59, 999); // hasta hoy
+        const startOfYear = new Date(new Date().getFullYear(), 0, 1); // 1 de enero 00:00
+        const endOfToday = new Date();
+        endOfToday.setHours(23, 59, 59, 999); // hasta hoy
 
-    // Total de quotes creadas este año
-    const totalQuotes = await Quote.countDocuments({
-      storeId: normalizedStoreId,
-      createdAt: { $gte: startOfYear, $lte: endOfToday },
-    });
+        // Total de quotes creadas este año
+        const totalQuotes = await Quote.countDocuments({
+            storeId: normalizedStoreId,
+            createdAt: { $gte: startOfYear, $lte: endOfToday },
+        });
 
-    // Quotes confirmadas este año
-    const confirmedQuotes = await Quote.countDocuments({
-      storeId: normalizedStoreId,
-      isConfirmed: true,
-      createdAt: { $gte: startOfYear, $lte: endOfToday },
-    });
+        // Quotes confirmadas este año
+        const confirmedQuotes = await Quote.countDocuments({
+            storeId: normalizedStoreId,
+            isConfirmed: true,
+            createdAt: { $gte: startOfYear, $lte: endOfToday },
+        });
 
-    const closingRate = totalQuotes > 0 ? confirmedQuotes / totalQuotes : 0;
+        const closingRate = totalQuotes > 0 ? confirmedQuotes / totalQuotes : 0;
 
-    return res.status(200).json({
-      success: true,
-      closingRate: closingRate.toFixed(4), // por ejemplo: 0.3548
-    });
-  } catch (error) {
-    return res.status(400).json({ success: false, message: error.message });
-  }
+        return res.status(200).json({
+            success: true,
+            closingRate: closingRate.toFixed(4), // por ejemplo: 0.3548
+        });
+    } catch (error) {
+        return res.status(400).json({ success: false, message: error.message });
+    }
 };
 
 export const deleteAllQuoteByUEmail = async (req, res) => {
-  try {
-    const { userEmail, storeId } = req.params;
-    const normalizedStoreId = storeId?.toUpperCase();
+    try {
+        const { userEmail, storeId } = req.params;
+        const normalizedStoreId = storeId?.toUpperCase();
 
-    // Construimos el filtro de búsqueda
-    const filter = { userEmail: userEmail, storeId: normalizedStoreId };
+        // Construimos el filtro de búsqueda
+        const filter = { userEmail: userEmail, storeId: normalizedStoreId };
 
-    const result = await Quote.deleteMany(filter);
+        const result = await Quote.deleteMany(filter);
 
-    res.status(200).json({
-      success: true,
-      message: `${result.deletedCount} Quote deleted`,
-    });
-  } catch (error) {
-    return res
-      .status(400)
-      .json({ success: false, message: error.message });
-  }
+        res.status(200).json({
+            success: true,
+            message: `${result.deletedCount} Quote deleted`,
+        });
+    } catch (error) {
+        return res
+            .status(400)
+            .json({ success: false, message: error.message });
+    }
 };

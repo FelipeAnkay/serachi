@@ -77,48 +77,7 @@ export default function CustomAgendaCalendar({
 
     return groups;
   }, [events, selectedDate, viewMode, startDate, endDate]);
-  /*
 
-const groupedEvents = useMemo(() => {
-  //console.log("Llamado a groupedEvents:")
-  console.log("Intervalo visible:", { startDate, endDate });
-  console.log("Eventos raw:", events.map(e => ({ start: e.start, end: e.end,title: e.title })));
-  const filtered = events.filter((e) => {
-    const start = typeof e.start === 'string' ? parseISO(e.start) : e.start;
-    return isWithinInterval(start, { start: startDate, end: endDate });
-  });
-  console.log("Eventos dentro del intervalo:", filtered.map(e => ({ start: e.start, title: e.title })));
-  const groups = {};
-  filtered.forEach((event) => {
-    const originalStartUTC = typeof event.start === 'string' ? parseISO(event.start) : event.start;
-    const originalEndUTC = typeof event.end === 'string' ? parseISO(event.end) : event.end;
-    //console.log("originalStartUTC", originalStartUTC)
-    // Convertir fechas UTC a zona horaria local
-    const originalStart = toZonedTime(originalStartUTC, timeZone);
-    const originalEnd = toZonedTime(originalEndUTC, timeZone);
-    //console.log("originalStart", originalStart)
-    const dateOnly = new Date(
-      originalStart.getFullYear(),
-      originalStart.getMonth(),
-      originalStart.getDate()
-    );
-
-    //console.log("dateOnly", dateOnly)
-
-    const dateKey = format(dateOnly, 'yyyy-MM-dd');
-    const hourKey = format(originalStart, 'HH:mm');
-    const staffKey = event.staffName || event.staffEmail || 'NO STAFF';
-
-    if (!groups[dateKey]) groups[dateKey] = {};
-    if (!groups[dateKey][hourKey]) groups[dateKey][hourKey] = {};
-    if (!groups[dateKey][hourKey][staffKey]) groups[dateKey][hourKey][staffKey] = [];
-
-    groups[dateKey][hourKey][staffKey].push({ ...event, start: originalStart, end: originalEnd });
-  });
-
-  return groups;
-}, [events, selectedDate, viewMode]);
-*/
   const handlePrev = () => {
     const newDate = viewMode === 'month'
       ? new Date(selectedDate.getFullYear(), selectedDate.getMonth() - 1, 1)
@@ -127,6 +86,14 @@ const groupedEvents = useMemo(() => {
     if (viewMode === 'month') {
       const endOfNewMonth = new Date(newDate.getFullYear(), newDate.getMonth() + 1, 0, 23, 59, 59, 999);
       onMonthChange && onMonthChange(newDate, endOfNewMonth);
+    }
+    if (viewMode === 'week') {
+      // Obtenemos inicio y fin reales de la semana
+      const newStart = startOfWeek(newDate, { weekStartsOn: 1 });
+      const newEnd = endOfWeek(newDate, { weekStartsOn: 1 });
+
+      // Llamamos onMonthChange como si fuera onDateRangeChange
+      onMonthChange && onMonthChange(newStart, newEnd);
     }
   };
 
@@ -138,6 +105,14 @@ const groupedEvents = useMemo(() => {
     if (viewMode === 'month') {
       const endOfNewMonth = new Date(newDate.getFullYear(), newDate.getMonth() + 1, 0, 23, 59, 59, 999);
       onMonthChange && onMonthChange(newDate, endOfNewMonth);
+    }
+    if (viewMode === 'week') {
+      // Obtenemos inicio y fin reales de la semana
+      const newStart = startOfWeek(newDate, { weekStartsOn: 1 });
+      const newEnd = endOfWeek(newDate, { weekStartsOn: 1 });
+
+      // Llamamos onMonthChange como si fuera onDateRangeChange
+      onMonthChange && onMonthChange(newStart, newEnd);
     }
   };
 
@@ -162,6 +137,14 @@ const groupedEvents = useMemo(() => {
           todayRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
       }, 1200);
+    }
+    if (viewMode === 'week') {
+      // Obtenemos inicio y fin reales de la semana
+      const newStart = startOfWeek(newDate, { weekStartsOn: 1 });
+      const newEnd = endOfWeek(newDate, { weekStartsOn: 1 });
+
+      // Llamamos onMonthChange como si fuera onDateRangeChange
+      onMonthChange && onMonthChange(newStart, newEnd);
     }
   }, []);
 

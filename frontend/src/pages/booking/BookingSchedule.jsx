@@ -10,7 +10,7 @@ import { useRoomServices } from "../../store/roomServices";
 import Cookies from 'js-cookie';
 import toast from "react-hot-toast";
 import LoadingSpinner from "../../components/LoadingSpinner";
-import { formatDateInput, formatDateDisplay } from '../../components/formatDateDisplay';
+import { formatDateInput, formatDateDisplay, formatDateISONoHours } from '../../components/formatDateDisplay';
 
 const localizer = momentLocalizer(moment);
 
@@ -44,11 +44,17 @@ export default function BookingSchedule() {
                     const auxCustomer = await getCustomerEmail(res.customerEmail, storeId)
                     const customer = auxCustomer.customerList[0]
                     //console.log("Respuesta de getRoomById: ", room)
+
+                    const rawDateIn = res.dateIn
+                    const rawDateOut = res.dateOut
+                    const name = customer.name
+                    //console.log("RAW dates: ", { rawDateIn, rawDateOut, name })
+
                     return {
                         id: res._id,
                         title: `${room.name} - ${customer.name}  - Beds: ${res.bedsReserved}`,
-                        start: new Date(res.dateIn),
-                        end: new Date(res.dateOut),
+                        start: new Date(rawDateIn),
+                        end: new Date(rawDateOut),
                         customerEmail: res.customerEmail,
                     };
                 })
@@ -100,7 +106,7 @@ export default function BookingSchedule() {
                 dateIn: selectedReservation.start,
                 dateOut: selectedReservation.end,
             };
-            console.log("Update Room: ", {selectedReservation, updated})
+            //console.log("Update Room: ", { selectedReservation, updated })
             await updateRoomReservation(selectedReservation.id, updated);
             window.scrollTo({ top: 0, behavior: 'smooth' });
             toast.success("Reservation updated")
@@ -227,19 +233,19 @@ export default function BookingSchedule() {
                             date={selectedDate}
                             className="rounded-md"
                             eventPropGetter={(event) => {
-                                    const color = '#118290'
-                                    const id = event.resource?._id || event.title;
-                                    return {
-                                        'data-id': `event-${id}`,
-                                        style: {
-                                            backgroundColor: color,
-                                            color: "white",
-                                            borderRadius: "0.375rem", // equivalente a rounded-md
-                                            paddingLeft: "0.5rem",    // equivalente a px-2
-                                            paddingRight: "0.5rem",
-                                        },
-                                    };
-                                }}
+                                const color = '#118290'
+                                const id = event.resource?._id || event.title;
+                                return {
+                                    'data-id': `event-${id}`,
+                                    style: {
+                                        backgroundColor: color,
+                                        color: "white",
+                                        borderRadius: "0.375rem", // equivalente a rounded-md
+                                        paddingLeft: "0.5rem",    // equivalente a px-2
+                                        paddingRight: "0.5rem",
+                                    },
+                                };
+                            }}
                         />
                     </div>
 

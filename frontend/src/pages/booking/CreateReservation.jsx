@@ -242,8 +242,8 @@ export default function CreateReservation() {
                 bedsReserved: adjustedQty,
                 roomUnitaryPrice: (room?.price || 0),
                 roomFinalPrice: finalPrice,
-                roomDateIn: isNaN(startDate) ? '' : startDate.toISOString(),
-                roomDateOut: isNaN(endDate) ? '' : endDate.toISOString(),
+                roomDateIn: isNaN(startDate) ? '' : startDate.toISOString().split('T')[0],
+                roomDateOut: isNaN(endDate) ? '' : endDate.toISOString().split('T')[0],
                 roomNights: nights
             };
         });
@@ -342,13 +342,13 @@ export default function CreateReservation() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         const auxDateIn = reservation.dateIn;
-         const auxDateOut = reservation.dateOut;
-         const auxEmail = reservation.customerEmail;
-         const auxStore = reservation.storeId;
-         const userEmail = reservation.userEmail;
-        console.log("Datos submit: ", {auxDateIn,auxDateOut ,auxEmail, auxStore, userEmail})
+        const auxDateOut = reservation.dateOut;
+        const auxEmail = reservation.customerEmail;
+        const auxStore = reservation.storeId;
+        const userEmail = reservation.userEmail;
+        // console.log("Datos submit: ", {auxDateIn,auxDateOut ,auxEmail, auxStore, userEmail})
         if (!reservation.dateIn || !reservation.dateOut || !reservation.customerEmail || !reservation.storeId || !reservation.userEmail) {
-            
+
             toast.error('Please fill all the mandatory data.');
             return;
         }
@@ -368,13 +368,14 @@ export default function CreateReservation() {
                 isPaid: reservation.isPaid,
             }));
             //console.log("El payload es: ", reservationPayloadList)
-            
+
             //console.log("selectedExperience: ", selectedExperience)
             let actualReservationList = []
             if (selectedExperience?.value) {
                 actualReservationList = [...(selectedExperience.experience.bookList || [])]
             }
             for (const res of reservationPayloadList) {
+                //console.log("Payload to create reservation: ", {res})
                 const auxRes = await createRoomReservation(res);
                 actualReservationList.push(auxRes.service._id)
             }
@@ -463,7 +464,7 @@ export default function CreateReservation() {
             if (customerPayload._id) {
                 // El cliente ya existe: actualizar
                 //console.log("F: entré a modificar");
-                await updateCustomer(customerPayload.email, customerPayload); // Asegúrate de tener esta función
+                await updateCustomer(customerPayload.email, storeId, customerPayload); // Asegúrate de tener esta función
                 toast.success("Customer updated successfully");
             } else {
                 // Crear nuevo cliente

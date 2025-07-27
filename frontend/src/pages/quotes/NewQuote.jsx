@@ -24,6 +24,7 @@ export default function NewQuote() {
     const { quoteId } = useParams();
     const storeId = Cookies.get('storeId');
     const clone = Cookies.get('clone');
+    const editConfirmed = Cookies.get('editConfirmed');
     const { user } = useAuthStore();
     const { store } = useStoreServices();
     const { getCustomerEmail, createCustomer, updateCustomer } = useCustomerServices();
@@ -56,6 +57,7 @@ export default function NewQuote() {
     const [isPeopleLock, setIsPeopleLock] = useState(false);
     const hasInteractedWithToggle = useRef(false);
     let roomType = "";
+    const [isQuoteConfirmed, setIsQuoteConfirmed] = useState(false)
 
     const roomFill = (roomList) => {
         setSelectedRooms(roomList);
@@ -245,6 +247,10 @@ export default function NewQuote() {
                     Cookies.remove('clone')
                 } else {
                     quoteFill(response);
+                }
+                if (editConfirmed) {
+                    setIsQuoteConfirmed(true);
+                    Cookies.remove('editConfirmed')
                 }
                 //console.log("F: Estoy en useEffect-productList:", response.productList)
                 if (response.productList && response.productList.length > 0) {
@@ -512,6 +518,7 @@ export default function NewQuote() {
                 window.scrollTo({ top: 0, behavior: 'smooth' });
                 toast.success('Quote Created');
             } else {
+                console.log("Quote: ", quote)
                 await updateQuote(quote._id, quote);
                 window.scrollTo({ top: 0, behavior: 'smooth' });
                 toast.success('Quote Updated');
@@ -595,7 +602,7 @@ export default function NewQuote() {
             if (customerPayload._id) {
                 // El cliente ya existe: actualizar
                 //console.log("F: entré a modificar");
-                await updateCustomer(customerPayload.email, customerPayload); // Asegúrate de tener esta función
+                await updateCustomer(customerPayload.email, storeId, customerPayload); // Asegúrate de tener esta función
                 toast.success("Customer updated successfully");
             } else {
                 // Crear nuevo cliente
@@ -1323,15 +1330,21 @@ export default function NewQuote() {
                         {/* Botones */}
                         <div className="flex flex-col sm:flex-row gap-4 mt-6 justify-center">
                             <button type="submit" className="bg-[#118290] hover:bg-[#0d6c77] text-cyan-50 px-4 py-2 rounded">
-                                Create Quote
+                                {isQuoteConfirmed ? (
+                                    <p>Edit Quote</p>
+                                ):(
+                                    <p>Create Quote</p>
+                                )}
                             </button>
-                            <button
-                                type="button"
-                                className="bg-slate-600 hover:bg-slate-700 text-cyan-50 px-4 py-2 rounded"
-                                onClick={handleReset}
-                            >
-                                Reset Quote
-                            </button>
+                            {!isQuoteConfirmed && (
+                                <button
+                                    type="button"
+                                    className="bg-slate-600 hover:bg-slate-700 text-cyan-50 px-4 py-2 rounded"
+                                    onClick={handleReset}
+                                >
+                                    Reset Quote
+                                </button>
+                            )}
                         </div>
                     </fieldset>
                 </form >
