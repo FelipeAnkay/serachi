@@ -3,7 +3,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { useState, useEffect, useRef } from 'react';
 import { useQuoteServices } from '../../store/quoteServices';
 import { useNavigate, useLocation } from "react-router-dom";
-import { Bed, BookMarked, CircleX, ConeIcon, Copy, MapPinCheckInside, MapPinPlus, Trash2 } from 'lucide-react';
+import { Bed, BookMarked, CircleX, ConeIcon, Copy, MapPinCheckInside, MapPinPlus, Pencil, Trash2 } from 'lucide-react';
 import { useAuthStore } from '../../store/authStore';
 import { useExperienceServices } from '../../store/experienceServices';
 import toast from 'react-hot-toast';
@@ -14,7 +14,7 @@ import { useCustomerServices } from '../../store/customerServices';
 import { useRoomReservationServices } from '../../store/roomReservationServices';
 import ProductSelect from '../../components/ProductSelect';
 import { createCustomServices } from '../../components/createCustomService'
-import { formatDateDisplay, formatDateShort, formatDateInput, formatDateISO, formatDateTimeDisplayHours } from '../../components/formatDateDisplay'
+import { formatDateDisplay, formatDateShort, formatDateInput, formatDateISO, formatDateTimeDisplayHours, formatDateISONoHours } from '../../components/formatDateDisplay'
 import LoadingSpinner from '../../components/LoadingSpinner';
 
 export default function ConfirmedQuote() {
@@ -49,6 +49,11 @@ export default function ConfirmedQuote() {
 
     const handleCloneClick = (quoteId) => {
         Cookies.set('clone', true)
+        navigate(`/new-quote/${quoteId}`);
+    };
+
+    const handleQuoteClick = (quoteId) => {
+        Cookies.set('editConfirmed', true)
         navigate(`/new-quote/${quoteId}`);
     };
 
@@ -207,19 +212,21 @@ export default function ConfirmedQuote() {
 
             if (quote.roomList && quote.roomList.length > 0) {
                 for (const room of quote.roomList) {
+                    const auxDateIn = new Date(room.roomDateIn)
+                    const auxDateOut = new Date(room.roomDateOut)
                     const reservationPayload = {
                         roomId: room.roomId,
                         quoteId: quote._id,
                         customerEmail: quote.customerEmail,
                         storeId: quote.storeId,
-                        dateIn: room.roomDateIn,
-                        dateOut: room.roomDateOut,
+                        dateIn: auxDateIn.toISOString().split('T')[0],
+                        dateOut: auxDateOut.toISOString().split('T')[0],
                         bedsReserved: room.Qty,
                         userEmail: quote.userEmail,
                         roomUnitaryPrice: room.roomUnitaryPrice,
                         roomFinalPrice: room.roomFinalPrice,
                     };
-
+                    //console.log("reservationPayload: ", {reservationPayload})
                     const reservation = await createRoomReservation(reservationPayload);
                     //console.log("reservation: ", reservation)
                     reservationIds.push(reservation.service._id);
@@ -480,6 +487,19 @@ export default function ConfirmedQuote() {
                                                                 <span>Clone Quote</span>
                                                             </div>
                                                         </motion.button>
+                                                        <motion.button
+                                                            type='button'
+                                                            whileHover={{ scale: 1.05 }}
+                                                            whileTap={{ scale: 0.95 }}
+                                                            onClick={() => handleQuoteClick(quote._id)}
+                                                            className={`w-full py-3 px-4 bg-[#118290] hover:bg-[#0d6c77] text-cyan-50 font-bold rounded-lg shadow-lg
+                                                         focus:ring-offset-1 focus:ring-offset-cyan-900 ${alreadyExists ? "sm:w-1/4 sm:self-end" : ""}`}
+                                                        >
+                                                            <div className='flex flex-col justify-center items-center'>
+                                                                <Pencil />
+                                                                <span>Edit Quote</span>
+                                                            </div>
+                                                        </motion.button>
                                                         {(quote.roomList?.length > 0 && !reservationAlreadyExists) && (
                                                             <motion.button
                                                                 type='button'
@@ -522,7 +542,7 @@ export default function ConfirmedQuote() {
                                                                 >
                                                                     <div className='flex flex-col justify-center items-center text-sm sm:text-base'>
                                                                         <MapPinPlus />
-                                                                        <span>Create Custom Experience</span>
+                                                                        <span>Custom Experience</span>
                                                                     </div>
                                                                 </motion.button>
                                                             </>

@@ -8,7 +8,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 
 
 export default function UserAddressBookModal({ onClose }) {
-    const { customerList, getCustomerList } = useCustomerServices();
+    const { customerList, getCustomerList, updateCustomer} = useCustomerServices();
     const [query, setQuery] = useState('');
     const [customerData, setCustomerData] = useState({});
     const [modalOpen, setModalOpen] = useState(false);

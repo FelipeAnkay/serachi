@@ -9,18 +9,24 @@ export const createRoomReservation = async (req, res) => {
             throw new Error("All fields are required");
         }
 
+        const toLocalMidnight = (str) => {
+            // Partimos del string y lo dividimos a mano para evitar UTC
+            const [year, month, day] = str.split("-").map(Number);
+            return new Date(year, month - 1, day); // ✅ Esto es medianoche local
+        };
+
         const roomReservation = new RoomReservation({
             roomId,
             quoteId,
             customerEmail,
             storeId: storeId?.toUpperCase(),
-            dateIn,
-            dateOut,
+            dateIn: toLocalMidnight(dateIn),
+            dateOut: toLocalMidnight(dateOut),
             bedsReserved,
             roomUnitaryPrice,
             roomFinalPrice,
             userEmail
-        })
+        });
 
         await roomReservation.save();
 
@@ -333,22 +339,22 @@ export const getReservationById = async (req, res) => {
     }
 }
 export const deleteAllRResByUEmail = async (req, res) => {
-  try {
-    const { userEmail, storeId } = req.params;
-    const normalizedStoreId = storeId?.toUpperCase();
+    try {
+        const { userEmail, storeId } = req.params;
+        const normalizedStoreId = storeId?.toUpperCase();
 
-    // Construimos el filtro de búsqueda
-    const filter = { userEmail: userEmail, storeId: normalizedStoreId };
+        // Construimos el filtro de búsqueda
+        const filter = { userEmail: userEmail, storeId: normalizedStoreId };
 
-    const result = await RoomReservation.deleteMany(filter);
+        const result = await RoomReservation.deleteMany(filter);
 
-    res.status(200).json({
-      success: true,
-      message: `${result.deletedCount} RoomReservation deleted`,
-    });
-  } catch (error) {
-    return res
-      .status(400)
-      .json({ success: false, message: error.message });
-  }
+        res.status(200).json({
+            success: true,
+            message: `${result.deletedCount} RoomReservation deleted`,
+        });
+    } catch (error) {
+        return res
+            .status(400)
+            .json({ success: false, message: error.message });
+    }
 };
