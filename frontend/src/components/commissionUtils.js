@@ -46,6 +46,7 @@ export const calculateCommission = (services, payrates) => {
   //console.log("In calculateCommission grouped is:", grouped);
 
   for (const key in grouped) {
+    //console.log("Key to analize: ", { key })
     const [staffEmail, productId] = key.split("_");
     const matchingRates = payrates
       .filter(p =>
@@ -60,7 +61,6 @@ export const calculateCommission = (services, payrates) => {
     let totalCommission = 0;
     let matchedFeeRules = [];
     //console.log("In calculateCommission groupServicesByKey is:", groupServicesByKey);
-    //console.log("In calculateCommission matchingRates are: ", matchingRates);
     let i = 0;
     let x = 0;
     let y = 0;
@@ -68,10 +68,11 @@ export const calculateCommission = (services, payrates) => {
     let commissionsTimeframe = [];
     for (const pr of matchingRates) {
       let commissionForThisRate = 0;
-      //console.log("tfGroups: ", tfGroups)
+      //console.log("Payrate to analize: ", { pr })
       for (const rule of pr.feeRules) {
+        //console.log("Rule to analize: ", { rule })
         const tfGroups = groupServices(groupServicesByKey, rule.timeframe);
-        //console.log("tfGroups 2: ", { tfGroups, rule })
+        //console.log("tfGroups: ", { tfGroups })
         const auxROperator = rule.operator;
         const auxRvalue = rule.value;
         const auxFee = rule.fee;
@@ -81,15 +82,27 @@ export const calculateCommission = (services, payrates) => {
           commissionForThisRate = 0;
         }
         for (const tfKey in tfGroups) {
+          //console.log("La tfKey es: ", { tfKey })
           const count = tfGroups[tfKey].length;
           //console.log("Comparativa y valor: ", { i, x, y, count, auxROperator, auxRvalue, auxFee })
           if (compare(count, rule.operator, rule.value)) {
             if (auxTimeframe != rule.timeframe) {
               matchedFeeRules.push(rule);
             }
+            let auxValue = rule.value
+            let auxFee = rule.fee
+            let auxROperator = rule.operator
             auxCount = count;
             auxTimeframe = rule.timeframe
-            commissionForThisRate += count * rule.fee;
+            //console.log("REGLA ENCONTRADA!: ", { tfKey, auxCount, auxROperator, auxValue, auxTimeframe, auxFee, commissionForThisRate })
+            if (auxROperator === '=') {
+              commissionForThisRate += rule.fee;
+            }
+            if (auxROperator === '>' || auxROperator === '<' || auxROperator === '>=' || auxROperator === '<=') {
+              commissionForThisRate += count * rule.fee;
+            }
+
+            //console.log("NUEVA COMISION: ", { commissionForThisRate })
           }
           y++;
         }
@@ -106,7 +119,7 @@ export const calculateCommission = (services, payrates) => {
       }
       i++;
     }
-
+    //console.log("Las comisiones por timeframe son: ", {commissionsTimeframe});
     const filtered = commissionsTimeframe.filter(
       (c) => c.auxTimeframe && c.commissionForThisRate > 0
     );
@@ -116,12 +129,22 @@ export const calculateCommission = (services, payrates) => {
       curr.commissionForThisRate < min.commissionForThisRate ? curr : min
       , { auxTimeframe: null, commissionForThisRate: Infinity });
 
-    //console.log("Menor comisión encontrada:", {staffEmail, minCommissionObj});
+    //console.log("Menor comisión encontrada:", { staffEmail, minCommissionObj });
+
+    const sumCommissionValue = filtered.reduce((sum, curr) =>
+      sum + (curr.commissionForThisRate || 0), 0);
+
+    const sumCommissionObj = {
+      auxTimeframe: filtered.length > 0 ? "SUM" : null, // o puedes usar cualquier valor simbólico
+      commissionForThisRate: sumCommissionValue
+    };
+
+    //console.log("Suma de comisiones encontradas:", { staffEmail, sumCommissionObj });
 
     result.push({
       staffEmail,
       productId,
-      totalCommission: minCommissionObj.auxTimeframe ? minCommissionObj.commissionForThisRate : 0,
+      totalCommission: sumCommissionObj.auxTimeframe ? sumCommissionObj.commissionForThisRate : 0,
       feeRules: matchedFeeRules,
     });
   }

@@ -47,7 +47,7 @@ export default function ViewSignedForms({ forms, isOpen, onClose }) {
 
     return (
         <motion.div
-            className="fixed inset-0 bg-black/95 flex items-center justify-center z-50"
+            className="fixed inset-0 bg-black/95 flex items-center justify-center z-10"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -110,7 +110,7 @@ export default function ViewSignedForms({ forms, isOpen, onClose }) {
                             exit={{ opacity: 0 }}
                         >
                             <motion.div
-                                className="bg-white text-black rounded-2xl max-w-3xl w-full p-6 overflow-y-auto max-h-[90vh] relative"
+                                className="bg-white text-black rounded-2xl max-w-3xl w-full p-6 overflow-y-auto h-[90%] relative"
                                 initial={{ scale: 0.8 }}
                                 animate={{ scale: 1 }}
                                 exit={{ scale: 0.8 }}

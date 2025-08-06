@@ -32,7 +32,7 @@ export default function ExperienceModal({ isOpen, onClose, experience, setExperi
     });
 
     useEffect(() => {
-        console.log("Entre a ExperienceModal: ", { storeId, userEmail })
+        //console.log("Entre a ExperienceModal: ", { storeId, userEmail })
         if (experience) {
             setExperiencePayload((prev) => ({
                 ...prev,
@@ -85,6 +85,7 @@ export default function ExperienceModal({ isOpen, onClose, experience, setExperi
                 setExperiencePayload((prev) => ({
                     ...prev,
                     customerEmail: found[0].email,
+                    name: 'E: ' + found[0].name
                 }));
                 const auxQuotes = await getQuoteByCustomerEmail(found[0].email, storeId);
                 console.log("auxQuotes: ", auxQuotes);
@@ -236,6 +237,7 @@ export default function ExperienceModal({ isOpen, onClose, experience, setExperi
                                     setExperiencePayload((prev) => ({
                                         ...prev,
                                         customerEmail: e.target.value,
+                                        name: 'E: ' + e.target.value
                                     }))
                                 }
                                 onKeyDown={(e) => {
@@ -301,13 +303,15 @@ export default function ExperienceModal({ isOpen, onClose, experience, setExperi
                                     <div className="flex justify-center">
                                         <DateRangePicker
                                             value={{ start: experiencePayload.dateIn, end: experiencePayload.dateOut }}
-                                            onChange={({ start, end }) =>
+                                            onChange={({ start, end }) => {
+                                                let prevName = 'E: ' + (customer.name || '')
                                                 setExperiencePayload((prev) => ({
                                                     ...prev,
                                                     dateIn: start,
-                                                    dateOut: end
+                                                    dateOut: end,
+                                                    name: prevName + ' - from: ' + formatDateShort(start) + ' to ' + formatDateShort(end)
                                                 }))
-                                            }
+                                            }}
                                         />
                                     </div>
                                 </div>
@@ -353,13 +357,23 @@ export default function ExperienceModal({ isOpen, onClose, experience, setExperi
                                 />
                             </div>
                         )}
-                        <button
-                            className="bg-[#118290] hover:bg-[#0d6c77] text-cyan-50 px-4 py-2 rounded w-full mt-4"
-                            type="button"
-                            onClick={handleCreateExperience}
-                        >
-                            Create Experience
-                        </button>
+                        {customer.name ? (
+                            <button
+                                className="bg-[#118290] hover:bg-[#0d6c77] text-cyan-50 px-4 py-2 rounded w-full mt-4"
+                                type="button"
+                                onClick={handleCreateExperience}
+                            >
+                                Create Experience
+                            </button>
+                        ) : (
+                            <button
+                                className="bg-slate-500 text-cyan-50 px-4 py-2 rounded w-full mt-4"
+                                type="button"
+                                disabled
+                            >
+                                Please find a customer
+                            </button>
+                        )}
                     </div>
                 </motion.div>
             </motion.div>
