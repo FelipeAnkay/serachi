@@ -80,7 +80,7 @@ const Agenda = () => {
 
         try {
             //setLoading(true);
-            //console.log("La llamada de getServiceById ", { startDate, endDate });
+            //console.log("La llamada de getServicesForCalendar ", { startDate, endDate, storeId});
             const serviceDetail = await getServicesForCalendar(startDate, endDate, storeId);
             //console.log("La respuesta de getServicesForCalendar ", serviceDetail);
             let lastDay = new Date();
@@ -99,8 +99,9 @@ const Agenda = () => {
                 const auxServiceList = serviceDetail.serviceList
                     .map((serv) => {
                         const staff = staffList.find(s => s.email === serv.staffEmail);
-                        const name = staff.name || "NO STAFF ASSIGNED"
-                        const color = staff.color || "#EF9A9A"
+                        //console.log("El staff es: ", {staff})
+                        const name = staff ? staff.name : "NO STAFF ASSIGNED"
+                        const color = staff ? staff.color : "#EF9A9A"
                         return {
                             ...serv,
                             staffName: name,
@@ -143,7 +144,7 @@ const Agenda = () => {
             setLoadedRange({ start: startDate, end: endDate });
         } catch (error) {
             toast.error("Theres no services for this month")
-            //console.log("El error es: ", error)
+            console.log("El error es: ", error)
             setEvents([]);
         } finally {
             //setLoading(false);

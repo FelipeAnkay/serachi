@@ -88,7 +88,7 @@ const PRCalculator = () => {
             setSummary(summaryData);
             setTableVisible(true);
         } catch (error) {
-            //console.error("Error fetching data:", error);
+            console.error("Error fetching data:", error);
             toast.error("Error Calculating Commission")
         } finally {
             setLoading(false);

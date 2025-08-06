@@ -40,15 +40,18 @@ const MonthlyCashFlow = () => {
         //console.log("El dateRange es: ", dateRange)
         const start = `${selectedYear}-01-01`;
         const end = `${selectedYear}-12-31`;
+        
         const [incomes, expenses] = await Promise.all([
             getIncomeByDates(start, end, storeId),
             getExpenseByDates(start, end, storeId)
         ])
+        //console.log('selectedYear: ', selectedYear)
         const auxStore = store;
         //console.log("auxStore: ", auxStore);
-        const openingBalanceEntry = auxStore.store?.openningBalance?.find(
+        const openingBalanceEntry = auxStore?.openningBalance?.find(
             entry => parseInt(entry.year) === selectedYear
         );
+        //console.log("openingBalanceEntry: ", openingBalanceEntry)
         const openingBalance = openingBalanceEntry?.amount || 0;
 
         setStoreData(auxStore.storeList)
