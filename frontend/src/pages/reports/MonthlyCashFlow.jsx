@@ -40,7 +40,7 @@ const MonthlyCashFlow = () => {
         //console.log("El dateRange es: ", dateRange)
         const start = `${selectedYear}-01-01`;
         const end = `${selectedYear}-12-31`;
-        
+
         const [incomes, expenses] = await Promise.all([
             getIncomeByDates(start, end, storeId),
             getExpenseByDates(start, end, storeId)
@@ -66,10 +66,15 @@ const MonthlyCashFlow = () => {
         const data = {};
         const monthList = new Set();
         const expenseTypeSet = new Set();
-
+        let firstTime = true
+        /*
+                const getMonthKey = (dateStr) => {
+                    const date = new Date(dateStr);
+                    return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+                };*/
         const getMonthKey = (dateStr) => {
             const date = new Date(dateStr);
-            return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+            return `${date.getUTCFullYear()}-${String(date.getUTCMonth() + 1).padStart(2, '0')}`;
         };
 
         // Procesar ingresos
