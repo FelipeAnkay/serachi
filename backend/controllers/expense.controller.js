@@ -98,11 +98,20 @@ export const getExpenseByDates = async (req, res) => {
     try {
         const { dateStart, dateEnd, storeId } = req.params;
         const normalizedStoreId = storeId?.toUpperCase();
+
+        // Crear fecha de inicio: 00:00:00.000
+        const startDate = new Date(dateStart);
+        startDate.setUTCHours(0, 0, 0, 0);
+
+        // Crear fecha de término: 23:59:59.999
+        const endDate = new Date(dateEnd);
+        endDate.setUTCHours(23, 59, 59, 999);
+
         const expenseList = await Expense.find({
             storeId: normalizedStoreId,
             date: {
-                $gte: new Date(dateStart),
-                $lte: new Date(dateEnd)
+                $gte: startDate,
+                $lte: endDate,
             },
         });
 
@@ -116,22 +125,22 @@ export const getExpenseByDates = async (req, res) => {
 }
 
 export const deleteAllExpenseByUEmail = async (req, res) => {
-  try {
-    const { userEmail, storeId } = req.params;
-    const normalizedStoreId = storeId?.toUpperCase();
+    try {
+        const { userEmail, storeId } = req.params;
+        const normalizedStoreId = storeId?.toUpperCase();
 
-    // Construimos el filtro de búsqueda
-    const filter = { userEmail: userEmail, storeId: normalizedStoreId };
+        // Construimos el filtro de búsqueda
+        const filter = { userEmail: userEmail, storeId: normalizedStoreId };
 
-    const result = await Expense.deleteMany(filter);
+        const result = await Expense.deleteMany(filter);
 
-    res.status(200).json({
-      success: true,
-      message: `${result.deletedCount} Expense deleted`,
-    });
-  } catch (error) {
-    return res
-      .status(400)
-      .json({ success: false, message: error.message });
-  }
+        res.status(200).json({
+            success: true,
+            message: `${result.deletedCount} Expense deleted`,
+        });
+    } catch (error) {
+        return res
+            .status(400)
+            .json({ success: false, message: error.message });
+    }
 };

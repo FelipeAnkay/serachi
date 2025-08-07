@@ -89,7 +89,7 @@ export const useIncomeServices = create((set) => ({
         try {
             const formattedDateIn = formatDateISO(start);
             const formattedDateOut = formatDateISO(end);
-            //console.log("F: Llamado a getStaffList");
+            console.log("New formatted dates: ", {formattedDateIn, formattedDateOut});
             const response = await axios.get(`${URL_API}/dates/${formattedDateIn}/${formattedDateOut}/${storeId}`);
             //console.log("F: Respueste de getStaffList: ", response);
             set({ incomeList: response.data.incomeList, isLoading: false });

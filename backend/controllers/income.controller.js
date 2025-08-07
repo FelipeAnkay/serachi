@@ -99,42 +99,50 @@ export const getIncomeByDates = async (req, res) => {
     try {
         const { dateStart, dateEnd, storeId } = req.params;
         const normalizedStoreId = storeId?.toUpperCase();
-        //console.log("getIncomeByDates data: ", { dateStart, dateEnd, normalizedStoreId })
+
+        // Crear fecha de inicio: 00:00:00.000
+        const startDate = new Date(dateStart);
+        startDate.setUTCHours(0, 0, 0, 0);
+
+        // Crear fecha de término: 23:59:59.999
+        const endDate = new Date(dateEnd);
+        endDate.setUTCHours(23, 59, 59, 999);
+
         const incomeList = await Income.find({
             storeId: normalizedStoreId,
             date: {
-                $gte: new Date(dateStart),
-                $lte: new Date(dateEnd)
+                $gte: startDate,
+                $lte: endDate,
             },
         });
 
-        //console.log("IncomeList: ", incomeList)
         if (!incomeList) {
             return res.status(400).json({ success: false, message: "incomeList not found" });
         }
+
         res.status(200).json({ success: true, incomeList });
     } catch (error) {
         return res.status(400).json({ success: false, message: error.message });
     }
-}
+};
 
 export const deleteAllIncomeByUEmail = async (req, res) => {
-  try {
-    const { userEmail, storeId } = req.params;
-    const normalizedStoreId = storeId?.toUpperCase();
+    try {
+        const { userEmail, storeId } = req.params;
+        const normalizedStoreId = storeId?.toUpperCase();
 
-    // Construimos el filtro de búsqueda
-    const filter = { userEmail: userEmail, storeId: normalizedStoreId };
+        // Construimos el filtro de búsqueda
+        const filter = { userEmail: userEmail, storeId: normalizedStoreId };
 
-    const result = await Income.deleteMany(filter);
+        const result = await Income.deleteMany(filter);
 
-    res.status(200).json({
-      success: true,
-      message: `${result.deletedCount} income deleted`,
-    });
-  } catch (error) {
-    return res
-      .status(400)
-      .json({ success: false, message: error.message });
-  }
+        res.status(200).json({
+            success: true,
+            message: `${result.deletedCount} income deleted`,
+        });
+    } catch (error) {
+        return res
+            .status(400)
+            .json({ success: false, message: error.message });
+    }
 };
