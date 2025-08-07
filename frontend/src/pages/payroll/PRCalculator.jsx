@@ -25,6 +25,7 @@ const PRCalculator = () => {
     const [dateIn, setDateIn] = useState('');
     const [dateOut, setDateOut] = useState('');
     const [summary, setSummary] = useState([]);
+    const [discountSummary, setDiscountSummary] = useState([]);
     const [loading, setLoading] = useState(false);
     const [selectedRules, setSelectedRules] = useState([]);
     const [showModal, setShowModal] = useState(false);
@@ -40,13 +41,14 @@ const PRCalculator = () => {
     const [showExistingServicesModal, setShowExistingServicesModal] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [excludedServiceIds, setExcludedServiceIds] = useState([]);
+    const [paymentSummary, setPaymentSummary] = useState([]);
 
     const fetchData = async () => {
         if (!dateIn || !dateOut) return;
         setLoading(true);
         try {
             const servicesResponse = await getServicesForFees(dateIn, dateOut, storeId);
-            console.log("servicesResponse is: ", servicesResponse);
+            //console.log("servicesResponse is: ", servicesResponse);
             if (!servicesResponse.success) {
                 toast.error("No services in the selected range")
                 setLoading(false);
@@ -80,7 +82,6 @@ const PRCalculator = () => {
                     editedCommission: item.totalCommission,
                     feeRules: item.feeRules,
                     productId: item.productId,
-                    paymentMethod: '',
                     services: services.filter(s => s.staffEmail === item.staffEmail && s.productId === item.productId),
                 };
             }));
@@ -143,71 +144,91 @@ const PRCalculator = () => {
         try {
             const userEmail = user.email;
             const storeId = Cookies.get("storeId");
-            const missingPayments = summary.filter(item => !item.paymentMethod);
 
+            const uniqueStaff = [...new Set(summary.map(item => item.staffEmail))];
+
+            // Validaciones
             if (useGlobalPaymentMethod && !globalPaymentMethod) {
                 toast.error("❗ All the payment methods must be selected");
                 return;
             }
 
+            const missingPayments = uniqueStaff.filter(email => {
+                return !paymentSummary.find(p => p.staffEmail === email)?.paymentMethod;
+            });
+
             if (!useGlobalPaymentMethod && missingPayments.length > 0) {
                 toast.error("❗ All the payment methods must be selected");
                 return;
             }
+
+            // Construir PRRecord con detalle por staff
+            const recordDetail = uniqueStaff.map(staffEmail => {
+                const servicesForStaff = summary
+                    .filter(item => item.staffEmail === staffEmail)
+                    .flatMap(item => item.services.map(s => s._id));
+
+                const totalCommission = summary
+                    .filter(item => item.staffEmail === staffEmail)
+                    .reduce((acc, curr) => acc + Number(curr.commission || 0), 0);
+
+                const discount = discountSummary.find(d => d.staffEmail === staffEmail)?.amount || 0;
+                const finalAmount = totalCommission - discount;
+
+                return {
+                    staffEmail,
+                    serviceId: servicesForStaff,
+                    amount: finalAmount,
+                };
+            });
+
             const prrecord = {
                 dateInit: new Date(dateIn),
                 dateEnd: new Date(dateOut),
-                recordDetail: summary.map(item => ({
-                    staffEmail: item.staffEmail,
-                    serviceId: item.services.map(s => s._id),
-                    amount: item.commission,
-                })),
+                recordDetail,
                 tag: tags,
                 type: "Payroll",
                 userEmail,
                 storeId,
             };
 
-            //console.log("Payload final a guardar:", prrecord);
-            //const auxPRId = 'DEBUG'
             const auxPR = await createPRrecord(prrecord);
             const auxPRId = auxPR.service._id;
 
-            for (const item of summary) {
-                if (item.commission > 0) {
-                    const expense = {
-                        date: new Date().toISOString(),
-                        staffEmail: item.staffEmail,
-                        amount: item.commission,
-                        type: 'Staff',
-                        storeId: storeId,
-                        userEmail: user.email,
-                        paymentMethod: item.paymentMethod,
-                        description: `Payroll for ${item.productName} - ${auxPRId}`,
-                    };
-                    //console.log("El expense a registrar es: ", expense)
-                    await createExpense(expense);
-                }
-
-                for (const updService of item.services) {
-                    await updateService(updService._id, {
-                        payrollList: [
-                            ...(updService.payrollList || []),
-                            auxPRId
-                        ],
-                    });
-                }
-
+            // Crear un solo Expense por trabajador
+            for (const detail of recordDetail) {
+                const paymentMethod = paymentSummary.find(p => p.staffEmail === detail.staffEmail)?.paymentMethod || '';
+                const expense = {
+                    date: new Date().toISOString(),
+                    staffEmail: detail.staffEmail,
+                    amount: detail.amount,
+                    type: 'Staff',
+                    storeId,
+                    userEmail,
+                    paymentMethod,
+                    description: `Payroll - ${auxPRId}`,
+                };
+                await createExpense(expense);
             }
+
+            // Actualizar servicios con el ID de PR record
+            const allServices = summary.flatMap(item => item.services);
+            for (const updService of allServices) {
+                await updateService(updService._id, {
+                    payrollList: [...(updService.payrollList || []), auxPRId],
+                });
+            }
+
             window.scrollTo({ top: 0, behavior: 'smooth' });
             toast.success('Payroll registered successfully');
             setSummary([]);
             setTableVisible(false);
-
+            setDiscountSummary([]);
+            setPaymentSummary([]);
         } catch (error) {
             window.scrollTo({ top: 0, behavior: 'smooth' });
             toast.error('Error registering payroll');
-            //console.error('❌ Error registering payroll:', error);
+            console.error('❌ Error registering payroll:', error);
         } finally {
             setIsSubmitting(false);
             setLoading(false);
@@ -240,7 +261,6 @@ const PRCalculator = () => {
                         editedCommission: item.totalCommission,
                         feeRules: item.feeRules,
                         productId: item.productId,
-                        paymentMethod: globalPaymentMethod || '',
                         services: remaining.filter(
                             s => s.staffEmail === item.staffEmail && s.productId === item.productId
                         ),
@@ -256,6 +276,28 @@ const PRCalculator = () => {
         } finally {
             setLoading(false)
         }
+    };
+
+    const handleRegisterDiscount = (staffEmail, amount) => {
+        const updated = [...discountSummary];
+        const index = updated.findIndex(item => item.staffEmail === staffEmail);
+        if (index !== -1) {
+            updated[index].amount = Number(amount);
+        } else {
+            updated.push({ staffEmail, amount: Number(amount) });
+        }
+        setDiscountSummary(updated);
+    };
+
+    const handleRegisterPaymentMethod = (staffEmail, method) => {
+        const updated = [...paymentSummary];
+        const index = updated.findIndex(p => p.staffEmail === staffEmail);
+        if (index !== -1) {
+            updated[index].paymentMethod = method;
+        } else {
+            updated.push({ staffEmail, paymentMethod: method });
+        }
+        setPaymentSummary(updated);
     };
 
     return (
@@ -424,45 +466,7 @@ const PRCalculator = () => {
                                         ))}
                                     </tbody>
                                 </table>
-                                <div className="flex items-center gap-4 mt-4 text-slate-800">
-                                    <label className="font-semibold">Same Payment Method for all the commissions:</label>
-                                    <input
-                                        type="checkbox"
-                                        checked={useGlobalPaymentMethod}
-                                        onChange={e => {
-                                            const checked = e.target.checked;
-                                            setUseGlobalPaymentMethod(checked);
-                                            if (checked && globalPaymentMethod) {
-                                                // aplicar a todas las filas
-                                                const updated = summary.map(item => ({
-                                                    ...item,
-                                                    paymentMethod: globalPaymentMethod,
-                                                }));
-                                                setSummary(updated);
-                                            }
-                                        }}
-                                    />
-                                    {useGlobalPaymentMethod && (
-                                        <select
-                                            className="bg-white text-slate-900 border border-slate-300 rounded px-3 py-2"
-                                            value={globalPaymentMethod}
-                                            onChange={e => {
-                                                const selected = e.target.value;
-                                                setGlobalPaymentMethod(selected);
-                                                const updated = summary.map(item => ({
-                                                    ...item,
-                                                    paymentMethod: selected,
-                                                }));
-                                                setSummary(updated);
-                                            }}
-                                        >
-                                            <option value="">Select Payment Method</option>
-                                            {paymentList.map(method => (
-                                                <option key={method.name} value={method.name}>{method.name}</option>
-                                            ))}
-                                        </select>
-                                    )}
-                                </div>
+
                             </fieldset>
                             {/* Tabla resumen de staff y total de comisiones*/}
                             <fieldset className='border rounded-2xl p-4 mb-6 bg-white'>
@@ -475,6 +479,9 @@ const PRCalculator = () => {
                                         <tr>
                                             <th className='px-4 py-2 text-left'>Staff Email</th>
                                             <th className='px-4 py-2 text-center'>Total Commission</th>
+                                            <th className='px-4 py-2 text-center'>Legal Discount</th>
+                                            <th className='px-4 py-2 text-center'>Final Commission</th>
+                                            <th className='px-4 py-2 text-center'>Payment Method</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -485,16 +492,92 @@ const PRCalculator = () => {
                                                 acc[email] += Number(item.commission || 0);
                                                 return acc;
                                             }, {})
-                                        ).map(([staffEmail, total], index) => (
-                                            <tr key={staffEmail || index} className='border-t border-white/20'>
-                                                <td className='px-4 py-2 text-left'>{staffEmail}</td>
-                                                <td className='px-4 py-2 text-center font-bold text-[#0d6c77]'>
-                                                    ${total.toFixed(2)}
-                                                </td>
-                                            </tr>
-                                        ))}
+                                        ).map(([staffEmail, total], index) => {
+                                            const discount = discountSummary.find(d => d.staffEmail === staffEmail)?.amount || 0;
+                                            const finalAmount = total - discount;
+                                            return (
+                                                <tr key={staffEmail || index} className='border-t border-white/20'>
+                                                    <td className='px-4 py-2 text-left'>{staffEmail}</td>
+                                                    <td className='px-4 py-2 text-center font-bold text-[#0d6c77]'>
+                                                        ${total.toFixed(2)}
+                                                    </td>
+                                                    <td className='px-4 py-2 text-center items-center justify-center font-bold text-red-300 flex flex-row'>
+                                                        <p className='text-red-400 font-bold'> - </p>
+                                                        <input
+                                                            type="number"
+                                                            value={discountSummary.find(d => d.staffEmail === staffEmail)?.amount || 0}
+                                                            onChange={e => {
+                                                                handleRegisterDiscount(staffEmail, e.target.value);
+                                                            }}
+                                                            className='flex rounded px-2 py-1 w-24 text-right bg-white text-red-400'
+                                                        />
+                                                    </td>
+                                                    <td className='px-4 py-2 text-center font-bold text-green-700'>
+                                                        ${finalAmount.toFixed(2)}
+                                                    </td>
+                                                    <td className='px-4 py-2 text-center'>
+                                                        <select
+                                                            className="px-2 py-1 bg-white text-slate-900 border border-slate-300 rounded"
+                                                            value={paymentSummary.find(p => p.staffEmail === staffEmail)?.paymentMethod || ''}
+                                                            onChange={(e) => handleRegisterPaymentMethod(staffEmail, e.target.value)}
+                                                        >
+                                                            <option value="">Select</option>
+                                                            {paymentList.map(method => (
+                                                                <option key={method.name} value={method.name}>{method.name}</option>
+                                                            ))}
+                                                        </select>
+                                                    </td>
+                                                </tr>
+                                            );
+                                        })}
                                     </tbody>
                                 </table>
+                                <div>
+                                    <div className="flex items-center gap-4 ml-4 mt-4 text-slate-800">
+                                        <label className="font-semibold">Same Payment Method for all the staff:</label>
+                                        <input
+                                            type="checkbox"
+                                            checked={useGlobalPaymentMethod}
+                                            onChange={e => {
+                                                const checked = e.target.checked;
+                                                setUseGlobalPaymentMethod(checked);
+
+                                                if (checked && globalPaymentMethod) {
+                                                    // Aplicar el método a todos los staff
+                                                    const uniqueStaff = [...new Set(summary.map(item => item.staffEmail))];
+                                                    const updated = uniqueStaff.map(email => ({
+                                                        staffEmail: email,
+                                                        paymentMethod: globalPaymentMethod,
+                                                    }));
+                                                    setPaymentSummary(updated);
+                                                }
+                                            }}
+                                        />
+                                        {useGlobalPaymentMethod && (
+                                            <select
+                                                className="bg-white text-slate-900 border border-slate-300 rounded px-3 py-2"
+                                                value={globalPaymentMethod}
+                                                onChange={e => {
+                                                    const selected = e.target.value;
+                                                    setGlobalPaymentMethod(selected);
+
+                                                    // Aplicar el método a todos los staff
+                                                    const uniqueStaff = [...new Set(summary.map(item => item.staffEmail))];
+                                                    const updated = uniqueStaff.map(email => ({
+                                                        staffEmail: email,
+                                                        paymentMethod: selected,
+                                                    }));
+                                                    setPaymentSummary(updated);
+                                                }}
+                                            >
+                                                <option value="">Select Payment Method</option>
+                                                {paymentList.map(method => (
+                                                    <option key={method.name} value={method.name}>{method.name}</option>
+                                                ))}
+                                            </select>
+                                        )}
+                                    </div>
+                                </div>
                             </fieldset>
                             {/* TAG SECTION */}
                             <fieldset className="w-full space-y-4 rounded-2xl border p-4 text-slate-800 mb-5 bg-white">

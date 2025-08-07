@@ -32,14 +32,14 @@ export default function CashFlowSummary() {
     const fetchData = async () => {
         setLoading(true)
         try {
-            console.log('DATES: ', formData.dateStart, ' TO ', formData.dateEnd)
+            //console.log('DATES: ', formData.dateStart, ' TO ', formData.dateEnd)
             const incomes = await getIncomeByDates(formData.dateStart, formData.dateEnd, storeId);
             const expenses = await getExpenseByDates(formData.dateStart, formData.dateEnd, storeId);
             // Cargar tipos
             const typesFromAPI = await getTypeByCategory("EXPENSE", storeId);
             //console.log("typesFromAPI: ", typesFromAPI)
             setTypes(typesFromAPI.typeList);
-            console.log("getIncomeByDates: ", incomes)
+            //console.log("getIncomeByDates: ", incomes)
             //console.log("getExpenseByDates: ", expenses)
             setFormData((prev) => ({
                 ...prev,
