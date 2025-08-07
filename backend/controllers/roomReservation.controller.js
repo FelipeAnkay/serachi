@@ -15,25 +15,17 @@ export const createRoomReservation = async (req, res) => {
             return new Date(year, month - 1, day); // ✅ Esto es medianoche local
         };
 
-        // Crear fecha de inicio: 00:00:00.000
-        const startDate = new Date(dateIn);
-        startDate.setUTCHours(0, 0, 0, 0);
-
-        // Crear fecha de término: 23:59:59.999
-        const endDate = new Date(dateOut);
-        endDate.setUTCHours(23, 59, 59, 999);
-        /*
-            dateIn: toLocalMidnight(dateIn),
-            dateOut: toLocalMidnight(dateOut),
-        */
+        // Forzar hora específica en UTC
+        const startDate = new Date(`${dateIn}T07:00:00.000Z`);
+        const endDate = new Date(`${dateOut}T04:00:00.000Z`);
 
         const roomReservation = new RoomReservation({
             roomId,
             quoteId,
             customerEmail,
             storeId: storeId?.toUpperCase(),
-            dateIn: toLocalMidnight(dateIn),
-            dateOut: toLocalMidnight(dateOut),
+            dateIn: startDate,
+            dateOut: endDate,
             bedsReserved,
             roomUnitaryPrice,
             roomFinalPrice,
