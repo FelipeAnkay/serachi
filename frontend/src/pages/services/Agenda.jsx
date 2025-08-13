@@ -340,6 +340,9 @@ const Agenda = () => {
                                         <strong>Duración:</strong>{' '}
                                         {moment(editData.dateOut).diff(moment(editData.dateIn), 'minutes')} minutos
                                     </p>
+                                    <p className='text-xs text-slate-500'>
+                                        Created by: {selectedService.userEmail}
+                                    </p>
                                     <div className="flex justify-between mt-6">
                                         <button
                                             className="bg-red-400 hover:bg-red-500 text-slate-800 px-4 py-2 rounded flex"

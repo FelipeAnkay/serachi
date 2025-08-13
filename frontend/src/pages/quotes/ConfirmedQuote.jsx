@@ -471,6 +471,9 @@ export default function ConfirmedQuote() {
                                                             })
                                                             }
                                                         </div>
+                                                        <div>
+                                                            <p className='text-xs text-slate-500 mt-2'>{quote.userEmail}</p>
+                                                        </div>
                                                     </div>
 
                                                     <div className={`flex flex-col sm:flex-row gap-2 w-full ${alreadyExists ? "sm:justify-end sm:w-1/2" : "sm:w-1/2"}`}>
