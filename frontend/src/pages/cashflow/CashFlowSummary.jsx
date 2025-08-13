@@ -165,6 +165,9 @@ export default function CashFlowSummary() {
                                             <div className="text-xs text-gray-500">
                                                 {item.paymentMethod}
                                             </div>
+                                            <div className="text-xs text-gray-500 text-right">
+                                                {item.userEmail}
+                                            </div>
                                         </div>
                                     ))}
                                 </div>
@@ -185,6 +188,9 @@ export default function CashFlowSummary() {
                                             </div>
                                             <div className="text-xs text-gray-500">
                                                 {item.paymentMethod}
+                                            </div>
+                                            <div className="text-xs text-gray-500 text-right">
+                                                {item.userEmail}
                                             </div>
                                         </div>
                                     ))}
